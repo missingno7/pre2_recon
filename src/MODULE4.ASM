@@ -6,13 +6,13 @@ public ShowWorldMapScrollIn
 DATA segment word public 'DATA'
 extrn byte_27E8:byte
 extrn byte_2879:byte
-extrn byte_6BE5:byte
 extrn CameraCol:word
 extrn CameraRow:word
 extrn CodeEntryState:byte
 extrn CodeInputCount:word
 extrn CurrentLevel:byte
 extrn DrawPage:word
+extrn EndSignal:byte
 extrn FineScroll:byte
 extrn FrameCallback:word
 extrn LastScanCode:byte
@@ -257,7 +257,7 @@ loc_96C1:
     sti
     call FadeOutPaletteToBlack
     mov byte ptr LastScanCode, 0
-    mov byte ptr byte_6BE5, 0
+    mov byte ptr EndSignal, 0
     ret
 
 ; Runs the map screen until ScreenExitRequested is nonzero. Used for the MODE choice and the

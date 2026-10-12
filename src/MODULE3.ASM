@@ -2,27 +2,27 @@
 ; module interface (tools/symtab.py)
 public BuildEffectDrawList
 public ComputePasswordCode
+public DrawStatusBarBackground
 public FadeOutPaletteToBlack
 public ProcessPlayerContacts
+public ResetLevelState
+public ResetRenderSlots
 public RunFrontEnd
 public ShowMode13PictureFadeIn
 public ShowPresentTitle
 public ShowTitusScreen
+public TryCaveTrigger
+public UpdateCameraFixedStep
+public UpdateCameraFollow
+public UpdateCameraShake
+public UpdateEffectParticles
+public UpdateFireflies
 public UpdateFollowerSlots
-public sub_454E
-public sub_45AF
-public sub_4907
-public sub_4B8E
-public sub_4C30
-public sub_4C69
-public sub_5237
-public sub_52FE
-public sub_53F6
-public sub_54AB
-public sub_55FC
-public sub_5634
-public sub_5643
-public sub_581E
+public UpdateHud
+public UpdateLevelState
+public UpdatePopupRing
+public UpdateProximityTriggers
+public UpdateTerrainEntities
 public sub_5850
 public sub_5CCE
 public sub_5CDB
@@ -55,11 +55,11 @@ DATA segment word public 'DATA'
 extrn AnimVisibleFlag:byte
 extrn BiosSeed:word
 extrn BiosSeedReady:byte
+extrn BonusFlashTimer:byte
+extrn BonusLetterMask:byte
 extrn byte_0666:byte
 extrn byte_083D:byte
 extrn byte_083E:byte
-extrn byte_27D6:byte
-extrn byte_27D8:byte
 extrn byte_27E8:byte
 extrn byte_27E9:byte
 extrn byte_27EA:byte
@@ -103,30 +103,18 @@ extrn byte_6BD0:byte
 extrn byte_6BD1:byte
 extrn byte_6BD2:byte
 extrn byte_6BD3:byte
-extrn byte_6BD9:byte
 extrn byte_6BDB:byte
 extrn byte_6BDC:byte
 extrn byte_6BE0:byte
 extrn byte_6BE1:byte
-extrn byte_6BE4:byte
-extrn byte_6BE5:byte
-extrn byte_6BE6:byte
 extrn byte_6BE8:byte
-extrn byte_6BEA:byte
 extrn byte_6BF3:byte
-extrn byte_6BFE:byte
 extrn byte_6BFF:byte
-extrn byte_6C00:byte
 extrn byte_6C01:byte
 extrn byte_6C02:byte
 extrn byte_6C03:byte
 extrn byte_6C04:byte
 extrn byte_6C05:byte
-extrn byte_6C12:byte
-extrn byte_6CA4:byte
-extrn byte_6CA5:byte
-extrn byte_6CA6:byte
-extrn byte_6CA7:byte
 extrn byte_6CA8:byte
 extrn byte_7090:byte
 extrn byte_78C6:byte
@@ -169,7 +157,10 @@ extrn dtbl_7D95:word
 extrn EffectFrame:word
 extrn EffectOriginX:word
 extrn EffectOriginY:word
+extrn EndSignal:byte
+extrn Energy:byte
 extrn ExpertFlag:byte
+extrn ExtraLifeBlocks:word
 extrn FineScroll:byte
 extrn FollowerOverlapMode:byte
 extrn FrameDataOffsets:word
@@ -179,10 +170,18 @@ extrn FrameHotX:byte
 extrn FrameWidths:byte
 extrn GridDirtyFlag:byte
 extrn HScrollDir:byte
+extrn HudCacheBonus:byte
+extrn HudCacheEnergy:byte
+extrn HudCacheLives:byte
+extrn HudCacheScoreHigh:word
+extrn HudCacheScoreLow:word
+extrn ItemTallyCounts:byte
+extrn ItemTotal:word
 extrn LandingDepth:word
 extrn LandingFlag:byte
 extrn LastDebrisSlot:word
 extrn LastEffectTick:word
+extrn LevelEndMode:byte
 extrn LevelFlags:byte
 extrn LevelPaletteTable:word
 extrn LevelPropHeader:word
@@ -190,19 +189,30 @@ extrn LevelScriptTable:word
 extrn LevelSegment:word
 extrn LevelStartX:word
 extrn LevelStartY:word
+extrn Lives:byte
 extrn MapRows:byte
 extrn NextFreeSegment:word
+extrn PlatformDeltaX:word
+extrn PlatformDeltaY:word
+extrn PlayerAnimPtr:word
 extrn PlayerHurtTimer:byte
+extrn PlayerOnPlatform:byte
+extrn PlayerRenderY:word
+extrn PlayerSprite:word
 extrn PlayerVelX:word
 extrn PlayerVelY:word
 extrn PlayerX:word
 extrn PlayerY:word
+extrn PopupRingHead:word
 extrn PrevCameraCol:word
 extrn RenderSlots:word
+extrn RespawnState:byte
 extrn ScoreHigh:word
 extrn ScoreLow:word
 extrn ScriptFrameCounter:word
 extrn ScriptPointer:word
+extrn ScrollFollowGate:byte
+extrn ShakeMagnitude:byte
 extrn ShakeRows:word
 extrn SineTable:byte
 extrn SnowFrameTick:byte
@@ -217,11 +227,8 @@ extrn word_27F2:word
 extrn word_287A:word
 extrn word_2A76:word
 extrn word_2A7A:word
-extrn word_4F0C:word
-extrn word_4F0E:word
 extrn word_4F20:word
 extrn word_4F25:word
-extrn word_4F28:word
 extrn word_4F2E:word
 extrn word_4F30:word
 extrn word_4F32:word
@@ -252,20 +259,13 @@ extrn word_5692:word
 extrn word_5694:word
 extrn word_6BAB:word
 extrn word_6BB1:word
-extrn word_6BBE:word
 extrn word_6BCA:word
 extrn word_6BE2:word
 extrn word_6BEB:word
 extrn word_6BF1:word
-extrn word_6BFA:word
-extrn word_6BFC:word
 extrn word_6C06:word
 extrn word_6C08:word
 extrn word_6C0A:word
-extrn word_6C0C:word
-extrn word_6C9E:word
-extrn word_6CA0:word
-extrn word_6CA2:word
 extrn word_78C4:word
 extrn word_79CE:word
 extrn word_7B04:word
@@ -360,11 +360,16 @@ extrn WaitForButtonPressRelease:near
 extrn WaitVerticalRetrace:near
 ; end module interface
 
-sub_454E:
-    mov word ptr word_6CA2, 0FFFFh
-    mov byte ptr byte_6CA4, 0FFh
-    mov byte ptr byte_6CA5, 0FFh
-    mov byte ptr byte_6CA6, 0FFh
+; Redraws the status-bar background: 23 rows of 40 bytes in each of the four planes, copied from
+; the HUD graphic at word_003D:07B0h into DrawPage+1B80h, then latch-copied to DisplayPage+1B80h.
+; Also invalidates the HUD caches so that UpdateHud redraws every field on its next call.
+; In: none. Out: status strip in DrawPage and DisplayPage; HudCacheScoreHigh = -1; the HudCache
+;     bytes = 0FFh. Preserves DS and ES. Callers: LevelRestart, sub_5850 (credits path).
+DrawStatusBarBackground:
+    mov word ptr HudCacheScoreHigh, 0FFFFh
+    mov byte ptr HudCacheLives, 0FFh
+    mov byte ptr HudCacheEnergy, 0FFh
+    mov byte ptr HudCacheBonus, 0FFh
     push ds
     push es
     call SetCpuWriteMode
@@ -400,22 +405,32 @@ loc_45AB:
     pop es
     pop ds
     ret
-cvar_45AE label byte
+HudDirtyCount label byte
 ; DATA: counter byte
     db 00h
 
-sub_45AF:
+; Per-frame HUD update: lives, energy, score, BONUS letters and the 25000-point extra-life check.
+; MainFrameLoop calls it only when UpdateLevelState returns CF = 0.
+; In: Lives, Energy, ScoreLow/ScoreHigh, BonusLetterMask, BonusFlashTimer, SnowFrameTick.
+; Out: changed fields redrawn into DrawPage (cached in HudCache*); HudDirtyCount copy of the strip
+;      into DisplayPage when any glyph was drawn; ExtraLifeBlocks raised and AddLife called per
+;      new block. Returns at once while RespawnState != 0 (no HUD and no extra-life check).
+; Notes: lives are shown capped at 9 (cache holds the uncapped value). The score shows the low six
+;        digits of the 32-bit counter then a fixed 0 digit, so the displayed value is
+;        (counter mod 1000000) * 10. The extra-life test divides ScoreHigh:ScoreLow by 25000 with
+;        DIV: the quotient must fit 16 bits, so a counter of 1638400000 or more raises #DE (quirk).
+UpdateHud:
     push ds
     push es
-    cmp byte ptr ds:byte_6BE4, 0
+    cmp byte ptr ds:RespawnState, 0
     jne loc_45AB
     mov ax, word ptr ScoreLow
     mov dx, word ptr ScoreHigh
     mov bx, 61A8h
     div bx
-    sub ax, word ptr word_6C0C
+    sub ax, word ptr ExtraLifeBlocks
     je loc_45E0
-    add word ptr word_6C0C, ax
+    add word ptr ExtraLifeBlocks, ax
     jmp short loc_45D3
 loc_45D0:
     call sub_65D6
@@ -427,35 +442,35 @@ loc_45D3:
     call SpawnDebrisElement
 loc_45E0:
     call SetCpuWriteMode
-    mov byte ptr cs:cvar_45AE, 0
-    mov al, byte ptr byte_27D8
-    cmp byte ptr byte_6CA4, al
+    mov byte ptr cs:HudDirtyCount, 0
+    mov al, byte ptr Lives
+    cmp byte ptr HudCacheLives, al
     je loc_4606
-    mov byte ptr byte_6CA4, al
+    mov byte ptr HudCacheLives, al
     cmp al, 9
     jbe loc_45FB
     mov al, 9
 loc_45FB:
     mov di, word ptr ds:DrawPage
     add di, 1CEDh
-    call sub_473D
+    call BlitHudGlyph
 loc_4606:
     xor al, al
     mov dx, word ptr ScoreLow
-    cmp word ptr word_6CA0, dx
+    cmp word ptr HudCacheScoreLow, dx
     je loc_4614
     or al, 1
 loc_4614:
     mov cx, word ptr ScoreHigh
-    cmp word ptr word_6CA2, cx
+    cmp word ptr HudCacheScoreHigh, cx
     je loc_4620
     or al, 1
 loc_4620:
     or al, al
     je loc_464C
-    mov word ptr word_6CA0, dx
-    mov word ptr word_6CA2, cx
-    call sub_4803
+    mov word ptr HudCacheScoreLow, dx
+    mov word ptr HudCacheScoreHigh, cx
+    call FormatDecimal32
     mov di, 1CF1h
     add di, word ptr ds:DrawPage
     mov si, 6F52h
@@ -464,18 +479,18 @@ loc_4639:
     cmp al, 24h
     je loc_4647
     sub al, 30h
-    call sub_473D
+    call BlitHudGlyph
     inc di
     inc di
     jmp short loc_4639
 loc_4647:
     xor al, al
-    call sub_473D
+    call BlitHudGlyph
 loc_464C:
-    mov al, byte ptr byte_27D6
-    cmp byte ptr byte_6CA5, al
+    mov al, byte ptr Energy
+    cmp byte ptr HudCacheEnergy, al
     je loc_4683
-    mov byte ptr byte_6CA5, al
+    mov byte ptr HudCacheEnergy, al
     mov ah, al
     mov dl, 3
     mov di, 1D01h
@@ -484,7 +499,7 @@ loc_464C:
     je loc_4674
     mov al, 0Ah
 loc_4669:
-    call sub_473D
+    call BlitHudGlyph
     inc di
     inc di
     dec dl
@@ -495,27 +510,27 @@ loc_4674:
     je loc_4683
     mov al, 0Bh
 loc_467A:
-    call sub_473D
+    call BlitHudGlyph
     inc di
     inc di
     dec dl
     jne loc_467A
 loc_4683:
-    cmp byte ptr ds:byte_6C00, 0
+    cmp byte ptr ds:BonusFlashTimer, 0
     je loc_469C
-    mov byte ptr byte_6CA6, 0FFh
+    mov byte ptr HudCacheBonus, 0FFh
     mov ah, 1Fh
     test byte ptr SnowFrameTick, 1
     jne loc_46AA
     xor ah, ah
     jmp short loc_46AA
 loc_469C:
-    mov ah, byte ptr byte_6CA7
-    cmp byte ptr byte_6CA6, ah
+    mov ah, byte ptr BonusLetterMask
+    cmp byte ptr HudCacheBonus, ah
     je loc_46C7
-    mov byte ptr byte_6CA6, ah
+    mov byte ptr HudCacheBonus, ah
 loc_46AA:
-    call sub_46EE
+    call ClearBonusLetterRow
     mov al, 0Ch
     mov si, 6F86h
 loc_46B2:
@@ -525,13 +540,13 @@ loc_46B2:
     inc si
     shr ah, 1
     jae loc_46C1
-    call sub_473D
+    call BlitHudGlyph
 loc_46C1:
     inc al
     cmp al, 10h
     jbe loc_46B2
 loc_46C7:
-    cmp byte ptr cs:cvar_45AE, 0
+    cmp byte ptr cs:HudDirtyCount, 0
     je loc_46EB
     call SetLatchCopyMode
     mov si, 1B80h
@@ -546,7 +561,11 @@ loc_46C7:
 loc_46EB:
     jmp near ptr loc_45AB
 
-sub_46EE:
+; Restores the background of the BONUS letter row (6 bytes by 23 rows, four planes) from the HUD
+; graphic at word_003D:07D1h into DrawPage+1BA1h. Letters are drawn afterwards by UpdateHud.
+; In: AH is not read (the letter mask stays in AH for the caller). Out: DrawPage+1BA1h region.
+; Clobbers: none (AX..BP saved). Notes: increments HudDirtyCount.
+ClearBonusLetterRow:
     push ax
     push bx
     push cx
@@ -578,7 +597,7 @@ loc_4715:
     shl ah, 1
     cmp ah, 10h
     jne loc_4711
-    inc byte ptr cs:cvar_45AE
+    inc byte ptr cs:HudDirtyCount
     pop bp
     pop es
     pop ds
@@ -590,7 +609,11 @@ loc_4715:
     pop ax
     ret
 
-sub_473D:
+; Blits one 16x12 HUD glyph (4 planes) from the glyph sheet at word_003D:(1010h + 96 * AL).
+; In: AL = glyph index (0..9 digits; 0Ah/0Bh energy pips; 0Ch..10h BONUS letters);
+;     ES = A000h; DI = destination offset in the current page.
+; Out: DI unchanged; HudDirtyCount incremented. Clobbers: none (DS restored).
+BlitHudGlyph:
     push ax
     push cx
     push dx
@@ -619,7 +642,7 @@ loc_4762:
     shl ah, 1
     cmp ah, 10h
     jne loc_475E
-    inc byte ptr cs:cvar_45AE
+    inc byte ptr cs:HudDirtyCount
     pop es
     pop ds
     pop si
@@ -628,7 +651,10 @@ loc_4762:
     pop ax
     ret
 
-sub_4780:
+; Blits one 16x11 digit (4 planes) from the font at word_003D:(1C70h + 88 * AL).
+; In: AL = digit 0..9; ES = A000h; DI = destination offset.
+; Out: DI unchanged; HudDirtyCount incremented. Clobbers: none.
+BlitHudDigit:
     push ax
     push cx
     push dx
@@ -656,7 +682,7 @@ loc_47A2:
     shl ah, 1
     cmp ah, 10h
     jne loc_479E
-    inc byte ptr cs:cvar_45AE
+    inc byte ptr cs:HudDirtyCount
     pop es
     pop ds
     pop si
@@ -665,7 +691,12 @@ loc_47A2:
     pop ax
     ret
 
-sub_47C0:
+; Blits one 16x11 glyph (4 planes) from sprite frame (0F1h + AL) of the loaded sprite sheet,
+; skipping its 16h-byte frame header (FrameDataOffsets / FrameDataSegments).
+; In: AL = glyph index from frame 0F1h (letters use AL = letter - 41h); ES = A000h; DI = offset.
+; Out: DI unchanged. Notes: does not increment HudDirtyCount, so a glyph drawn only through this
+;        routine does not trigger the strip copy in UpdateHud (quirk).
+BlitHudSpriteGlyph:
     push ax
     push cx
     push dx
@@ -704,7 +735,10 @@ loc_47EA:
     pop ax
     ret
 
-sub_4803:
+; Converts the unsigned 32-bit value CX:DX (CX high word) to 10 ASCII digits at ds:6F4Eh,
+; terminated by '$' at ds:6F58h, using the descending power-of-ten table ending at ds:6F82h.
+; In: CX:DX. Out: ds:6F4E..6F58 written. Notes: sets DS = DATA and does not restore DS.
+FormatDecimal32:
     push dx
     push ax
     push bx
@@ -751,7 +785,14 @@ loc_483B:
     pop dx
     ret
 
-sub_484E:
+; Chooses the player's pose frame and display position from the pose word word_4F20 (pose key in
+; its low 13 bits, flags in the high byte) and the pose table at 7B29h (6-byte records:
+; key word, frame word, dx byte, dy byte; key 0 ends the table). Writes render slot 0.
+; In: byte_6BC5 (returns at once when 0), byte_6BC7, PlayerVelX, PlayerX/Y, byte_7B1A, byte_6BC8.
+; Out: RenderSlots (X), PlayerRenderY (Y), PlayerSprite (frame). When no key matches, the three
+;      words keep the values from the previous frame.
+; Notes: bit 7 of the flag byte mirrors dx. The frame may be taken from word_7B1B[byte_7B1A].
+UpdatePlayerRenderSlot:
     cmp byte ptr ds:byte_6BC5, 0
     jne loc_4858
     jmp near ptr loc_4906
@@ -821,14 +862,14 @@ loc_48DD:
     jae loc_48E9
     inc ax
 loc_48E9:
-    mov word ptr word_4F0E, ax
+    mov word ptr PlayerSprite, ax
     mov ax, word ptr PlayerX
     add ax, cx
     mov word ptr RenderSlots, ax
     mov al, byte ptr [si+5]
     cbw
     add ax, word ptr PlayerY
-    mov word ptr word_4F0C, ax
+    mov word ptr PlayerRenderY, ax
     jmp short loc_4906
 loc_4901:
     add si, 6
@@ -836,12 +877,18 @@ loc_4901:
 loc_4906:
     ret
 
-sub_4907:
+; Advances the 16 terrain entities at 9107h (stride 0Fh; sprite word FFFFh = free) and writes the
+; visible ones as render slots at 5570h (stride 12h, up to 7 plus a -1 terminator).
+; In: CameraCol, CameraRow, PlayerX/Y, LevelSegment, entity records.
+; Out: entity records; render slots 5570h..; PlayerOnPlatform = 0 at entry; PlatformDeltaX/Y.
+; Notes: type nibble (flags & 0Fh) 8 = falling (gravity; fall velocity at +0Bh). Other types
+;        step in one of eight directions (flags & 7). Riding: TryLandOnTerrainEntity.
+UpdateTerrainEntities:
     mov si, 9107h
     mov di, 5570h
     mov bx, 7
     mov cx, 10h
-    mov byte ptr byte_6BFE, 0
+    mov byte ptr PlayerOnPlatform, 0
 loc_4918:
     cmp word ptr [si+4], -1
     jne loc_4921
@@ -853,7 +900,7 @@ loc_4921:
     je loc_492D
     jmp near ptr loc_49F3
 loc_492D:
-    mov word ptr word_6BFA, 0
+    mov word ptr PlatformDeltaX, 0
     mov ax, word ptr [si+0Bh]
     sub word ptr [si+2], ax
     cmp byte ptr [si+0Ah], 0
@@ -889,7 +936,7 @@ loc_497F:
     push cx
     mov cl, 4
     sar ax, cl
-    mov word ptr word_6BFC, ax
+    mov word ptr PlatformDeltaY, ax
     add word ptr [si+0Bh], ax
     mov es, word ptr LevelSegment
     mov bx, word ptr [si]
@@ -937,8 +984,8 @@ loc_49EA:
     jmp near ptr loc_4A8B
 loc_49F3:
     xor ax, ax
-    mov word ptr word_6BFA, ax
-    mov word ptr word_6BFC, ax
+    mov word ptr PlatformDeltaX, ax
+    mov word ptr PlatformDeltaY, ax
     cmp byte ptr [si+0Eh], 0
     jne loc_4A0D
     cmp byte ptr [si+7], 0
@@ -993,11 +1040,11 @@ loc_4A58:
 loc_4A61:
     mov dl, ah
     cbw
-    mov word ptr word_6BFA, ax
+    mov word ptr PlatformDeltaX, ax
     add word ptr [si], ax
     mov al, dl
     cbw
-    mov word ptr word_6BFC, ax
+    mov word ptr PlatformDeltaY, ax
     add word ptr [si+2], ax
     mov al, byte ptr [si+0Eh]
     cmp byte ptr [si+7], al
@@ -1043,7 +1090,7 @@ loc_4A8B:
     cmp word ptr ds:PlayerVelY, -10h
     jle loc_4AE4
     or byte ptr [si+6], 40h
-    call sub_4B05
+    call TryLandOnTerrainEntity
     jb loc_4AEC
 loc_4AE4:
     and byte ptr [si+6], 0BFh
@@ -1063,18 +1110,24 @@ loc_4AF9:
     jne loc_4AF9
     ret
 
-sub_4B05:
+; Lands the player on terrain entity DI when the player is above it and the probe at PlayerY +
+; PlatformDeltaY overlaps (sub_8D7B, hitbox overlap). Snaps PlayerY to the top of the entity.
+; In: DI = entity render slot; PlatformDeltaX/Y; PlayerOnPlatform.
+; Out: CF = 1 when landed: PlayerOnPlatform = 1, PlayerX += PlatformDeltaX, PlayerY snapped,
+;      PlayerVelY = 1 if it was below the top, else PlatformDeltaY * 16 (snapped to top + 1).
+;      CF = 0 otherwise (also when already on a platform).
+TryLandOnTerrainEntity:
     push ax
     push bx
     push si
-    cmp byte ptr ds:byte_6BFE, 0
+    cmp byte ptr ds:PlayerOnPlatform, 0
     jne loc_4B89
     mov ax, word ptr PlayerY
     cmp word ptr [di+2], ax
     jle loc_4B89
     mov si, 4F1Ch
     push word ptr PlayerY
-    mov ax, word ptr word_6BFC
+    mov ax, word ptr PlatformDeltaY
     or ax, ax
     jl loc_4B29
     add word ptr PlayerY, ax
@@ -1085,9 +1138,9 @@ loc_4B29:
     pop word ptr [si+4]
     pop word ptr PlayerY
     jae loc_4B89
-    mov byte ptr byte_6BFE, 1
+    mov byte ptr PlayerOnPlatform, 1
     mov byte ptr byte_4F24, 0
-    mov ax, word ptr word_6BFA
+    mov ax, word ptr PlatformDeltaX
     add word ptr PlayerX, ax
     call sub_64DF
     mov bx, word ptr [di+4]
@@ -1104,7 +1157,7 @@ loc_4B29:
     mov word ptr PlayerVelY, 1
     jmp short loc_4B84
 loc_4B76:
-    mov ax, word ptr word_6BFC
+    mov ax, word ptr PlatformDeltaY
     shl ax, 1
     shl ax, 1
     shl ax, 1
@@ -1123,7 +1176,12 @@ loc_4B89:
     pop ax
     ret
 
-sub_4B8E:
+; Moves the 20 effect particles at 7DE6h (6-byte records: x, y, angle index, speed; x = FFFFh
+; free) by table steps (x from the table at ds:6F90h, y from ds:7090h) and plots each live
+; particle inside the view as one pixel with the VGA XOR function. Frees particles that leave.
+; In: DS = DATA; CameraRow, CameraCol, FineScroll. Out: particle records; DrawPage pixels XORed.
+; Notes: writes GC index 3 = XOR and index 1 = 0; the caller does not restore them.
+UpdateEffectParticles:
     push es
     call SetCpuWriteMode
     mov dx, 3C4h
@@ -1198,8 +1256,14 @@ loc_4C21:
     pop es
     ret
 
-sub_4C30:
-    cmp byte ptr ds:byte_6BEA, 1
+; Per-frame vertical screen shake. ShakeMagnitude 0 = idle; 1 = clear ShakeRows; 2 and above =
+; active: on each odd SnowFrameTick PlayerY moves up 3 (unless byte_4F27 is 5 or 20h) and the
+; magnitude is incremented, and ShakeRows = ShakeMagnitude.
+; In: ShakeMagnitude, SnowFrameTick, byte_4F27. Out: ShakeRows, PlayerY, ShakeMagnitude.
+; Notes: impacts set ShakeMagnitude = 7 (sub_53F6, sub_864F); sub_5850 counts it down each frame.
+;        At 0 ShakeRows is left as it was (it was zeroed on the step to 1).
+UpdateCameraShake:
+    cmp byte ptr ds:ShakeMagnitude, 1
     jb loc_4C68
     je loc_4C63
     xor ax, ax
@@ -1211,8 +1275,8 @@ sub_4C30:
     je loc_4C55
     sub word ptr PlayerY, 3
 loc_4C55:
-    inc byte ptr byte_6BEA
-    mov al, byte ptr byte_6BEA
+    inc byte ptr ShakeMagnitude
+    mov al, byte ptr ShakeMagnitude
     xor ah, ah
 loc_4C5E:
     mov word ptr ShakeRows, ax
@@ -1223,9 +1287,32 @@ loc_4C63:
 loc_4C68:
     ret
 
-sub_4C69:
+; Level state machine. Called once per frame by MainFrameLoop; decides whether the frame goes on
+; or the level is (re)entered. Priority: LevelEndMode (nonzero) first; with it zero,
+; RespawnState, then EndSignal.
+; In: LevelEndMode, RespawnState, EndSignal, CurrentLevel, byte_2879 (demo playback),
+;     CheckpointX/Y, PlayerX/Y.
+; Out: CF = 0 continue the frame (MainFrameLoop ignores AX).
+;      CF = 1 MainFrameLoop jumps to LevelRestart with AX = 0 (new level after an exit, or a
+;      warp; sub_5237 has run) or AX = 1 (game over, ending, or demo end: LevelRestart resets
+;      Lives to 2 and clears the demo flag).
+; Paths:
+;   LevelEndMode = 1: exit sequence (iris, walk to 3Ch/0AFh, pot animation, tally when ItemTotal
+;     is nonzero, then CurrentLevel++ and sub_5237). CurrentLevel >= 0Ah: CurrentLevel++ only.
+;   LevelEndMode >= 2: CurrentLevel < 0Ah: CurrentLevel = WarpLevelTable[CurrentLevel] and
+;     LevelRestart at once. CurrentLevel >= 0Ah: CurrentLevel = its slot (search), then the exit.
+;   LevelEndMode = 0:
+;     RespawnState = 1: PlayDeathBounce; if demo or EndSignal, GameOverPath; else
+;       RestartFromCheckpoint (state rebuilt in place, CF = 0).
+;     EndSignal = 1 (no lives or demo abort): LifeLostPath (death bounce, then GameOverPath).
+;     EndSignal = 0FFh: ShowEndingPicture, then AX = 1 CF = 1. CurrentLevel is not reset here.
+;     Otherwise: CF = 0 (normal play).
+; Notes: GameOverPath zeroes ScoreLow, ScoreHigh and ExtraLifeBlocks and sets CurrentLevel = 0.
+;        The id search at loc_4C7E has no bound: an id missing from the table (0Dh) is searched
+;        past the 10 bytes (quirk; reachable only with a level-end mode >= 2 for id 0Dh).
+UpdateLevelState:
     xor ax, ax
-    cmp byte ptr ds:byte_6BE6, 1
+    cmp byte ptr ds:LevelEndMode, 1
     je loc_4CBA
     jb loc_4C99
     mov bx, 2CF6h
@@ -1233,6 +1320,8 @@ sub_4C69:
     cmp al, 0Ah
     jb loc_4C8F
 loc_4C7E:
+; quirk: unbounded search. Equality-only scan of WarpLevelTable with no end test; an id absent
+; from the table (0Dh) reads past it into LevelPaletteTable until a match.
     cmp byte ptr [bx], al
     je loc_4C85
     inc bx
@@ -1248,27 +1337,27 @@ loc_4C8F:
     jmp near ptr loc_4F65
 loc_4C99:
     inc ax
-    cmp byte ptr ds:byte_6BE4, 1
+    cmp byte ptr ds:RespawnState, 1
     jne loc_4CA4
-    jmp near ptr loc_4F6C
+    jmp near ptr RespawnPath
 loc_4CA4:
-    cmp byte ptr ds:byte_6BE5, 1
+    cmp byte ptr ds:EndSignal, 1
     jne loc_4CAE
-    jmp near ptr loc_5063
+    jmp near ptr LifeLostPath
 loc_4CAE:
-    cmp byte ptr ds:byte_6BE5, 0FFh
+    cmp byte ptr ds:EndSignal, 0FFh
     jne loc_4CB8
-    jmp near ptr loc_5034
+    jmp near ptr ShowEndingPicture
 loc_4CB8:
     clc
     ret
 loc_4CBA:
     cmp byte ptr ds:CurrentLevel, 0Ah
-    jb loc_4CCB
+    jb LevelTransitionStart
     call ClearStaggeredBlocks
     inc byte ptr CurrentLevel
     jmp near ptr loc_4F65
-loc_4CCB:
+LevelTransitionStart:
     cmp byte ptr ds:byte_6C04, 0
     je loc_4CE1
     mov byte ptr byte_6C01, 0
@@ -1295,12 +1384,12 @@ loc_4CE1:
     mov word ptr word_4F25, 0
     mov word ptr PlayerVelX, 0
     call SetCpuWriteMode
-    call sub_51A3
+    call RenderTallyPanel
     mov byte ptr byte_6BC5, 0
-    mov word ptr word_4F0E, 0FFFFh
-    mov word ptr word_4F28, 7BA7h
+    mov word ptr PlayerSprite, 0FFFFh
+    mov word ptr PlayerAnimPtr, 7BA7h
 loc_4D37:
-    mov bx, word ptr word_4F28
+    mov bx, word ptr PlayerAnimPtr
     call sub_638B
     xor bp, bp
     mov ax, word ptr PlayerX
@@ -1331,8 +1420,8 @@ loc_4D6E:
     inc bp
 loc_4D7A:
     mov word ptr PlayerY, dx
-    call sub_520C
-    call sub_51A3
+    call ClearDrawPage
+    call RenderTallyPanel
     call DrawSpriteObjects
     call PresentFrame
     or bp, bp
@@ -1348,11 +1437,11 @@ loc_4D7A:
     mov word ptr word_4F54, 9Bh
     mov word ptr word_4F56, 68h
 loc_4DBE:
-    mov bx, word ptr word_4F28
+    mov bx, word ptr PlayerAnimPtr
     call sub_638B
-    call sub_520C
-    call sub_51F0
-    call sub_51A3
+    call ClearDrawPage
+    call AnimateTallyPotFlame
+    call RenderTallyPanel
     call DrawSpriteObjects
     call PresentFrame
     sub word ptr word_4F2E, 3
@@ -1360,19 +1449,19 @@ loc_4DBE:
     sub word ptr word_4F52, 3
     cmp word ptr ds:word_4F2E, 9Bh
     ja loc_4DBE
-    cmp word ptr ds:word_6C9E, 0
-    jne loc_4DF5
-    jmp near ptr loc_4F0E
-loc_4DF5:
-    mov word ptr word_4F28, 7C6Bh
+    cmp word ptr ds:ItemTotal, 0
+    jne ItemTallyPath
+    jmp near ptr LevelExitNoTally
+ItemTallyPath:
+    mov word ptr PlayerAnimPtr, 7C6Bh
     mov word ptr PlayerVelX, 40h
     mov byte ptr byte_4F24, 2
 loc_4E06:
-    mov bx, word ptr word_4F28
+    mov bx, word ptr PlayerAnimPtr
     call sub_638B
-    call sub_520C
-    call sub_51F0
-    call sub_51A3
+    call ClearDrawPage
+    call AnimateTallyPotFlame
+    call RenderTallyPanel
     call DrawSpriteObjects
     call PresentFrame
     call sub_6333
@@ -1384,14 +1473,14 @@ loc_4E06:
     add word ptr PlayerX, ax
     or ax, ax
     jne loc_4E06
-    mov word ptr word_4F28, 7CAFh
+    mov word ptr PlayerAnimPtr, 7CAFh
     xor di, di
 loc_4E3A:
-    mov bx, word ptr word_4F28
+    mov bx, word ptr PlayerAnimPtr
     call sub_638B
-    call sub_520C
-    call sub_51F0
-    call sub_51A3
+    call ClearDrawPage
+    call AnimateTallyPotFlame
+    call RenderTallyPanel
     call DrawSpriteObjects
     call FlipDisplayPage
     call WaitVerticalRetrace
@@ -1437,7 +1526,7 @@ loc_4EBA:
     xor al, al
     jmp short loc_4ECC
 loc_4EBE:
-    cmp byte ptr [di+byte_6C12], 0
+    cmp byte ptr [di+ItemTallyCounts], 0
     jne loc_4ED5
     inc al
     cmp al, 71h
@@ -1464,23 +1553,23 @@ loc_4EEE:
     mov word ptr [si], 9Bh
     mov word ptr [si+2], 0
     mov word ptr [si+0Eh], 0
-    dec byte ptr [di+byte_6C12]
+    dec byte ptr [di+ItemTallyCounts]
     inc di
     jmp near ptr loc_4E3A
 loc_4F07:
     or bp, bp
-    je loc_4F0E
+    je LevelExitNoTally
     jmp near ptr loc_4E3A
-loc_4F0E:
+LevelExitNoTally:
     call WaitVerticalRetrace
     call WaitVerticalRetrace
-    mov word ptr word_4F28, 7BA7h
+    mov word ptr PlayerAnimPtr, 7BA7h
 loc_4F1A:
-    mov bx, word ptr word_4F28
+    mov bx, word ptr PlayerAnimPtr
     call sub_638B
-    call sub_520C
-    call sub_51F0
-    call sub_51A3
+    call ClearDrawPage
+    call AnimateTallyPotFlame
+    call RenderTallyPanel
     call DrawSpriteObjects
     call PresentFrame
     sub word ptr word_4F2E, 2
@@ -1497,25 +1586,28 @@ loc_4F49:
     jg loc_4F1A
     cmp byte ptr ds:byte_2879, 0
     je loc_4F5E
-    jmp near ptr loc_506C
+    jmp near ptr GameOverPath
 loc_4F5E:
     inc byte ptr CurrentLevel
-    call sub_51DF
+    call ResetItemTally
 loc_4F65:
-    call sub_5237
+    call ResetLevelState
     xor ax, ax
     stc
     ret
-loc_4F6C:
-    call sub_509D
+RespawnPath:
+    call PlayDeathBounce
     cmp byte ptr ds:byte_2879, 0
     je loc_4F79
-    jmp near ptr loc_506C
+    jmp near ptr GameOverPath
 loc_4F79:
-    cmp byte ptr ds:byte_6BE5, 0
-    je loc_4F83
-    jmp near ptr loc_506C
-loc_4F83:
+    cmp byte ptr ds:EndSignal, 0
+    je RestartFromCheckpoint
+    jmp near ptr GameOverPath
+RestartFromCheckpoint:
+; quirk: the death snapshot of the effect-source table (8F1D, 70 x 7) is written into
+; 6C12h..6C9Fh, over ItemTallyCounts and ItemTotal. ResetItemTally clears those afterwards, so
+; item tallies restart on respawn even though the restored objects keep their state.
     push ax
     push bx
     push cx
@@ -1549,7 +1641,7 @@ loc_4FB9:
     stosb
     add si, 5
     loop loc_4FB0
-    call sub_5237
+    call ResetLevelState
     mov ax, word ptr CheckpointX
     mov word ptr PlayerX, ax
     mov ax, word ptr CheckpointY
@@ -1591,7 +1683,7 @@ loc_5015:
 loc_501F:
     add di, 5
     loop loc_5015
-    call sub_51DF
+    call ResetItemTally
     pop bp
     pop es
     pop ds
@@ -1604,7 +1696,7 @@ loc_501F:
     xor ax, ax
     clc
     ret
-loc_5034:
+ShowEndingPicture:
     call SetLevelVideoMode
     mov ax, word ptr word_0039
     mov word ptr NextFreeSegment, ax
@@ -1625,11 +1717,11 @@ loc_5034:
     mov ax, 1
     stc
     ret
-loc_5063:
+LifeLostPath:
     mov ax, word ptr LevelSegment
     mov word ptr NextFreeSegment, ax
-    call sub_509D
-loc_506C:
+    call PlayDeathBounce
+GameOverPath:
     call TryShowIntroKeyed
     mov ax, 11h
     call ActivateResourceSlot
@@ -1638,13 +1730,18 @@ loc_506C:
     mov byte ptr CurrentLevel, 0
     mov word ptr ScoreLow, 0
     mov word ptr ScoreHigh, 0
-    mov word ptr word_6C0C, 0
-    call sub_51DF
+    mov word ptr ExtraLifeBlocks, 0
+    call ResetItemTally
     mov ax, 1
     stc
     ret
 
-sub_509D:
+; Death bounce: 60 frames of a hop. Hides the player (PlayerSprite = FFFFh), moves PlayerX by
+; PlayerVelX (+5 or -5, away from the view centre; PlayerX is 16 units per tile) and PlayerY by
+; a PlayerVelY arc (15 down to -16 units per frame). Redraws the scene each frame, plays sound 7.
+; In: PlayerX/Y, CameraCol. Out: PlayerX/Y moved; PlayerVelX, PlayerVelY, PlayerSprite set.
+; Callers: UpdateLevelState (respawn, life-lost and demo-end paths).
+PlayDeathBounce:
     push ax
     push bx
     push cx
@@ -1675,8 +1772,8 @@ loc_50D8:
     mov cx, 3Ch
 loc_50DE:
     push cx
-    mov word ptr word_4F0E, 0FFFFh
-    call sub_581E
+    mov word ptr PlayerSprite, 0FFFFh
+    call UpdatePopupRing
     call sub_6822
     call sub_6210
     call sub_60FE
@@ -1684,10 +1781,10 @@ loc_50DE:
     call AnimateTiles
     call RedrawOverlayTiles
     call CopyRingWindowToPage
-    call sub_4B8E
+    call UpdateEffectParticles
     call DrawSpriteObjects
     call DrawForegroundOverSprites
-    call sub_54AB
+    call UpdateFireflies
     call UpdateWindAndFlakes
     call PresentFrame
     mov ax, word ptr PlayerVelX
@@ -1714,12 +1811,18 @@ loc_5122:
     pop ax
     ret
 
-sub_5139:
+; Draws the percent-collected line of the tally panel: label at DrawPage+410h, then the percent
+; at DrawPage+430h followed by a percent sign. Percent = 100 * (word_2A76 + word_2A7A) /
+; (CollectTotalMain + CollectTotalDecor); 100 when the total is zero.
+; In: CollectTotalMain, CollectTotalDecor, word_2A76, word_2A7A. Out: DrawPage text.
+; Notes: quirk: the numerator is the LOW BYTE of the sum times 100 (mul AH with AH = 64h), so the
+;        percent wraps once the collected count reaches 256.
+RenderTallyPercent:
     call SetCpuWriteMode
     mov di, 410h
     add di, word ptr ds:DrawPage
     mov si, 7D7Fh
-    call sub_5190
+    call DrawHudText
     mov ax, 64h
     mov cx, word ptr CollectTotalMain
     add cx, word ptr CollectTotalDecor
@@ -1733,7 +1836,7 @@ sub_5139:
 loc_5165:
     mov dx, ax
     xor cx, cx
-    call sub_4803
+    call FormatDecimal32
     mov si, 6F55h
     mov di, 430h
     add di, word ptr ds:DrawPage
@@ -1745,39 +1848,46 @@ loc_517C:
     cmp al, 24h
     je loc_518A
     sub al, 30h
-    call sub_4780
+    call BlitHudDigit
     inc di
     inc di
     jmp short loc_517C
 loc_518A:
     mov al, 1Ah
-    call sub_47C0
+    call BlitHudSpriteGlyph
     ret
 
-sub_5190:
+; Draws a glyph string at DI: '$' ends it, a space advances one glyph cell (2 bytes), any other
+; byte is a letter drawn by BlitHudSpriteGlyph with index (byte - 41h).
+; In: SI = string in DS; DI = destination offset in the current page; ES = A000h.
+; Out: SI past the terminator; DI advanced 2 per character.
+DrawHudText:
     lodsb
     cmp al, 24h
     je loc_51A2
     cmp al, 20h
     je loc_519E
     sub al, 41h
-    call sub_47C0
+    call BlitHudSpriteGlyph
 loc_519E:
     inc di
     inc di
-    jmp short sub_5190
+    jmp short DrawHudText
 loc_51A2:
     ret
 
-sub_51A3:
+; Renders the tally score line: the text at DrawPage+230h, the six low score digits and a fixed
+; 0 digit at DrawPage+23Ch via BlitHudDigit, then the percent line (RenderTallyPercent).
+; In: ScoreLow/ScoreHigh. Out: DrawPage text. Notes: same display convention as UpdateHud.
+RenderTallyPanel:
     call SetCpuWriteMode
     mov di, 230h
     add di, word ptr ds:DrawPage
     mov si, 7D8Fh
-    call sub_5190
+    call DrawHudText
     mov dx, word ptr ScoreLow
     mov cx, word ptr ScoreHigh
-    call sub_4803
+    call FormatDecimal32
     mov di, 23Ch
     add di, word ptr ds:DrawPage
     mov si, 6F52h
@@ -1786,25 +1896,30 @@ loc_51C8:
     cmp al, 24h
     je loc_51D6
     sub al, 30h
-    call sub_4780
+    call BlitHudDigit
     inc di
     inc di
     jmp short loc_51C8
 loc_51D6:
     xor al, al
-    call sub_4780
-    call sub_5139
+    call BlitHudDigit
+    call RenderTallyPercent
     ret
 
-sub_51DF:
+; Clears the item tally: ItemTallyCounts (71h bytes at 6C12h) and ItemTotal.
+; In: none. Out: none. Callers: exit path (after the level counter is advanced) and respawn.
+ResetItemTally:
     mov di, 6C12h
     mov cx, 71h
     xor al, al
     rep stosb
-    mov word ptr word_6C9E, 0
+    mov word ptr ItemTotal, 0
     ret
 
-sub_51F0:
+; Every 4th frame (SnowFrameTick & 3 = 0) advances the tally pot flame sprite id word_4F56
+; (POT_FLAME_SPRITE) through 68h..6Dh (high byte masked with 1Fh before the step).
+; In: word_4F56, SnowFrameTick. Out: word_4F56.
+AnimateTallyPotFlame:
     test byte ptr SnowFrameTick, 3
     jne loc_520B
     push ax
@@ -1820,7 +1935,9 @@ loc_5207:
 loc_520B:
     ret
 
-sub_520C:
+; Clears the current draw page: 8000 bytes (0FA0h words) in each of the four planes, to zero.
+; In: DrawPage. Out: DrawPage zeroed. Notes: leaves GC mode 0 and rotate 0 set.
+ClearDrawPage:
     push ax
     push cx
     push dx
@@ -1847,7 +1964,15 @@ sub_520C:
     pop ax
     ret
 
-sub_5237:
+; Level setup (level start, exit and respawn). Clears the transition-state block 6BC4h..6C0Bh
+; (48h bytes: including RespawnState, EndSignal, LevelEndMode, ShakeMagnitude, BonusFlashTimer,
+; ScrollFollowGate, PlayerOnPlatform), copies the level's mutable object tables from the template
+; at 9203h to 815Eh (10A5h bytes), sets Energy = 3, resets the palette, the wind and flake tables,
+; the particles and the popup ring (PopupRingHead = 4F76h), and sets ScriptPointer from
+; LevelScriptTable[CurrentLevel] with ScriptFrameCounter = 0.
+; In: CurrentLevel. Out: as above. Calls ResetRenderSlots and RestoreSceneryMap.
+; Notes: ShakeRows is not reset here, so a shake can carry over into the next level.
+ResetLevelState:
     push ax
     push bx
     push cx
@@ -1870,9 +1995,9 @@ sub_5237:
     rep movsb
     mov byte ptr byte_4F2C, al
     mov word ptr PrevCameraCol, 55AAh
-    mov word ptr word_6BBE, 4F76h
+    mov word ptr PopupRingHead, 4F76h
     mov ax, 0FFFFh
-    call sub_55FC
+    call ResetRenderSlots
     call SetLevelPalette
     mov di, 6CA9h
     mov cx, 100h
@@ -1887,7 +2012,7 @@ loc_527A:
     mov ax, 55AAh
     mov cx, 50h
     rep stosw
-    call sub_52D2
+    call RestoreSceneryMap
     mov cx, 78h
     mov di, 7DE6h
     mov ax, 0FFFFh
@@ -1895,7 +2020,7 @@ loc_527A:
     mov cx, 37h
     mov di, 7DAFh
     rep stosb
-    mov byte ptr byte_27D6, 3
+    mov byte ptr Energy, 3
     mov word ptr word_A517, 0FFFFh
     mov bl, byte ptr CurrentLevel
     xor bh, bh
@@ -1914,7 +2039,11 @@ loc_527A:
     pop ax
     ret
 
-sub_52D2:
+; Applies inline patch records from NextFreeSegment to the level map at LevelSegment. Each record:
+; word dest (FFFFh ends the list), word rows-and-width (low byte = rows, high byte = width), then
+; width * rows data bytes. Rows are written 100h apart in the map.
+; In: LevelSegment, NextFreeSegment. Out: map bytes replaced. DS and ES restored.
+RestoreSceneryMap:
     push es
     push ds
     mov es, word ptr LevelSegment
@@ -1940,7 +2069,15 @@ loc_52FB:
     pop es
     ret
 
-sub_52FE:
+; Cave trigger: when the player's tile (GetPlayerTile) equals a record of the 20-entry table at
+; 8367h (stride 7: source tile, camera target lo = X hi = Y, destination tile lo = X hi = Y,
+; flag), and byte_6BC5 is nonzero and byte_6BE1 is nonzero, the view scrolls to the camera
+; target, the player moves to the destination tile, and ScrollFollowGate takes the flag.
+; In: byte_6BE1, byte_6BC5, PlayerX/Y, table 8367h. Out: PlayerX/Y, CameraRow/Col,
+;     PlayerVelX = 0, PlayerVelY = 0, ScrollFollowGate, byte_6BE1 = 0 on a hit.
+; Notes: CurrentLevel 5 also gets a fixed setup of byte_A324..A32Ch and 5570h..55D8h (0FFh).
+;        The meaning of byte_6BE1 (the gate) is unresolved (pre2_port: drop_gate).
+TryCaveTrigger:
     mov ax, seg DATA
     mov ds, ax
     mov es, ax
@@ -1948,7 +2085,7 @@ sub_52FE:
     je loc_5325
     cmp byte ptr ds:byte_6BC5, 0
     jne loc_5325
-    call sub_549A
+    call GetPlayerTile
     mov si, 8367h
     mov cx, 14h
 loc_531C:
@@ -2001,7 +2138,7 @@ loc_5389:
     pop si
     pop word ptr CameraLeftLimit
     mov al, byte ptr [si+6]
-    mov byte ptr byte_6BD9, al
+    mov byte ptr ScrollFollowGate, al
     mov byte ptr byte_6BE1, 0
     cmp byte ptr ds:CurrentLevel, 5
     jne loc_53D7
@@ -2021,18 +2158,24 @@ loc_5389:
 loc_53D7:
     call RedrawOverlayTiles
     call CopyRingWindowToPage
-    call sub_4907
+    call UpdateTerrainEntities
     call BuildEffectDrawList
     call sub_6822
     call DrawSpriteObjects
     call DrawForegroundOverSprites
-    call sub_54AB
+    call UpdateFireflies
     call UpdateWindAndFlakes
     call RevealLevelColumns
     ret
 
-sub_53F6:
-    call sub_549A
+; Proximity triggers: the 15 records at 83F3h (stride 0Ah; word at +4: FFFFh = idle, FFFEh =
+; fired, else a packed tile). A trigger whose word is within 8 of the packed player tile fires,
+; sets ShakeMagnitude = 7, and on every 4th frame copies one step of its reveal block from the
+; trigger bank (NextFreeSegment) into the level map. A fired record counts down its byte at +8
+; and then goes idle.
+; In: PlayerX/Y (via GetPlayerTile), SnowFrameTick, trigger records. Out: map bytes, triggers.
+UpdateProximityTriggers:
+    call GetPlayerTile
     mov si, 83F3h
     mov cx, 0Fh
 loc_53FF:
@@ -2104,7 +2247,9 @@ loc_5495:
     pop cx
     jmp near ptr loc_5415
 
-sub_549A:
+; Player tile: DH = PlayerY >> 4 (row), DL = PlayerX >> 4 (column).
+; In: PlayerX, PlayerY. Out: DX. Clobbers: AX, CL.
+GetPlayerTile:
     mov cl, 4
     mov ax, word ptr PlayerY
     sar ax, cl
@@ -2114,7 +2259,12 @@ sub_549A:
     mov dl, al
     ret
 
-sub_54AB:
+; Moves and draws the 20 firefly records at 6EA9h (8 bytes: x, y, direction, speed, timer; x =
+; 55AAh is free). Motion comes from the wind (byte_6BC0 / byte_6BC1, NextWindRandom); pixels are
+; plotted with the VGA XOR function. Sets GC index 1 to 0 on return.
+; In: PlayerX/Y, CameraRow/Col, SnowFrameTick, wind bytes. Out: records; DrawPage pixels.
+; Notes: the same block is used for wall markers elsewhere (pre2_port union; E-list C).
+UpdateFireflies:
     mov si, 6EA9h
     call SetCpuWriteMode
     mov dx, 3C4h
@@ -2273,7 +2423,10 @@ loc_55F4:
     out dx, ax
     ret
 
-sub_55FC:
+; Resets the per-level working state: clears words 4F1Ch..5732h, marks the 116 render slots from
+; 4F0Ah as free (sprite FFFFh, life 0), and sets PlayerX/PlayerY to LevelStartX/Y.
+; In: LevelStartX/Y. AX is not read (callers pass FFFFh). Out: slot block; PlayerX/Y.
+ResetRenderSlots:
     push bx
     push di
     push si
@@ -2300,32 +2453,46 @@ loc_5616:
     pop bx
     ret
 
-sub_5634:
-    mov byte ptr cs:cvar_6771, 1
-    call sub_5649
-    dec byte ptr cs:cvar_6771
+; Camera follow with CameraFixedStep = 1: vertical steps are a fixed 10h and the forced
+; down-scroll of LevelFlags bit 2 is not used. Then UpdateCameraScroll.
+; Caller: MODULE2 (level view entry). In/Out: as UpdateCameraScroll.
+UpdateCameraFixedStep:
+    mov byte ptr cs:CameraFixedStep, 1
+    call UpdateCameraScroll
+    dec byte ptr cs:CameraFixedStep
     ret
 
-sub_5643:
-    mov byte ptr cs:cvar_6771, 0
+; Camera follow with CameraFixedStep = 0 (table-driven vertical steps). Falls through into
+; UpdateCameraScroll. Called once per frame from MainFrameLoop.
+UpdateCameraFollow:
+    mov byte ptr cs:CameraFixedStep, 0
 
-sub_5649:
+; Camera follow body. Returns at once when ScrollFollowGate is nonzero. Otherwise calls
+; UpdateHorizontalCamera (unless LevelFlags bit 1 is set) and UpdateVerticalCamera.
+; In: ScrollFollowGate, LevelFlags. Out: CameraRow/Col, HScrollDir, VScrollActive.
+UpdateCameraScroll:
     mov ax, seg DATA
     mov ds, ax
-    cmp byte ptr ds:byte_6BD9, 0
+    cmp byte ptr ds:ScrollFollowGate, 0
     jne loc_5662
     test byte ptr LevelFlags, 2
     jne loc_565F
-    call sub_57A8
+    call UpdateHorizontalCamera
 loc_565F:
-    call sub_5663
+    call UpdateVerticalCamera
 loc_5662:
     ret
 
-sub_5663:
+; Vertical camera follow. VScrollActive is set when the player's screen row leaves the dead zone
+; (threshold from PlayerVelY, LevelFlags bit 0, LevelPropHeader); the camera then scrolls one
+; step per frame until the player is back inside it. LevelFlags bit 2 forces a down-scroll when
+; CameraFixedStep is 0. Steps come from the tile table (GridDirtyFlag selects the table) or 10h.
+; In: PlayerX/Y, PlayerVelY, CameraRow, LevelPropHeader, FineScroll, LevelFlags, GridDirtyFlag.
+; Out: CameraRow via ScrollViewUp/Down, VScrollActive, word_6BF1 (the dead-zone row).
+UpdateVerticalCamera:
     mov ax, seg DATA
     mov ds, ax
-    cmp byte ptr cs:cvar_6771, 0
+    cmp byte ptr cs:CameraFixedStep, 0
     jne loc_567D
     test byte ptr LevelFlags, 4
     je loc_567D
@@ -2406,7 +2573,7 @@ loc_5716:
     ja loc_57A2
 loc_572E:
     mov dl, 10h
-    cmp byte ptr cs:cvar_6771, 0
+    cmp byte ptr cs:CameraFixedStep, 0
     jne loc_5763
     mov ax, word ptr PlayerY
     sub al, byte ptr FineScroll
@@ -2429,7 +2596,7 @@ loc_5763:
     jmp short loc_57A7
 loc_576A:
     mov dl, 10h
-    cmp byte ptr cs:cvar_6771, 0
+    cmp byte ptr cs:CameraFixedStep, 0
     jne loc_579D
     mov ax, word ptr PlayerY
     sub al, byte ptr FineScroll
@@ -2453,7 +2620,13 @@ loc_57A2:
 loc_57A7:
     ret
 
-sub_57A8:
+; Horizontal camera follow. HScrollDir: 0 = idle; 1 = view scrolls right until the player's
+; screen column is 5 or less; 2 = view scrolls left until the column is 0Fh or more. A direction
+; starts when the column is outside a central band (about 0Ah..10h), or when a sideways push
+; is in progress (PlayerVelX nonzero).
+; In: PlayerX, CameraCol, PlayerVelX, byte_4F23 bit 7, byte_6BFE, HScrollDir.
+; Out: CameraCol via ScrollViewLeft/Right; HScrollDir.
+UpdateHorizontalCamera:
     mov ax, seg DATA
     mov ds, ax
     mov dx, word ptr PlayerX
@@ -2462,7 +2635,7 @@ sub_57A8:
     sub dx, word ptr CameraCol
     cmp dx, 14h
     jae loc_57CC
-    cmp byte ptr ds:byte_6BFE, 0
+    cmp byte ptr ds:PlayerOnPlatform, 0
     jne loc_57CC
     cmp word ptr ds:PlayerVelX, 0
     je loc_57F0
@@ -2507,8 +2680,12 @@ loc_581A:
 loc_581D:
     ret
 
-sub_581E:
-    mov si, word ptr word_6BBE
+; Ticks the popup/trail ring of 5 records (stride 12h, 4F76h..4FBEh), walking backwards from
+; PopupRingHead. A live record's frame (low 5 bits of the high byte of the sprite word) advances
+; by 1 and its Y drops by 1 each frame; at frame 3Ah the record is freed (FFFFh).
+; In: PopupRingHead, ring records. Out: ring records.
+UpdatePopupRing:
+    mov si, word ptr PopupRingHead
     mov cx, 5
 loc_5825:
     mov ax, word ptr [si+4]
@@ -2544,18 +2721,18 @@ sub_5850:
     push bp
     mov ax, seg DATA
     mov ds, ax
-    mov word ptr word_4F0E, 0FFFFh
-    cmp byte ptr ds:byte_6BE4, 0
+    mov word ptr PlayerSprite, 0FFFFh
+    cmp byte ptr ds:RespawnState, 0
     jne loc_587C
     cmp byte ptr ds:byte_282F, 0
     je loc_587C
     call sub_65AF
-    dec byte ptr byte_6BE4
+    dec byte ptr RespawnState
     jmp near ptr loc_5A8C
 loc_587C:
     cmp byte ptr ds:byte_2830, 0
     je loc_5892
-    mov byte ptr byte_6BE5, 1
+    mov byte ptr EndSignal, 1
 loc_5888:
     cmp byte ptr ds:byte_2830, 0
     je loc_5888
@@ -2563,7 +2740,7 @@ loc_5888:
 loc_5892:
     call TryShowCredits
     jb loc_589A
-    call sub_454E
+    call DrawStatusBarBackground
 loc_589A:
     mov es, word ptr LevelSegment
     mov si, 4F1Ch
@@ -2717,22 +2894,22 @@ loc_5A36:
     sar ax, cl
     add word ptr PlayerY, ax
     call sub_5A96
-    call sub_484E
+    call UpdatePlayerRenderSlot
     mov dx, 1
     sub byte ptr byte_6BCE, dl
     adc byte ptr byte_6BCE, dh
     sub byte ptr byte_6BCD, dl
     adc byte ptr byte_6BCD, dh
-    sub byte ptr byte_6BEA, dl
-    adc byte ptr byte_6BEA, dh
+    sub byte ptr ShakeMagnitude, dl
+    adc byte ptr ShakeMagnitude, dh
     sub byte ptr byte_6BE8, dl
     adc byte ptr byte_6BE8, dh
-    sub byte ptr byte_6BE4, dl
-    adc byte ptr byte_6BE4, dh
+    sub byte ptr RespawnState, dl
+    adc byte ptr RespawnState, dh
     sub byte ptr byte_6BE1, dl
     adc byte ptr byte_6BE1, dh
-    sub byte ptr byte_6C00, dl
-    adc byte ptr byte_6C00, dh
+    sub byte ptr BonusFlashTimer, dl
+    adc byte ptr BonusFlashTimer, dh
     sub word ptr word_6BE2, 1
     adc word ptr word_6BE2, 0
 loc_5A8C:
@@ -2808,7 +2985,7 @@ loc_5B03:
 loc_5B18:
     cmp byte ptr ds:CurrentLevel, 0Eh
     jne loc_5B26
-    mov byte ptr byte_6BE5, 0FFh
+    mov byte ptr EndSignal, 0FFh
     jmp short loc_5B29
 loc_5B26:
     call sub_65AF
@@ -2817,7 +2994,7 @@ loc_5B29:
     call sub_5B81
     cmp byte ptr ds:byte_6BF3, 1
     jne loc_5B54
-    cmp byte ptr ds:byte_6BFE, 0
+    cmp byte ptr ds:PlayerOnPlatform, 0
     je loc_5B44
     call sub_64DF
     jmp short loc_5B54
@@ -3036,7 +3213,7 @@ loc_5CE5:
     mov byte ptr byte_6BC8, 0
     call sub_62EC
     call sub_6333
-    cmp byte ptr ds:byte_6BFE, 0
+    cmp byte ptr ds:PlayerOnPlatform, 0
     jne loc_5D0E
     cmp word ptr ds:PlayerVelY, 0
     je loc_5D0E
@@ -3093,7 +3270,7 @@ loc_5D73:
     cmp byte ptr ds:byte_27E9, 0
     je loc_5DC9
 loc_5D83:
-    cmp byte ptr ds:byte_6BFE, 0
+    cmp byte ptr ds:PlayerOnPlatform, 0
     jne loc_5DC9
     mov bx, 26h
     mov al, 13h
@@ -3101,7 +3278,7 @@ loc_5D83:
     call sub_638B
     test byte ptr LevelFlags, 2
     jne loc_5E08
-    cmp byte ptr ds:byte_6BD9, 0
+    cmp byte ptr ds:ScrollFollowGate, 0
     jne loc_5E08
     mov ax, word ptr PlayerX
     mov cl, 4
@@ -3137,7 +3314,7 @@ loc_5DE0:
     jmp short loc_5E08
 loc_5DED:
     mov bx, word ptr [bx+word_7CDF]
-    mov word ptr word_4F28, bx
+    mov word ptr PlayerAnimPtr, bx
     mov ax, word ptr [bx]
     mov dh, byte ptr word_4F25
     and dh, 80h
@@ -3159,7 +3336,7 @@ sub_5E11:
 sub_5E18:
     push ax
     push bx
-    mov bx, word ptr word_6BBE
+    mov bx, word ptr PopupRingHead
     mov ax, word ptr PlayerX
     mov word ptr [bx], ax
     mov ax, word ptr PlayerY
@@ -3170,7 +3347,7 @@ sub_5E18:
     jae loc_5E3A
     mov bx, 4FBEh
 loc_5E3A:
-    mov word ptr word_6BBE, bx
+    mov word ptr PopupRingHead, bx
     pop bx
     pop ax
 loc_5E40:
@@ -3178,7 +3355,7 @@ loc_5E40:
 
 sub_5E41:
     push bx
-    mov bx, word ptr word_6BBE
+    mov bx, word ptr PopupRingHead
     mov word ptr [bx], ax
     mov word ptr [bx+2], dx
     mov word ptr [bx+4], 35h
@@ -3187,7 +3364,7 @@ sub_5E41:
     jae loc_5E5C
     mov bx, 4FBEh
 loc_5E5C:
-    mov word ptr word_6BBE, bx
+    mov word ptr PopupRingHead, bx
     pop bx
     ret
 
@@ -3281,7 +3458,7 @@ sub_5F30:
     je loc_5F41
     jmp near ptr sub_5CDB
 loc_5F41:
-    mov byte ptr byte_6BFE, 0
+    mov byte ptr PlayerOnPlatform, 0
     mov bl, byte ptr byte_6BD1
     xor bh, bh
     inc byte ptr byte_6BD1
@@ -3363,7 +3540,7 @@ loc_5FEB:
     mov dx, 0FFD0h
     call sub_5E11
 loc_6004:
-    cmp byte ptr ds:byte_6BFE, 0
+    cmp byte ptr ds:PlayerOnPlatform, 0
     jne loc_600F
     add word ptr PlayerVelY, dx
 loc_600F:
@@ -3401,7 +3578,7 @@ loc_604B:
     sar cx, 1
     add ax, cx
     mov word ptr [si], ax
-    mov ax, word ptr word_4F0C
+    mov ax, word ptr PlayerRenderY
     sar bx, 1
     sar bx, 1
     sar bx, 1
@@ -3435,7 +3612,7 @@ loc_6090:
     or ah, dh
     neg cx
 loc_60AE:
-    mov word ptr word_4F0E, ax
+    mov word ptr PlayerSprite, ax
     mov ax, word ptr PlayerX
     mov dx, word ptr PlayerVelX
     sar dx, 1
@@ -3453,7 +3630,7 @@ loc_60AE:
     sar dx, 1
     add ax, dx
     sub ax, word ptr [bx+si+6]
-    mov word ptr word_4F0C, ax
+    mov word ptr PlayerRenderY, ax
 loc_60DE:
     ret
 
@@ -3780,10 +3957,10 @@ sub_635D:
     je loc_636F
     mov byte ptr byte_4F2C, al
     mov bx, word ptr [bx+word_7CDF]
-    mov word ptr word_4F28, bx
+    mov word ptr PlayerAnimPtr, bx
     ret
 loc_636F:
-    mov bx, word ptr word_4F28
+    mov bx, word ptr PlayerAnimPtr
     ret
 
 sub_6374:
@@ -3791,10 +3968,10 @@ sub_6374:
     je loc_6386
     mov byte ptr byte_4F27, al
     mov bx, word ptr [bx+word_7CDF]
-    mov word ptr word_4F28, bx
+    mov word ptr PlayerAnimPtr, bx
     ret
 loc_6386:
-    mov bx, word ptr word_4F28
+    mov bx, word ptr PlayerAnimPtr
     ret
 
 sub_638B:
@@ -3815,7 +3992,7 @@ loc_6398:
     mov word ptr word_4F20, ax
     inc bx
     inc bx
-    mov word ptr word_4F28, bx
+    mov word ptr PlayerAnimPtr, bx
     pop dx
     pop bx
     pop ax
@@ -3923,7 +4100,7 @@ loc_647C:
     jb loc_64B3
     cmp word ptr ds:PlayerVelY, 0A0h
     jle loc_64B3
-    mov byte ptr byte_6BEA, 8
+    mov byte ptr ShakeMagnitude, 8
 loc_64B3:
     cmp byte ptr ds:byte_6BD2, 0Ah
     jbe loc_64D9
@@ -4054,17 +4231,17 @@ sub_65AF:
     ret
 
 sub_65B3:
-    cmp byte ptr ds:byte_6BE4, 0
+    cmp byte ptr ds:RespawnState, 0
     jne loc_65CF
-    cmp byte ptr ds:byte_27D8, 0
+    cmp byte ptr ds:Lives, 0
     je loc_65D0
-    dec byte ptr byte_27D8
-    mov byte ptr byte_27D6, 0
-    mov byte ptr byte_6BE4, 2
+    dec byte ptr Lives
+    mov byte ptr Energy, 0
+    mov byte ptr RespawnState, 2
 loc_65CF:
     ret
 loc_65D0:
-    mov byte ptr byte_6BE5, 1
+    mov byte ptr EndSignal, 1
     ret
 
 sub_65D6:
@@ -4279,7 +4456,7 @@ unused_6760:
 loc_676E:
     add ax, dx
     ret
-cvar_6771 label byte
+CameraFixedStep label byte
 ; DATA: flag byte
     db 00h
 
@@ -4332,7 +4509,7 @@ loc_67D6:
     ret
 
 sub_67D7:
-    cmp byte ptr ds:byte_6CA7, 1Fh
+    cmp byte ptr ds:BonusLetterMask, 1Fh
     jne loc_680D
     mov ax, word ptr PlayerX
     mov word ptr EffectOriginX, ax
@@ -4345,9 +4522,9 @@ sub_67D7:
     xor dx, dx
     mov cx, 1
     call SpawnEffectBurst
-    mov byte ptr byte_6CA7, 0
+    mov byte ptr BonusLetterMask, 0
     mov byte ptr byte_6BFF, 1
-    mov byte ptr byte_6C00, 2Ch
+    mov byte ptr BonusFlashTimer, 2Ch
     ret
 loc_680D:
     mov al, byte ptr byte_6CA8
@@ -4417,7 +4594,7 @@ loc_688F:
     je loc_68D2
     cmp word ptr ds:word_6BE2, 7
     jne loc_68B6
-    mov byte ptr byte_6BEA, 9
+    mov byte ptr ShakeMagnitude, 9
 loc_68B6:
     mov di, 0A801h
     and dh, 1Fh
@@ -4990,7 +5167,7 @@ loc_6D4C:
     mov bp, word ptr [bx+4]
     cmp bp, -1
     je loc_6DD2
-    cmp byte ptr ds:byte_6BE4, 0
+    cmp byte ptr ds:RespawnState, 0
     jne loc_6D80
     call TestHitboxOverlap
     jae loc_6D80
@@ -5142,7 +5319,7 @@ loc_6EAB:
     cmp al, 1
     je loc_6F0F
     mov ah, 3
-    mov byte ptr byte_6BEA, 4
+    mov byte ptr ShakeMagnitude, 4
     add word ptr PlayerX, 2
     push ax
     mov si, 7DAFh
@@ -5198,7 +5375,7 @@ loc_6F0F:
     mov byte ptr byte_A32B, al
     mov byte ptr byte_A329, 0
 loc_6F3C:
-    cmp byte ptr ds:byte_6BE4, 0
+    cmp byte ptr ds:RespawnState, 0
     je loc_6F46
     jmp near ptr loc_70CB
 loc_6F46:
@@ -5225,7 +5402,7 @@ loc_6F69:
     call sub_824D
     jmp short loc_6FBB
 loc_6F8F:
-    cmp byte ptr ds:byte_6BE4, 0
+    cmp byte ptr ds:RespawnState, 0
     je loc_6F99
     jmp near ptr loc_70CB
 loc_6F99:
@@ -5379,7 +5556,7 @@ loc_7118:
     and byte ptr word_9201, 0F0h
     cmp word ptr ds:word_6C08, 0
     je loc_7157
-    mov byte ptr byte_6BEA, 7
+    mov byte ptr ShakeMagnitude, 7
 loc_7157:
     mov word ptr word_6C08, 0
     mov word ptr word_6C06, 0
@@ -5644,7 +5821,7 @@ loc_743D:
     mov word ptr word_A401, 0A475h
     cmp word ptr ds:word_6C08, 0
     jne loc_744F
-    mov byte ptr byte_6BEA, 4
+    mov byte ptr ShakeMagnitude, 4
 loc_744F:
     jmp near ptr loc_7534
 loc_7452:
@@ -5870,7 +6047,7 @@ sub_7665:
     mov al, byte ptr [si+0Eh]
     cmp byte ptr ds:CurrentLevel, 5
     jne loc_7685
-    cmp byte ptr ds:byte_6BEA, 0
+    cmp byte ptr ds:ShakeMagnitude, 0
     je loc_7685
     cmp al, 3
     je loc_7685
@@ -6728,7 +6905,7 @@ loc_7D98:
 sub_7D9B:
     cmp byte ptr ds:CurrentLevel, 5
     jne loc_7DB0
-    cmp byte ptr ds:byte_6BEA, 0
+    cmp byte ptr ds:ShakeMagnitude, 0
     jne loc_7D98
     cmp word ptr ds:word_A326, 3
     je loc_7D98
@@ -7211,7 +7388,7 @@ loc_81B2:
     ret
 
 sub_81B4:
-    cmp byte ptr ds:byte_6BE4, 0
+    cmp byte ptr ds:RespawnState, 0
     jne loc_81F2
     mov si, 4F1Ch
     mov di, word ptr ds:word_A421
@@ -7275,7 +7452,7 @@ sub_824D:
     dec byte ptr byte_6BC9
     jns loc_8264
     mov byte ptr byte_6BC9, 5
-    dec byte ptr byte_27D6
+    dec byte ptr Energy
     jns loc_8264
     call sub_65B3
 loc_8264:
@@ -7428,7 +7605,7 @@ loc_838A:
     cmp byte ptr ds:byte_6BC5, 0
     mov byte ptr byte_6BC5, 0
     jne loc_83CD
-    dec byte ptr byte_27D6
+    dec byte ptr Energy
     jns loc_83CD
     call sub_65B3
 loc_83CD:
@@ -7574,9 +7751,9 @@ loc_84EB:
 loc_84F3:
     jmp near ptr loc_860E
 loc_84F6:
-    cmp byte ptr ds:byte_27D6, 3
+    cmp byte ptr ds:Energy, 3
     jae loc_8509
-    inc byte ptr byte_27D6
+    inc byte ptr Energy
     mov dx, 4
     call StartSoundEffect
     jmp short loc_853F
@@ -7602,7 +7779,7 @@ loc_8524:
     mov cl, al
     mov al, 1
     shl al, cl
-    or byte ptr byte_6CA7, al
+    or byte ptr BonusLetterMask, al
     pop cx
 loc_853F:
     mov bx, word ptr [si+9]
@@ -7648,7 +7825,7 @@ loc_8582:
     mov ax, 20h
     je loc_85A5
     neg ax
-    mov byte ptr byte_6BEA, 7
+    mov byte ptr ShakeMagnitude, 7
 loc_85A5:
     mov word ptr [si+6], ax
     mov ax, word ptr EffectFrame
@@ -7660,8 +7837,8 @@ loc_85B0:
 loc_85B6:
     sub ax, 39h
     mov bx, ax
-    inc byte ptr [bx+byte_6C12]
-    inc word ptr word_6C9E
+    inc byte ptr [bx+ItemTallyCounts]
+    inc word ptr ItemTotal
     mov al, byte ptr [bx-5C8Bh]
     xor ah, ah
     add ax, 4Ah
@@ -7682,9 +7859,9 @@ loc_85ED:
     inc byte ptr byte_6BC9
     cmp byte ptr ds:byte_6BC9, 6
     jb loc_860E
-    cmp byte ptr ds:byte_27D6, 3
+    cmp byte ptr ds:Energy, 3
     je loc_860E
-    inc byte ptr byte_27D6
+    inc byte ptr Energy
     mov byte ptr byte_6BC9, 0
     mov ax, 0E2h
 loc_860B:
@@ -7697,7 +7874,7 @@ loc_860E:
 loc_8617:
     ret
 loc_8618:
-    cmp byte ptr ds:byte_27D6, 1
+    cmp byte ptr ds:Energy, 1
     jae loc_8624
     call sub_65B3
     jmp short loc_860E
@@ -7707,13 +7884,13 @@ loc_8624:
     mov byte ptr PlayerHurtTimer, 2Ch
     mov byte ptr byte_4F2C, 0
     mov byte ptr byte_4F27, 8
-    dec byte ptr byte_27D6
-    mov al, byte ptr byte_27D6
+    dec byte ptr Energy
+    mov al, byte ptr Energy
     push ax
-    mov byte ptr byte_27D6, 1
+    mov byte ptr Energy, 1
     call SpawnPlayerBurst
     pop ax
-    mov byte ptr byte_27D6, al
+    mov byte ptr Energy, al
     jmp short loc_860E
 loc_864F:
     mov dx, 1
@@ -7722,7 +7899,7 @@ loc_864F:
     mov byte ptr byte_4F2C, 0
     mov byte ptr byte_4F27, 8
     call SpawnPlayerBurst
-    mov byte ptr byte_6BEA, 7
+    mov byte ptr ShakeMagnitude, 7
     mov bx, word ptr [si+9]
     cmp bx, -1
     je loc_8679
@@ -7745,13 +7922,13 @@ SpawnPlayerBurst:
     sub ax, 30h
     mov word ptr EffectOriginY, ax
     mov al, 6
-    mul byte ptr byte_27D6
+    mul byte ptr Energy
     mov cx, ax
     add cl, byte ptr byte_6BC9
     je loc_86B5
     mov ax, 30h
     mov dx, 0FF80h
-    mov byte ptr byte_27D6, 0
+    mov byte ptr Energy, 0
     mov byte ptr byte_6BC9, 0
     mov word ptr EffectFrame, 2046h
     call SpawnEffectBurst
@@ -7784,7 +7961,7 @@ loc_86CC:
 loc_86E4:
     add di, 12h
     loop loc_86CC
-    mov byte ptr byte_6BEA, 9
+    mov byte ptr ShakeMagnitude, 9
     pop bp
     pop es
     pop ds
@@ -7938,10 +8115,10 @@ loc_884A:
     jne loc_8853
     mov byte ptr CurrentLevel, 6
 loc_8853:
-    mov byte ptr byte_6BE6, 1
+    mov byte ptr LevelEndMode, 1
     ret
 loc_8859:
-    mov byte ptr byte_6BE6, 0FFh
+    mov byte ptr LevelEndMode, 0FFh
     ret
 loc_885F:
     push cx
@@ -8880,7 +9057,7 @@ RunLevelIntroScene:
     mov word ptr PlayerY, 0A9h
     mov word ptr word_4F25, ax
     mov word ptr PlayerVelX, ax
-    mov word ptr word_4F28, 7BA7h
+    mov word ptr PlayerAnimPtr, 7BA7h
     mov word ptr word_4F2E, 30h
     mov word ptr word_4F30, 0A9h
     mov word ptr word_4F37, ax
@@ -8890,7 +9067,7 @@ RunLevelIntroScene:
     xor bp, bp
 loc_8F96:
     inc bp
-    mov bx, word ptr word_4F28
+    mov bx, word ptr PlayerAnimPtr
     call sub_638B
     mov si, 4F2Eh
     call StepSpriteAnimation
@@ -8927,7 +9104,7 @@ loc_8FF2:
     add si, 12h
     loop loc_8FF2
 loc_9002:
-    mov bx, word ptr word_4F28
+    mov bx, word ptr PlayerAnimPtr
     call sub_638B
     mov cx, 3
     mov si, 4F2Eh

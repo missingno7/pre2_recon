@@ -381,7 +381,7 @@ def module_setup(name, seed, row=0, mix=False):
         mix_buffer(m, rng)
         m.ww(m.code('ConventionalTopSeg'), 0xA000, seg=CODE_SEG)
         m.ww(m.data('NextFreeSegment'), 0x2530)
-        m.write(DATA_SEG, 0x000C, name.encode() + b' ')
+        m.write(DATA_SEG, 0x000C, name.encode() + b'\0')
         seg = m.call('LoadSqzFile', {'DX': 0x000C})['AX']
         m.ints[0x21].log.clear()
         hdr = m.read(seg, 0, 1084)

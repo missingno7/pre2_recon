@@ -12,6 +12,8 @@ public BackFileChar
 public BackdropCursor
 public BiosSeed
 public BiosSeedReady
+public BonusFlashTimer
+public BonusLetterMask
 public CameraCol
 public CameraLeftLimit
 public CameraRow
@@ -31,9 +33,12 @@ public DrawPage
 public EffectFrame
 public EffectOriginX
 public EffectOriginY
+public EndSignal
+public Energy
 public ExpandDstSegment
 public ExpandSrcSegment
 public ExpertFlag
+public ExtraLifeBlocks
 public FineScroll
 public FlakeTable
 public FollowerOverlapMode
@@ -47,18 +52,26 @@ public FrameWidths
 public GridDirtyFlag
 public HScrollDir
 public HaltWithMessage
+public HudCacheBonus
+public HudCacheEnergy
+public HudCacheLives
+public HudCacheScoreHigh
+public HudCacheScoreLow
 public IrisAngleIndex
 public IrisCenterX
 public IrisCenterY
 public IrisRadius
 public IrisSpeed
 public IrisSpeedCounter
+public ItemTallyCounts
+public ItemTotal
 public KeyDownTable
 public LandingDepth
 public LandingFlag
 public LastDebrisSlot
 public LastEffectTick
 public LastScanCode
+public LevelEndMode
 public LevelFileChar
 public LevelFlags
 public LevelMapRowsTable
@@ -68,6 +81,7 @@ public LevelScriptTable
 public LevelSegment
 public LevelStartX
 public LevelStartY
+public Lives
 public LoadSqzFile
 public MapRows
 public MapScrollX
@@ -78,12 +92,19 @@ public OptionBits
 public OptionVByte
 public PageInResource
 public PictureSegment
+public PlatformDeltaX
+public PlatformDeltaY
+public PlayerAnimPtr
 public PlayerHurtTimer
+public PlayerOnPlatform
+public PlayerRenderY
+public PlayerSprite
 public PlayerVelX
 public PlayerVelY
 public PlayerX
 public PlayerY
 public PollInputState
+public PopupRingHead
 public PrevCameraCol
 public PrevCameraRow
 public PrevMapScrollX
@@ -93,6 +114,7 @@ public PrintAsciiz
 public PrintDecimalWord
 public RandomSeed
 public RenderSlots
+public RespawnState
 public RingTileOffset
 public RowRing
 public ScoreHigh
@@ -104,8 +126,10 @@ public ScreenStartOffset
 public ScriptFrameCounter
 public ScriptPointer
 public ScrollAnimCounter
+public ScrollFollowGate
 public SetLevelPalette
 public SetStartupPalette
+public ShakeMagnitude
 public ShakeRows
 public SineTable
 public SnowFrameTick
@@ -124,6 +148,7 @@ public VScrollActive
 public VisibleTileFlags
 public WaitForButtonPressRelease
 public WaitSoundTicks
+public WarpLevelTable
 public WavePhase
 public WindRandA
 public WindRandB
@@ -132,8 +157,6 @@ public WindRandWord
 public byte_0666
 public byte_083D
 public byte_083E
-public byte_27D6
-public byte_27D8
 public byte_27E8
 public byte_27E9
 public byte_27EA
@@ -154,7 +177,6 @@ public byte_2830
 public byte_2879
 public byte_287C
 public byte_287D
-public byte_2CF6
 public byte_2D96
 public byte_4F1B
 public byte_4F21
@@ -192,31 +214,19 @@ public byte_6BD0
 public byte_6BD1
 public byte_6BD2
 public byte_6BD3
-public byte_6BD9
 public byte_6BDB
 public byte_6BDC
 public byte_6BE0
 public byte_6BE1
-public byte_6BE4
-public byte_6BE5
-public byte_6BE6
 public byte_6BE7
 public byte_6BE8
-public byte_6BEA
 public byte_6BF3
-public byte_6BFE
 public byte_6BFF
-public byte_6C00
 public byte_6C01
 public byte_6C02
 public byte_6C03
 public byte_6C04
 public byte_6C05
-public byte_6C12
-public byte_6CA4
-public byte_6CA5
-public byte_6CA6
-public byte_6CA7
 public byte_6CA8
 public byte_7090
 public byte_78C6
@@ -261,11 +271,8 @@ public word_2DC4
 public word_2DCA
 public word_2DCC
 public word_2DD2
-public word_4F0C
-public word_4F0E
 public word_4F20
 public word_4F25
-public word_4F28
 public word_4F2E
 public word_4F30
 public word_4F32
@@ -302,20 +309,13 @@ public word_6A88
 public word_6B14
 public word_6BAB
 public word_6BB1
-public word_6BBE
 public word_6BCA
 public word_6BE2
 public word_6BEB
 public word_6BF1
-public word_6BFA
-public word_6BFC
 public word_6C06
 public word_6C08
 public word_6C0A
-public word_6C0C
-public word_6C9E
-public word_6CA0
-public word_6CA2
 public word_7522
 public word_78C4
 public word_79CE
@@ -375,6 +375,7 @@ extrn CheckVgaAdapter:near
 extrn CopyRingWindowToPage:near
 extrn DrawForegroundOverSprites:near
 extrn DrawSpriteObjects:near
+extrn DrawStatusBarBackground:near
 extrn EnterLevelView:near
 extrn FadeOutPaletteToBlack:near
 extrn LoadLevel:near
@@ -383,6 +384,8 @@ extrn PresentFrame:near
 extrn ProcessPlayerContacts:near
 extrn ReadClockYear:near
 extrn RedrawOverlayTiles:near
+extrn ResetLevelState:near
+extrn ResetRenderSlots:near
 extrn RunFrontEnd:near
 extrn SetCpuWriteMode:near
 extrn SetLevelVideoMode:near
@@ -391,19 +394,6 @@ extrn ShowMode13PictureFadeIn:near
 extrn ShowPresentTitle:near
 extrn ShowTitusScreen:near
 extrn ShowWorldMapScrollIn:near
-extrn sub_454E:near
-extrn sub_45AF:near
-extrn sub_4907:near
-extrn sub_4B8E:near
-extrn sub_4C30:near
-extrn sub_4C69:near
-extrn sub_5237:near
-extrn sub_52FE:near
-extrn sub_53F6:near
-extrn sub_54AB:near
-extrn sub_55FC:near
-extrn sub_5643:near
-extrn sub_581E:near
 extrn sub_5850:near
 extrn sub_5CCE:near
 extrn sub_5CDB:near
@@ -432,7 +422,17 @@ extrn sub_6673:near
 extrn sub_6772:near
 extrn sub_67D7:near
 extrn sub_6822:near
+extrn TryCaveTrigger:near
+extrn UpdateCameraFollow:near
+extrn UpdateCameraShake:near
+extrn UpdateEffectParticles:near
+extrn UpdateFireflies:near
 extrn UpdateFollowerSlots:near
+extrn UpdateHud:near
+extrn UpdateLevelState:near
+extrn UpdatePopupRing:near
+extrn UpdateProximityTriggers:near
+extrn UpdateTerrainEntities:near
 extrn UpdateWindAndFlakes:near
 ; end module interface
 ; Unused: no reader or writer in src/ (initial bytes at cs:0000: 03h FFh FFh 1Fh 00h 00h 00h 00h).
@@ -619,8 +619,8 @@ LevelRestart:
     je loc_0163
     call FadeOutPaletteToBlack
     call SetLevelVideoMode
-    mov byte ptr byte_27D8, 2
-    mov byte ptr byte_6CA7, 0
+    mov byte ptr Lives, 2
+    mov byte ptr BonusLetterMask, 0
     mov byte ptr byte_7B19, 14h
     mov byte ptr byte_7B18, 0
     mov byte ptr byte_6CA8, 0
@@ -673,12 +673,12 @@ loc_01C4:
     mov al, byte ptr CurrentLevel
     call LoadLevel
     call SetLevelPalette
-    call sub_5237
+    call ResetLevelState
     mov ax, seg DATA
     mov ds, ax
-    call sub_55FC
+    call ResetRenderSlots
     call EnterLevelView
-    call sub_454E
+    call DrawStatusBarBackground
     call CopyRingWindowToPage
     call PresentFrame
     mov word ptr word_A341, 0
@@ -697,36 +697,36 @@ MainFrameLoop:
     mov ax, seg DATA
     mov ds, ax
     sti
-    call sub_581E
+    call UpdatePopupRing
     call UpdateFollowerSlots
     call sub_6822
     call sub_6210
     call sub_60FE
     call sub_60DF
-    call sub_4907
+    call UpdateTerrainEntities
     call sub_5850
     call ProcessPlayerContacts
     call BuildEffectDrawList
-    call sub_52FE
-    call sub_53F6
-    call sub_5643
+    call TryCaveTrigger
+    call UpdateProximityTriggers
+    call UpdateCameraFollow
     call AnimateTiles
     call RedrawOverlayTiles
     call CopyRingWindowToPage
-    call sub_4B8E
+    call UpdateEffectParticles
     call DrawSpriteObjects
     call DrawForegroundOverSprites
-    call sub_54AB
+    call UpdateFireflies
     call UpdateWindAndFlakes
-    call sub_4C69
+    call UpdateLevelState
     jae loc_0261
     jmp near ptr LevelRestart
 loc_0261:
-    call sub_45AF
+    call UpdateHud
     call PresentFrame
     call sub_6772
     call sub_67D7
-    call sub_4C30
+    call UpdateCameraShake
     jmp short MainFrameLoop
 ; SbBasePort (word): the detected Sound Blaster base (e.g. 220h) written by sub_1D6F; the initial
 ; words 0000h, 000Ah, 000Ch, 000Eh are offsets until detection replaces them.
@@ -2181,7 +2181,7 @@ PollInputState:
     je loc_0E51
     cmp byte ptr ds:LastScanCode, 0
     je loc_0DE2
-    mov byte ptr byte_6BE5, 1
+    mov byte ptr EndSignal, 1
 loc_0DE2:
     mov si, word ptr word_287A
     or si, si
@@ -2194,7 +2194,7 @@ loc_0DF1:
     inc si
     cmp ax, 55AAh
     jne loc_0E01
-    mov byte ptr byte_6BE5, 1
+    mov byte ptr EndSignal, 1
 loc_0E01:
     mov word ptr word_287A, si
     mov byte ptr byte_287C, al
@@ -5594,10 +5594,10 @@ byte_27D4 label byte
 byte_27D5 label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
-byte_27D6 label byte
+Energy label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-byte_27D8 label byte
+Lives label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
 byte_27D9 label byte
@@ -5960,7 +5960,7 @@ ExpandSrcSegment label word
 MapRows label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
-byte_2CF6 label byte
+WarpLevelTable label byte
 ; UNKNOWN: not yet classified as code or data
     db 0FFh, 0Ch, 0Bh, 0Ah, 0FFh, 0FFh, 00h, 0FFh, 0FFh, 0Eh
 LevelPaletteTable label word
@@ -6101,10 +6101,10 @@ RenderSlots label word
 ; DATA: render slot records, 116 x 18 bytes (slot 1 = player; +4 word, FFFFh = empty)
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_4F0C label word
+PlayerRenderY label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_4F0E label word
+PlayerSprite label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h
@@ -6138,7 +6138,7 @@ word_4F25 label word
 byte_4F27 label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
-word_4F28 label word
+PlayerAnimPtr label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
 PlayerVelY label word
@@ -6332,7 +6332,7 @@ word_6BB1 label word
 AnimVisibleFlag label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
-word_6BBE label word
+PopupRingHead label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
 byte_6BC0 label byte
@@ -6395,7 +6395,7 @@ AnimTickCounter label byte
 SnowFrameTick label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h
-byte_6BD9 label byte
+ScrollFollowGate label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
 byte_6BDB label byte
@@ -6413,13 +6413,13 @@ byte_6BE1 label byte
 word_6BE2 label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-byte_6BE4 label byte
+RespawnState label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
-byte_6BE5 label byte
+EndSignal label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
-byte_6BE6 label byte
+LevelEndMode label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
 byte_6BE7 label byte
@@ -6428,7 +6428,7 @@ byte_6BE7 label byte
 byte_6BE8 label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-byte_6BEA label byte
+ShakeMagnitude label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
 word_6BEB label word
@@ -6452,19 +6452,19 @@ SnowWind label word
 ShakeRows label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_6BFA label word
+PlatformDeltaX label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_6BFC label word
+PlatformDeltaY label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-byte_6BFE label byte
+PlayerOnPlatform label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
 byte_6BFF label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
-byte_6C00 label byte
+BonusFlashTimer label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
 byte_6C01 label byte
@@ -6491,7 +6491,7 @@ word_6C08 label word
 word_6C0A label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_6C0C label word
+ExtraLifeBlocks label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
 ScoreLow label word
@@ -6500,28 +6500,28 @@ ScoreLow label word
 ScoreHigh label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-byte_6C12 label byte
+ItemTallyCounts label byte
 ; UNKNOWN: not yet classified as code or data
     db 140 dup(0)
-word_6C9E label word
+ItemTotal label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_6CA0 label word
+HudCacheScoreLow label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_6CA2 label word
+HudCacheScoreHigh label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-byte_6CA4 label byte
+HudCacheLives label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
-byte_6CA5 label byte
+HudCacheEnergy label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
-byte_6CA6 label byte
+HudCacheBonus label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
-byte_6CA7 label byte
+BonusLetterMask label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
 byte_6CA8 label byte
@@ -7078,13 +7078,13 @@ word_A343 label word
 ; UNKNOWN: not yet classified as code or data
     db 78h, 00h, 64h, 00h, 0A6h, 0FFh, 6Eh, 00h, 88h, 0FFh, 28h, 00h
     db 50h, 00h, 3Ch, 00h
-word_A353 label word
+BonusPointTable label word
 ; DATA: score table: word per debris code 4Ah..5Ah (10,20,..,10000); ScoreLow/High += it
 ; UNKNOWN: not yet classified as code or data
     db 0Ah, 00h, 14h, 00h, 1Eh, 00h, 32h, 00h, 3Ch, 00h, 46h, 00h
     db 4Bh, 00h, 50h, 00h, 64h, 00h, 0C8h, 00h, 0F4h, 01h, 20h, 03h
     db 0E8h, 03h, 0D0h, 07h, 0B8h, 0Bh, 70h, 17h, 10h, 27h
-byte_A375 label byte
+BonusItemClass label byte
 ; UNKNOWN: not yet classified as code or data
     db 10h, 0Fh, 0Dh, 0Eh, 0Ch, 0Ch, 0Dh, 0Eh, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 03h, 03h, 02h, 02h, 01h, 01h

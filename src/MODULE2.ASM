@@ -45,7 +45,6 @@ extrn byte_2805:byte
 extrn byte_2806:byte
 extrn byte_2811:byte
 extrn byte_282C:byte
-extrn byte_2CF6:byte
 extrn byte_2D96:byte
 extrn byte_6688:byte
 extrn byte_6689:byte
@@ -128,6 +127,7 @@ extrn TextRowOffset:word
 extrn TileClassTable:byte
 extrn VisibleTileFlags:byte
 extrn VScrollActive:byte
+extrn WarpLevelTable:byte
 extrn WindRandA:byte
 extrn WindRandB:byte
 extrn WindRandC:byte
@@ -161,8 +161,8 @@ extrn PrintAsciiz:near
 extrn PrintDecimalWord:near
 extrn SetLevelPalette:near
 extrn SetStartupPalette:near
-extrn sub_5634:near
 extrn sub_6772:near
+extrn UpdateCameraFixedStep:near
 extrn WaitForButtonPressRelease:near
 extrn WaitSoundTicks:near
 ; end module interface
@@ -3050,7 +3050,7 @@ loc_3B1E:
     dec ch
     jne loc_3B1C
 loc_3B35:
-    call sub_5634
+    call UpdateCameraFixedStep
     mov al, byte ptr VScrollActive
     or al, byte ptr HScrollDir
     jne loc_3B35
@@ -3715,7 +3715,7 @@ loc_4098:
     xor bh, bh
     cmp bl, 0Ah
     jae loc_40BB
-    cmp byte ptr [bx+byte_2CF6], 0FFh
+    cmp byte ptr [bx+WarpLevelTable], 0FFh
     je loc_40BB
     shl word ptr CollectTotalDecor, 1
     shl word ptr CollectTotalMain, 1
