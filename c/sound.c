@@ -38,7 +38,7 @@
 #include "pre2.h"
 #include "sound.h"
 
-#define VOLUME_TABLE 0x12C1u     /* DS offset of VolumeTable (no label in src/) */
+#define VOLUME_TABLE DS_VolumeTable   /* 65 rows of 64 bytes, filled at SB set-up (loc_1E90) */
 
 /* ds offset of a channel field, and of a field of the instrument record at `rec`. */
 #define CH_OFF(name, ch)       ((uint16_t)(DS_##name + (ch)))

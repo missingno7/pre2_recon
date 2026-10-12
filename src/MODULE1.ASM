@@ -5532,6 +5532,7 @@ MixDmaRecord label word
     db 0BEh, 10h
 ; UNKNOWN: not yet classified as code or data
     db 504 dup(0)
+VolumeTable label byte
 ; DATA: volume table: VolumeTable[v*64+s] = (v*s)>>6, v = 0..64, s = 0..63
     db 3159 dup(0)
 word_1F18 label word
