@@ -24,7 +24,8 @@ def rename_all(pairs):
     paths = main_sources() + sorted((ROOT/'include').glob('*.INC'))
     texts = {p: p.read_text(encoding='latin-1') for p in paths}
     every = set()
-    for t in texts.values(): every |= {x.upper() for x in symtab.IDENT.findall(t)}
+    for t in texts.values():      # identifiers in code only (comments may mention future names)
+        for line in t.splitlines(): every |= {x.upper() for x in symtab.IDENT.findall(symtab.code_text(line))}
     for old, new in pairs:
         if not re.fullmatch(r'[A-Za-z_@?][\w@?$]*', new): raise SystemExit(f'bad name {new}')
         if new.upper() in every and new.upper() != old.upper(): raise SystemExit(f'{new} already exists')

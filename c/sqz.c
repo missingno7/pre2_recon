@@ -16,14 +16,14 @@
 #include "dos_files.h"
 #include "sqz.h"
 
-#define IN_DOS        DS_BYTE_2877
-#define FREE_SEG      DS_WORD_2875
-#define MEM_TOP       CS_CVAR_0006      /* paragraphs of conventional memory (INT 12h << 6) */
-#define FILE_HANDLE   CS_CVAR_1204
-#define OUT_SEG       CS_CVAR_1206
-#define LZ_SRC_MODE   CS_CVAR_140F      /* 0 file, 1 memory, 2 EMS, 3 XMS */
-#define LZ_BUF_BYTES  CS_CVAR_1410
-#define LZ_REFILL_AT  CS_CVAR_1412
+#define IN_DOS        DS_DosCallActive
+#define FREE_SEG      DS_NextFreeSegment
+#define MEM_TOP       CS_ConventionalTopSeg      /* paragraphs of conventional memory (INT 12h << 6) */
+#define FILE_HANDLE   CS_SqzFileHandle
+#define OUT_SEG       CS_SqzOutputSegment
+#define LZ_SRC_MODE   CS_LzssSourceMode      /* 0 file, 1 memory, 2 EMS, 3 XMS */
+#define LZ_BUF_BYTES  CS_LzssChunkBytes
+#define LZ_REFILL_AT  CS_LzssRefillThreshold
 
 static void dos_enter(void) { SET_DB(IN_DOS, 1); }
 static void dos_leave_dec(void) { SET_DB(IN_DOS, DB(IN_DOS) - 1); }
@@ -337,7 +337,7 @@ int LoadSqzFile(uint16_t name, uint16_t *out_seg)
 }
 
 /* Differential-test adapter: DX = name offset in DATA; returns AX = output segment. */
-EXPORT int c_sub_107B(Regs *r)
+EXPORT int c_LoadSqzFile(Regs *r)
 {
     uint16_t seg = 0;
     int e = LoadSqzFile(r->dx, &seg);

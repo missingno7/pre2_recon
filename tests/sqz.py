@@ -12,10 +12,10 @@ NAME = 0x000C
 
 def make(name):
     def setup(m):
-        m.ww(6, 0xA000, seg=m.code and 0x1030)
-        m.ww(0x2875, FREE)
+        m.ww(m.code('ConventionalTopSeg'), 0xA000, seg=0x1030)
+        m.ww(m.data('NextFreeSegment'), FREE)
         m.write(0x1A0F, NAME, name.encode() + b'\0')
-    return Case(name, 'sub_107B', 'c_sub_107B', regs=dict(DX=NAME), setup=setup, out_regs=('AX',),
+    return Case(name, 'LoadSqzFile', 'c_LoadSqzFile', regs=dict(DX=NAME), setup=setup, out_regs=('AX',),
                 ranges=[(FREE, 0, 0xA000 - FREE - 0x10 and 0x10000)] + [(FREE + 0x1000*k, 0, 0x10000) for k in range(1, 7)],
                 files=True)
 

@@ -52,6 +52,7 @@ public sub_919F
 public sub_9286
 public sub_932F
 DATA segment word public 'DATA'
+extrn AnimVisibleFlag:byte
 extrn byte_0666:byte
 extrn byte_083D:byte
 extrn byte_083E:byte
@@ -73,10 +74,6 @@ extrn byte_2830:byte
 extrn byte_2879:byte
 extrn byte_287C:byte
 extrn byte_287D:byte
-extrn byte_2CF5:byte
-extrn byte_2D8A:byte
-extrn byte_2DF4:byte
-extrn byte_4DF8:byte
 extrn byte_4F1B:byte
 extrn byte_4F21:byte
 extrn byte_4F23:byte
@@ -90,10 +87,8 @@ extrn byte_565F:byte
 extrn byte_5671:byte
 extrn byte_5683:byte
 extrn byte_5695:byte
-extrn byte_6BBD:byte
 extrn byte_6BC0:byte
 extrn byte_6BC1:byte
-extrn byte_6BC4:byte
 extrn byte_6BC5:byte
 extrn byte_6BC6:byte
 extrn byte_6BC7:byte
@@ -107,7 +102,6 @@ extrn byte_6BD0:byte
 extrn byte_6BD1:byte
 extrn byte_6BD2:byte
 extrn byte_6BD3:byte
-extrn byte_6BD5:byte
 extrn byte_6BD9:byte
 extrn byte_6BDB:byte
 extrn byte_6BDC:byte
@@ -118,8 +112,6 @@ extrn byte_6BE5:byte
 extrn byte_6BE6:byte
 extrn byte_6BE8:byte
 extrn byte_6BEA:byte
-extrn byte_6BED:byte
-extrn byte_6BEE:byte
 extrn byte_6BF3:byte
 extrn byte_6BFE:byte
 extrn byte_6BFF:byte
@@ -135,11 +127,7 @@ extrn byte_6CA5:byte
 extrn byte_6CA6:byte
 extrn byte_6CA7:byte
 extrn byte_6CA8:byte
-extrn byte_6F90:byte
 extrn byte_7090:byte
-extrn byte_7190:byte
-extrn byte_7191:byte
-extrn byte_752A:byte
 extrn byte_78C6:byte
 extrn byte_7B06:byte
 extrn byte_7B07:byte
@@ -149,7 +137,6 @@ extrn byte_7B19:byte
 extrn byte_7B1A:byte
 extrn byte_7B7F:byte
 extrn byte_7F5E:byte
-extrn byte_8166:byte
 extrn byte_91FB:byte
 extrn byte_91FE:byte
 extrn byte_A312:byte
@@ -167,37 +154,60 @@ extrn byte_A3F9:byte
 extrn byte_A3FA:byte
 extrn byte_A515:byte
 extrn byte_A516:byte
-extrn byte_B197:byte
 extrn byte_B198:byte
+extrn CameraCol:word
+extrn CameraLeftLimit:word
+extrn CameraRow:word
+extrn CheckpointX:word
+extrn CheckpointY:word
+extrn CollectTotalDecor:word
+extrn CollectTotalMain:word
+extrn CurrentLevel:byte
+extrn DisplayPage:word
+extrn DrawPage:word
 extrn dtbl_79EC:word
 extrn dtbl_7D2F:word
 extrn dtbl_7D95:word
+extrn ExpertFlag:byte
+extrn FineScroll:byte
+extrn FrameDataOffsets:word
+extrn FrameDataSegments:word
+extrn FrameHeights:byte
+extrn FrameHotX:byte
+extrn FrameWidths:byte
+extrn GridDirtyFlag:byte
+extrn HScrollDir:byte
+extrn LevelFlags:byte
+extrn LevelPaletteTable:word
+extrn LevelPropHeader:word
+extrn LevelScriptTable:word
+extrn LevelSegment:word
+extrn LevelStartX:word
+extrn LevelStartY:word
+extrn MapRows:byte
+extrn NextFreeSegment:word
+extrn PlayerX:word
+extrn PlayerY:word
+extrn PrevCameraCol:word
+extrn RenderSlots:word
+extrn ScriptFrameCounter:word
+extrn ScriptPointer:word
+extrn ShakeRows:word
+extrn SineTable:byte
+extrn SnowFrameTick:byte
+extrn SnowWind:word
+extrn TileClassTable:byte
+extrn VScrollActive:byte
 extrn word_0039:word
 extrn word_003D:word
 extrn word_0100:word
 extrn word_27F0:word
 extrn word_27F2:word
-extrn word_2875:word
 extrn word_287A:word
-extrn word_2A74:word
 extrn word_2A76:word
-extrn word_2A78:word
 extrn word_2A7A:word
-extrn word_2D00:word
-extrn word_2D40:word
-extrn word_2DBC:word
-extrn word_2DBE:word
-extrn word_2DD6:word
-extrn word_2DD8:word
-extrn word_2DDA:word
-extrn word_2DE0:word
-extrn word_2DE4:word
-extrn word_2DE6:word
-extrn word_4F0A:word
 extrn word_4F0C:word
 extrn word_4F0E:word
-extrn word_4F1C:word
-extrn word_4F1E:word
 extrn word_4F20:word
 extrn word_4F22:word
 extrn word_4F25:word
@@ -231,19 +241,13 @@ extrn word_5682:word
 extrn word_5690:word
 extrn word_5692:word
 extrn word_5694:word
-extrn word_5F48:word
-extrn word_62E8:word
 extrn word_6BAB:word
-extrn word_6BAD:word
-extrn word_6BAF:word
 extrn word_6BB1:word
 extrn word_6BBE:word
 extrn word_6BCA:word
 extrn word_6BE2:word
 extrn word_6BEB:word
 extrn word_6BF1:word
-extrn word_6BF6:word
-extrn word_6BF8:word
 extrn word_6BFA:word
 extrn word_6BFC:word
 extrn word_6C06:word
@@ -262,10 +266,6 @@ extrn word_7B1B:word
 extrn word_7CDF:word
 extrn word_7D9B:word
 extrn word_7DA9:word
-extrn word_815E:word
-extrn word_8160:word
-extrn word_8162:word
-extrn word_8164:word
 extrn word_91F7:word
 extrn word_91F9:word
 extrn word_91FC:word
@@ -319,45 +319,45 @@ DATA ends
 CODE segment word public 'CODE'
 assume cs:CODE, ds:DATA, es:nothing, ss:nothing
 ; module interface (tools/symtab.py)
-extrn cvar_0001:byte
-extrn cvar_0003:word
-extrn cvar_0005:byte
-extrn sub_0282:near
-extrn sub_02CC:near
-extrn sub_0492:near
-extrn sub_0BA0:near
-extrn sub_0BBE:near
-extrn sub_0DC1:near
-extrn sub_107B:near
-extrn sub_247B:near
-extrn sub_25C7:near
-extrn sub_25F6:near
-extrn sub_26CF:near
-extrn sub_26FA:near
-extrn sub_3034:near
-extrn sub_3054:near
-extrn sub_30C6:near
-extrn sub_316F:near
-extrn sub_3363:near
-extrn sub_33AD:near
-extrn sub_3414:near
-extrn sub_3435:near
-extrn sub_35A1:near
-extrn sub_3668:near
-extrn sub_3721:near
-extrn sub_3922:near
-extrn sub_39DF:near
-extrn sub_3A27:near
-extrn sub_3AF2:near
-extrn sub_3B77:near
-extrn sub_447D:near
-extrn sub_44CD:near
-extrn sub_44FB:near
-extrn sub_4509:near
-extrn sub_452B:near
-extrn sub_453B:near
-extrn sub_96D5:near
-extrn sub_9B23:near
+extrn ActivateResourceSlot:near
+extrn AnimateTiles:near
+extrn BlitTileToRing:near
+extrn ClearStaggeredBlocks:near
+extrn CopyRingWindowToPage:near
+extrn CpuClass:byte
+extrn DrawForegroundOverSprites:near
+extrn DrawSpriteObjects:near
+extrn EnableVideoOutput:near
+extrn EnterLevelView:near
+extrn FlipDisplayPage:near
+extrn LoadSqzFile:near
+extrn NextWindRandom:near
+extrn OptionBits:word
+extrn OptionVByte:byte
+extrn PageInResource:near
+extrn PollInputState:near
+extrn PresentFrame:near
+extrn RedrawOverlayTiles:near
+extrn RevealLevelColumns:near
+extrn RunCallbackMapScreen:near
+extrn RunGameOverScreen:near
+extrn RunIrisClose:near
+extrn ScrollViewDown:near
+extrn ScrollViewLeft:near
+extrn ScrollViewRight:near
+extrn ScrollViewUp:near
+extrn SetCpuWriteMode:near
+extrn SetLatchCopyMode:near
+extrn SetLevelPalette:near
+extrn SetLevelVideoMode:near
+extrn ShowIntroPicture:near
+extrn StartSoundEffect:near
+extrn StepRandomSeed:near
+extrn TryShowCredits:near
+extrn TryShowIntroKeyed:near
+extrn UpdateWindAndFlakes:near
+extrn WaitForButtonPressRelease:near
+extrn WaitVerticalRetrace:near
 ; end module interface
 
 sub_454E:
@@ -367,11 +367,11 @@ sub_454E:
     mov byte ptr byte_6CA6, 0FFh
     push ds
     push es
-    call sub_452B
+    call SetCpuWriteMode
     mov ax, 0A000h
     mov es, ax
-    push word ptr word_2DD6
-    mov di, word ptr ds:word_2DD8
+    push word ptr DisplayPage
+    mov di, word ptr ds:DrawPage
     mov ds, word ptr word_003D
     mov si, 7B0h
     add di, 1B80h
@@ -385,7 +385,7 @@ loc_4586:
     shl ah, 1
     cmp ah, 10h
     jne loc_4586
-    call sub_453B
+    call SetLatchCopyMode
     mov si, di
     pop di
     add di, 1B80h
@@ -426,7 +426,7 @@ loc_45D3:
     mov ax, 0E3h
     call sub_8875
 loc_45E0:
-    call sub_452B
+    call SetCpuWriteMode
     mov byte ptr cs:cvar_45AE, 0
     mov al, byte ptr byte_27D8
     cmp byte ptr byte_6CA4, al
@@ -436,7 +436,7 @@ loc_45E0:
     jbe loc_45FB
     mov al, 9
 loc_45FB:
-    mov di, word ptr ds:word_2DD8
+    mov di, word ptr ds:DrawPage
     add di, 1CEDh
     call sub_473D
 loc_4606:
@@ -457,7 +457,7 @@ loc_4620:
     mov word ptr word_6CA2, cx
     call sub_4803
     mov di, 1CF1h
-    add di, word ptr ds:word_2DD8
+    add di, word ptr ds:DrawPage
     mov si, 6F52h
 loc_4639:
     lodsb
@@ -479,7 +479,7 @@ loc_464C:
     mov ah, al
     mov dl, 3
     mov di, 1D01h
-    add di, word ptr ds:word_2DD8
+    add di, word ptr ds:DrawPage
     or ah, ah
     je loc_4674
     mov al, 0Ah
@@ -505,7 +505,7 @@ loc_4683:
     je loc_469C
     mov byte ptr byte_6CA6, 0FFh
     mov ah, 1Fh
-    test byte ptr byte_6BD5, 1
+    test byte ptr SnowFrameTick, 1
     jne loc_46AA
     xor ah, ah
     jmp short loc_46AA
@@ -520,7 +520,7 @@ loc_46AA:
     mov si, 6F86h
 loc_46B2:
     mov di, word ptr [si]
-    add di, word ptr ds:word_2DD8
+    add di, word ptr ds:DrawPage
     inc si
     inc si
     shr ah, 1
@@ -533,11 +533,11 @@ loc_46C1:
 loc_46C7:
     cmp byte ptr cs:cvar_45AE, 0
     je loc_46EB
-    call sub_453B
+    call SetLatchCopyMode
     mov si, 1B80h
     mov di, si
-    add si, word ptr word_2DD8
-    add di, word ptr ds:word_2DD6
+    add si, word ptr DrawPage
+    add di, word ptr ds:DisplayPage
     mov ax, 0A000h
     mov es, ax
     mov ds, ax
@@ -558,7 +558,7 @@ sub_46EE:
     push bp
     mov ax, 0A000h
     mov es, ax
-    mov di, word ptr ds:word_2DD8
+    mov di, word ptr ds:DrawPage
     add di, 1BA1h
     mov si, 7D1h
     mov ds, word ptr word_003D
@@ -678,8 +678,8 @@ sub_47C0:
     add ax, 0F1h
     shl ax, 1
     mov si, ax
-    mov ax, word ptr [si+word_5F48]
-    mov ds, word ptr [si+word_62E8]
+    mov ax, word ptr [si+FrameDataOffsets]
+    mov ds, word ptr [si+FrameDataSegments]
     add ax, 16h
     mov si, ax
     mov dx, 3C4h
@@ -822,12 +822,12 @@ loc_48DD:
     inc ax
 loc_48E9:
     mov word ptr word_4F0E, ax
-    mov ax, word ptr word_4F1C
+    mov ax, word ptr PlayerX
     add ax, cx
-    mov word ptr word_4F0A, ax
+    mov word ptr RenderSlots, ax
     mov al, byte ptr [si+5]
     cbw
-    add ax, word ptr word_4F1E
+    add ax, word ptr PlayerY
     mov word ptr word_4F0C, ax
     jmp short loc_4906
 loc_4901:
@@ -891,13 +891,13 @@ loc_497F:
     sar ax, cl
     mov word ptr word_6BFC, ax
     add word ptr [si+0Bh], ax
-    mov es, word ptr word_2DDA
+    mov es, word ptr LevelSegment
     mov bx, word ptr [si]
     sar bx, cl
     mov dx, word ptr [si+2]
     add dx, word ptr [si+0Bh]
     sar dx, cl
-    mov al, byte ptr byte_2CF5
+    mov al, byte ptr MapRows
     xor ah, ah
     dec ax
     sub ax, dx
@@ -1011,7 +1011,7 @@ loc_4A61:
 loc_4A88:
     mov word ptr [si+0Ch], ax
 loc_4A8B:
-    mov dx, word ptr word_2DE4
+    mov dx, word ptr CameraCol
     mov ax, word ptr [si]
     shl dx, 1
     shl dx, 1
@@ -1025,7 +1025,7 @@ loc_4A8B:
     jle loc_4AF0
     mov word ptr [di], ax
     mov ax, word ptr [si+2]
-    mov dx, word ptr word_2DE6
+    mov dx, word ptr CameraRow
     shl dx, 1
     shl dx, 1
     shl dx, 1
@@ -1069,38 +1069,38 @@ sub_4B05:
     push si
     cmp byte ptr ds:byte_6BFE, 0
     jne loc_4B89
-    mov ax, word ptr word_4F1E
+    mov ax, word ptr PlayerY
     cmp word ptr [di+2], ax
     jle loc_4B89
     mov si, 4F1Ch
-    push word ptr word_4F1E
+    push word ptr PlayerY
     mov ax, word ptr word_6BFC
     or ax, ax
     jl loc_4B29
-    add word ptr word_4F1E, ax
+    add word ptr PlayerY, ax
 loc_4B29:
     push word ptr [si+4]
     mov word ptr [si+4], 7
     call sub_8D7B
     pop word ptr [si+4]
-    pop word ptr word_4F1E
+    pop word ptr PlayerY
     jae loc_4B89
     mov byte ptr byte_6BFE, 1
     mov byte ptr byte_4F24, 0
     mov ax, word ptr word_6BFA
-    add word ptr word_4F1C, ax
+    add word ptr PlayerX, ax
     call sub_64DF
     mov bx, word ptr [di+4]
     and bh, 1Fh
     shl bx, 1
-    mov al, byte ptr [bx+byte_7191]
+    mov al, byte ptr [bx+FrameHeights]
     xor ah, ah
     neg ax
     add ax, word ptr [di+2]
-    cmp word ptr word_4F1E, ax
+    cmp word ptr PlayerY, ax
     jle loc_4B76
     inc ax
-    mov word ptr word_4F1E, ax
+    mov word ptr PlayerY, ax
     mov word ptr word_4F2A, 1
     jmp short loc_4B84
 loc_4B76:
@@ -1125,7 +1125,7 @@ loc_4B89:
 
 sub_4B8E:
     push es
-    call sub_452B
+    call SetCpuWriteMode
     mov dx, 3C4h
     mov ax, 0F02h
     out dx, ax
@@ -1158,11 +1158,11 @@ loc_4BA9:
     add word ptr [si+2], ax
     mov ax, 0A000h
     mov es, ax
-    mov al, byte ptr byte_6BC4
+    mov al, byte ptr FineScroll
     cbw
     neg ax
     add ax, word ptr [si+2]
-    mov dx, word ptr word_2DE6
+    mov dx, word ptr CameraRow
     shl dx, cl
     sub ax, dx
     cmp ax, 0B0h
@@ -1171,7 +1171,7 @@ loc_4BA9:
     mul ah
     mov di, ax
     mov ax, word ptr [si]
-    mov dx, word ptr word_2DE4
+    mov dx, word ptr CameraCol
     shl dx, cl
     sub ax, dx
     cmp ax, 140h
@@ -1182,7 +1182,7 @@ loc_4BA9:
     shr ax, 1
     shr ax, 1
     add di, ax
-    add di, word ptr ds:word_2DD8
+    add di, word ptr ds:DrawPage
     mov al, 80h
     shr al, cl
     xchg byte ptr es:[di], al
@@ -1203,23 +1203,23 @@ sub_4C30:
     jb loc_4C68
     je loc_4C63
     xor ax, ax
-    test byte ptr byte_6BD5, 1
+    test byte ptr SnowFrameTick, 1
     je loc_4C5E
     cmp byte ptr ds:byte_4F27, 5
     je loc_4C55
     cmp byte ptr ds:byte_4F27, 20h
     je loc_4C55
-    sub word ptr word_4F1E, 3
+    sub word ptr PlayerY, 3
 loc_4C55:
     inc byte ptr byte_6BEA
     mov al, byte ptr byte_6BEA
     xor ah, ah
 loc_4C5E:
-    mov word ptr word_6BF8, ax
+    mov word ptr ShakeRows, ax
     jmp short loc_4C68
 loc_4C63:
     xor ax, ax
-    mov word ptr word_6BF8, ax
+    mov word ptr ShakeRows, ax
 loc_4C68:
     ret
 
@@ -1229,7 +1229,7 @@ sub_4C69:
     je loc_4CBA
     jb loc_4C99
     mov bx, 2CF6h
-    mov al, byte ptr byte_2D8A
+    mov al, byte ptr CurrentLevel
     cmp al, 0Ah
     jb loc_4C8F
 loc_4C7E:
@@ -1239,12 +1239,12 @@ loc_4C7E:
     jmp short loc_4C7E
 loc_4C85:
     sub bx, 2CF6h
-    mov byte ptr byte_2D8A, bl
+    mov byte ptr CurrentLevel, bl
     jmp short loc_4CBA
 loc_4C8F:
     xlat
-    mov byte ptr byte_2D8A, al
-    call sub_30C6
+    mov byte ptr CurrentLevel, al
+    call ClearStaggeredBlocks
     jmp near ptr loc_4F65
 loc_4C99:
     inc ax
@@ -1263,10 +1263,10 @@ loc_4CB8:
     clc
     ret
 loc_4CBA:
-    cmp byte ptr ds:byte_2D8A, 0Ah
+    cmp byte ptr ds:CurrentLevel, 0Ah
     jb loc_4CCB
-    call sub_30C6
-    inc byte ptr byte_2D8A
+    call ClearStaggeredBlocks
+    inc byte ptr CurrentLevel
     jmp near ptr loc_4F65
 loc_4CCB:
     cmp byte ptr ds:byte_6C04, 0
@@ -1275,26 +1275,26 @@ loc_4CCB:
     mov byte ptr byte_6C02, 1
     mov byte ptr byte_6C03, 0
 loc_4CE1:
-    call sub_316F
+    call RunIrisClose
     mov ax, 0Fh
-    call sub_02CC
-    mov ax, word ptr word_2DE6
+    call ActivateResourceSlot
+    mov ax, word ptr CameraRow
     shl ax, 1
     shl ax, 1
     shl ax, 1
     shl ax, 1
-    sub word ptr word_4F1E, ax
-    mov ax, word ptr word_2DE4
+    sub word ptr PlayerY, ax
+    mov ax, word ptr CameraCol
     shl ax, 1
     shl ax, 1
     shl ax, 1
     shl ax, 1
-    sub word ptr word_4F1C, ax
-    mov word ptr word_2DE4, 0
-    mov word ptr word_2DE6, 0
+    sub word ptr PlayerX, ax
+    mov word ptr CameraCol, 0
+    mov word ptr CameraRow, 0
     mov word ptr word_4F25, 0
     mov word ptr word_4F22, 0
-    call sub_452B
+    call SetCpuWriteMode
     call sub_51A3
     mov byte ptr byte_6BC5, 0
     mov word ptr word_4F0E, 0FFFFh
@@ -1303,7 +1303,7 @@ loc_4D37:
     mov bx, word ptr word_4F28
     call sub_638B
     xor bp, bp
-    mov ax, word ptr word_4F1C
+    mov ax, word ptr PlayerX
     mov dx, 3Ch
     mov bx, 2
     sub ax, dx
@@ -1312,12 +1312,12 @@ loc_4D37:
 loc_4D4F:
     cmp ax, 2
     jb loc_4D5B
-    mov dx, word ptr word_4F1C
+    mov dx, word ptr PlayerX
     sub dx, bx
     inc bp
 loc_4D5B:
-    mov word ptr word_4F1C, dx
-    mov ax, word ptr word_4F1E
+    mov word ptr PlayerX, dx
+    mov ax, word ptr PlayerY
     mov dx, 0AFh
     mov bx, 2
     sub ax, dx
@@ -1326,15 +1326,15 @@ loc_4D5B:
 loc_4D6E:
     cmp ax, 2
     jb loc_4D7A
-    mov dx, word ptr word_4F1E
+    mov dx, word ptr PlayerY
     sub dx, bx
     inc bp
 loc_4D7A:
-    mov word ptr word_4F1E, dx
+    mov word ptr PlayerY, dx
     call sub_520C
     call sub_51A3
-    call sub_26FA
-    call sub_44FB
+    call DrawSpriteObjects
+    call PresentFrame
     or bp, bp
     jne loc_4D37
     mov ax, 168h
@@ -1353,8 +1353,8 @@ loc_4DBE:
     call sub_520C
     call sub_51F0
     call sub_51A3
-    call sub_26FA
-    call sub_44FB
+    call DrawSpriteObjects
+    call PresentFrame
     sub word ptr word_4F2E, 3
     sub word ptr word_4F40, 3
     sub word ptr word_4F52, 3
@@ -1373,15 +1373,15 @@ loc_4E06:
     call sub_520C
     call sub_51F0
     call sub_51A3
-    call sub_26FA
-    call sub_44FB
+    call DrawSpriteObjects
+    call PresentFrame
     call sub_6333
     mov ax, word ptr word_4F22
     sar ax, 1
     sar ax, 1
     sar ax, 1
     sar ax, 1
-    add word ptr word_4F1C, ax
+    add word ptr PlayerX, ax
     or ax, ax
     jne loc_4E06
     mov word ptr word_4F28, 7CAFh
@@ -1392,9 +1392,9 @@ loc_4E3A:
     call sub_520C
     call sub_51F0
     call sub_51A3
-    call sub_26FA
-    call sub_4509
-    call sub_44CD
+    call DrawSpriteObjects
+    call FlipDisplayPage
+    call WaitVerticalRetrace
     mov si, 52E8h
     mov cx, 14h
     xor bp, bp
@@ -1426,11 +1426,11 @@ loc_4E6F:
     adc word ptr word_6C10, 0
     mov word ptr [si+4], 0FFFFh
     mov dx, 8
-    call sub_0282
+    call StartSoundEffect
 loc_4EAB:
     add si, 12h
     loop loc_4E5B
-    test word ptr byte_6BD5, 7
+    test word ptr SnowFrameTick, 7
     je loc_4EBA
     jmp short loc_4E3A
 loc_4EBA:
@@ -1472,8 +1472,8 @@ loc_4F07:
     je loc_4F0E
     jmp near ptr loc_4E3A
 loc_4F0E:
-    call sub_44CD
-    call sub_44CD
+    call WaitVerticalRetrace
+    call WaitVerticalRetrace
     mov word ptr word_4F28, 7BA7h
 loc_4F1A:
     mov bx, word ptr word_4F28
@@ -1481,8 +1481,8 @@ loc_4F1A:
     call sub_520C
     call sub_51F0
     call sub_51A3
-    call sub_26FA
-    call sub_44FB
+    call DrawSpriteObjects
+    call PresentFrame
     sub word ptr word_4F2E, 2
     sub word ptr word_4F40, 2
     sub word ptr word_4F52, 2
@@ -1492,14 +1492,14 @@ loc_4F1A:
 loc_4F46:
     mov ax, 2
 loc_4F49:
-    add word ptr word_4F1C, ax
+    add word ptr PlayerX, ax
     cmp word ptr ds:word_4F2E, -34h
     jg loc_4F1A
     cmp byte ptr ds:byte_2879, 0
     je loc_4F5E
     jmp near ptr loc_506C
 loc_4F5E:
-    inc byte ptr byte_2D8A
+    inc byte ptr CurrentLevel
     call sub_51DF
 loc_4F65:
     call sub_5237
@@ -1550,11 +1550,11 @@ loc_4FB9:
     add si, 5
     loop loc_4FB0
     call sub_5237
-    mov ax, word ptr word_6BAD
-    mov word ptr word_4F1C, ax
-    mov ax, word ptr word_6BAF
-    mov word ptr word_4F1E, ax
-    call sub_3AF2
+    mov ax, word ptr CheckpointX
+    mov word ptr PlayerX, ax
+    mov ax, word ptr CheckpointY
+    mov word ptr PlayerY, ax
+    call EnterLevelView
     mov di, 8F1Dh
     mov si, 6C12h
     mov cx, 46h
@@ -1605,37 +1605,37 @@ loc_501F:
     clc
     ret
 loc_5034:
-    call sub_447D
+    call SetLevelVideoMode
     mov ax, word ptr word_0039
-    mov word ptr word_2875, ax
+    mov word ptr NextFreeSegment, ax
     mov dx, 6BA0h
     push ds
     push es
-    call sub_107B
+    call LoadSqzFile
     pop es
     pop ds
-    mov word ptr word_2DDA, ax
-    mov ds, word ptr word_2DDA
+    mov word ptr LevelSegment, ax
+    mov ds, word ptr LevelSegment
     xor si, si
     mov cl, 10h
     call sub_919F
-    call sub_0BBE
+    call WaitForButtonPressRelease
     call sub_9286
-    call sub_25F6
+    call ShowIntroPicture
     mov ax, 1
     stc
     ret
 loc_5063:
-    mov ax, word ptr word_2DDA
-    mov word ptr word_2875, ax
+    mov ax, word ptr LevelSegment
+    mov word ptr NextFreeSegment, ax
     call sub_509D
 loc_506C:
-    call sub_25C7
+    call TryShowIntroKeyed
     mov ax, 11h
-    call sub_02CC
-    call sub_9B23
+    call ActivateResourceSlot
+    call RunGameOverScreen
     mov word ptr word_4F20, 0Dh
-    mov byte ptr byte_2D8A, 0
+    mov byte ptr CurrentLevel, 0
     mov word ptr word_6C0E, 0
     mov word ptr word_6C10, 0
     mov word ptr word_6C0C, 0
@@ -1655,12 +1655,12 @@ sub_509D:
     push es
     push bp
     mov dx, 7
-    call sub_0282
+    call StartSoundEffect
     mov byte ptr byte_4F2D, 0
     mov word ptr word_4F20, 21h
     mov word ptr word_4F2A, 0Fh
-    mov ax, word ptr word_4F1C
-    mov dx, word ptr word_2DE4
+    mov ax, word ptr PlayerX
+    mov dx, word ptr CameraCol
     add dx, 0Ah
     shl dx, 1
     shl dx, 1
@@ -1681,17 +1681,17 @@ loc_50DE:
     call sub_6210
     call sub_60FE
     call sub_60DF
-    call sub_3668
-    call sub_35A1
-    call sub_3A27
+    call AnimateTiles
+    call RedrawOverlayTiles
+    call CopyRingWindowToPage
     call sub_4B8E
-    call sub_26FA
-    call sub_3721
+    call DrawSpriteObjects
+    call DrawForegroundOverSprites
     call sub_54AB
-    call sub_3922
-    call sub_44FB
+    call UpdateWindAndFlakes
+    call PresentFrame
     mov ax, word ptr word_4F22
-    add word ptr word_4F1C, ax
+    add word ptr PlayerX, ax
     mov ax, word ptr word_4F2A
     dec ax
     cmp ax, 0FFF0h
@@ -1699,10 +1699,10 @@ loc_50DE:
     mov ax, 0FFF0h
 loc_5122:
     mov word ptr word_4F2A, ax
-    sub word ptr word_4F1E, ax
+    sub word ptr PlayerY, ax
     pop cx
     loop loc_50DE
-    call sub_30C6
+    call ClearStaggeredBlocks
     pop bp
     pop es
     pop ds
@@ -1715,14 +1715,14 @@ loc_5122:
     ret
 
 sub_5139:
-    call sub_452B
+    call SetCpuWriteMode
     mov di, 410h
-    add di, word ptr ds:word_2DD8
+    add di, word ptr ds:DrawPage
     mov si, 7D7Fh
     call sub_5190
     mov ax, 64h
-    mov cx, word ptr word_2A74
-    add cx, word ptr word_2A78
+    mov cx, word ptr CollectTotalMain
+    add cx, word ptr CollectTotalDecor
     jcxz loc_5165
     mov ax, word ptr word_2A76
     add ax, word ptr word_2A7A
@@ -1736,7 +1736,7 @@ loc_5165:
     call sub_4803
     mov si, 6F55h
     mov di, 430h
-    add di, word ptr ds:word_2DD8
+    add di, word ptr ds:DrawPage
     cmp byte ptr [si], 30h
     jne loc_517C
     inc si
@@ -1770,16 +1770,16 @@ loc_51A2:
     ret
 
 sub_51A3:
-    call sub_452B
+    call SetCpuWriteMode
     mov di, 230h
-    add di, word ptr ds:word_2DD8
+    add di, word ptr ds:DrawPage
     mov si, 7D8Fh
     call sub_5190
     mov dx, word ptr word_6C0E
     mov cx, word ptr word_6C10
     call sub_4803
     mov di, 23Ch
-    add di, word ptr ds:word_2DD8
+    add di, word ptr ds:DrawPage
     mov si, 6F52h
 loc_51C8:
     lodsb
@@ -1805,7 +1805,7 @@ sub_51DF:
     ret
 
 sub_51F0:
-    test byte ptr byte_6BD5, 3
+    test byte ptr SnowFrameTick, 3
     jne loc_520B
     push ax
     mov ax, word ptr word_4F56
@@ -1828,7 +1828,7 @@ sub_520C:
     push es
     mov ax, 0A000h
     mov es, ax
-    mov di, word ptr ds:word_2DD8
+    mov di, word ptr ds:DrawPage
     mov dx, 3C4h
     mov ax, 0F02h
     out dx, ax
@@ -1869,17 +1869,17 @@ sub_5237:
     mov cx, 10A5h
     rep movsb
     mov byte ptr byte_4F2C, al
-    mov word ptr word_2DE0, 55AAh
+    mov word ptr PrevCameraCol, 55AAh
     mov word ptr word_6BBE, 4F76h
     mov ax, 0FFFFh
     call sub_55FC
-    call sub_0BA0
+    call SetLevelPalette
     mov di, 6CA9h
     mov cx, 100h
 loc_527A:
-    call sub_39DF
+    call NextWindRandom
     mov dh, al
-    call sub_39DF
+    call NextWindRandom
     mov ah, al
     stosw
     loop loc_527A
@@ -1897,12 +1897,12 @@ loc_527A:
     rep stosb
     mov byte ptr byte_27D6, 3
     mov word ptr word_A517, 0FFFFh
-    mov bl, byte ptr byte_2D8A
+    mov bl, byte ptr CurrentLevel
     xor bh, bh
     shl bx, 1
-    mov ax, word ptr [bx+word_2D40]
-    mov word ptr word_2DBC, ax
-    mov word ptr word_2DBE, 0
+    mov ax, word ptr [bx+LevelScriptTable]
+    mov word ptr ScriptPointer, ax
+    mov word ptr ScriptFrameCounter, 0
     pop bp
     pop es
     pop ds
@@ -1917,8 +1917,8 @@ loc_527A:
 sub_52D2:
     push es
     push ds
-    mov es, word ptr word_2DDA
-    mov ds, word ptr word_2875
+    mov es, word ptr LevelSegment
+    mov ds, word ptr NextFreeSegment
     xor si, si
 loc_52DE:
     mov di, word ptr [si]
@@ -1961,51 +1961,51 @@ loc_5325:
 loc_5326:
     mov word ptr word_4F22, 0
     mov word ptr word_4F2A, 0
-    call sub_30C6
-    mov byte ptr byte_6BC4, 0
-    push word ptr word_8164
+    call ClearStaggeredBlocks
+    mov byte ptr FineScroll, 0
+    push word ptr CameraLeftLimit
     push si
-    mov word ptr word_8164, 0ECh
+    mov word ptr CameraLeftLimit, 0ECh
     mov ax, word ptr [si+4]
     mov cl, 4
     mov dl, al
     xor dh, dh
     shl dx, cl
-    mov word ptr word_4F1C, dx
+    mov word ptr PlayerX, dx
     mov dl, ah
     xor dh, dh
     shl dx, cl
-    mov word ptr word_4F1E, dx
+    mov word ptr PlayerY, dx
     mov ax, word ptr [si+2]
 loc_5361:
-    cmp byte ptr word_2DE6, ah
+    cmp byte ptr CameraRow, ah
     je loc_5377
     jb loc_5370
     mov dl, 10h
-    call sub_3363
+    call ScrollViewUp
     jmp short loc_5361
 loc_5370:
     mov dl, 10h
-    call sub_33AD
+    call ScrollViewDown
     jmp short loc_5361
 loc_5377:
-    cmp byte ptr word_2DE4, al
+    cmp byte ptr CameraCol, al
     je loc_5389
     jb loc_5384
-    call sub_3414
+    call ScrollViewLeft
     jmp short loc_5377
 loc_5384:
-    call sub_3435
+    call ScrollViewRight
     jmp short loc_5377
 loc_5389:
     pop si
-    pop word ptr word_8164
+    pop word ptr CameraLeftLimit
     mov al, byte ptr [si+6]
     mov byte ptr byte_6BD9, al
     mov byte ptr byte_6BE1, 0
-    cmp byte ptr ds:byte_2D8A, 5
+    cmp byte ptr ds:CurrentLevel, 5
     jne loc_53D7
-    and byte ptr byte_8166, 1
+    and byte ptr LevelFlags, 1
     mov byte ptr byte_A324, 0
     mov byte ptr byte_A325, 5
     mov byte ptr word_A326, 0
@@ -2019,16 +2019,16 @@ loc_5389:
     mov al, 0FFh
     rep stosb
 loc_53D7:
-    call sub_35A1
-    call sub_3A27
+    call RedrawOverlayTiles
+    call CopyRingWindowToPage
     call sub_4907
     call sub_8922
     call sub_6822
-    call sub_26FA
-    call sub_3721
+    call DrawSpriteObjects
+    call DrawForegroundOverSprites
     call sub_54AB
-    call sub_3922
-    call sub_3054
+    call UpdateWindAndFlakes
+    call RevealLevelColumns
     ret
 
 sub_53F6:
@@ -2106,17 +2106,17 @@ loc_5495:
 
 sub_549A:
     mov cl, 4
-    mov ax, word ptr word_4F1E
+    mov ax, word ptr PlayerY
     sar ax, cl
     mov dh, al
-    mov ax, word ptr word_4F1C
+    mov ax, word ptr PlayerX
     sar ax, cl
     mov dl, al
     ret
 
 sub_54AB:
     mov si, 6EA9h
-    call sub_452B
+    call SetCpuWriteMode
     mov dx, 3C4h
     mov ax, 0F02h
     out dx, ax
@@ -2134,15 +2134,15 @@ loc_54CA:
     js loc_54D2
     jmp near ptr loc_5573
 loc_54D2:
-    call sub_26CF
+    call StepRandomSeed
     and al, 7
     add al, 3
     mov byte ptr [si+6], al
-    call sub_39DF
+    call NextWindRandom
     and al, 0Fh
     mov dx, word ptr [si]
     sar dx, cl
-    cmp word ptr word_4F1C, dx
+    cmp word ptr PlayerX, dx
     jge loc_54ED
     neg al
 loc_54ED:
@@ -2151,12 +2151,12 @@ loc_54ED:
     neg al
 loc_54F5:
     mov byte ptr byte_6BC0, al
-    call sub_39DF
+    call NextWindRandom
     and al, 0Fh
     mov dx, word ptr [si+2]
     sar dx, cl
     add dx, 20h
-    cmp word ptr word_4F1E, dx
+    cmp word ptr PlayerY, dx
     jge loc_550D
     neg al
 loc_550D:
@@ -2165,7 +2165,7 @@ loc_550D:
     neg al
 loc_5515:
     mov byte ptr byte_6BC1, al
-    call sub_26CF
+    call StepRandomSeed
     and al, 1Fh
     cmp byte ptr ds:byte_6BC0, 0
     jge loc_5526
@@ -2202,7 +2202,7 @@ loc_5556:
     neg al
 loc_555F:
     mov byte ptr [si+5], al
-    test byte ptr byte_6BD5, 0Fh
+    test byte ptr SnowFrameTick, 0Fh
     jne loc_5573
     mov al, byte ptr [si+7]
     and al, 7
@@ -2235,7 +2235,7 @@ loc_559E:
     mov es, ax
     mov ax, word ptr [si+2]
     sar ax, cl
-    mov dx, word ptr word_2DE6
+    mov dx, word ptr CameraRow
     shl dx, cl
     shl dx, 1
     sub ax, dx
@@ -2246,7 +2246,7 @@ loc_559E:
     mov di, ax
     mov ax, word ptr [si]
     sar ax, cl
-    mov dx, word ptr word_2DE4
+    mov dx, word ptr CameraCol
     shl dx, cl
     shl dx, 1
     sub ax, dx
@@ -2258,7 +2258,7 @@ loc_559E:
     shr ax, 1
     shr ax, 1
     add di, ax
-    add di, word ptr ds:word_2DD8
+    add di, word ptr ds:DrawPage
     mov al, 80h
     shr al, cl
     xchg byte ptr es:[di], al
@@ -2291,10 +2291,10 @@ loc_5616:
     mov byte ptr [di+11h], 0
     add di, 12h
     loop loc_5616
-    mov ax, word ptr word_8160
-    mov word ptr word_4F1C, ax
-    mov ax, word ptr word_8162
-    mov word ptr word_4F1E, ax
+    mov ax, word ptr LevelStartX
+    mov word ptr PlayerX, ax
+    mov ax, word ptr LevelStartY
+    mov word ptr PlayerY, ax
     pop si
     pop di
     pop bx
@@ -2314,7 +2314,7 @@ sub_5649:
     mov ds, ax
     cmp byte ptr ds:byte_6BD9, 0
     jne loc_5662
-    test byte ptr byte_8166, 2
+    test byte ptr LevelFlags, 2
     jne loc_565F
     call sub_57A8
 loc_565F:
@@ -2327,20 +2327,20 @@ sub_5663:
     mov ds, ax
     cmp byte ptr cs:cvar_6771, 0
     jne loc_567D
-    test byte ptr byte_8166, 4
+    test byte ptr LevelFlags, 4
     je loc_567D
     mov dl, 1
-    call sub_33AD
+    call ScrollViewDown
     ret
 loc_567D:
     cmp word ptr ds:word_4F2A, 0
     jne loc_5689
-    mov byte ptr byte_6BEE, 0
+    mov byte ptr VScrollActive, 0
 loc_5689:
-    mov dx, word ptr word_4F1E
+    mov dx, word ptr PlayerY
     mov cl, 4
     sar dx, cl
-    sub dx, word ptr word_2DE6
+    sub dx, word ptr CameraRow
     cmp word ptr ds:word_4F2A, 0
     je loc_56AE
     mov ax, 3
@@ -2351,7 +2351,7 @@ loc_5689:
     jg loc_56E0
     jmp short loc_56D9
 loc_56AE:
-    test byte ptr byte_8166, 1
+    test byte ptr LevelFlags, 1
     jne loc_56C2
     mov ax, 9
     cmp dx, 0Ah
@@ -2371,23 +2371,23 @@ loc_56D4:
     jg loc_56E0
 loc_56D9:
     mov word ptr word_6BF1, ax
-    inc byte ptr byte_6BEE
+    inc byte ptr VScrollActive
 loc_56E0:
-    cmp byte ptr ds:byte_6BEE, 0
+    cmp byte ptr ds:VScrollActive, 0
     jne loc_56EA
     jmp near ptr loc_57A7
 loc_56EA:
-    mov ax, word ptr word_815E
+    mov ax, word ptr LevelPropHeader
     add ax, 0Bh
     shl ax, cl
-    cmp word ptr word_4F1E, ax
+    cmp word ptr PlayerY, ax
     ja loc_5703
-    mov bx, word ptr word_2DE6
+    mov bx, word ptr CameraRow
     dec bx
-    cmp word ptr word_815E, bx
+    cmp word ptr LevelPropHeader, bx
     jl loc_576A
 loc_5703:
-    cmp byte ptr ds:byte_6BEE, 0
+    cmp byte ptr ds:VScrollActive, 0
     jne loc_570D
     jmp near ptr loc_57A7
 loc_570D:
@@ -2396,27 +2396,27 @@ loc_570D:
     jmp near ptr loc_57A2
 loc_5716:
     jg loc_576A
-    mov ax, word ptr word_815E
+    mov ax, word ptr LevelPropHeader
     mov dx, ax
     add dx, 0Bh
     shl dx, cl
-    cmp word ptr word_4F1E, dx
+    cmp word ptr PlayerY, dx
     ja loc_572E
-    cmp word ptr word_2DE6, ax
+    cmp word ptr CameraRow, ax
     ja loc_57A2
 loc_572E:
     mov dl, 10h
     cmp byte ptr cs:cvar_6771, 0
     jne loc_5763
-    mov ax, word ptr word_4F1E
-    sub al, byte ptr byte_6BC4
+    mov ax, word ptr PlayerY
+    sub al, byte ptr FineScroll
     sbb ah, 0
-    mov dx, word ptr word_2DE6
+    mov dx, word ptr CameraRow
     add dx, word ptr word_6BF1
     shl dx, cl
     sub ax, dx
     mov bx, ax
-    cmp byte ptr ds:byte_2DF4, 0
+    cmp byte ptr ds:GridDirtyFlag, 0
     jne loc_575D
     mov dl, byte ptr [bx+byte_78C6]
     jmp short loc_5763
@@ -2424,21 +2424,21 @@ loc_575D:
     add bx, word ptr word_78C4
     mov dl, byte ptr [bx]
 loc_5763:
-    call sub_33AD
+    call ScrollViewDown
     jb loc_57A2
     jmp short loc_57A7
 loc_576A:
     mov dl, 10h
     cmp byte ptr cs:cvar_6771, 0
     jne loc_579D
-    mov ax, word ptr word_4F1E
-    sub al, byte ptr byte_6BC4
+    mov ax, word ptr PlayerY
+    sub al, byte ptr FineScroll
     sbb ah, 0
-    mov bx, word ptr word_2DE6
+    mov bx, word ptr CameraRow
     add bx, word ptr word_6BF1
     shl bx, cl
     sub bx, ax
-    cmp byte ptr ds:byte_2DF4, 0
+    cmp byte ptr ds:GridDirtyFlag, 0
     jne loc_5797
     mov dl, byte ptr [bx+byte_78C6]
     jmp short loc_579D
@@ -2446,20 +2446,20 @@ loc_5797:
     add bx, word ptr word_78C4
     mov dl, byte ptr [bx]
 loc_579D:
-    call sub_3363
+    call ScrollViewUp
     jae loc_57A7
 loc_57A2:
-    mov byte ptr byte_6BEE, 0
+    mov byte ptr VScrollActive, 0
 loc_57A7:
     ret
 
 sub_57A8:
     mov ax, seg DATA
     mov ds, ax
-    mov dx, word ptr word_4F1C
+    mov dx, word ptr PlayerX
     mov cl, 4
     sar dx, cl
-    sub dx, word ptr word_2DE4
+    sub dx, word ptr CameraCol
     cmp dx, 14h
     jae loc_57CC
     cmp byte ptr ds:byte_6BFE, 0
@@ -2467,22 +2467,22 @@ sub_57A8:
     cmp word ptr ds:word_4F22, 0
     je loc_57F0
 loc_57CC:
-    cmp byte ptr ds:byte_6BED, 0
+    cmp byte ptr ds:HScrollDir, 0
     je loc_57F6
-    cmp byte ptr ds:byte_6BED, 1
+    cmp byte ptr ds:HScrollDir, 1
     je loc_57E6
     cmp dx, 0Fh
     jge loc_57F0
-    call sub_3414
+    call ScrollViewLeft
     jae loc_581D
     jmp short loc_57F0
 loc_57E6:
     cmp dx, 5
     jle loc_57F0
-    call sub_3435
+    call ScrollViewRight
     jae loc_581D
 loc_57F0:
-    mov byte ptr byte_6BED, 0
+    mov byte ptr HScrollDir, 0
     ret
 loc_57F6:
     cmp word ptr ds:word_4F22, 0
@@ -2503,7 +2503,7 @@ loc_5813:
     cmp dx, 10h
     jl loc_581D
 loc_581A:
-    mov byte ptr byte_6BED, al
+    mov byte ptr HScrollDir, al
 loc_581D:
     ret
 
@@ -2561,14 +2561,14 @@ loc_5888:
     je loc_5888
     jmp near ptr loc_5A8C
 loc_5892:
-    call sub_247B
+    call TryShowCredits
     jb loc_589A
     call sub_454E
 loc_589A:
-    mov es, word ptr word_2DDA
+    mov es, word ptr LevelSegment
     mov si, 4F1Ch
     call sub_6294
-    call sub_0DC1
+    call PollInputState
     mov dl, byte ptr byte_27ED
     or dl, byte ptr byte_27EC
     mov byte ptr byte_6BDB, dl
@@ -2699,9 +2699,9 @@ loc_5A0F:
     mov ax, word ptr word_4F22
     mov cl, 4
     sar ax, cl
-    mov dx, word ptr word_4F1C
+    mov dx, word ptr PlayerX
     add ax, dx
-    mov dx, word ptr word_8164
+    mov dx, word ptr CameraLeftLimit
     add dx, 14h
     shl dx, cl
     cmp dx, ax
@@ -2710,12 +2710,12 @@ loc_5A0F:
     jl loc_5A36
     cmp ax, 0FF8h
     jge loc_5A36
-    mov word ptr word_4F1C, ax
+    mov word ptr PlayerX, ax
 loc_5A36:
     mov ax, word ptr word_4F2A
     mov cl, 4
     sar ax, cl
-    add word ptr word_4F1E, ax
+    add word ptr PlayerY, ax
     call sub_5A96
     call sub_484E
     mov dx, 1
@@ -2752,7 +2752,7 @@ sub_5A96:
     push cx
     push dx
     mov si, 4F1Ch
-    mov ax, word ptr word_4F1E
+    mov ax, word ptr PlayerY
     mov cl, 4
     sar ax, cl
     dec ax
@@ -2760,7 +2760,7 @@ sub_5A96:
     mov bx, word ptr word_4F20
     and bh, 1Fh
     shl bx, 1
-    mov dh, byte ptr [bx+byte_7191]
+    mov dh, byte ptr [bx+FrameHeights]
     mov bx, 9
     cmp word ptr ds:word_4F22, 0
     jg loc_5AC3
@@ -2771,42 +2771,42 @@ loc_5AC1:
 loc_5AC3:
     push ax
     push bx
-    mov bx, word ptr word_4F1C
+    mov bx, word ptr PlayerX
     sar bx, cl
     add bx, ax
-    mov ax, word ptr word_4F1E
+    mov ax, word ptr PlayerY
     sar ax, cl
-    sub ax, word ptr word_2DE6
+    sub ax, word ptr CameraRow
     jns loc_5ADA
     neg ax
 loc_5ADA:
     cmp ax, 0Bh
     ja loc_5B18
-    mov ax, word ptr word_4F1C
+    mov ax, word ptr PlayerX
     sar ax, cl
-    sub ax, word ptr word_2DE4
+    sub ax, word ptr CameraCol
     jns loc_5AEC
     neg ax
 loc_5AEC:
     cmp ax, 14h
     ja loc_5B18
-    test byte ptr byte_8166, 4
+    test byte ptr LevelFlags, 4
     je loc_5B03
-    mov ax, word ptr word_2DE6
+    mov ax, word ptr CameraRow
     shl ax, cl
-    cmp word ptr word_4F1E, ax
+    cmp word ptr PlayerY, ax
     jl loc_5B18
 loc_5B03:
-    cmp word ptr ds:word_4F1E, 0
+    cmp word ptr ds:PlayerY, 0
     jl loc_5B29
-    mov al, byte ptr byte_2CF5
+    mov al, byte ptr MapRows
     xor ah, ah
     inc ax
     shl ax, cl
-    cmp word ptr word_4F1E, ax
+    cmp word ptr PlayerY, ax
     jle loc_5B29
 loc_5B18:
-    cmp byte ptr ds:byte_2D8A, 0Eh
+    cmp byte ptr ds:CurrentLevel, 0Eh
     jne loc_5B26
     mov byte ptr byte_6BE5, 0FFh
     jmp short loc_5B29
@@ -2832,9 +2832,9 @@ loc_5B54:
 loc_5B59:
     pop bx
     pop ax
-    cmp word ptr ds:word_4F1E, 0
+    cmp word ptr ds:PlayerY, 0
     jle loc_5B7D
-    add bx, word ptr word_4F1C
+    add bx, word ptr PlayerX
     sar bx, cl
     add bx, ax
     call sub_5C92
@@ -2856,7 +2856,7 @@ sub_5B81:
     push ax
     push bx
     push bp
-    cmp word ptr ds:word_4F1E, -1
+    cmp word ptr ds:PlayerY, -1
     jg loc_5B96
     call sub_63B5
     mov byte ptr byte_6BF3, 0FFh
@@ -2865,7 +2865,7 @@ loc_5B96:
     push bx
     lea di, [bx+word_0100]
     mov ax, di
-    cmp byte ptr byte_2CF5, ah
+    cmp byte ptr MapRows, ah
     mov al, byte ptr es:[di]
     ja loc_5BA8
     xor al, al
@@ -2936,7 +2936,7 @@ loc_5C04:
     pop ax
     and ah, 1
     je loc_5C77
-    cmp word ptr ds:word_4F1E, 0
+    cmp word ptr ds:PlayerY, 0
     jle loc_5C77
     mov dx, 0FFFFh
     mov bx, 7E5Eh
@@ -2959,7 +2959,7 @@ loc_5C53:
     jne loc_5C76
 loc_5C70:
     shl dx, 1
-    add word ptr word_4F1C, dx
+    add word ptr PlayerX, dx
 loc_5C76:
     pop di
 loc_5C77:
@@ -2969,10 +2969,10 @@ loc_5C77:
     ret
 
 sub_5C7B:
-    cmp byte ptr [bx+byte_4DF8], 1
+    cmp byte ptr [bx+TileClassTable], 1
     jb loc_5C8E
-    mov byte ptr byte_2DF4, 1
-    mov word ptr word_2DE0, 55AAh
+    mov byte ptr GridDirtyFlag, 1
+    mov word ptr PrevCameraCol, 55AAh
     ret
 loc_5C8E:
     call sub_653D
@@ -3099,24 +3099,24 @@ loc_5D83:
     mov al, 13h
     call sub_635D
     call sub_638B
-    test byte ptr byte_8166, 2
+    test byte ptr LevelFlags, 2
     jne loc_5E08
     cmp byte ptr ds:byte_6BD9, 0
     jne loc_5E08
-    mov ax, word ptr word_4F1C
+    mov ax, word ptr PlayerX
     mov cl, 4
     sar ax, cl
-    sub ax, word ptr word_2DE4
+    sub ax, word ptr CameraCol
     test byte ptr byte_4F21, 80h
     jne loc_5DBF
     cmp ax, 2
     jbe loc_5E08
-    call sub_3435
+    call ScrollViewRight
     jmp short loc_5E08
 loc_5DBF:
     cmp ax, 11h
     jae loc_5E08
-    call sub_3414
+    call ScrollViewLeft
     jmp short loc_5E08
 loc_5DC9:
     mov si, 79E0h
@@ -3153,16 +3153,16 @@ loc_5E0D:
     ret
 
 sub_5E11:
-    test byte ptr byte_6BD5, 3
+    test byte ptr SnowFrameTick, 3
     jne loc_5E40
 
 sub_5E18:
     push ax
     push bx
     mov bx, word ptr word_6BBE
-    mov ax, word ptr word_4F1C
+    mov ax, word ptr PlayerX
     mov word ptr [bx], ax
-    mov ax, word ptr word_4F1E
+    mov ax, word ptr PlayerY
     mov word ptr [bx+2], ax
     mov word ptr [bx+4], 35h
     sub bx, 12h
@@ -3352,7 +3352,7 @@ loc_5FD2:
     je loc_5FEB
     mov dl, 0Ah
 loc_5FEB:
-    call sub_0282
+    call StartSoundEffect
     xor dx, dx
     mov al, byte ptr byte_4F27
     cmp al, 6
@@ -3394,7 +3394,7 @@ loc_6025:
 loc_604B:
     mov word ptr [si+4], ax
     mov word ptr [si+6], cx
-    mov ax, word ptr word_4F0A
+    mov ax, word ptr RenderSlots
     sar cx, 1
     sar cx, 1
     sar cx, 1
@@ -3436,7 +3436,7 @@ loc_6090:
     neg cx
 loc_60AE:
     mov word ptr word_4F0E, ax
-    mov ax, word ptr word_4F1C
+    mov ax, word ptr PlayerX
     mov dx, word ptr word_4F22
     sar dx, 1
     sar dx, 1
@@ -3444,8 +3444,8 @@ loc_60AE:
     sar dx, 1
     add ax, dx
     sub ax, cx
-    mov word ptr word_4F0A, ax
-    mov ax, word ptr word_4F1E
+    mov word ptr RenderSlots, ax
+    mov ax, word ptr PlayerY
     mov dx, word ptr word_4F2A
     sar dx, 1
     sar dx, 1
@@ -3476,7 +3476,7 @@ sub_60FE:
     mov si, 50A8h
     mov bp, 20h
     mov cl, 4
-    mov es, word ptr word_2DDA
+    mov es, word ptr LevelSegment
 loc_610A:
     cmp word ptr [si+4], -1
     je loc_6136
@@ -3570,7 +3570,7 @@ loc_61CC:
     sar ax, cl
     add word ptr [si], ax
 loc_61E3:
-    test byte ptr byte_6BD5, 1
+    test byte ptr SnowFrameTick, 1
     jne loc_6206
     cmp word ptr [si+6], 0
     je loc_6206
@@ -3713,7 +3713,7 @@ loc_62E3:
 
 sub_62EC:
     push ax
-    mov ax, word ptr word_6BF6
+    mov ax, word ptr SnowWind
     shr ax, 1
     shr ax, 1
     shr ax, 1
@@ -3865,7 +3865,7 @@ sub_6407:
     sar ax, 1
     sar ax, 1
     sar ax, 1
-    sub word ptr word_4F1C, ax
+    sub word ptr PlayerX, ax
     mov word ptr word_4F22, 0
     pop ax
     ret
@@ -3877,7 +3877,7 @@ sub_641F:
     jmp short sub_6401
 loc_642D:
     mov byte ptr byte_6BC7, 0
-    and byte ptr word_4F1E, 0F0h
+    and byte ptr PlayerY, 0F0h
     mov bl, byte ptr es:[di]
     xor bh, bh
     mov al, byte ptr [bx-71E3h]
@@ -3906,18 +3906,18 @@ loc_645E:
     jge loc_647C
     sub ax, 10h
 loc_6478:
-    add word ptr word_4F1E, ax
+    add word ptr PlayerY, ax
 loc_647C:
     cmp byte ptr ds:byte_6BD2, 4
     jbe loc_64D9
     call sub_5E18
-    mov ax, word ptr word_4F1E
+    mov ax, word ptr PlayerY
     sub ax, word ptr word_6BCA
     cmp ax, 20h
     jl loc_64D9
     cmp word ptr ds:word_4F2A, 50h
     jl loc_64D9
-    mov ax, word ptr word_4F1E
+    mov ax, word ptr PlayerY
     mov word ptr word_6BCA, ax
     cmp byte ptr ds:byte_6BD2, 14h
     jb loc_64B3
@@ -3927,7 +3927,7 @@ loc_647C:
 loc_64B3:
     cmp byte ptr ds:byte_6BD2, 0Ah
     jbe loc_64D9
-    test byte ptr byte_8166, 1
+    test byte ptr LevelFlags, 1
     jne loc_64C7
     mov word ptr word_4F2A, 0FFE0h
 loc_64C7:
@@ -3945,7 +3945,7 @@ sub_64DF:
     adc byte ptr byte_6BE0, 0
     mov byte ptr byte_6BD1, 0
     mov byte ptr byte_6BF3, 2
-    mov ax, word ptr word_4F1E
+    mov ax, word ptr PlayerY
     mov word ptr word_6BCA, ax
     ret
 loc_64FA:
@@ -3954,10 +3954,10 @@ loc_64FD:
     cmp word ptr [si], 55AAh
     jne loc_6522
     mov cl, 3
-    mov ax, word ptr word_4F1C
+    mov ax, word ptr PlayerX
     shl ax, cl
     mov word ptr [si], ax
-    mov ax, word ptr word_4F1E
+    mov ax, word ptr PlayerY
     shl ax, cl
     mov word ptr [si+2], ax
     mov byte ptr [si+4], 0
@@ -4002,9 +4002,9 @@ sub_653D:
     push ax
     mov bl, 50h
     mov bh, 2
-    cmp byte ptr cs:cvar_0001, 3
+    cmp byte ptr cs:OptionVByte, 3
     jb loc_656E
-    call sub_453B
+    call SetLatchCopyMode
     mov bl, 28h
     mov bh, 1
 loc_656E:
@@ -4031,7 +4031,7 @@ loc_656E:
     pop di
     add di, ax
     pop ax
-    call sub_3B77
+    call BlitTileToRing
     mov byte ptr ds:[6BBDh], 1
     clc
     jmp short loc_65A5
@@ -4092,7 +4092,7 @@ sub_65EF:
     cmp ax, 10h
     jge loc_6616
     add di, 100h
-    add word ptr word_4F1E, 10h
+    add word ptr PlayerY, 10h
     jmp short sub_6641
 loc_6616:
     call sub_6401
@@ -4103,7 +4103,7 @@ sub_661A:
     je loc_6640
     push bx
     push ax
-    mov ax, word ptr word_4F1C
+    mov ax, word ptr PlayerX
     and ax, 0Fh
     mov bl, 3
     div bl
@@ -4157,8 +4157,8 @@ sub_6673:
     cmp word ptr ds:word_4F2A, 0
     je loc_668B
     mov word ptr word_4F2A, 0
-    and word ptr word_4F1E, 0FFF0h
-    add word ptr word_4F1E, 10h
+    and word ptr PlayerY, 0FFF0h
+    add word ptr PlayerY, 10h
     ret
 loc_668B:
     mov al, byte ptr word_4F20
@@ -4177,7 +4177,7 @@ loc_668B:
     sar ax, cl
     mov bl, al
     mov di, bx
-    mov es, word ptr word_2DDA
+    mov es, word ptr LevelSegment
     mov bx, 7E5Eh
     mov al, byte ptr es:[di]
     xlat
@@ -4288,10 +4288,10 @@ sub_6772:
     or al, byte ptr byte_6C02
     je loc_67D6
     inc byte ptr byte_6C03
-    mov bl, byte ptr byte_2D8A
+    mov bl, byte ptr CurrentLevel
     xor bh, bh
     shl bx, 1
-    mov si, word ptr [bx+word_2D00]
+    mov si, word ptr [bx+LevelPaletteTable]
     mov dx, 3C8h
     xor al, al
     out dx, al
@@ -4334,9 +4334,9 @@ loc_67D6:
 sub_67D7:
     cmp byte ptr ds:byte_6CA7, 1Fh
     jne loc_680D
-    mov ax, word ptr word_4F1C
+    mov ax, word ptr PlayerX
     mov word ptr word_A336, ax
-    mov ax, word ptr word_4F1E
+    mov ax, word ptr PlayerY
     sub ax, 70h
     mov word ptr word_A338, ax
     mov ax, 6Eh
@@ -4364,15 +4364,15 @@ sub_6822:
     je loc_682C
     call sub_70D7
 loc_682C:
-    cmp byte ptr ds:byte_2D8A, 5
+    cmp byte ptr ds:CurrentLevel, 5
     jne loc_6844
-    test byte ptr byte_8166, 0FEh
+    test byte ptr LevelFlags, 0FEh
     jne loc_6844
     cmp word ptr ds:word_A326, 3
     je loc_6844
     call sub_6D34
 loc_6844:
-    cmp byte ptr ds:byte_2D8A, 9
+    cmp byte ptr ds:CurrentLevel, 9
     jne loc_684E
     call sub_6ADD
 loc_684E:
@@ -4552,7 +4552,7 @@ sub_698C:
     mov ax, word ptr [si]
     sar ax, cl
     mov bl, al
-    mov es, word ptr word_2DDA
+    mov es, word ptr LevelSegment
     mov dl, byte ptr es:[bx]
     mov dh, byte ptr es:[bx-100h]
     mov ax, word ptr [si+8]
@@ -4787,7 +4787,7 @@ loc_6BAB:
     cmp al, 0FDh
     jne loc_6BB8
     mov dx, 2
-    call sub_0282
+    call StartSoundEffect
     inc bx
     jmp short loc_6B95
 loc_6BB8:
@@ -4834,7 +4834,7 @@ loc_6C09:
 sub_6C0D:
     mov di, 3F40h
     add di, 18h
-    call sub_453B
+    call SetLatchCopyMode
     mov ah, 6
     mul ah
     mov bx, ax
@@ -4844,7 +4844,7 @@ loc_6C21:
     mov cl, 6
 loc_6C23:
     push ds
-    mov ds, word ptr word_2DDA
+    mov ds, word ptr LevelSegment
     mov al, byte ptr [bx]
     inc bx
     push es
@@ -4935,7 +4935,7 @@ loc_6CBC:
     mov byte ptr [si+11h], 0
     mov word ptr [si+0Ch], 84h
     mov word ptr [si+9], 0FFFFh
-    call sub_39DF
+    call NextWindRandom
     and ax, 0Fh
     shl ax, 1
     shl ax, 1
@@ -4961,7 +4961,7 @@ loc_6CF9:
     jmp short loc_6D31
 loc_6D06:
     mov word ptr [si+4], 1CBh
-    call sub_39DF
+    call NextWindRandom
     and ax, 7Fh
     sub ax, 10h
     mov word ptr [si], ax
@@ -5101,7 +5101,7 @@ loc_6E12:
     mov ax, 0FFFFh
 loc_6E55:
     mov word ptr word_564C, ax
-    test byte ptr byte_6BD5, 3
+    test byte ptr SnowFrameTick, 3
     jne loc_6E6D
     mov al, byte ptr byte_A328
     inc al
@@ -5143,7 +5143,7 @@ loc_6EAB:
     je loc_6F0F
     mov ah, 3
     mov byte ptr byte_6BEA, 4
-    add word ptr word_4F1C, 2
+    add word ptr PlayerX, 2
     push ax
     mov si, 7DAFh
     mov cx, 5
@@ -5155,10 +5155,10 @@ loc_6EC7:
     jmp short loc_6F0E
 loc_6ED4:
     mov word ptr [si+4], 1B3h
-    mov ax, word ptr word_4F1E
+    mov ax, word ptr PlayerY
     sub ax, 96h
     mov word ptr [si+2], ax
-    call sub_39DF
+    call NextWindRandom
     mov dl, al
     and al, 7Ch
     test al, 4
@@ -5166,7 +5166,7 @@ loc_6ED4:
     neg al
 loc_6EEF:
     cbw
-    add ax, word ptr word_4F1C
+    add ax, word ptr PlayerX
     mov word ptr [si], ax
     and dx, 3
     inc dx
@@ -5183,13 +5183,13 @@ loc_6F0F:
     mov byte ptr byte_A32B, ah
     dec byte ptr byte_A32C
     jne loc_6F3C
-    call sub_39DF
+    call NextWindRandom
     and al, 0Fh
     shl al, 1
     shl al, 1
     shl al, 1
     mov byte ptr byte_A32C, al
-    call sub_39DF
+    call NextWindRandom
     and al, 0Fh
     shl al, 1
     shl al, 1
@@ -5210,7 +5210,7 @@ loc_6F46:
     call sub_8D7B
     jae loc_6F8F
 loc_6F59:
-    cmp word ptr ds:word_4F1E, 7BBh
+    cmp word ptr ds:PlayerY, 7BBh
     jg loc_6F69
     mov word ptr word_4F2A, 0FF60h
     jmp short loc_6FBB
@@ -5318,7 +5318,7 @@ loc_709B:
     add di, 12h
     loop loc_709B
 loc_70A5:
-    cmp word ptr ds:word_4F1C, 3D8h
+    cmp word ptr ds:PlayerX, 3D8h
     jle loc_70CB
     mov byte ptr byte_4F2D, 2Ch
     mov byte ptr byte_6BD0, 0
@@ -5370,7 +5370,7 @@ loc_7118:
     sar ax, cl
     mov bh, bl
     mov bl, al
-    mov es, word ptr word_2DDA
+    mov es, word ptr LevelSegment
     mov al, byte ptr es:[bx]
     mov bx, 7F5Eh
     xlat
@@ -5390,13 +5390,13 @@ loc_7165:
     add word ptr word_6C08, 10h
 loc_7172:
     xor dx, dx
-    mov ax, word ptr word_4F1C
+    mov ax, word ptr PlayerX
     cmp word ptr word_91FF, ax
     jae loc_717E
     inc dx
 loc_717E:
     mov byte ptr byte_A3FA, dl
-    mov ax, word ptr word_4F1C
+    mov ax, word ptr PlayerX
     sub ax, word ptr word_91FF
     jns loc_718D
     neg ax
@@ -5406,7 +5406,7 @@ loc_718D:
     jbe loc_7198
     jmp near ptr loc_7579
 loc_7198:
-    mov ax, word ptr word_4F1E
+    mov ax, word ptr PlayerY
     sub ax, word ptr word_9201
     jns loc_71A3
     neg ax
@@ -5452,7 +5452,7 @@ loc_7203:
 loc_7221:
     cmp byte ptr ds:byte_6BD0, 0
     je loc_7235
-    test byte ptr byte_6BD5, 7
+    test byte ptr SnowFrameTick, 7
     jne loc_7235
     call sub_757A
     jmp near ptr loc_7534
@@ -5529,7 +5529,7 @@ loc_72FF:
     mov bx, ax
     mov word ptr word_A401, 0A45Eh
     mov ax, word ptr word_91FF
-    sub ax, word ptr word_4F1C
+    sub ax, word ptr PlayerX
     push ax
     jns loc_731C
     neg ax
@@ -5620,7 +5620,7 @@ loc_73F1:
     mov word ptr word_6C08, 0FFAFh
     mov dx, 50h
     mov ax, word ptr word_91FF
-    cmp word ptr word_4F1C, ax
+    cmp word ptr PlayerX, ax
     jg loc_7405
     neg dx
 loc_7405:
@@ -5713,7 +5713,7 @@ loc_751A:
     mov word ptr word_6C08, 0FF9Fh
     mov dx, 0FFD0h
     mov ax, word ptr word_91FF
-    cmp word ptr word_4F1C, ax
+    cmp word ptr PlayerX, ax
     jg loc_752E
     neg dx
 loc_752E:
@@ -5766,7 +5766,7 @@ loc_7596:
     push cx
     jcxz loc_75B1
     mov ax, 0Dh
-    call sub_02CC
+    call ActivateResourceSlot
 loc_759F:
     mov word ptr [si+4], 135h
     mov word ptr [si], ax
@@ -5795,7 +5795,7 @@ sub_75C4:
     mov al, byte ptr [bx+0Dh]
     cbw
     mov dx, word ptr [si]
-    cmp word ptr word_4F1C, dx
+    cmp word ptr PlayerX, dx
     jge loc_75DE
     neg ax
 loc_75DE:
@@ -5837,7 +5837,7 @@ sub_760F:
     cbw
     shl ax, cl
     mov dx, word ptr [si]
-    cmp word ptr word_4F1C, dx
+    cmp word ptr PlayerX, dx
     jg loc_763A
     neg ax
 loc_763A:
@@ -5868,7 +5868,7 @@ loc_7664:
 sub_7665:
     call sub_8084
     mov al, byte ptr [si+0Eh]
-    cmp byte ptr ds:byte_2D8A, 5
+    cmp byte ptr ds:CurrentLevel, 5
     jne loc_7685
     cmp byte ptr ds:byte_6BEA, 0
     je loc_7685
@@ -5913,14 +5913,14 @@ loc_76C0:
     mov byte ptr [bx+4], 0Fh
     mov dl, byte ptr [bx+0Dh]
     xor dh, dh
-    mov ax, word ptr word_4F1C
+    mov ax, word ptr PlayerX
     cmp word ptr [si], ax
     jl loc_76DE
     neg dx
 loc_76DE:
     mov word ptr [si+8], dx
 loc_76E1:
-    test byte ptr byte_6BD5, 3
+    test byte ptr SnowFrameTick, 3
     jne loc_7702
     dec byte ptr [bx+7]
     jne loc_7702
@@ -5950,7 +5950,7 @@ loc_771F:
     test byte ptr [si+5], 20h
     jne loc_7731
     mov ax, word ptr [si+2]
-    cmp word ptr word_4F1E, ax
+    cmp word ptr PlayerY, ax
     jge loc_7731
     jmp near ptr loc_7CFF
 loc_7731:
@@ -5967,14 +5967,14 @@ sub_773D:
     cmp byte ptr [si+0Eh], 0FFh
     je loc_7785
     mov ax, word ptr [si+2]
-    sub ax, word ptr word_4F1E
+    sub ax, word ptr PlayerY
     jns loc_7757
     neg ax
 loc_7757:
     cmp ax, 0BEh
     jae loc_777B
     mov ax, word ptr [bx+0Dh]
-    mov dx, word ptr word_4F1C
+    mov dx, word ptr PlayerX
     cmp dx, ax
     jl loc_7773
     mov ax, word ptr [bx+0Fh]
@@ -6041,7 +6041,7 @@ sub_77DE:
     cmp word ptr [si+8], 0
     jne loc_77F8
     mov dx, 1
-    mov ax, word ptr word_4F1C
+    mov ax, word ptr PlayerX
     cmp word ptr [si], ax
     jle loc_77F5
     neg dx
@@ -6053,7 +6053,7 @@ loc_77F8:
     jne loc_7857
     call sub_8001
     jb loc_7825
-    mov ax, word ptr word_4F1C
+    mov ax, word ptr PlayerX
     sub ax, word ptr [si]
     jns loc_780D
     neg ax
@@ -6061,7 +6061,7 @@ loc_780D:
     sar ax, cl
     cmp byte ptr [bx+0Dh], al
     jb loc_7825
-    mov ax, word ptr word_4F1E
+    mov ax, word ptr PlayerY
     sub ax, word ptr [si+2]
     jns loc_781E
     neg ax
@@ -6081,7 +6081,7 @@ loc_7827:
     cbw
     shl ax, cl
     mov dx, word ptr [si]
-    cmp word ptr word_4F1C, dx
+    cmp word ptr PlayerX, dx
     jg loc_7842
     neg ax
 loc_7842:
@@ -6131,13 +6131,13 @@ sub_7898:
     or al, al
     jne loc_78DF
     mov dx, 1
-    mov ax, word ptr word_4F1C
+    mov ax, word ptr PlayerX
     cmp word ptr [si], ax
     jle loc_78B0
     neg dx
 loc_78B0:
     mov word ptr [si+8], dx
-    mov ax, word ptr word_4F1C
+    mov ax, word ptr PlayerX
     sub ax, word ptr [si]
     jns loc_78BC
     neg ax
@@ -6175,7 +6175,7 @@ sub_78EC:
     or al, al
     jne loc_7930
     call sub_7A50
-    mov ax, word ptr word_4F1C
+    mov ax, word ptr PlayerX
     sub ax, word ptr [si]
     jns loc_7904
     neg ax
@@ -6203,7 +6203,7 @@ loc_7930:
     jmp near ptr loc_7A48
 loc_7937:
     call sub_7A50
-    mov ax, word ptr word_4F1C
+    mov ax, word ptr PlayerX
     sub ax, word ptr [si]
     mov bp, ax
     jns loc_7945
@@ -6213,7 +6213,7 @@ loc_7945:
     mov word ptr word_A30E, ax
     mov word ptr word_A310, dx
     xchg cx, ax
-    mov ax, word ptr word_4F1E
+    mov ax, word ptr PlayerY
     sub ax, word ptr [si+2]
     jns loc_7959
     neg ax
@@ -6249,30 +6249,30 @@ loc_799F:
     js loc_79A7
     jmp near ptr loc_7A28
 loc_79A7:
-    call sub_26CF
+    call StepRandomSeed
     and al, 0Fh
     add al, 3
     mov byte ptr [bx+10h], al
-    call sub_39DF
+    call NextWindRandom
     and ah, 7
     and al, 0Fh
     add al, ah
     mov dx, word ptr [si]
-    cmp word ptr word_4F1C, dx
+    cmp word ptr PlayerX, dx
     jge loc_79C5
     neg al
 loc_79C5:
     mov byte ptr byte_6BC0, al
-    call sub_39DF
+    call NextWindRandom
     and al, 0Fh
     mov dx, word ptr [si+2]
     add dx, 32h
-    cmp word ptr word_4F1E, dx
+    cmp word ptr PlayerY, dx
     jge loc_79DB
     neg al
 loc_79DB:
     mov byte ptr byte_6BC1, al
-    call sub_26CF
+    call StepRandomSeed
     and al, 1Fh
     cmp byte ptr ds:byte_6BC0, 0
     jge loc_79EC
@@ -6333,7 +6333,7 @@ loc_7A4F:
 
 sub_7A50:
     mov dx, 1
-    mov ax, word ptr word_4F1C
+    mov ax, word ptr PlayerX
     cmp word ptr [si], ax
     jle loc_7A5C
     neg dx
@@ -6348,13 +6348,13 @@ sub_7A60:
     or al, al
     jne loc_7AB7
     mov dx, 1
-    mov ax, word ptr word_4F1C
+    mov ax, word ptr PlayerX
     cmp word ptr [si], ax
     jle loc_7A78
     neg dx
 loc_7A78:
     mov word ptr [si+8], dx
-    mov ax, word ptr word_4F1C
+    mov ax, word ptr PlayerX
     sub ax, word ptr [si]
     jns loc_7A84
     neg ax
@@ -6362,7 +6362,7 @@ loc_7A84:
     sar ax, cl
     cmp byte ptr [bx+0Dh], al
     jb loc_7ADE
-    mov ax, word ptr word_4F1E
+    mov ax, word ptr PlayerY
     sub ax, word ptr [si+2]
     jns loc_7A95
     neg ax
@@ -6385,7 +6385,7 @@ loc_7AB7:
     cmp al, 0Ah
     jne loc_7AD7
     mov ax, word ptr [si+2]
-    sub ax, word ptr word_4F1E
+    sub ax, word ptr PlayerY
     jns loc_7AC6
     neg ax
 loc_7AC6:
@@ -6461,7 +6461,7 @@ sub_7B53:
     mov al, byte ptr [bx+0Fh]
     xor ah, ah
     mov di, ax
-    mov al, byte ptr [di+byte_6F90]
+    mov al, byte ptr [di+SineTable]
     sar al, 1
     sar al, 1
     mov ch, byte ptr [bx+0Dh]
@@ -6493,7 +6493,7 @@ sub_7B91:
     call sub_8001
     jb loc_7BC4
     mov ax, word ptr [bx+9]
-    sub ax, word ptr word_4F1C
+    sub ax, word ptr PlayerX
     jns loc_7BAD
     neg ax
 loc_7BAD:
@@ -6519,7 +6519,7 @@ loc_7BC5:
     mov ax, word ptr [si]
     sar ax, cl
     mov bl, al
-    mov es, word ptr word_2DDA
+    mov es, word ptr LevelSegment
     mov al, byte ptr es:[bx]
     mov bx, 7F5Eh
     xlat
@@ -6532,7 +6532,7 @@ loc_7BC5:
     or byte ptr [bx+4], 48h
     mov dx, 30h
     mov ax, word ptr [si]
-    cmp word ptr word_4F1C, ax
+    cmp word ptr PlayerX, ax
     jge loc_7C11
     neg dx
 loc_7C11:
@@ -6612,7 +6612,7 @@ sub_7C90:
     call sub_8001
     jb loc_7CB3
     mov ax, word ptr [si+2]
-    sub ax, word ptr word_4F1E
+    sub ax, word ptr PlayerY
     cmp ax, 0B0h
     jge loc_7CFF
     or byte ptr [bx+4], 8
@@ -6626,7 +6626,7 @@ loc_7CB4:
     jne loc_7CFE
     mov byte ptr [si+0Eh], 2
     mov dx, 20h
-    mov ax, word ptr word_4F1C
+    mov ax, word ptr PlayerX
     cmp word ptr [si], ax
     jl loc_7CCE
     neg dx
@@ -6646,7 +6646,7 @@ loc_7CDA:
     test byte ptr [si+5], 20h
     jne loc_7CF3
     mov ax, word ptr [si+2]
-    cmp word ptr word_4F1E, ax
+    cmp word ptr PlayerY, ax
     jl loc_7CFF
 loc_7CF3:
     cmp word ptr [si+0Ah], 0F0h
@@ -6667,10 +6667,10 @@ loc_7D1A:
 
 sub_7D1B:
     mov ax, word ptr [si+0Bh]
-    cmp word ptr word_4F1E, ax
+    cmp word ptr PlayerY, ax
     jle loc_7D6C
     mov ax, word ptr [si+9]
-    sub ax, word ptr word_4F1C
+    sub ax, word ptr PlayerX
     jns loc_7D2F
     neg ax
 loc_7D2F:
@@ -6678,7 +6678,7 @@ loc_7D2F:
     jge loc_7D6C
     cmp ax, 140h
     jge loc_7D49
-    mov ax, word ptr word_4F1E
+    mov ax, word ptr PlayerY
     sub ax, word ptr [si+0Bh]
     cmp ax, 168h
     jge loc_7D6C
@@ -6713,7 +6713,7 @@ sub_7D6E:
     call sub_7F26
     jb loc_7D96
     mov byte ptr [si+4], 37h
-    call sub_39DF
+    call NextWindRandom
     and al, 3Fh
     cbw
     sub word ptr [di+2], ax
@@ -6726,7 +6726,7 @@ loc_7D98:
     jmp near ptr loc_7E95
 
 sub_7D9B:
-    cmp byte ptr ds:byte_2D8A, 5
+    cmp byte ptr ds:CurrentLevel, 5
     jne loc_7DB0
     cmp byte ptr ds:byte_6BEA, 0
     jne loc_7D98
@@ -6742,14 +6742,14 @@ loc_7DB0:
     cmp byte ptr [si+6], al
     ja loc_7D98
     mov cl, 4
-    mov ax, word ptr word_4F1C
+    mov ax, word ptr PlayerX
     sar ax, cl
     mov dx, word ptr [si+9]
     sub al, dl
     jb loc_7D98
     cmp byte ptr [si+0Bh], al
     jb loc_7D98
-    mov ax, word ptr word_4F1E
+    mov ax, word ptr PlayerY
     sar ax, cl
     sub al, dh
     jb loc_7D98
@@ -6760,7 +6760,7 @@ loc_7DB0:
     mov byte ptr [di+10h], 0
     mov word ptr ds:word_A32E, di
     mov bx, word ptr word_A341
-    mov ax, word ptr word_4F1C
+    mov ax, word ptr PlayerX
     mov dx, ax
     add ax, word ptr [bx-5CBDh]
     inc bx
@@ -6775,7 +6775,7 @@ loc_7DB0:
 loc_7E15:
     mov word ptr [di+8], dx
     mov cl, 4
-    mov ax, word ptr word_4F1E
+    mov ax, word ptr PlayerY
     sar ax, cl
     mov bh, al
     mov ax, word ptr [di]
@@ -6784,8 +6784,8 @@ loc_7E15:
     add bh, 4
     mov bp, bx
     mov bx, 7F5Eh
-    mov es, word ptr word_2DDA
-    mov dh, byte ptr byte_2CF5
+    mov es, word ptr LevelSegment
+    mov dh, byte ptr MapRows
     xor dl, dl
     mov ah, 0Ah
 loc_7E3B:
@@ -6839,7 +6839,7 @@ sub_7E97:
     pop ax
     jb loc_7EBE
     or al, 5
-    cmp byte ptr ds:byte_2D8A, 6
+    cmp byte ptr ds:CurrentLevel, 6
     jne loc_7EB0
     or al, 80h
 loc_7EB0:
@@ -6929,14 +6929,14 @@ loc_7F6B:
 
 sub_7F6C:
     mov cl, 4
-    mov ax, word ptr word_4F1C
+    mov ax, word ptr PlayerX
     sar ax, cl
     mov dx, word ptr [si+9]
     sub al, dl
     jb loc_7FD8
     cmp byte ptr [si+0Bh], al
     jb loc_7FD8
-    mov ax, word ptr word_4F1E
+    mov ax, word ptr PlayerY
     sar ax, cl
     sub al, dh
     jb loc_7FD8
@@ -6951,10 +6951,10 @@ sub_7F6C:
     je loc_7FA6
     neg dx
 loc_7FA6:
-    mov ax, word ptr word_4F1C
+    mov ax, word ptr PlayerX
     add ax, dx
     mov word ptr [di], ax
-    mov ax, word ptr word_4F1E
+    mov ax, word ptr PlayerY
     sub ax, 0B0h
     mov word ptr [di+2], ax
     mov ax, word ptr [si+2]
@@ -7012,13 +7012,13 @@ loc_8021:
 sub_8022:
     mov cl, 4
     sar ax, cl
-    sub ax, word ptr word_2DE4
+    sub ax, word ptr CameraCol
     cmp ax, 0FFFEh
     jl loc_8046
     cmp ax, 16h
     jg loc_8046
     sar dx, cl
-    sub dx, word ptr word_2DE6
+    sub dx, word ptr CameraRow
     cmp dx, -2
     jl loc_8046
     cmp dx, 0Dh
@@ -7084,14 +7084,14 @@ sub_8089:
     je loc_80CA
     test byte ptr [si+5], 20h
     jne loc_80CA
-    sub ax, word ptr word_4F1C
+    sub ax, word ptr PlayerX
     jns loc_80A0
     neg ax
 loc_80A0:
     cmp ax, 140h
     ja loc_80B4
     mov ax, dx
-    sub ax, word ptr word_4F1E
+    sub ax, word ptr PlayerY
     jns loc_80AF
     neg ax
 loc_80AF:
@@ -7135,7 +7135,7 @@ loc_80EC:
     loop loc_80EC
     ret
 loc_80F7:
-    mov ax, word ptr byte_6BD5
+    mov ax, word ptr SnowFrameTick
     mov dx, ax
     sub ax, word ptr word_A3FD
     jns loc_8104
@@ -7145,7 +7145,7 @@ loc_8104:
     jbe loc_8181
     mov word ptr word_A3FD, dx
     mov dx, 8
-    call sub_0282
+    call StartSoundEffect
     or byte ptr byte_564D, 40h
     or byte ptr byte_565F, 40h
     or byte ptr byte_5671, 40h
@@ -7164,7 +7164,7 @@ loc_814C:
     cmp al, 14h
     jbe loc_8176
     mov dx, 30h
-    mov ax, word ptr word_4F1C
+    mov ax, word ptr PlayerX
     cmp word ptr word_91FF, ax
     jge loc_815E
     neg dx
@@ -7228,7 +7228,7 @@ sub_81B4:
     je loc_81EF
     mov ax, 0FF80h
     mov dx, 3
-    call sub_0282
+    call StartSoundEffect
 loc_81EF:
     mov word ptr word_4F2A, ax
 loc_81F2:
@@ -7252,14 +7252,14 @@ loc_8201:
 loc_8217:
     call sub_824D
     mov dx, 1
-    call sub_0282
+    call StartSoundEffect
     mov byte ptr byte_4F2D, 2Ch
     mov byte ptr byte_6BD0, 0
     mov word ptr word_4F2A, 0FF80h
     mov byte ptr byte_4F24, 3
     mov ax, 80h
     mov dx, word ptr word_91FF
-    cmp word ptr word_4F1C, dx
+    cmp word ptr PlayerX, dx
     jge loc_8244
     neg ax
 loc_8244:
@@ -7279,9 +7279,9 @@ sub_824D:
     jns loc_8264
     call sub_65B3
 loc_8264:
-    mov ax, word ptr word_4F1C
+    mov ax, word ptr PlayerX
     mov word ptr word_A336, ax
-    mov ax, word ptr word_4F1E
+    mov ax, word ptr PlayerY
     sub ax, 30h
     mov word ptr word_A338, ax
     mov cx, 1
@@ -7357,7 +7357,7 @@ loc_82E9:
     jns loc_832C
     neg ax
 loc_832C:
-    mov dx, word ptr word_4F1C
+    mov dx, word ptr PlayerX
     cmp word ptr [di], dx
     jg loc_8336
     neg ax
@@ -7374,7 +7374,7 @@ loc_8343:
     jmp short loc_837A
 loc_8348:
     mov dx, 3
-    call sub_0282
+    call StartSoundEffect
     mov al, byte ptr [di+10h]
     shr al, 1
     shr al, 1
@@ -7397,11 +7397,11 @@ loc_837A:
     mov word ptr word_4F2A, ax
     mov byte ptr byte_6BD2, 0
     mov ax, word ptr word_A331
-    sub word ptr word_4F1E, ax
+    sub word ptr PlayerY, ax
     ret
 loc_838A:
     mov dx, 9
-    call sub_0282
+    call StartSoundEffect
     mov di, word ptr [di+6]
     and byte ptr [di+4], 0FEh
     mov byte ptr byte_4F2D, 2Ch
@@ -7479,7 +7479,7 @@ loc_8442:
     jne loc_844D
     jmp near ptr loc_885F
 loc_844D:
-    cmp word ptr ds:word_4F1E, 20h
+    cmp word ptr ds:PlayerY, 20h
     jle loc_845C
     cmp ax, 0E2h
     jne loc_845C
@@ -7566,13 +7566,13 @@ loc_84F6:
     jae loc_8509
     inc byte ptr byte_27D6
     mov dx, 4
-    call sub_0282
+    call StartSoundEffect
     jmp short loc_853F
 loc_8509:
     ret
 loc_850A:
     mov dx, 8
-    call sub_0282
+    call StartSoundEffect
     cmp byte ptr ds:byte_6BC5, 0
     jne loc_84F3
     mov byte ptr byte_6BC5, 1
@@ -7581,7 +7581,7 @@ loc_850A:
     jmp short loc_853F
 loc_8524:
     mov dx, 8
-    call sub_0282
+    call StartSoundEffect
     sub ax, 27h
     jb loc_84F3
     cmp al, 4
@@ -7601,7 +7601,7 @@ loc_854C:
     jmp near ptr loc_860E
 loc_854F:
     mov dx, 8
-    call sub_0282
+    call StartSoundEffect
     sub ax, 2Dh
     push cx
     push si
@@ -7626,12 +7626,12 @@ loc_857E:
     jmp short loc_853F
 loc_8582:
     mov dx, 4
-    call sub_0282
+    call StartSoundEffect
     mov bx, word ptr [si+0Eh]
     cmp bx, 80h
     jl loc_85B6
     neg word ptr [si+0Eh]
-    call sub_39DF
+    call NextWindRandom
     test al, 1
     mov ax, 20h
     je loc_85A5
@@ -7644,7 +7644,7 @@ loc_85A5:
     jmp short loc_860E
 loc_85B0:
     mov dx, 8
-    call sub_0282
+    call StartSoundEffect
 loc_85B6:
     sub ax, 39h
     mov bx, ax
@@ -7661,7 +7661,7 @@ loc_85D8:
     jmp short loc_860B
 loc_85DA:
     mov dx, 8
-    call sub_0282
+    call StartSoundEffect
     mov bx, word ptr [si+9]
     cmp bx, -1
     je loc_85ED
@@ -7691,7 +7691,7 @@ loc_8618:
     jmp short loc_860E
 loc_8624:
     mov dx, 1
-    call sub_0282
+    call StartSoundEffect
     mov byte ptr byte_4F2D, 2Ch
     mov byte ptr byte_4F2C, 0
     mov byte ptr byte_4F27, 8
@@ -7705,7 +7705,7 @@ loc_8624:
     jmp short loc_860E
 loc_864F:
     mov dx, 1
-    call sub_0282
+    call StartSoundEffect
     mov byte ptr byte_4F2D, 2Ch
     mov byte ptr byte_4F2C, 0
     mov byte ptr byte_4F27, 8
@@ -7721,9 +7721,9 @@ loc_8679:
 
 sub_867E:
     push cx
-    mov ax, word ptr word_4F1C
+    mov ax, word ptr PlayerX
     mov word ptr word_A336, ax
-    mov ax, word ptr word_4F1E
+    mov ax, word ptr PlayerY
     sub ax, 30h
     mov word ptr word_A338, ax
     mov al, 6
@@ -7742,7 +7742,7 @@ loc_86B5:
     ret
 loc_86B7:
     mov dx, 0
-    call sub_0282
+    call StartSoundEffect
     push ax
     push bx
     push cx
@@ -7785,7 +7785,7 @@ loc_8704:
     jmp near ptr loc_860B
 loc_870A:
     mov dx, 0
-    call sub_0282
+    call StartSoundEffect
     push ax
     push bx
     push cx
@@ -7835,7 +7835,7 @@ loc_876C:
     cmp byte ptr ds:byte_6C04, 1
     je loc_878D
     mov dx, 1
-    call sub_0282
+    call StartSoundEffect
     mov byte ptr byte_6C02, 0
     mov byte ptr byte_6C01, 1
     mov byte ptr byte_6C03, 0
@@ -7853,27 +7853,27 @@ loc_87AB:
     jmp near ptr loc_853F
 loc_87AE:
     mov dx, 8
-    call sub_0282
+    call StartSoundEffect
     mov byte ptr byte_7B18, 0
     jmp near ptr loc_853F
 loc_87BC:
     mov dx, 8
-    call sub_0282
+    call StartSoundEffect
     mov byte ptr byte_7B18, 1
     jmp near ptr loc_853F
 loc_87CA:
     mov dx, 8
-    call sub_0282
+    call StartSoundEffect
     mov byte ptr byte_7B18, 2
     jmp near ptr loc_853F
 loc_87D8:
     mov dx, 8
-    call sub_0282
+    call StartSoundEffect
     mov byte ptr byte_7B18, 3
     jmp near ptr loc_853F
 loc_87E6:
     mov dx, 4
-    call sub_0282
+    call StartSoundEffect
     call sub_65D6
     push si
     mov ax, 0E3h
@@ -7882,10 +7882,10 @@ loc_87E6:
     pop si
     jmp near ptr loc_853F
 loc_87FD:
-    mov ax, word ptr word_4F1C
-    mov word ptr word_6BAD, ax
-    mov ax, word ptr word_4F1E
-    mov word ptr word_6BAF, ax
+    mov ax, word ptr PlayerX
+    mov word ptr CheckpointX, ax
+    mov ax, word ptr PlayerY
+    mov word ptr CheckpointY, ax
     mov di, 8F1Dh
     mov cx, 46h
 loc_880F:
@@ -7902,23 +7902,23 @@ loc_8819:
 loc_8829:
     ret
 loc_882A:
-    mov al, byte ptr byte_2D8A
+    mov al, byte ptr CurrentLevel
     cmp al, 2
     jne loc_8838
-    mov byte ptr byte_2D8A, 0Ch
+    mov byte ptr CurrentLevel, 0Ch
     jmp short loc_8841
 loc_8838:
     cmp al, 0Dh
     jne loc_8841
-    mov byte ptr byte_2D8A, 2
+    mov byte ptr CurrentLevel, 2
 loc_8841:
     cmp al, 6
     jne loc_884A
-    mov byte ptr byte_2D8A, 0Eh
+    mov byte ptr CurrentLevel, 0Eh
 loc_884A:
     cmp al, 0Fh
     jne loc_8853
-    mov byte ptr byte_2D8A, 6
+    mov byte ptr CurrentLevel, 6
 loc_8853:
     mov byte ptr byte_6BE6, 1
     ret
@@ -8026,20 +8026,20 @@ loc_8930:
     je loc_898C
     mov ax, word ptr [si]
     sar ax, cl
-    sub ax, word ptr word_2DE4
+    sub ax, word ptr CameraCol
     jb loc_898C
     cmp ax, 16h
     jg loc_898C
     mov ax, word ptr [si+2]
     sar ax, cl
-    sub ax, word ptr word_2DE6
+    sub ax, word ptr CameraRow
     jb loc_898C
     cmp ax, 2Bh
     jg loc_898C
     mov ax, word ptr [si]
     mov word ptr [di], ax
     xor ax, ax
-    test byte ptr byte_6BD5, 1
+    test byte ptr SnowFrameTick, 1
     jne loc_8974
     mov al, byte ptr [si+6]
     cbw
@@ -8201,7 +8201,7 @@ loc_8A8B:
     push dx
     call sub_8BF6
 loc_8A90:
-    call sub_39DF
+    call NextWindRandom
     and ax, 7
     je loc_8A90
     add ax, 6Eh
@@ -8214,7 +8214,7 @@ loc_8A90:
     pop cx
     jmp near ptr loc_8B77
 loc_8AB1:
-    mov ax, word ptr byte_6BD5
+    mov ax, word ptr SnowFrameTick
     push ax
     sub ax, word ptr word_A33C
     jns loc_8ABD
@@ -8235,7 +8235,7 @@ loc_8AC6:
     jne loc_8B19
     mov byte ptr [di+2], 0
     mov cx, 132h
-    mov al, byte ptr byte_2D8A
+    mov al, byte ptr CurrentLevel
     cmp al, 3
     je loc_8AF7
     mov cx, 12Ch
@@ -8251,14 +8251,14 @@ loc_8AF7:
     mov cx, 2
     call sub_8D1B
     mov ax, 136h
-    cmp byte ptr ds:byte_2D8A, 8
+    cmp byte ptr ds:CurrentLevel, 8
     je loc_8B43
     mov ax, 0E5h
     mov cx, 4
     jmp short loc_8B43
 loc_8B19:
     mov cx, 132h
-    mov al, byte ptr byte_2D8A
+    mov al, byte ptr CurrentLevel
     cmp al, 3
     je loc_8B31
     mov cx, 12Ch
@@ -8312,19 +8312,19 @@ loc_8B77:
     mov ax, 0FFFFh
     xchg word ptr [di+3], ax
     mov bl, byte ptr [di+1]
-    mov es, word ptr word_2DDA
+    mov es, word ptr LevelSegment
     mov di, ax
     mov byte ptr es:[di], bl
-    sub al, byte ptr word_2DE4
+    sub al, byte ptr CameraCol
     jb loc_8BE8
     cmp al, 14h
     jae loc_8BE8
-    sub ah, byte ptr word_2DE6
+    sub ah, byte ptr CameraRow
     jb loc_8BE8
     cmp ah, 0Ch
     jae loc_8BE8
     push bx
-    call sub_453B
+    call SetLatchCopyMode
     mov bl, 28h
     mov bh, 1
     mov ax, di
@@ -8350,10 +8350,10 @@ loc_8B77:
     pop di
     add di, ax
     pop ax
-    call sub_3B77
-    mov byte ptr byte_6BBD, 1
-    mov byte ptr byte_2DF4, 1
-    mov word ptr word_2DE0, 55AAh
+    call BlitTileToRing
+    mov byte ptr AnimVisibleFlag, 1
+    mov byte ptr GridDirtyFlag, 1
+    mov word ptr PrevCameraCol, 55AAh
 loc_8BE8:
     stc
     jmp short loc_8BEC
@@ -8386,7 +8386,7 @@ sub_8BF6:
     ret
 
 sub_8C13:
-    call sub_39DF
+    call NextWindRandom
     and ax, 7Fh
     cmp al, 5Fh
     jae sub_8C13
@@ -8411,7 +8411,7 @@ loc_8C27:
     sub byte ptr [di+0Fh], al
     jae loc_8C58
     mov dx, 2
-    call sub_0282
+    call StartSoundEffect
     call sub_8C72
     jmp short loc_8C61
 loc_8C58:
@@ -8594,7 +8594,7 @@ loc_8DA8:
 loc_8DBB:
     and bh, 1Fh
     shl bx, 1
-    mov bl, byte ptr [bx+byte_7191]
+    mov bl, byte ptr [bx+FrameHeights]
     xor bh, bh
     sub ax, bx
     cmp ax, dx
@@ -8617,7 +8617,7 @@ loc_8DF1:
     and bh, 1Fh
     shl bx, 1
     mov bp, bx
-    mov al, byte ptr [bx+byte_752A]
+    mov al, byte ptr [bx+FrameHotX]
     xor ah, ah
     mov dx, word ptr [si]
     sub dx, ax
@@ -8625,13 +8625,13 @@ loc_8DF1:
     and bh, 1Fh
     shl bx, 1
     mov ax, word ptr [di]
-    sub al, byte ptr [bx+byte_752A]
+    sub al, byte ptr [bx+FrameHotX]
     sbb ah, 0
-    mov bl, byte ptr [bx+byte_7190]
+    mov bl, byte ptr [bx+FrameWidths]
     cmp ax, dx
     jl loc_8E24
     xchg dx, ax
-    mov bl, byte ptr ds:[bp+byte_7190]
+    mov bl, byte ptr ds:[bp+FrameWidths]
 loc_8E24:
     xor bh, bh
     cmp byte ptr ds:byte_A312, 0
@@ -8668,9 +8668,9 @@ sub_8E45:
     mov byte ptr byte_287C, al
     mov byte ptr byte_287D, al
     mov cx, 8
-    call sub_0492
-    mov word ptr word_2DDA, ax
-    mov ds, word ptr word_2DDA
+    call PageInResource
+    mov word ptr LevelSegment, ax
+    mov ds, word ptr LevelSegment
     xor si, si
     mov cl, 0A0h
     call sub_919F
@@ -8692,8 +8692,8 @@ loc_8E7B:
     jb loc_8E7B
     call sub_9286
     mov cx, 0Ch
-    call sub_0492
-    mov word ptr word_2DDA, ax
+    call PageInResource
+    mov word ptr LevelSegment, ax
     mov ds, ax
     xor si, si
     call sub_9155
@@ -8703,24 +8703,24 @@ loc_8E7B:
     call sub_9286
     mov byte ptr byte_2879, 1
     mov al, byte ptr ds:byte_083E
-    mov byte ptr byte_2D8A, al
+    mov byte ptr CurrentLevel, al
     mov al, byte ptr byte_083D
     mov byte ptr byte_B198, al
     jmp short loc_8F29
 loc_8EC9:
-    mov byte ptr byte_2D8A, 0
-    call sub_447D
+    mov byte ptr CurrentLevel, 0
+    call SetLevelVideoMode
     mov dx, 991Fh
-    call sub_96D5
-    mov byte ptr byte_2D8A, 0
+    call RunCallbackMapScreen
+    mov byte ptr CurrentLevel, 0
     jmp short loc_8EFD
 loc_8EDE:
-    mov byte ptr byte_2D8A, 0
-    call sub_447D
+    mov byte ptr CurrentLevel, 0
+    call SetLevelVideoMode
     mov dx, 9985h
-    mov byte ptr byte_2D8A, 0FFh
-    call sub_96D5
-    cmp byte ptr ds:byte_2D8A, 0
+    mov byte ptr CurrentLevel, 0FFh
+    call RunCallbackMapScreen
+    cmp byte ptr ds:CurrentLevel, 0
     jge loc_8EFB
     jmp near ptr sub_8E45
 loc_8EFB:
@@ -8733,12 +8733,12 @@ loc_8EFD:
     mov ax, 55AAh
     rep stosw
     dec di
-    mov al, byte ptr byte_2D8A
+    mov al, byte ptr CurrentLevel
     stosb
-    mov al, byte ptr byte_B197
+    mov al, byte ptr ExpertFlag
     mov byte ptr byte_B198, al
     mov byte ptr byte_083D, al
-    cmp byte ptr cs:cvar_0005, 3
+    cmp byte ptr cs:CpuClass, 3
     jb loc_8F29
     mov word ptr word_78C4, 78C6h
 loc_8F29:
@@ -8746,7 +8746,7 @@ loc_8F29:
     ret
 
 sub_8F2D:
-    call sub_453B
+    call SetLatchCopyMode
     mov ax, 0A000h
     mov ds, ax
     mov es, ax
@@ -8759,12 +8759,12 @@ sub_8F2D:
     mov byte ptr byte_6C01, 0
     mov byte ptr byte_6C02, 1
     mov byte ptr byte_6C03, 0
-    mov byte ptr byte_6BC4, 0
+    mov byte ptr FineScroll, 0
     xor ax, ax
-    mov word ptr word_2DE4, ax
-    mov word ptr word_2DE6, ax
-    mov word ptr word_4F1C, ax
-    mov word ptr word_4F1E, 0A9h
+    mov word ptr CameraCol, ax
+    mov word ptr CameraRow, ax
+    mov word ptr PlayerX, ax
+    mov word ptr PlayerY, 0A9h
     mov word ptr word_4F25, ax
     mov word ptr word_4F22, ax
     mov word ptr word_4F28, 7BA7h
@@ -8782,10 +8782,10 @@ loc_8F96:
     mov si, 4F2Eh
     call sub_9047
     call sub_9071
-    call sub_26FA
-    call sub_44FB
+    call DrawSpriteObjects
+    call PresentFrame
     mov ax, 5
-    add word ptr word_4F1C, ax
+    add word ptr PlayerX, ax
     test bp, 3
     jne loc_8FBB
     dec ax
@@ -8804,8 +8804,8 @@ loc_8FBB:
     rep movsw
     mov si, 4F2Eh
     mov cx, 3
-    mov ax, word ptr word_4F1C
-    mov dx, word ptr word_4F1E
+    mov ax, word ptr PlayerX
+    mov dx, word ptr PlayerY
 loc_8FF2:
     add ax, 1Eh
     sub dx, 3
@@ -8835,9 +8835,9 @@ loc_901F:
     add si, 12h
     loop loc_900F
     call sub_9071
-    call sub_26FA
-    call sub_44FB
-    sub word ptr word_4F1C, 7
+    call DrawSpriteObjects
+    call PresentFrame
+    sub word ptr PlayerX, 7
     jns loc_9002
     ret
 
@@ -8871,9 +8871,9 @@ sub_9071:
     push cx
     push si
     push di
-    call sub_453B
+    call SetLatchCopyMode
     mov si, 3F40h
-    mov di, word ptr ds:word_2DD8
+    mov di, word ptr ds:DrawPage
     mov ax, 0A000h
     mov ds, ax
     mov es, ax
@@ -8892,15 +8892,15 @@ sub_9090:
     mov dx, 0A2F8h
     push ds
     push es
-    call sub_107B
+    call LoadSqzFile
     pop es
     pop ds
-    mov word ptr word_2875, ax
-    mov word ptr word_2DDA, ax
+    mov word ptr NextFreeSegment, ax
+    mov word ptr LevelSegment, ax
     mov cl, 0FFh
     call sub_919F
     pop ds
-    mov ax, word ptr word_2875
+    mov ax, word ptr NextFreeSegment
     add ax, 1030h
     mov ds, ax
     mov ax, 0A000h
@@ -8911,7 +8911,7 @@ sub_9090:
     rep movsw
     mov ax, seg DATA
     mov ds, ax
-    mov es, word ptr word_2875
+    mov es, word ptr NextFreeSegment
     xor di, di
     mov dx, 3C7h
     mov al, 0
@@ -8960,7 +8960,7 @@ loc_9110:
     inc bl
     cmp bl, 52h
     jb loc_911F
-    call sub_44CD
+    call WaitVerticalRetrace
     xor bl, bl
 loc_911F:
     loop loc_90EE
@@ -8977,16 +8977,16 @@ sub_912B:
     mov dx, 0A304h
     push ds
     push es
-    call sub_107B
+    call LoadSqzFile
     pop es
     pop ds
-    mov word ptr word_2875, ax
-    mov word ptr word_2DDA, ax
+    mov word ptr NextFreeSegment, ax
+    mov word ptr LevelSegment, ax
     mov cl, 10h
     call sub_919F
     mov cx, 46h
 loc_9149:
-    call sub_44CD
+    call WaitVerticalRetrace
     loop loc_9149
     call sub_9286
     pop ds
@@ -9000,8 +9000,8 @@ cvar_9154 label byte
 
 sub_9155:
     push ds
-    call sub_447D
-    call sub_44CD
+    call SetLevelVideoMode
+    call WaitVerticalRetrace
     mov dx, 3C8h
     mov al, 0
     out dx, al
@@ -9042,7 +9042,7 @@ sub_919F:
     push ds
     mov ax, 13h
     int 10h
-    call sub_44CD
+    call WaitVerticalRetrace
     mov dx, 3C8h
     mov al, 0
     out dx, al
@@ -9054,8 +9054,8 @@ loc_91B7:
     call sub_926E
     mov cx, 7D00h
     rep movsw
-    call sub_44CD
-    call sub_3034
+    call WaitVerticalRetrace
+    call EnableVideoOutput
     mov si, ds
     sub si, 30h
     mov ds, si
@@ -9066,9 +9066,9 @@ loc_91CF:
 loc_91D9:
     test byte ptr cs:cvar_9154, 1Fh
     jne loc_91E4
-    call sub_44CD
+    call WaitVerticalRetrace
 loc_91E4:
-    test word ptr cs:cvar_0003, 1
+    test word ptr cs:OptionBits, 1
     je loc_925E
     mov dx, 3C7h
     mov al, byte ptr cs:cvar_9154
@@ -9149,7 +9149,7 @@ loc_926C:
 sub_926E:
     mov ax, seg DATA
     mov ds, ax
-    mov si, word ptr word_2DDA
+    mov si, word ptr LevelSegment
     add si, 30h
     mov ds, si
     xor si, si
@@ -9159,11 +9159,11 @@ sub_926E:
     ret
 
 sub_9286:
-    test word ptr cs:cvar_0003, 1
+    test word ptr cs:OptionBits, 1
     jne loc_9292
     jmp near ptr loc_932E
 loc_9292:
-    mov al, byte ptr cs:cvar_0001
+    mov al, byte ptr cs:OptionVByte
     cmp al, 5
     je loc_929B
     ret
@@ -9173,7 +9173,7 @@ loc_929B:
 loc_92A3:
     test byte ptr cs:cvar_9154, 1Fh
     jne loc_92AE
-    call sub_44CD
+    call WaitVerticalRetrace
 loc_92AE:
     mov dx, 3C7h
     mov al, byte ptr cs:cvar_9154
@@ -9298,7 +9298,7 @@ loc_939B:
     pop ax
     xor ax, 55A3h
     mul word ptr word_A333
-    mov cl, byte ptr cs:cvar_0005
+    mov cl, byte ptr cs:CpuClass
     rol ax, cl
     pop es
     pop ds

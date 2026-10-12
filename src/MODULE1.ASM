@@ -3,6 +3,117 @@ STK segment para stack 'STACK'
     db 200h dup(0)
 STK ends
 ; module interface (tools/symtab.py)
+public ActivateResourceSlot
+public AnimRemapPtr
+public AnimTickCounter
+public AnimTileFlags
+public AnimVisibleFlag
+public BackFileChar
+public BackdropCursor
+public CameraCol
+public CameraLeftLimit
+public CameraRow
+public CheckpointX
+public CheckpointY
+public ClockYear
+public CodeEntryState
+public CodeInputCount
+public CollectTotalDecor
+public CollectTotalMain
+public ColumnRing
+public CpuClass
+public CurrentLevel
+public CurrentObject
+public DisplayPage
+public DrawPage
+public ExpandDstSegment
+public ExpandSrcSegment
+public ExpertFlag
+public FineScroll
+public FlakeTable
+public FrameCallback
+public FrameDataOffsets
+public FrameDataSegments
+public FrameHeights
+public FrameHotX
+public FrameHotY
+public FrameWidths
+public GridDirtyFlag
+public HScrollDir
+public HaltWithMessage
+public IrisAngleIndex
+public IrisCenterX
+public IrisCenterY
+public IrisRadius
+public IrisSpeed
+public IrisSpeedCounter
+public KeyDownTable
+public LastScanCode
+public LevelFileChar
+public LevelFlags
+public LevelMapRowsTable
+public LevelPaletteTable
+public LevelPropHeader
+public LevelScriptTable
+public LevelSegment
+public LevelStartX
+public LevelStartY
+public LoadSqzFile
+public MapRows
+public MapScrollX
+public MapScrollY
+public MixedTileCount
+public NextFreeSegment
+public OptionBits
+public OptionVByte
+public PageInResource
+public PictureSegment
+public PlayerX
+public PlayerY
+public PollInputState
+public PrevCameraCol
+public PrevCameraRow
+public PrevMapScrollX
+public PrevMapScrollY
+public PrevScreenStartOffset
+public PrintAsciiz
+public PrintDecimalWord
+public RandomSeed
+public RenderSlots
+public RingTileOffset
+public RowRing
+public ScreenExitRequested
+public ScreenFirstFrame
+public ScreenRowBytes
+public ScreenStartOffset
+public ScriptFrameCounter
+public ScriptPointer
+public ScrollAnimCounter
+public SetLevelPalette
+public SetStartupPalette
+public ShakeRows
+public SineTable
+public SnowFrameTick
+public SnowWind
+public SpriteBankA
+public SpriteBankB
+public SpriteDataSegment
+public SpriteRelY
+public SpriteSheetSegment
+public StartSoundEffect
+public TextAdvance
+public TextByteColumn
+public TextRowOffset
+public TileClassTable
+public VScrollActive
+public VisibleTileFlags
+public WaitForButtonPressRelease
+public WaitSoundTicks
+public WavePhase
+public WindRandA
+public WindRandB
+public WindRandC
+public WindRandWord
 public byte_0666
 public byte_083D
 public byte_083E
@@ -14,7 +125,6 @@ public byte_27EA
 public byte_27EB
 public byte_27EC
 public byte_27ED
-public byte_27F4
 public byte_27F6
 public byte_27F7
 public byte_2805
@@ -26,25 +136,11 @@ public byte_282C
 public byte_282D
 public byte_282F
 public byte_2830
-public byte_2874
 public byte_2879
 public byte_287C
 public byte_287D
-public byte_2CEC
-public byte_2CED
-public byte_2CEE
-public byte_2CF5
 public byte_2CF6
-public byte_2D30
-public byte_2D8A
-public byte_2D90
 public byte_2D96
-public byte_2DAA
-public byte_2DF2
-public byte_2DF3
-public byte_2DF4
-public byte_2DF5
-public byte_4DF8
 public byte_4F1B
 public byte_4F21
 public byte_4F23
@@ -67,11 +163,8 @@ public byte_678A
 public byte_6888
 public byte_6889
 public byte_688A
-public byte_6988
-public byte_6BBD
 public byte_6BC0
 public byte_6BC1
-public byte_6BC4
 public byte_6BC5
 public byte_6BC6
 public byte_6BC7
@@ -85,8 +178,6 @@ public byte_6BD0
 public byte_6BD1
 public byte_6BD2
 public byte_6BD3
-public byte_6BD4
-public byte_6BD5
 public byte_6BD9
 public byte_6BDB
 public byte_6BDC
@@ -98,8 +189,6 @@ public byte_6BE6
 public byte_6BE7
 public byte_6BE8
 public byte_6BEA
-public byte_6BED
-public byte_6BEE
 public byte_6BF3
 public byte_6BFE
 public byte_6BFF
@@ -115,12 +204,7 @@ public byte_6CA5
 public byte_6CA6
 public byte_6CA7
 public byte_6CA8
-public byte_6F90
 public byte_7090
-public byte_7190
-public byte_7191
-public byte_752A
-public byte_752B
 public byte_78C6
 public byte_7B06
 public byte_7B07
@@ -130,7 +214,6 @@ public byte_7B19
 public byte_7B1A
 public byte_7B7F
 public byte_7F5E
-public byte_8166
 public byte_91FB
 public byte_91FE
 public byte_A312
@@ -148,88 +231,27 @@ public byte_A3F9
 public byte_A3FA
 public byte_A515
 public byte_A516
-public byte_B197
 public byte_B198
-public byte_B1A5
-public byte_B1AA
-public byte_B1AB
-public byte_B1B2
-public byte_B1BB
 public cvar_0000
-public cvar_0001
-public cvar_0003
-public cvar_0005
 public dtbl_79EC
 public dtbl_7D2F
 public dtbl_7D95
-public loc_104F
-public sub_0282
-public sub_02CC
-public sub_0492
-public sub_0B92
-public sub_0BA0
-public sub_0BBE
-public sub_0BEF
-public sub_0C31
-public sub_0DC1
-public sub_107B
-public sub_1C65
-public word_0037
 public word_0039
 public word_003B
 public word_003D
 public word_0100
 public word_1F18
-public word_2383
-public word_2385
 public word_27F0
 public word_27F2
-public word_2875
 public word_287A
-public word_28AE
-public word_28C1
-public word_2A74
 public word_2A76
-public word_2A78
 public word_2A7A
-public word_2CEF
-public word_2CF1
-public word_2CF3
-public word_2D00
-public word_2D40
-public word_2DB0
-public word_2DB4
-public word_2DBA
-public word_2DBC
-public word_2DBE
-public word_2DC0
-public word_2DC2
 public word_2DC4
-public word_2DC6
-public word_2DC8
 public word_2DCA
 public word_2DCC
-public word_2DCE
-public word_2DD0
 public word_2DD2
-public word_2DD6
-public word_2DD8
-public word_2DDA
-public word_2DDC
-public word_2DE0
-public word_2DE2
-public word_2DE4
-public word_2DE6
-public word_2DE8
-public word_2DEA
-public word_2DEC
-public word_2DEE
-public word_2DF6
-public word_4F0A
 public word_4F0C
 public word_4F0E
-public word_4F1C
-public word_4F1E
 public word_4F20
 public word_4F22
 public word_4F25
@@ -264,25 +286,18 @@ public word_5682
 public word_5690
 public word_5692
 public word_5694
-public word_5F48
 public word_62DA
-public word_62E8
 public word_667A
 public word_6989
 public word_6A88
 public word_6B14
 public word_6BAB
-public word_6BAD
-public word_6BAF
 public word_6BB1
 public word_6BBE
-public word_6BC2
 public word_6BCA
 public word_6BE2
 public word_6BEB
 public word_6BF1
-public word_6BF6
-public word_6BF8
 public word_6BFA
 public word_6BFC
 public word_6C06
@@ -294,7 +309,6 @@ public word_6C10
 public word_6C9E
 public word_6CA0
 public word_6CA2
-public word_6CA9
 public word_7522
 public word_78C4
 public word_79CE
@@ -303,12 +317,6 @@ public word_7B1B
 public word_7CDF
 public word_7D9B
 public word_7DA9
-public word_815E
-public word_8160
-public word_8162
-public word_8164
-public word_8C89
-public word_8C8B
 public word_91F7
 public word_91F9
 public word_91FC
@@ -357,33 +365,25 @@ public word_A425
 public word_A4F7
 public word_A517
 public word_A519
-public word_B199
-public word_B19B
-public word_B19D
-public word_B19F
-public word_B1A1
-public word_B1A3
-public word_B1A8
-public word_B1AE
 ; end module interface
 CODE segment para public 'CODE'
 assume cs:CODE, ds:DATA, es:nothing, ss:nothing
 ; module interface (tools/symtab.py)
-extrn sub_23D4:near
-extrn sub_240A:near
-extrn sub_26FA:near
-extrn sub_2DFA:near
-extrn sub_35A1:near
-extrn sub_3668:near
-extrn sub_3721:near
-extrn sub_3922:near
-extrn sub_3A27:near
-extrn sub_3AF2:near
-extrn sub_3ED6:near
-extrn sub_43D2:near
-extrn sub_447D:near
-extrn sub_44FB:near
-extrn sub_452B:near
+extrn AnimateTiles:near
+extrn CheckVgaAdapter:near
+extrn CopyRingWindowToPage:near
+extrn DrawForegroundOverSprites:near
+extrn DrawSpriteObjects:near
+extrn EnterLevelView:near
+extrn LoadLevel:near
+extrn LoadSpriteSheet:near
+extrn PresentFrame:near
+extrn ReadClockYear:near
+extrn RedrawOverlayTiles:near
+extrn SetCpuWriteMode:near
+extrn SetLevelVideoMode:near
+extrn ShowLateYearCredits:near
+extrn ShowWorldMapScrollIn:near
 extrn sub_454E:near
 extrn sub_45AF:near
 extrn sub_4907:near
@@ -433,28 +433,54 @@ extrn sub_9090:near
 extrn sub_912B:near
 extrn sub_919F:near
 extrn sub_9286:near
-extrn sub_9520:near
+extrn UpdateWindAndFlakes:near
 ; end module interface
+; Unused: no reader or writer in src/ (initial bytes at cs:0000: 03h FFh FFh 1Fh 00h 00h 00h 00h).
+; The old DATA comment saying the entry writes this byte is wrong: it writes cs:1, 2, 3, 5 and 6.
 cvar_0000 label byte
 ; DATA: command-line option and CPU state bytes/words (written by entry 0008..007C, CPU probe 1C0C, INT 12h at 00A9)
     db 03h
-cvar_0001 label byte
+; OptionVByte: FFh by default, 1 when /V is given (ProgramEntry). Read only by
+; SetDacBlock0To15IfFlag, which tests for 5 (never stored).
+OptionVByte label byte
 ; UNKNOWN: not yet classified as code or data
     db 0FFh
-cvar_0002 label byte
+; SoundEnabledFlag: FFh by default, 0 when /M is given (ProgramEntry). InitSoundDevices returns
+; at once when it is 0.
+SoundEnabledFlag label byte
 ; UNKNOWN: not yet classified as code or data
     db 0FFh
-cvar_0003 label word
+; OptionBits (word, default 001Fh). Command-line effects (cleared = bit off unless stated):
+;   01h /F: no reader in R1 (no effect observed).   02h /A: FRONT.SQZ not loaded at start-up.
+;   04h /E: EMS not used.   08h /X: XMS not used.   10h /L: no resource cache (see
+;   InitResourceMemory).   20h /D: resources loaded into the heap; never set by any path, so /D
+;   has no effect.   40h /B: low-memory mode, set by /B and also by a memory check near cs:1F23
+;   (outside R1); makes ActivateResourceSlot and sample placement skip.
+OptionBits label word
 ; UNKNOWN: not yet classified as code or data
     db 1Fh, 00h
-cvar_0005 label byte
+; CpuClass: 0 = 8086/8088, 2 = 80186/80286, 3 = 80386 or later (ProbeCpuClass). InitSoundDevices
+; needs at least 2 for the OPL path; sub_1CEB uses the longer delays at 3.
+CpuClass label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
-cvar_0006 label word
+; ConventionalTopSeg (word): INT 12h KB * 64, the first segment above conventional memory. Set by
+; ProgramEntry; used as the heap limit by the loaders and the memory checks.
+ConventionalTopSeg label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
 
-sub_0008:
+; Program entry (far entry 0020:0008). Parses the command tail (PSP 80h) into OptionVByte,
+; SoundEnabledFlag and OptionBits, then runs the start-up sequence and MainFrameLoop.
+; Start-up order (cs:0008..0126): option parse; NextFreeSegment = DATA + 0B1Ch; INT 24h =
+;   CriticalErrorHandler (ds:90h/92h); SwapInt08Int09Vectors (install); INT 12h ->
+;   ConventionalTopSeg; sub_23D4; ProbeCpuClass; CalibrateJoystick; KEYB.SQZ (ds:000Ch) loaded,
+;   its first 800h bytes copied to DATA:003Fh; PIT ch0 = 16384 (~72.8 Hz, cs:00E5); ALLFONTS.SQZ
+;   (ds:0015h) loaded and its segment stored at word_003D (see note there); sub_240A;
+;   InitSoundDevices; sub_912B; ActivateResourceSlot(3); sub_9090; InitResourceMemory;
+;   FRONT.SQZ (ds:0022h) -> word_003B unless OptionBits 02h (/A); sub_2DFA; then LevelRestart.
+; Never returns to DOS: the only exit is the ESC quit in KeyboardIsr.
+ProgramEntry:
     cli
     cld
     mov dx, 0FFFFh
@@ -474,39 +500,39 @@ loc_001F:
     and al, 0DFh
     cmp al, 46h
     jne loc_002C
-    and word ptr cs:cvar_0003, 0FFFEh
+    and word ptr cs:OptionBits, 0FFFEh
 loc_002C:
     cmp al, 4Dh
     jne loc_0036
-    mov byte ptr cs:cvar_0002, 0
+    mov byte ptr cs:SoundEnabledFlag, 0
 loc_0036:
     cmp al, 41h
     jne loc_0040
-    and word ptr cs:cvar_0003, 0FFFDh
+    and word ptr cs:OptionBits, 0FFFDh
 loc_0040:
     cmp al, 45h
     jne loc_004A
-    and word ptr cs:cvar_0003, 0FFFBh
+    and word ptr cs:OptionBits, 0FFFBh
 loc_004A:
     cmp al, 58h
     jne loc_0054
-    and word ptr cs:cvar_0003, 0FFF7h
+    and word ptr cs:OptionBits, 0FFF7h
 loc_0054:
     cmp al, 4Ch
     jne loc_005E
-    and word ptr cs:cvar_0003, 0FFEFh
+    and word ptr cs:OptionBits, 0FFEFh
 loc_005E:
     cmp al, 44h
     jne loc_0068
-    and word ptr cs:cvar_0003, 0FFDFh
+    and word ptr cs:OptionBits, 0FFDFh
 loc_0068:
     cmp al, 42h
     jne loc_0072
-    or word ptr cs:cvar_0003, 40h
+    or word ptr cs:OptionBits, 40h
 loc_0072:
     cmp al, 56h
     jne loc_007E
-    mov byte ptr cs:cvar_0001, 1
+    mov byte ptr cs:OptionVByte, 1
     loop loc_0016
 loc_007E:
     mov ax, seg DATA
@@ -515,33 +541,33 @@ loc_007E:
     mov cl, 4
     shr ax, cl
     add ax, seg DATA+1
-    mov word ptr word_2875, ax
+    mov word ptr NextFreeSegment, ax
     push ds
     xor ax, ax
     mov ds, ax
     mov word ptr ds:[90h], 0FC0h
     mov word ptr ds:[92h], cs
     pop ds
-    call sub_177F
+    call SwapInt08Int09Vectors
     int 12h
     mov cl, 6
     shl ax, cl
-    mov word ptr cs:cvar_0006, ax
+    mov word ptr cs:ConventionalTopSeg, ax
     sti
-    call sub_23D4
+    call ReadClockYear
     mov ax, seg DATA
     mov ds, ax
-    call sub_1C0C
-    call sub_0CBC
-    call sub_43D2
-    call sub_447D
+    call ProbeCpuClass
+    call CalibrateJoystick
+    call CheckVgaAdapter
+    call SetLevelVideoMode
     mov dx, 0Ch
     push ds
     push es
-    call sub_107B
+    call LoadSqzFile
     pop es
     pop ds
-    mov word ptr word_2875, ax
+    mov word ptr NextFreeSegment, ax
     mov word ptr word_003D, ax
     xor si, si
     mov ds, word ptr word_003D
@@ -557,107 +583,117 @@ loc_007E:
     mov dx, 15h
     push ds
     push es
-    call sub_107B
+    call LoadSqzFile
     pop es
     pop ds
     mov word ptr ds:[3Dh], ax
-    call sub_240A
-    call sub_07C9
+    call ShowLateYearCredits
+    call InitSoundDevices
     call sub_912B
     mov ax, 3
-    call sub_02CC
+    call ActivateResourceSlot
     call sub_9090
-    call sub_08DC
-    test word ptr cs:cvar_0003, 2
+    call InitResourceMemory
+    test word ptr cs:OptionBits, 2
     je loc_0126
     mov dx, 22h
     push ds
     push es
-    call sub_107B
+    call LoadSqzFile
     pop es
     pop ds
     mov word ptr word_003B, ax
 loc_0126:
-    call sub_2DFA
-    mov ax, word ptr word_2875
+    call LoadSpriteSheet
+    mov ax, word ptr NextFreeSegment
     mov word ptr word_0039, ax
-loc_012F:
+; Level (re)start, entered from ProgramEntry and from MainFrameLoop when sub_4C69 returns CF = 1.
+; Resets NextFreeSegment from word_0039 and calls the level-change routines when AX is nonzero.
+; For level ids 8..9 with byte_B198 = 0 it loads CASTLE.SQZ (ds:002Ch) and jumps back here with
+; AX = 1. Then activates slot byte_2D20[level] (ActivateResourceSlot), sets the level palette
+; (SetLevelPalette), runs the level set-up calls and falls into MainFrameLoop.
+LevelRestart:
     mov dx, word ptr word_0039
-    mov word ptr word_2875, dx
+    mov word ptr NextFreeSegment, dx
     or ax, ax
     je loc_0163
     call sub_9286
-    call sub_447D
+    call SetLevelVideoMode
     mov byte ptr byte_27D8, 2
     mov byte ptr byte_6CA7, 0
     mov byte ptr byte_7B19, 14h
     mov byte ptr byte_7B18, 0
     mov byte ptr byte_6CA8, 0
     mov ax, 3
-    call sub_02CC
+    call ActivateResourceSlot
     call sub_8E45
 loc_0163:
-    cmp byte ptr ds:byte_2D8A, 8
+    cmp byte ptr ds:CurrentLevel, 8
     jb loc_019E
-    cmp byte ptr ds:byte_2D8A, 0Ah
+    cmp byte ptr ds:CurrentLevel, 0Ah
     jae loc_019E
     cmp byte ptr ds:byte_B198, 0
     jne loc_019E
     mov dx, 2Ch
     push ds
     push es
-    call sub_107B
+    call LoadSqzFile
     pop es
     pop ds
-    mov word ptr word_2875, ax
-    mov word ptr word_2DDA, ax
+    mov word ptr NextFreeSegment, ax
+    mov word ptr LevelSegment, ax
     xor si, si
     mov ds, ax
     mov cl, 0FFh
     call sub_919F
     mov ax, seg DATA
     mov ds, ax
-    call sub_0BBE
+    call WaitForButtonPressRelease
     mov ax, 1
-    jmp short loc_012F
+    jmp short LevelRestart
 loc_019E:
-    cmp byte ptr ds:byte_2D8A, 0Ah
+    cmp byte ptr ds:CurrentLevel, 0Ah
     jae loc_01AB
-    call sub_447D
-    call sub_9520
+    call SetLevelVideoMode
+    call ShowWorldMapScrollIn
 loc_01AB:
-    mov bl, byte ptr byte_2D8A
+    mov bl, byte ptr CurrentLevel
     xor bh, bh
     mov al, byte ptr [bx+byte_2D20]
     xor ah, ah
-    call sub_02CC
-    cmp byte ptr ds:byte_2D8A, 0Ah
+    call ActivateResourceSlot
+    cmp byte ptr ds:CurrentLevel, 0Ah
     jae loc_01C4
-    call sub_447D
+    call SetLevelVideoMode
 loc_01C4:
     mov ax, 0FFFFh
     mov di, 4F0Ah
     mov cx, 40Bh
     rep stosw
-    mov al, byte ptr byte_2D8A
-    call sub_3ED6
-    call sub_0BA0
+    mov al, byte ptr CurrentLevel
+    call LoadLevel
+    call SetLevelPalette
     call sub_5237
     mov ax, seg DATA
     mov ds, ax
     call sub_55FC
-    call sub_3AF2
+    call EnterLevelView
     call sub_454E
-    call sub_3A27
-    call sub_44FB
+    call CopyRingWindowToPage
+    call PresentFrame
     mov word ptr word_A341, 0
     mov byte ptr byte_6BCC, 0
-    mov byte ptr byte_2CEC, 5
-    mov byte ptr byte_2CED, 22h
-    mov byte ptr byte_2CEE, 86h
-    mov word ptr word_2CEF, 0E58Dh
-    mov byte ptr byte_2874, 0
-loc_0214:
+    mov byte ptr WindRandA, 5
+    mov byte ptr WindRandB, 22h
+    mov byte ptr WindRandC, 86h
+    mov word ptr WindRandWord, 0E58Dh
+    mov byte ptr LastScanCode, 0
+; Per-frame loop of the game (after ProgramEntry's start-up). STI, then in order:
+;   sub_581E sub_88D7 sub_6822 sub_6210 sub_60FE sub_60DF sub_4907 sub_5850 sub_8295 sub_8922
+;   sub_52FE sub_53F6 sub_5643 sub_3668 sub_35A1 sub_3A27 sub_4B8E sub_26FA sub_3721 sub_54AB
+;   sub_3922 sub_4C69. If CF = 0 after sub_4C69: sub_45AF sub_44FB sub_6772 sub_67D7 sub_4C30,
+;   then back to this label. If CF = 1: jump to LevelRestart (level change or restart).
+MainFrameLoop:
     mov ax, seg DATA
     mov ds, ax
     sti
@@ -674,44 +710,59 @@ loc_0214:
     call sub_52FE
     call sub_53F6
     call sub_5643
-    call sub_3668
-    call sub_35A1
-    call sub_3A27
+    call AnimateTiles
+    call RedrawOverlayTiles
+    call CopyRingWindowToPage
     call sub_4B8E
-    call sub_26FA
-    call sub_3721
+    call DrawSpriteObjects
+    call DrawForegroundOverSprites
     call sub_54AB
-    call sub_3922
+    call UpdateWindAndFlakes
     call sub_4C69
     jae loc_0261
-    jmp near ptr loc_012F
+    jmp near ptr LevelRestart
 loc_0261:
     call sub_45AF
-    call sub_44FB
+    call PresentFrame
     call sub_6772
     call sub_67D7
     call sub_4C30
-    jmp short loc_0214
-cvar_0272 label word
+    jmp short MainFrameLoop
+; SbBasePort (word): the detected Sound Blaster base (e.g. 220h) written by sub_1D6F; the initial
+; words 0000h, 000Ah, 000Ch, 000Eh are offsets until detection replaces them.
+SbBasePort label word
 ; DATA: detected SB port words (written 1DA2..1DC1)
     db 00h, 00h
-cvar_0274 label word
+; SbReadPort (word): SB base + 0Ah, DSP read data port (sub_1D6F reads AAh here).
+SbReadPort label word
 ; UNKNOWN: not yet classified as code or data
     db 0Ah, 00h
-cvar_0276 label word
+; SbWritePort (word): SB base + 0Ch, DSP write port; busy while bit 7 of a read is set.
+SbWritePort label word
 ; UNKNOWN: not yet classified as code or data
     db 0Ch, 00h
-cvar_0278 label word
+; SbAckPort (word): SB base + 0Eh, DSP read-buffer status port (not used in R1).
+SbAckPort label word
 ; UNKNOWN: not yet classified as code or data
     db 0Eh, 00h
-cvar_027A label dword
-    dd sub_075C
-    dd sub_1823
+; Int08SwapSlot: four words at cs:027Ah, the swap slot for IVT 08h (offset, segment), followed by
+; the IVT 09h slot at cs:027Eh (no label in the source; a `cvar_027E label dword` would name it).
+; Initially holds SpeakerTimerIsr and KeyboardIsr (both 0020:xxxx); SwapInt08Int09Vectors
+; exchanges them with the IVT and so holds the BIOS vectors while the game's handlers are
+; installed. The busy path of the timer body (loc_17C0) chains through this slot.
+Int08SwapSlot label dword
+    dd SpeakerTimerIsr
+    dd KeyboardIsr
 
-sub_0282:
-    cmp byte ptr cs:cvar_1D6C, 1
+; Starts sound effect DL (0..10). Sample mode (cvar_1D6C or cvar_1D6D equal to 1): copies the
+; start offset from DATA:1009h+4*DL into SfxPlayPos and the length from DATA:100Bh+4*DL into
+; SfxBytesLeft (offsets inside SfxBankSegment). Otherwise (speaker mode) points
+; SpeakerSequencePtr at the 10-byte record DATA:1037h+10*DL.
+; In: DL = effect index (no range check). Out: none. Preserves all registers.
+StartSoundEffect:
+    cmp byte ptr cs:AdLibEnabled, 1
     je loc_02A9
-    cmp byte ptr cs:cvar_1D6D, 1
+    cmp byte ptr cs:SbDetected, 1
     je loc_02A9
     push ax
     push bx
@@ -721,7 +772,7 @@ sub_0282:
     mov al, 0Ah
     mul dl
     add ax, 1037h
-    mov word ptr word_1035, ax
+    mov word ptr SpeakerSequencePtr, ax
     pop ds
     pop bx
     pop ax
@@ -736,9 +787,9 @@ loc_02A9:
     mov ax, seg DATA
     mov ds, ax
     mov ax, word ptr [bx+word_1009]
-    mov word ptr word_1004, ax
+    mov word ptr SfxPlayPos, ax
     mov ax, word ptr [bx+word_100B]
-    mov word ptr word_1006, ax
+    mov word ptr SfxBytesLeft, ax
     pop ds
     pop bx
     pop ax
@@ -747,7 +798,18 @@ loc_02C8:
 loc_02C9:
     jmp near ptr loc_0482
 
-sub_02CC:
+; Makes resource slot AX the active slot. Returns at once when cvar_1D6D is 0 (no Sound
+; Blaster), when the slot already has bit 01h, when byte_2879 is 1, or when OptionBits 40h is
+; set (that path only performs the sound update at the end). Otherwise: sets bit 01h of
+; ResourceFlags[AX], clears it on every other slot that lacks bit 08h (pinned), clears cvar_1D6E
+; bit 1, calls PageInResource(AX), then rebuilds the bank descriptor tables (DATA:0BD2h..0BDCh,
+; DATA:0DC2h..0DC7h) from the resource header in ModuleSegment and rescales the bank bytes in
+; place with (b + 80h) >> 2. Ends with the sound update (sub_214E if cvar_1D6E bit 0) and sets
+; cvar_1D6E bit 1.
+; In: AX = slot (0..17). Out: none. Preserves all registers.
+; Notes: adds 80h paragraphs (2 KB) to NextFreeSegment on entry and removes them on every exit.
+;   The purpose of the bank rebuild is not proven by R1 (palette-like use suspected).
+ActivateResourceSlot:
     push ax
     push bx
     push cx
@@ -757,37 +819,37 @@ sub_02CC:
     push ds
     push es
     push bp
-    add word ptr word_2875, 80h
-    cmp byte ptr cs:cvar_1D6D, 0
+    add word ptr NextFreeSegment, 80h
+    cmp byte ptr cs:SbDetected, 0
     je loc_02C9
     mov si, ax
-    mov al, byte ptr [si+byte_0ABC]
+    mov al, byte ptr [si+ResourceFlags]
     test al, 1
     jne loc_02C9
     cmp byte ptr ds:byte_2879, 1
     je loc_02C9
-    test word ptr cs:cvar_0003, 40h
+    test word ptr cs:OptionBits, 40h
     je loc_0300
     jmp near ptr loc_046F
 loc_0300:
-    or byte ptr [si+byte_0ABC], 1
+    or byte ptr [si+ResourceFlags], 1
     xor di, di
     mov cx, 12h
 loc_030A:
     cmp di, si
     je loc_031A
-    test byte ptr [di+byte_0ABC], 8
+    test byte ptr [di+ResourceFlags], 8
     jne loc_031A
-    and byte ptr [di+byte_0ABC], 0FEh
+    and byte ptr [di+ResourceFlags], 0FEh
 loc_031A:
     inc di
     loop loc_030A
     mov cx, si
-    and byte ptr cs:cvar_1D6E, 0FDh
-    call sub_0492
+    and byte ptr cs:SoundState, 0FDh
+    call PageInResource
     mov ax, seg DATA
     mov es, ax
-    mov ds, word ptr es:word_0B5E
+    mov ds, word ptr es:ModuleSegment
     mov si, 14h
     xor di, di
     mov dx, 0Fh
@@ -797,13 +859,13 @@ loc_031A:
     jne loc_034C
     mov dl, 1Fh
 loc_034C:
-    mov byte ptr es:byte_0DC4, dl
+    mov byte ptr es:InstrumentCount, dl
 loc_0351:
     add si, 16h
     lodsw
     xchg al, ah
     shl ax, 1
-    mov word ptr es:[di+word_0BD2], ax
+    mov word ptr es:[di+InstrumentTable], ax
     lodsw
     xchg al, ah
     mov word ptr es:[di+word_0BD4], ax
@@ -819,19 +881,19 @@ loc_0351:
     dec dx
     jne loc_0351
     lodsb
-    mov byte ptr es:byte_0DC2, al
+    mov byte ptr es:SongLength, al
     inc si
     mov di, 0DC7h
     mov cx, 40h
     rep movsw
     mov ax, seg DATA
     mov ds, ax
-    mov es, word ptr word_0B5E
-    cmp byte ptr ds:byte_0DC4, 0Fh
+    mov es, word ptr ModuleSegment
+    cmp byte ptr ds:InstrumentCount, 0Fh
     je loc_03A1
     add si, 4
 loc_03A1:
-    mov cl, byte ptr byte_0DC2
+    mov cl, byte ptr SongLength
     xor ch, ch
     mov di, 0DC7h
     xor ah, ah
@@ -844,14 +906,14 @@ loc_03B4:
     inc di
     loop loc_03AC
     inc ah
-    mov byte ptr byte_0DC3, ah
-    mov word ptr word_0DC5, si
+    mov byte ptr PatternCount, ah
+    mov word ptr PatternDataOffset, si
     xor al, al
     shr ax, 1
     shr ax, 1
-    add ax, word ptr word_0B5E
+    add ax, word ptr ModuleSegment
     xor bx, bx
-    mov cl, byte ptr byte_0DC4
+    mov cl, byte ptr InstrumentCount
     xor ch, ch
 loc_03D3:
     mov dx, si
@@ -863,7 +925,7 @@ loc_03D3:
     shr dx, 1
     add ax, dx
     mov word ptr [bx+word_0BDC], ax
-    mov bp, word ptr [bx+word_0BD2]
+    mov bp, word ptr [bx+InstrumentTable]
     or bp, bp
     je loc_0407
     mov di, si
@@ -879,15 +941,15 @@ loc_03F8:
     jne loc_03F8
     mov ax, dx
 loc_0407:
-    add si, word ptr [bx+word_0BD2]
+    add si, word ptr [bx+InstrumentTable]
     add bx, 10h
     loop loc_03D3
     mov ax, seg DATA
     mov ds, ax
     mov es, ax
-    mov si, word ptr word_0DC5
-    mov dh, byte ptr byte_0DC3
-    mov ds, word ptr word_0B5E
+    mov si, word ptr PatternDataOffset
+    mov dh, byte ptr PatternCount
+    mov ds, word ptr ModuleSegment
     xor dl, dl
 loc_0425:
     lodsw
@@ -908,10 +970,10 @@ loc_043F:
     jne loc_0425
     mov ax, es
     mov ds, ax
-    mov word ptr word_0B86, 0
-    mov word ptr word_0B88, 0
-    mov byte ptr byte_0B85, 1
-    mov byte ptr byte_0B84, 6
+    mov word ptr SongOrderPos, 0
+    mov word ptr SongRow, 0
+    mov byte ptr SongTickCount, 1
+    mov byte ptr SongSpeed, 6
     mov di, 0B8Ah
     mov cx, 4
     mov ax, 0FFFFh
@@ -921,14 +983,14 @@ loc_043F:
     rep stosw
 loc_046F:
     cli
-    test byte ptr cs:cvar_1D6E, 1
+    test byte ptr cs:SoundState, 1
     je loc_047B
-    call sub_214E
+    call StartSbBlock
 loc_047B:
-    or byte ptr cs:cvar_1D6E, 2
+    or byte ptr cs:SoundState, 2
     sti
 loc_0482:
-    sub word ptr word_2875, 80h
+    sub word ptr NextFreeSegment, 80h
     pop bp
     pop es
     pop ds
@@ -940,9 +1002,18 @@ loc_0482:
     pop ax
     ret
 
-sub_0492:
+; Makes resource slot CX resident. Location code = ResourceFlags bits 02h and 04h:
+;   0 (no copy): name from ResourceNameAt, SQZ load by sub_107B into the heap, then unless pinned
+;     (08h) copy 105Bh paragraphs into ModuleSegment and restore NextFreeSegment;
+;   1 (02h): copy from the conventional segment in ResourceAddressTable[CX] (sub_14D8);
+;   2 (04h): map EMS logical pages from ResourceAddressTable[CX] with INT 67h AH=44h (handle
+;     EmsHandle, physical pages 0 and 1), then copy (sub_14D8);
+;   3 (06h): XMS move with XmsDriverEntry, function 0Bh, from XMS offset ResourceAddressTable[CX].
+; In: CX = slot. Out: the data is at the location above; AX is not defined on return.
+; Notes: an EMS or XMS failure goes to the fatal XMS message in CriticalErrorHandler (loc_0FEC).
+PageInResource:
     mov si, cx
-    mov al, byte ptr [si+byte_0ABC]
+    mov al, byte ptr [si+ResourceFlags]
     mov ah, al
     and ah, 8
     mov byte ptr byte_0B16, ah
@@ -956,19 +1027,19 @@ loc_04AA:
     mov bx, si
     shl bx, 1
     shl bx, 1
-    mov ax, word ptr word_2875
+    mov ax, word ptr NextFreeSegment
     cmp byte ptr ds:byte_0B16, 0
     jne loc_04C1
-    mov ax, word ptr word_0B5E
+    mov ax, word ptr ModuleSegment
 loc_04C1:
     mov es, ax
-    mov ds, word ptr [bx+word_0ACE]
+    mov ds, word ptr [bx+ResourceAddressTable]
     mov si, 11h
     xor di, di
-    mov byte ptr cs:cvar_140F, 1
-    call sub_14D8
-    mov byte ptr cs:cvar_140F, 0
-    mov ax, word ptr word_2875
+    mov byte ptr cs:LzssSourceMode, 1
+    call DecodeLzssStream
+    mov byte ptr cs:LzssSourceMode, 0
+    mov ax, word ptr NextFreeSegment
     jmp near ptr loc_06D4
 loc_04E1:
     cmp al, 2
@@ -978,7 +1049,7 @@ loc_04E1:
     mov bx, si
     shl bx, 1
     shl bx, 1
-    mov bx, word ptr [bx+word_0ACE]
+    mov bx, word ptr [bx+ResourceAddressTable]
     mov si, bx
     and si, 0Fh
     mov cl, 0Ah
@@ -988,31 +1059,31 @@ loc_04E1:
     shr bx, 1
     shr bx, 1
     shr bx, 1
-    mov dx, word ptr word_0B55
+    mov dx, word ptr EmsHandle
     int 67h
     inc bx
     mov ax, 4401h
     int 67h
-    mov word ptr cs:cvar_140D, bx
-    mov ax, word ptr word_2875
+    mov word ptr cs:EmsNextLogicalPage, bx
+    mov ax, word ptr NextFreeSegment
     cmp byte ptr ds:byte_0B16, 0
     jne loc_0525
-    mov ax, word ptr word_0B5E
+    mov ax, word ptr ModuleSegment
 loc_0525:
     mov es, ax
     xor di, di
-    mov ds, word ptr word_0B51
-    mov byte ptr cs:cvar_140F, 2
-    call sub_14D8
-    mov byte ptr cs:cvar_140F, 0
-    mov ax, word ptr word_2875
+    mov ds, word ptr EmsFrameSegment
+    mov byte ptr cs:LzssSourceMode, 2
+    call DecodeLzssStream
+    mov byte ptr cs:LzssSourceMode, 0
+    mov ax, word ptr NextFreeSegment
     jmp near ptr loc_06D4
 loc_0542:
     cmp al, 3
     je loc_0549
     jmp near ptr loc_0699
 loc_0549:
-    mov al, byte ptr [si+byte_0AAA]
+    mov al, byte ptr [si+ResourceSizeKb]
     xor ah, ah
     xor bx, bx
     mov cx, 0Ah
@@ -1020,36 +1091,36 @@ loc_0554:
     shl ax, 1
     rcl bx, 1
     loop loc_0554
-    mov word ptr cs:cvar_1409, ax
-    mov word ptr cs:cvar_140B, bx
+    mov word ptr cs:XmsBytesLeftLow, ax
+    mov word ptr cs:XmsBytesLeftHigh, bx
     mov bx, si
     shl bx, 1
     shl bx, 1
-    mov ax, word ptr [bx+word_0ACE]
+    mov ax, word ptr [bx+ResourceAddressTable]
     xor dx, dx
     mov cx, 0Ah
 loc_0572:
     shl ax, 1
     rcl dx, 1
     loop loc_0572
-    mov word ptr word_0B27, ax
-    mov word ptr word_0B29, dx
-    mov word ptr word_0B21, 18h
+    mov word ptr XmsSourceOffsetLow, ax
+    mov word ptr XmsSourceOffsetHigh, dx
+    mov word ptr XmsMoveLength, 18h
     mov word ptr word_0B23, 0
     mov word ptr word_0B2D, 0B31h
     mov word ptr word_0B2F, ds
     mov word ptr word_0B2B, 0
-    mov ax, word ptr word_0B1F
-    mov word ptr word_0B25, ax
+    mov ax, word ptr XmsHandle
+    mov word ptr XmsSourceHandle, ax
     mov si, 0B21h
     mov ah, 0Bh
-    inc byte ptr cs:byte_2877
-    call dword ptr dword_0B17
+    inc byte ptr cs:DosCallActive
+    call dword ptr XmsDriverEntry
     cmp ax, 1
     je loc_05B7
-    jmp near ptr loc_0FEC
+    jmp near ptr ReportXmsError
 loc_05B7:
-    dec byte ptr cs:byte_2877
+    dec byte ptr cs:DosCallActive
     mov dl, byte ptr byte_0B3F
     mov ax, word ptr word_0B40
     mov cx, 4
@@ -1065,14 +1136,14 @@ loc_05CA:
     xor ax, ax
 loc_05DA:
     mov dx, ax
-    add dx, word ptr word_2875
-    cmp dx, word ptr cs:cvar_0006
+    add dx, word ptr NextFreeSegment
+    cmp dx, word ptr cs:ConventionalTopSeg
     jb loc_05EA
     jmp near ptr loc_06D5
 loc_05EA:
     mov es, dx
     mov ax, dx
-    sub ax, word ptr cs:cvar_0006
+    sub ax, word ptr cs:ConventionalTopSeg
     neg ax
     mov dx, 0F000h
     cmp ax, 0F00h
@@ -1081,60 +1152,60 @@ loc_05EA:
     shl ax, cl
     mov dx, ax
 loc_0603:
-    mov word ptr cs:cvar_1410, dx
+    mov word ptr cs:LzssChunkBytes, dx
     sub dx, 80h
-    mov word ptr cs:cvar_1412, dx
+    mov word ptr cs:LzssRefillThreshold, dx
     mov word ptr word_0B2D, 0
     mov word ptr word_0B2F, es
-    mov ax, word ptr cs:cvar_1410
-    cmp word ptr cs:cvar_140B, 0
+    mov ax, word ptr cs:LzssChunkBytes
+    cmp word ptr cs:XmsBytesLeftHigh, 0
     jne loc_0632
-    cmp word ptr cs:cvar_1409, ax
+    cmp word ptr cs:XmsBytesLeftLow, ax
     jae loc_0632
-    mov ax, word ptr cs:cvar_1409
+    mov ax, word ptr cs:XmsBytesLeftLow
 loc_0632:
-    sub word ptr cs:cvar_1409, ax
-    sbb word ptr cs:cvar_140B, 0
-    mov word ptr word_0B21, ax
+    sub word ptr cs:XmsBytesLeftLow, ax
+    sbb word ptr cs:XmsBytesLeftHigh, 0
+    mov word ptr XmsMoveLength, ax
     mov word ptr word_0B23, 0
     mov ah, 0Bh
     mov si, 0B21h
-    inc byte ptr cs:byte_2877
-    call dword ptr dword_0B17
+    inc byte ptr cs:DosCallActive
+    call dword ptr XmsDriverEntry
     cmp ax, 1
     je loc_065C
-    jmp near ptr loc_0FEC
+    jmp near ptr ReportXmsError
 loc_065C:
-    dec byte ptr cs:byte_2877
-    mov ax, word ptr word_0B21
-    add word ptr word_0B27, ax
-    adc word ptr word_0B29, 0
+    dec byte ptr cs:DosCallActive
+    mov ax, word ptr XmsMoveLength
+    add word ptr XmsSourceOffsetLow, ax
+    adc word ptr XmsSourceOffsetHigh, 0
     xor di, di
     mov si, 11h
-    mov byte ptr cs:cvar_140F, 3
-    mov ax, word ptr word_2875
+    mov byte ptr cs:LzssSourceMode, 3
+    mov ax, word ptr NextFreeSegment
     cmp byte ptr ds:byte_0B16, 0
     jne loc_0685
-    mov ax, word ptr word_0B5E
+    mov ax, word ptr ModuleSegment
 loc_0685:
     mov ds, ax
     push ds
     push es
     pop ds
     pop es
-    call sub_14D8
-    mov byte ptr cs:cvar_140F, 0
-    mov ax, word ptr word_2875
+    call DecodeLzssStream
+    mov byte ptr cs:LzssSourceMode, 0
+    mov ax, word ptr NextFreeSegment
     jmp short loc_06D4
 loc_0699:
-    call sub_0B81
-    push word ptr word_2875
+    call ResourceNameAt
+    push word ptr NextFreeSegment
     cmp byte ptr ds:byte_0B16, 0
     jne loc_06CD
     push ds
     push es
-    call sub_107B
-    mov dx, word ptr word_0B5E
+    call LoadSqzFile
+    mov dx, word ptr ModuleSegment
     mov bx, 105Bh
 loc_06B3:
     xor si, si
@@ -1149,11 +1220,11 @@ loc_06B3:
     jne loc_06B3
     pop es
     pop ds
-    pop word ptr word_2875
+    pop word ptr NextFreeSegment
     jmp short loc_06D4
 loc_06CD:
-    call sub_107B
-    pop word ptr word_2875
+    call LoadSqzFile
+    pop word ptr NextFreeSegment
 loc_06D4:
     ret
 loc_06D5:
@@ -1164,7 +1235,7 @@ loc_06D5:
     mov ah, 9
     mov dx, 840h
     int 21h
-    jmp near ptr loc_104F
+    jmp near ptr HaltWithMessage
 loc_06E9:
     mov ax, 4000h
     out 40h, al
@@ -1173,9 +1244,17 @@ loc_06E9:
     pop ax
     jmp near ptr loc_07AD
 
-sub_06F6:
+; INT 08h handler for sample output through port 389h; installed by InitAdlibSampler (0020h).
+; Busy (DATA:2877 nonzero): PIT ch0 = 16384 and the tick path. Otherwise PIT ch0 = 142
+; (~8.4 kHz); while cvar_1D6E bit 0 is set and SfxBytesLeft is nonzero, outputs one sample:
+; byte SfxBankSegment:SfxPlayPos, xor 80h, >> 1, translated through DATA:0F05h, to port 389h.
+; Every 128th call (cvar_1D69) takes the tick path.
+; Tick path (loc_07AD): cvar_1D67++, cvar_1D6B = (cvar_1D6B + 1) & 3; every 4th tick jumps to
+; loc_17C0 (BIOS-tick body: DATA:006Ch / 40:006Ch counter, floppy motor timeout, midnight wrap).
+; Other ticks and the sample path end with EOI and IRET. Preserves all registers.
+SampleTimerIsr:
     push ax
-    cmp byte ptr cs:byte_2877, 0
+    cmp byte ptr cs:DosCallActive, 0
     jne loc_06E9
     mov al, 8Eh
     out 40h, al
@@ -1192,17 +1271,17 @@ loc_0718:
     push dx
     push si
     push ds
-    test byte ptr cs:cvar_1D6E, 1
+    test byte ptr cs:SoundState, 1
     je loc_0752
     mov ax, seg DATA
     mov ds, ax
-    cmp word ptr ds:word_1006, 0
+    cmp word ptr ds:SfxBytesLeft, 0
     je loc_0752
-    dec word ptr word_1006
-    mov si, word ptr word_1004
-    inc word ptr word_1004
+    dec word ptr SfxBytesLeft
+    mov si, word ptr SfxPlayPos
+    inc word ptr SfxPlayPos
     mov dx, ds
-    mov ds, word ptr word_0B59
+    mov ds, word ptr SfxBankSegment
     lodsb
     xor al, 80h
     mov ds, dx
@@ -1221,17 +1300,24 @@ loc_0752:
     pop ax
     iret
 
-sub_075C:
+; INT 08h handler when no sample device is active (cvar_1D6C and cvar_1D6D both 0). Steps the
+; PC-speaker sequence at SpeakerSequencePtr (-1 = idle): writes the current divisor to PIT ch2
+; (port 42h, low then high byte), subtracts the step, and when the count reaches zero reloads the
+; record and sets the pointer to -1 and divisor 000Ah. Record (10 bytes): +0 divisor, +2 start
+; divisor, +4 count, +6 step, +8 count reload. Then the tick path of SampleTimerIsr.
+; Initial value of Int08SwapSlot (installed first by SwapInt08Int09Vectors).
+; Preserves all registers.
+SpeakerTimerIsr:
     push ax
     push bx
     push si
     push ds
     mov ax, seg DATA
     mov ds, ax
-    mov al, byte ptr cs:cvar_1D6D
-    or al, byte ptr cs:cvar_1D6C
+    mov al, byte ptr cs:SbDetected
+    or al, byte ptr cs:AdLibEnabled
     jne loc_07A9
-    mov si, word ptr word_1035
+    mov si, word ptr SpeakerSequencePtr
     cmp si, -1
     je loc_07A9
     mov bx, word ptr [si]
@@ -1247,7 +1333,7 @@ sub_075C:
     mov word ptr [si+4], ax
     mov ax, word ptr [si+2]
     mov word ptr [si], ax
-    mov word ptr word_1035, 0FFFFh
+    mov word ptr SpeakerSequencePtr, 0FFFFh
     mov bx, 0Ah
     mov al, bl
     out 42h, al
@@ -1259,7 +1345,7 @@ loc_07A9:
     pop bx
     pop ax
 loc_07AD:
-    inc word ptr cs:cvar_1D67
+    inc word ptr cs:TimerTickCount
     inc byte ptr cs:cvar_1D6B
     and byte ptr cs:cvar_1D6B, 3
     je loc_07C6
@@ -1271,7 +1357,16 @@ loc_07AD:
 loc_07C6:
     jmp near ptr loc_17C0
 
-sub_07C9:
+; Sound set-up, called once from ProgramEntry. Saves the PIC mask in PicMaskSaved. Returns at once
+; when SoundEnabledFlag is 0 (/M). Otherwise loads SAMPLE.SQZ (ds:0859h) into SfxBankSegment
+; and builds the 11 (start, length) sample pairs at DATA:1009h+4k / DATA:100Bh+4k. Then:
+;   Sound Blaster detected (sub_1D6F): cvar_1D6D = 1, SbBasePort and the port words set;
+;   else if CpuClass >= 2 and the OPL probe (sub_1D22) succeeds: InitAdlibSampler, cvar_1D6C = 1,
+;     cvar_1D6E = 1;
+;   else PC speaker: PIT ch2 mode 3 (port 43h, B6h), port 61h bits 0-1 set, and NextFreeSegment
+;     reset to SfxBankSegment (the sample file is discarded).
+; Out: cvar_1D6C, cvar_1D6D, cvar_1D6E, SfxBankSegment, NextFreeSegment, PicMaskSaved.
+InitSoundDevices:
     push ax
     push bx
     push cx
@@ -1284,19 +1379,19 @@ sub_07C9:
     mov ax, seg DATA
     mov ds, ax
     in al, 21h
-    mov byte ptr byte_0E6F, al
-    cmp byte ptr cs:cvar_0002, 0
+    mov byte ptr PicMaskSaved, al
+    cmp byte ptr cs:SoundEnabledFlag, 0
     je loc_0849
     mov dx, 859h
     push ds
     push es
-    call sub_107B
+    call LoadSqzFile
     pop es
     pop ds
-    mov word ptr word_0B59, ax
-    sub ax, word ptr word_2875
+    mov word ptr SfxBankSegment, ax
+    sub ax, word ptr NextFreeSegment
     neg ax
-    mov word ptr word_0B5B, ax
+    mov word ptr SfxBankParagraphs, ax
     mov si, 1009h
     mov cx, 0Bh
     xor dx, dx
@@ -1306,22 +1401,22 @@ loc_0802:
     add dx, ax
     add si, 4
     loop loc_0802
-    call sub_1D6F
+    call DetectSoundBlaster
     jb loc_081B
-    mov byte ptr cs:cvar_1D6D, 1
+    mov byte ptr cs:SbDetected, 1
     jmp short loc_0849
 loc_081B:
-    call sub_1D22
+    call DetectAdLib
     jb loc_0839
-    cmp byte ptr cs:cvar_0005, 2
+    cmp byte ptr cs:CpuClass, 2
     jb loc_0839
-    call sub_0853
-    mov byte ptr cs:cvar_1D6C, 1
-    mov byte ptr cs:cvar_1D6E, 1
+    call InitAdlibSampler
+    mov byte ptr cs:AdLibEnabled, 1
+    mov byte ptr cs:SoundState, 1
     jmp short loc_0849
 loc_0839:
-    mov ax, word ptr word_0B59
-    mov word ptr word_2875, ax
+    mov ax, word ptr SfxBankSegment
+    mov word ptr NextFreeSegment, ax
     mov al, 0B6h
     out 43h, al
     in al, 61h
@@ -1339,35 +1434,40 @@ loc_0849:
     pop ax
     ret
 
-sub_0853:
+; Programs the OPL (ports 388h/389h through sub_1CEB) for sample output, waits for the OPL status
+; at 388h to clear, sets PIT ch0 to 142 (~8.4 kHz) and writes SampleTimerIsr straight into IVT 08h
+; (cs:06F6h) over the swapped-in handler. Called only from InitSoundDevices.
+; In: none. Out: IVT 08h, PIT ch0 divisor 142. Interrupts are enabled again at return (STI).
+; Clobbers: AX, CX, DX; ES is left 0000h.
+InitAdlibSampler:
     mov ax, 2001h
-    call sub_1CEB
+    call OplWriteRegister
     mov ax, 0BDh
-    call sub_1CEB
+    call OplWriteRegister
     mov ax, 0B0h
-    call sub_1CEB
+    call OplWriteRegister
     mov ax, 2120h
-    call sub_1CEB
+    call OplWriteRegister
     mov ax, 0F060h
-    call sub_1CEB
+    call OplWriteRegister
     mov ax, 0F080h
-    call sub_1CEB
+    call OplWriteRegister
     mov ax, 1C0h
-    call sub_1CEB
+    call OplWriteRegister
     mov ax, 0E0h
-    call sub_1CEB
+    call OplWriteRegister
     mov ax, 3F43h
-    call sub_1CEB
+    call OplWriteRegister
     mov ax, 6004h
-    call sub_1CEB
+    call OplWriteRegister
     mov ax, 0F302h
-    call sub_1CEB
+    call OplWriteRegister
     mov ax, 8FA0h
-    call sub_1CEB
+    call OplWriteRegister
     mov ax, 2EB0h
-    call sub_1CEB
+    call OplWriteRegister
     mov ax, 2304h
-    call sub_1CEB
+    call OplWriteRegister
     mov dx, 388h
     cli
 loc_08AB:
@@ -1375,11 +1475,11 @@ loc_08AB:
     test al, 0F0h
     jne loc_08AB
     mov ax, 0A0h
-    call sub_1CEB
+    call OplWriteRegister
     mov ax, 20B0h
-    call sub_1CEB
+    call OplWriteRegister
     mov ax, 3F40h
-    call sub_1CEB
+    call OplWriteRegister
     mov al, 8Eh
     out 40h, al
     xor al, al
@@ -1391,10 +1491,22 @@ loc_08AB:
     sti
     ret
 
-sub_08DC:
+; Sets up the resource cache. If OptionBits 10h (/L) is clear: clears the resident bit 02h of
+; ResourceFlags[0..17] and returns (every resource is loaded from disk on use).
+; Otherwise EMS (unless OptionBits 04h, /E): INT 67h AH=40h/41h/42h/43h give EmsFrameSegment,
+; EmsFreeKb (= pages * 16) and EmsHandle (55AAh = none). XMS (unless OptionBits 08h, /X, or when
+; the current DOS drive from INT 21h AH=19h is above B:): INT 2Fh AX=4300h/4310h give XmsDriverEntry;
+; AH=08h/09h give XmsFreeKb and XmsHandle for all free XMS. Then each of the 18 ResourceSlotList
+; entries, in order, is placed: EMS (EmsFreeKb >= size and EMS handle set) via LoadResourceToEms,
+; else XMS (XmsFreeKb >= size, handle set, flags 10h clear) via LoadResourceToXms, else if the
+; resident bit 02h is set: LoadResourceFile when OptionBits 20h is set, otherwise bit 02h is
+; cleared. Which entries are tried depends on cvar_1D6D and the pinned bit 08h.
+; Out: the EMS/XMS variables, ResourceFlags, ResourceAddressTable, NextFreeSegment.
+; Notes: the XMS branch is skipped when the current drive (AH=19h) is above 1.
+InitResourceMemory:
     mov ax, seg DATA
     mov ds, ax
-    test word ptr cs:cvar_0003, 10h
+    test word ptr cs:OptionBits, 10h
     jne loc_08F7
     mov cx, 12h
     mov di, 0ABCh
@@ -1404,7 +1516,7 @@ loc_08F0:
     loop loc_08F0
     ret
 loc_08F7:
-    test word ptr cs:cvar_0003, 4
+    test word ptr cs:OptionBits, 4
     je loc_094F
     xor ax, ax
     mov es, ax
@@ -1422,7 +1534,7 @@ loc_08F7:
     int 67h
     or ah, ah
     jne loc_094F
-    mov word ptr word_0B51, bx
+    mov word ptr EmsFrameSegment, bx
     mov ah, 42h
     int 67h
     or ah, ah
@@ -1432,16 +1544,16 @@ loc_08F7:
     shl ax, 1
     shl ax, 1
     shl ax, 1
-    mov word ptr word_0B53, ax
+    mov word ptr EmsFreeKb, ax
     or bx, bx
     je loc_094F
     mov ah, 43h
     int 67h
     or ah, ah
     jne loc_094F
-    mov word ptr word_0B55, dx
+    mov word ptr EmsHandle, dx
 loc_094F:
-    test word ptr cs:cvar_0003, 8
+    test word ptr cs:OptionBits, 8
     je loc_0991
     mov ah, 19h
     int 21h
@@ -1453,69 +1565,69 @@ loc_094F:
     jne loc_0991
     mov ax, 4310h
     int 2Fh
-    mov word ptr dword_0B17, bx
+    mov word ptr XmsDriverEntry, bx
     mov word ptr word_0B19, es
     mov ah, 8
-    call dword ptr dword_0B17
-    mov word ptr word_0B1D, ax
+    call dword ptr XmsDriverEntry
+    mov word ptr XmsFreeKb, ax
     mov ah, 9
-    mov dx, word ptr word_0B1D
-    call dword ptr dword_0B17
+    mov dx, word ptr XmsFreeKb
+    call dword ptr XmsDriverEntry
     or ax, ax
     je loc_0991
-    mov word ptr word_0B1F, dx
+    mov word ptr XmsHandle, dx
 loc_0991:
     xor si, si
     mov cx, 12h
 loc_0996:
     push si
-    mov al, byte ptr [si+byte_0A98]
+    mov al, byte ptr [si+ResourceSlotList]
     xor ah, ah
     mov si, ax
-    cmp byte ptr cs:cvar_1D6D, 1
+    cmp byte ptr cs:SbDetected, 1
     je loc_09B0
-    test byte ptr [si+byte_0ABC], 8
+    test byte ptr [si+ResourceFlags], 8
     je loc_0A23
     jmp short loc_09C0
 loc_09B0:
-    test byte ptr [si+byte_0ABC], 8
+    test byte ptr [si+ResourceFlags], 8
     jne loc_09C0
-    test word ptr cs:cvar_0003, 40h
+    test word ptr cs:OptionBits, 40h
     jne loc_0A23
 loc_09C0:
-    mov al, byte ptr [si+byte_0AAA]
+    mov al, byte ptr [si+ResourceSizeKb]
     xor ah, ah
-    cmp word ptr word_0B53, ax
+    cmp word ptr EmsFreeKb, ax
     jb loc_09DD
-    cmp word ptr ds:word_0B55, 55AAh
+    cmp word ptr ds:EmsHandle, 55AAh
     je loc_09DD
-    call sub_0A2C
-    sub word ptr word_0B53, ax
+    call LoadResourceToEms
+    sub word ptr EmsFreeKb, ax
     jmp short loc_0A23
 loc_09DD:
-    cmp word ptr word_0B1D, ax
+    cmp word ptr XmsFreeKb, ax
     jb loc_09FF
-    cmp word ptr ds:word_0B1F, 55AAh
+    cmp word ptr ds:XmsHandle, 55AAh
     je loc_09FF
-    test byte ptr [si+byte_0ABC], 10h
+    test byte ptr [si+ResourceFlags], 10h
     jne loc_09FF
-    sub word ptr word_0B1D, ax
-    call sub_0ADA
-    add word ptr word_0B1B, ax
+    sub word ptr XmsFreeKb, ax
+    call LoadResourceToXms
+    add word ptr XmsNextOffsetKb, ax
     jmp short loc_0A23
 loc_09FF:
-    test byte ptr [si+byte_0ABC], 2
+    test byte ptr [si+ResourceFlags], 2
     je loc_0A23
-    test word ptr cs:cvar_0003, 20h
+    test word ptr cs:OptionBits, 20h
     je loc_0A1E
-    call sub_0B74
+    call LoadResourceFile
     mov bx, si
     shl bx, 1
     shl bx, 1
-    mov word ptr [bx+word_0ACE], ax
+    mov word ptr [bx+ResourceAddressTable], ax
     jmp short loc_0A23
 loc_0A1E:
-    and byte ptr [si+byte_0ABC], 0FDh
+    and byte ptr [si+ResourceFlags], 0FDh
 loc_0A23:
     pop si
     inc si
@@ -1525,7 +1637,12 @@ loc_0A23:
 loc_0A2B:
     ret
 
-sub_0A2C:
+; Loads slot SI from disk into the heap (LoadRawFile, name from ResourceNameAt), copies it
+; into EMS pages through EmsFrameSegment (INT 67h AH=44h, handle EmsHandle), sets ResourceFlags
+; [SI] to location code 04h (other bits cleared), ResourceAddressTable[SI] = EmsNextOffsetKb and
+; advances EmsNextOffsetKb by the size. NextFreeSegment is restored. The caller reduces EmsFreeKb.
+; In: SI = slot (size from ResourceSizeKb[SI]). Out: none.
+LoadResourceToEms:
     push ax
     push bx
     push cx
@@ -1537,27 +1654,27 @@ sub_0A2C:
     push bp
     mov di, si
     mov cx, si
-    call sub_0B81
-    push word ptr word_2875
-    call sub_0F7F
-    mov word ptr word_2875, ax
-    mov al, byte ptr [di+byte_0ABC]
+    call ResourceNameAt
+    push word ptr NextFreeSegment
+    call LoadRawFile
+    mov word ptr NextFreeSegment, ax
+    mov al, byte ptr [di+ResourceFlags]
     and al, 0F9h
     or al, 4
-    mov byte ptr [di+byte_0ABC], al
-    mov cl, byte ptr [di+byte_0AAA]
+    mov byte ptr [di+ResourceFlags], al
+    mov cl, byte ptr [di+ResourceSizeKb]
     xor ch, ch
     shl di, 1
     shl di, 1
-    mov ax, word ptr word_0B57
-    mov word ptr [di+word_0ACE], ax
-    mov es, word ptr word_0B51
-    mov dx, word ptr word_0B55
+    mov ax, word ptr EmsNextOffsetKb
+    mov word ptr [di+ResourceAddressTable], ax
+    mov es, word ptr EmsFrameSegment
+    mov dx, word ptr EmsHandle
 loc_0A6B:
     xor si, si
     mov al, 0
     mov ah, 44h
-    mov bx, word ptr word_0B57
+    mov bx, word ptr EmsNextOffsetKb
     mov di, bx
     shr bx, 1
     shr bx, 1
@@ -1576,29 +1693,29 @@ loc_0A91:
     xchg cl, ch
     shl cx, 1
     shl cx, 1
-    mov ax, word ptr word_0B57
+    mov ax, word ptr EmsNextOffsetKb
     and ax, 0Fh
     xchg al, ah
     shl ax, 1
     shl ax, 1
     mov di, ax
-    mov ds, word ptr word_2875
+    mov ds, word ptr NextFreeSegment
     mov bp, cx
     rep movsb
     mov ax, seg DATA
     mov ds, ax
     mov cl, 4
     shr bp, cl
-    add word ptr word_2875, bp
+    add word ptr NextFreeSegment, bp
     mov cl, 6
     shr bp, cl
-    add word ptr word_0B57, bp
+    add word ptr EmsNextOffsetKb, bp
     mov cx, bx
     sub cx, bp
     je loc_0ACC
     jmp short loc_0A6B
 loc_0ACC:
-    pop word ptr word_2875
+    pop word ptr NextFreeSegment
     pop bp
     pop es
     pop ds
@@ -1610,7 +1727,12 @@ loc_0ACC:
     pop ax
     ret
 
-sub_0ADA:
+; Loads slot SI from disk into the heap (LoadRawFile) and moves it into the XMS block at
+; XmsNextOffsetKb with XMS function 0Bh (XmsDriverEntry). Sets ResourceFlags[SI] to location code 06h,
+; ResourceAddressTable[SI] = XmsNextOffsetKb. The caller reduces XmsFreeKb and advances
+; XmsNextOffsetKb by the size.
+; In: SI = slot, AX = size in KB. Out: AX preserved.
+LoadResourceToXms:
     push ax
     push bx
     push cx
@@ -1621,15 +1743,15 @@ sub_0ADA:
     push es
     push bp
     mov dx, ax
-    mov ax, word ptr word_0B1B
+    mov ax, word ptr XmsNextOffsetKb
     mov bx, si
     shl bx, 1
     shl bx, 1
-    mov word ptr [bx+word_0ACE], ax
-    mov al, byte ptr [si+byte_0ABC]
+    mov word ptr [bx+ResourceAddressTable], ax
+    mov al, byte ptr [si+ResourceFlags]
     and al, 0F9h
     or al, 6
-    mov byte ptr [si+byte_0ABC], al
+    mov byte ptr [si+ResourceFlags], al
     mov ax, dx
     xor dx, dx
     mov cx, 0Ah
@@ -1637,15 +1759,15 @@ loc_0B05:
     shl ax, 1
     rcl dx, 1
     loop loc_0B05
-    mov word ptr word_0B21, ax
+    mov word ptr XmsMoveLength, ax
     mov word ptr word_0B23, dx
-    mov word ptr word_0B25, 0
-    mov word ptr word_0B27, 0
-    mov ax, word ptr word_2875
-    mov word ptr word_0B29, ax
-    mov ax, word ptr word_0B1F
+    mov word ptr XmsSourceHandle, 0
+    mov word ptr XmsSourceOffsetLow, 0
+    mov ax, word ptr NextFreeSegment
+    mov word ptr XmsSourceOffsetHigh, ax
+    mov ax, word ptr XmsHandle
     mov word ptr word_0B2B, ax
-    mov ax, word ptr word_0B1B
+    mov ax, word ptr XmsNextOffsetKb
     xor dx, dx
     mov cx, 0Ah
 loc_0B32:
@@ -1655,19 +1777,19 @@ loc_0B32:
     mov word ptr word_0B2D, ax
     mov word ptr word_0B2F, dx
     mov cx, si
-    call sub_0B81
-    push word ptr word_2875
-    call sub_0F7F
-    pop word ptr word_2875
+    call ResourceNameAt
+    push word ptr NextFreeSegment
+    call LoadRawFile
+    pop word ptr NextFreeSegment
     mov si, 0B21h
     mov ah, 0Bh
-    inc byte ptr cs:byte_2877
-    call dword ptr dword_0B17
+    inc byte ptr cs:DosCallActive
+    call dword ptr XmsDriverEntry
     cmp ax, 1
     je loc_0B65
-    jmp near ptr loc_0FEC
+    jmp near ptr ReportXmsError
 loc_0B65:
-    dec byte ptr cs:byte_2877
+    dec byte ptr cs:DosCallActive
     pop bp
     pop es
     pop ds
@@ -1679,17 +1801,24 @@ loc_0B65:
     pop ax
     ret
 
-sub_0B74:
+; Loads the file named by ResourceNameAt(SI) raw with LoadRawFile (not SQZ). Only reached
+; through InitResourceMemory when OptionBits 20h is set, which no code path sets: effectively
+; unused in the shipped configuration.
+; In: SI = slot. Out: AX = segment of the file (heap top before the load); heap advanced.
+LoadResourceFile:
     push cx
     push si
     mov cx, si
-    call sub_0B81
-    call sub_0F7F
+    call ResourceNameAt
+    call LoadRawFile
     pop si
     pop cx
     ret
 
-sub_0B81:
+; Returns the file name of resource CX: DX = DS offset of the CX-th NUL-terminated name in the
+; table that starts at DATA:09E0h (first name PRES.TRK).
+; In: CX = index. Out: DX = name offset. Clobbers SI and CX.
+ResourceNameAt:
     mov si, 9E0h
     jcxz loc_0B8F
 loc_0B86:
@@ -1702,45 +1831,56 @@ loc_0B8F:
     mov dx, si
     ret
 
-sub_0B92:
+; Sets DS = ES = DATA and calls SetDacBlock0To15IfFlag with DX = 287Eh (16-entry DAC table).
+; Out: DS = ES = DATA. Effective result: no DAC change (see SetDacBlock0To15IfFlag).
+SetStartupPalette:
     mov ax, seg DATA
     mov ds, ax
     mov es, ax
     mov dx, 287Eh
-    call sub_0BDC
+    call SetDacBlock0To15IfFlag
     ret
 
-sub_0BA0:
+; Sets DAC registers 0..15 (INT 10h AX=1012h) from the 16-entry palette at the offset stored in
+; word_2D00 for the level id byte_2D8A (ES:DX = DS:[word_2D00 + 2*byte_2D8A]).
+; In: none. Out: DS = ES = DATA. Clobbers AX, BX, CX, DX.
+SetLevelPalette:
     mov ax, seg DATA
     mov ds, ax
     mov es, ax
     mov ax, 1012h
-    mov bl, byte ptr byte_2D8A
+    mov bl, byte ptr CurrentLevel
     xor bh, bh
     shl bx, 1
-    mov dx, word ptr [bx+word_2D00]
+    mov dx, word ptr [bx+LevelPaletteTable]
     xor bx, bx
     mov cx, 10h
     int 10h
     ret
 
-sub_0BBE:
+; Loops over PollInputState until a button flag (byte_2832 or byte_27E8) is set, then until both
+; flags are clear again. In: none. Out: none. Callers: LevelRestart (around loc_0196) and four
+; places in other modules.
+WaitForButtonPressRelease:
     mov ax, seg DATA
     mov ds, ax
 loc_0BC3:
-    call sub_0DC1
+    call PollInputState
     mov al, byte ptr byte_2832
     or al, byte ptr byte_27E8
     je loc_0BC3
 loc_0BCF:
-    call sub_0DC1
+    call PollInputState
     mov al, byte ptr byte_27E8
     or al, byte ptr byte_2832
     jne loc_0BCF
     ret
 
-sub_0BDC:
-    mov al, byte ptr cs:cvar_0001
+; Sets DAC registers 0..15 (INT 10h AX=1012h) from ES:DX when OptionVByte equals 5. Only
+; SetStartupPalette calls this. OptionVByte is only ever 0FFh (default) or 1 (/V), so the palette
+; write never happens in the shipped code paths.
+SetDacBlock0To15IfFlag:
+    mov al, byte ptr cs:OptionVByte
     cmp al, 5
     jne loc_0BEE
     mov ax, 1012h
@@ -1750,7 +1890,10 @@ sub_0BDC:
 loc_0BEE:
     ret
 
-sub_0BEF:
+; Prints DX as an unsigned decimal number (0..65535) with DrawFontChar: five digit positions,
+; leading zeros printed as spaces (the last digit is always printed).
+; In: DX. Out: none. Clobbers AX, BX, DX; DATA:27D5h is used as the leading-zero flag.
+PrintDecimalWord:
     mov byte ptr byte_27D5, 0
     mov bx, 2710h
 loc_0BF7:
@@ -1773,7 +1916,7 @@ loc_0C03:
 loc_0C17:
     mov byte ptr byte_27D5, 1
 loc_0C1C:
-    call sub_0C3E
+    call DrawFontChar
     mov ax, bx
     push dx
     xor dx, dx
@@ -1785,19 +1928,27 @@ loc_0C1C:
     jne loc_0BF7
     ret
 
-sub_0C31:
+; Draws the NUL-terminated string at DS:SI with DrawFontChar. In: DS:SI. Out: SI past the NUL.
+; Preserves AX.
+PrintAsciiz:
     push ax
 loc_0C32:
     lodsb
     or al, al
     je loc_0C3C
-    call sub_0C3E
+    call DrawFontChar
     jmp short loc_0C32
 loc_0C3C:
     pop ax
     ret
 
-sub_0C3E:
+; Draws one character at the text cursor. In: AL = character. Cursor byte offset = word_2385 +
+; word_2383 + word_2DD6; word_2383 is then incremented. A space clears a 12-row by 4-plane column
+; of VGA memory (A000h, sequencer map mask all planes). Other characters: glyph index = AL - 30h,
+; minus 2 when that exceeds 9. The 48-byte glyph (12 rows x 4 planes, index * 30h) is read from
+; word_003D and written plane by plane. sub_452B (outside R1) sets up the VGA state.
+; Preserves all registers.
+DrawFontChar:
     push ax
     push bx
     push cx
@@ -1807,15 +1958,15 @@ sub_0C3E:
     push ds
     push es
     push bp
-    mov di, word ptr ds:word_2385
-    add di, word ptr ds:word_2383
-    add di, word ptr ds:word_2DD6
-    inc word ptr word_2383
+    mov di, word ptr ds:TextRowOffset
+    add di, word ptr ds:TextByteColumn
+    add di, word ptr ds:DisplayPage
+    inc word ptr TextByteColumn
     cmp al, 20h
     jne loc_0C7B
     mov ax, 0A000h
     mov es, ax
-    call sub_452B
+    call SetCpuWriteMode
     mov dx, 3C4h
     mov ax, 0F02h
     out dx, ax
@@ -1839,7 +1990,7 @@ loc_0C83:
     mov si, ax
     mov ax, 0A000h
     mov es, ax
-    call sub_452B
+    call SetCpuWriteMode
     mov dx, 3C4h
     mov al, 2
     out dx, al
@@ -1868,7 +2019,12 @@ loc_0CB2:
     pop ax
     ret
 
-sub_0CBC:
+; Finds the joystick on game port 201h. Samples the port 0C80h times to see which axis-line pair
+; toggles (masks byte_27E6 / byte_27E7), sets byte_27E4 (bit shift for ReadJoystickTimes; FFh
+; means no joystick) and calibrates the X and Y limit words (DATA:27DCh..27E2h, 27DEh, 27E0h) from
+; ReadJoystickTimes readings. Up to three attempts (byte_27E5). Interrupts are disabled while
+; sampling and enabled at return. Out: byte_27E4 and the limit words.
+CalibrateJoystick:
     mov ax, seg DATA
     mov ds, ax
     mov byte ptr byte_27E5, 3
@@ -1900,7 +2056,7 @@ loc_0CF5:
     mov al, byte ptr byte_27E6
 loc_0CFD:
     mov byte ptr byte_27E4, al
-    call sub_0D6B
+    call ReadJoystickTimes
     jb loc_0D51
     cmp ax, 320h
     jae loc_0D51
@@ -1949,7 +2105,12 @@ loc_0D69:
     sti
     ret
 
-sub_0D6B:
+; Reads the joystick timing on port 201h: fires the one-shot and counts how long the X and Y
+; lines stay high, up to the count word at DATA:27DAh. In: byte_27E4 = bit shift (FFh = none),
+; byte_27D9 = 0. Out: CF=0 with AX = X count and BX = Y count; CF=1 when there is no joystick,
+; the port is busy, or the lines do not start low. Updates the button bytes byte_27E8/27E9
+; from the port bits. Interrupt flag is restored (PUSHF/POPF); CF is the result.
+ReadJoystickTimes:
     pushf
     mov cl, byte ptr byte_27E4
     or cl, cl
@@ -1997,7 +2158,14 @@ loc_0DBE:
     stc
     ret
 
-sub_0DC1:
+; Per-frame input poll. Reads the joystick through ReadJoystickTimes and the key-derived flag
+; bytes (groups at byte_2804..byte_2870) into the direction and button bytes byte_27E8..27ED and
+; byte_27EA..27ED. With byte_2879 nonzero it first decodes the next run-length entry of the input
+; log at DATA:003Fh (cursor word_287A); byte_2879 = 1 then stops. Otherwise live sampling
+; continues and a (value, count) entry is appended to that log while word_287A < 7FCh (the log
+; is seeded by the first 800h bytes of KEYB.SQZ, see ProgramEntry). Out: the bytes above and
+; word_287A. All registers preserved.
+PollInputState:
     push ax
     push bx
     push cx
@@ -2011,7 +2179,7 @@ sub_0DC1:
     mov ds, ax
     cmp byte ptr ds:byte_2879, 0
     je loc_0E51
-    cmp byte ptr ds:byte_2874, 0
+    cmp byte ptr ds:LastScanCode, 0
     je loc_0DE2
     mov byte ptr byte_6BE5, 1
 loc_0DE2:
@@ -2072,7 +2240,7 @@ loc_0E5B:
     mov byte ptr byte_27ED, al
     mov byte ptr byte_27E8, al
     mov byte ptr byte_27E9, al
-    call sub_0D6B
+    call ReadJoystickTimes
     jb loc_0EA4
     cmp ax, word ptr word_27DC
     ja loc_0E81
@@ -2143,7 +2311,7 @@ loc_0EA4:
     rcl al, 1
     or si, si
     jne loc_0F54
-    mov ah, byte ptr byte_2D8A
+    mov ah, byte ptr CurrentLevel
     mov byte ptr ds:byte_083E, ah
     jmp short loc_0F67
 loc_0F54:
@@ -2169,16 +2337,22 @@ loc_0F75:
     pop ax
     ret
 
-sub_0F7F:
+; Reads the whole file named at DS:DX into the heap at NextFreeSegment (one INT 21h read of up to
+; FFFEh bytes), closes it and advances NextFreeSegment by bytes/16 + 1. Sets byte_2878 = 1 while it
+; runs. In: DS:DX = ASCIIZ name in DATA. Out: AX = segment of the data (the old NextFreeSegment).
+; Open failure: loc_1012 shows the swap message with the name, waits for RETURN (sub_105F) and
+; retries (byte_2878 = 1 retries this routine). Read failure: fatal read error (loc_0FFF), halt.
+; Notes: the MOV BX,BX before the close is a no-op.
+LoadRawFile:
     mov ax, seg DATA
     mov ds, ax
-    mov byte ptr byte_2878, 1
+    mov byte ptr RawLoadInProgress, 1
     mov ax, 3D00h
     int 21h
     jae loc_0F93
-    jmp near ptr loc_1012
+    jmp near ptr ReportOpenError
 loc_0F93:
-    mov dx, word ptr word_2875
+    mov dx, word ptr NextFreeSegment
     push dx
     push ds
     mov ds, dx
@@ -2187,30 +2361,38 @@ loc_0F93:
     mov dx, 0
     mov ah, 3Fh
     int 21h
-    jb loc_0FFF
+    jb ReportReadError
     mov cl, 4
     shr ax, cl
     inc ax
     pop ds
-    add word ptr word_2875, ax
+    add word ptr NextFreeSegment, ax
     mov bx, bx
     mov ah, 3Eh
     int 21h
     pop ax
-    mov byte ptr byte_2878, 0
+    mov byte ptr RawLoadInProgress, 0
     ret
 
-sub_0FC0:
+; INT 24h handler (vector set in ProgramEntry at ds:90h/92h). Never returns to DOS: sets text
+; mode, prints "FATAL: Disk missing !" (DATA:0864h) with INT 21h AH=09h, then halts in loc_104F,
+; which prints "PRESS ESC TO RESET & DEBUG." and spins with interrupts on. ESC is handled by
+; KeyboardIsr. Other entries reuse the halt: loc_0FD9 (DATA:087Ah, squeezed file error), loc_0FEC
+; (DATA:0896h, XMS error), loc_0FFF (DATA:08C7h, read error), loc_06D5 (DATA:0840h, memory).
+; Notes: the program does not restore this vector; DOS normally restores INT 22h-24h from the PSP
+; at normal termination (not verified in R1).
+CriticalErrorHandler:
     mov ax, 3
     int 10h
     mov ax, seg DATA
     mov ds, ax
-    mov byte ptr cs:byte_2877, 0
+    mov byte ptr cs:DosCallActive, 0
     mov ah, 9
     mov dx, 864h
     int 21h
-    jmp short loc_104F
-loc_0FD9:
+    jmp short HaltWithMessage
+; Fatal: prints "FATAL: squeezed file error." then HaltWithMessage. Never returns.
+ReportSqzError:
     mov ax, seg DATA
     mov ds, ax
     mov ax, 3
@@ -2218,8 +2400,9 @@ loc_0FD9:
     mov ah, 9
     mov dx, 87Ah
     int 21h
-    jmp short loc_104F
-loc_0FEC:
+    jmp short HaltWithMessage
+; Fatal: prints "FATAL: XMS error, use /X or another XMS driver !" then HaltWithMessage.
+ReportXmsError:
     mov ax, 3
     int 10h
     mov ax, seg DATA
@@ -2227,8 +2410,9 @@ loc_0FEC:
     mov ah, 9
     mov dx, 896h
     int 21h
-    jmp short loc_104F
-loc_0FFF:
+    jmp short HaltWithMessage
+; Fatal: prints "FATAL: read error !" (video mode 3 first) then HaltWithMessage. Never returns.
+ReportReadError:
     mov ax, 3
     int 10h
     mov ax, seg DATA
@@ -2236,8 +2420,14 @@ loc_0FFF:
     mov ah, 9
     mov dx, 8C7h
     int 21h
-    jmp short loc_104F
-loc_1012:
+    jmp short HaltWithMessage
+; Open-failure path of both loaders. Video mode 3, prints "SWAP MESSAGE: Insert the disk with "
+; then the file name (DX, ASCIIZ), then WaitRetryPrompt. On RETURN it restores DX/AX/BX/CX and
+; re-enters LoadRawFile when RawLoadInProgress = 1, else LoadSqzFile.
+; In: DX = file name offset (DATA). AX = DOS error (unused).
+; Notes: The NUL after the name is found by scanning up to 90 bytes; the byte after it is
+;        temporarily replaced by '$' for the print and restored.
+ReportOpenError:
     push ax
     push bx
     push cx
@@ -2261,73 +2451,93 @@ loc_1012:
     mov ah, 9
     int 21h
     mov byte ptr [di], bl
-    call sub_105F
+    call WaitRetryPrompt
     pop di
     pop dx
     pop cx
     pop bx
     pop ax
-    cmp byte ptr ds:byte_2878, 1
+    cmp byte ptr ds:RawLoadInProgress, 1
     jne loc_104D
-    jmp near ptr sub_0F7F
+    jmp near ptr LoadRawFile
 loc_104D:
-    jmp short sub_107B
-loc_104F:
+    jmp short LoadSqzFile
+; Prints "PRESS ESC TO RESET & DEBUG." and spins with interrupts enabled. Never returns.
+HaltWithMessage:
     mov ah, 9
     mov dx, 8FFh
     int 21h
-    mov byte ptr cs:byte_2877, 0
+    mov byte ptr cs:DosCallActive, 0
     sti
 loc_105D:
     jmp short loc_105D
 
-sub_105F:
-    mov byte ptr cs:byte_2877, 0
+; Prints "Press RETURN to continue or ESC to cancel." and waits for the RETURN key.
+; In: none. Out: jumps to sub_447D when LastScanCode = 1Ch (RETURN make code); sub_447D restores
+;     the display and RETs to the caller (ReportOpenError), which then retries the load.
+; Notes: Only RETURN is accepted; ESC is printed as an option but never tested here.
+;        The wait is a busy loop on LastScanCode with interrupts enabled.
+WaitRetryPrompt:
+    mov byte ptr cs:DosCallActive, 0
     mov ah, 9
     mov dx, 91Dh
     int 21h
-    mov byte ptr byte_2874, 0
+    mov byte ptr LastScanCode, 0
 loc_1071:
-    mov al, byte ptr byte_2874
+    mov al, byte ptr LastScanCode
     cmp al, 1Ch
     jne loc_1071
-    jmp near ptr sub_447D
+    jmp near ptr SetLevelVideoMode
 
-sub_107B:
+; Opens the SQZ file named at DS:DX and decompresses it into the next free segment.
+; In: DX = offset (in DATA) of the ASCIIZ file name.
+; Out: AX = segment of the decompressed data (the NextFreeSegment value on entry). DS = DATA.
+;      NextFreeSegment += paragraphs from the header. ES = SqzOutputSegment (not reset).
+; Format: first 6 bytes. B4 4C -> LzssStream; byte 1 == 10h -> LzwStream; else Huffman+RLE.
+; Errors: open -> ReportOpenError; 6-byte read -> ReportReadError; no room below cs:0006 ->
+;         "FATAL: Not enough memory" and halt.
+; Notes: The header and the file are read with the handle kept in SqzFileHandle.
+LoadSqzFile:
     mov ax, seg DATA
     mov ds, ax
     mov es, ax
-    mov byte ptr cs:byte_2877, 1
+    mov byte ptr cs:DosCallActive, 1
     mov ax, 3D00h
     int 21h
-    mov byte ptr cs:byte_2877, 0
+    mov byte ptr cs:DosCallActive, 0
     jae loc_1098
-    jmp near ptr loc_1012
+    jmp near ptr ReportOpenError
 loc_1098:
-    mov word ptr cs:cvar_1204, ax
-    mov ax, word ptr word_2875
-    mov word ptr cs:cvar_1206, ax
+    mov word ptr cs:SqzFileHandle, ax
+    mov ax, word ptr NextFreeSegment
+    mov word ptr cs:SqzOutputSegment, ax
     mov ds, ax
-    mov byte ptr cs:byte_2877, 1
-    mov bx, word ptr cs:cvar_1204
+    mov byte ptr cs:DosCallActive, 1
+    mov bx, word ptr cs:SqzFileHandle
     mov cx, 6
     mov dx, 41Ah
     mov ah, 3Fh
     int 21h
     jae loc_10BF
-    jmp near ptr loc_0FFF
+    jmp near ptr ReportReadError
 loc_10BF:
-    dec byte ptr cs:byte_2877
+    dec byte ptr cs:DosCallActive
     mov si, dx
     lodsw
     cmp ax, 4CB4h
     jne loc_10CF
-    jmp near ptr loc_1414
+    jmp near ptr LoadLzssStream
 loc_10CF:
     cmp ah, 10h
-    jne loc_10D7
-    jmp near ptr loc_1208
-loc_10D7:
+    jne DecodeHuffmanRle
+    jmp near ptr LoadLzwStream
+; Huffman + RLE path of LoadSqzFile (the header is neither LZSS nor LZW).
+; Header: bytes 0-3 = size as LE words, high word first. Bytes 4-5 = tree size (LE).
+;         Tree bytes start at file offset 6, then the bit stream (MSB first).
+; Out: AX = SqzOutputSegment via HuffmanStreamEnd. Output placement: SqzOutputSegment:0000.
+; Notes: The size is not used to stop decoding. Stream blocks of 2800h bytes go to DS:041Ah.
+;        A tree longer than 414h bytes is overwritten by the first block read.
+DecodeHuffmanRle:
     mov bx, ax
     lodsw
     mov cx, 4
@@ -2339,29 +2549,31 @@ loc_10DD:
     mov cx, word ptr [si]
     add ax, word ptr es:[2875h]
     mov word ptr es:[2875h], ax
-    cmp word ptr cs:cvar_0006, ax
+    cmp word ptr cs:ConventionalTopSeg, ax
     ja loc_10F9
     jmp near ptr loc_06D5
 loc_10F9:
     mov ds, ax
-    mov ax, word ptr cs:cvar_1206
+    mov ax, word ptr cs:SqzOutputSegment
     mov es, ax
-    mov byte ptr cs:byte_2877, 1
-    mov bx, word ptr cs:cvar_1204
+    mov byte ptr cs:DosCallActive, 1
+    mov bx, word ptr cs:SqzFileHandle
     mov cx, cx
     mov dx, 6
     mov ah, 3Fh
     int 21h
     jae loc_111A
-    jmp near ptr loc_0FFF
+    jmp near ptr ReportReadError
 loc_111A:
-    dec byte ptr cs:byte_2877
+    dec byte ptr cs:DosCallActive
     mov dl, 1
     mov word ptr ds:[0], 2
     xor di, di
 loc_1129:
+; Huffman main loop. An RLE symbol before any output reads ES:[FFFFh]. Window moves happen at
+; loc_117C only (DI >= 4000h), so a long run can run past the window before the move.
     xor bx, bx
-    call sub_11D0
+    call ReadHuffmanSymbol
     or bh, bh
     je loc_1178
     cmp bl, 2
@@ -2377,7 +2589,7 @@ loc_1147:
     or bl, bl
     jne loc_115E
     xor bx, bx
-    call sub_11D0
+    call ReadHuffmanSymbol
     mov bp, ax
     mov cx, bx
     mov al, byte ptr es:[di-1]
@@ -2386,10 +2598,10 @@ loc_1147:
     jmp short loc_117C
 loc_115E:
     xor bx, bx
-    call sub_11D0
+    call ReadHuffmanSymbol
     mov ch, bl
     xor bx, bx
-    call sub_11D0
+    call ReadHuffmanSymbol
     mov cl, bl
     mov bp, ax
     mov al, byte ptr es:[di-1]
@@ -2407,26 +2619,32 @@ loc_117C:
     mov es, bx
     sub di, 3FF0h
     jmp short loc_117C
-loc_1190:
+; Huffman stream block refill: reads up to 2800h bytes to DS:041Ah. DS:0 = bytes left, rounded up
+;      to even, reduced by 2 per 16-bit word; zero means the block is used up.
+; Out: AX = next stream word (bytes swapped, MSB first), SI = 041Ah + bytes used, DL = 17 (the
+;      bit step decrements it to 16 for this word).
+; Notes: With an odd byte count the final word includes one byte past the data (stale memory).
+;        That is why odd-length streams can emit symbols past the header size.
+RefillHuffmanBuffer:
     sub word ptr ds:[0], 2
     jne loc_11CB
     push bx
     push di
-    mov byte ptr cs:byte_2877, 1
-    mov bx, word ptr cs:cvar_1204
+    mov byte ptr cs:DosCallActive, 1
+    mov bx, word ptr cs:SqzFileHandle
     mov cx, 2800h
     mov dx, 41Ah
     mov ah, 3Fh
     int 21h
     jae loc_11B3
-    jmp near ptr loc_0FFF
+    jmp near ptr ReportReadError
 loc_11B3:
-    dec byte ptr cs:byte_2877
+    dec byte ptr cs:DosCallActive
     mov word ptr ds:[0], ax
     or ax, ax
     pop di
     pop bx
-    je loc_11E5
+    je HuffmanStreamEnd
     shr ax, 1
     adc word ptr ds:[0], 0
     mov si, 41Ah
@@ -2435,9 +2653,16 @@ loc_11CB:
     xchg al, ah
     mov dl, 11h
 
-sub_11D0:
+; Reads one Huffman symbol from the tree at DS:0006, consuming bits MSB first.
+; In: BX = 0 (tree root); DS = work segment (tree at DS:6, see DecodeHuffmanRle).
+; Out: BX = symbol (0..7FFFh). Clobbers AX, DL, CF. The bit buffer is in AX.
+; Notes: Node N = two LE words at DS:6+N (bit 0) and DS:8+N (bit 1); a child word is the next node
+;        offset; bit 15 set = leaf. Refills 16 bits at a time through RefillHuffmanBuffer.
+;        When the stream is exhausted there is no return: HuffmanStreamEnd pops this routine's
+;        return address and returns from LoadSqzFile with AX = SqzOutputSegment.
+ReadHuffmanSymbol:
     dec dl
-    je loc_1190
+    je RefillHuffmanBuffer
     rol ax, 1
     jae loc_11DA
     inc bx
@@ -2445,52 +2670,60 @@ sub_11D0:
 loc_11DA:
     mov bx, word ptr [bx+6]
     or bh, bh
-    jns sub_11D0
+    jns ReadHuffmanSymbol
     and bh, 7Fh
     ret
-loc_11E5:
+; End of the Huffman stream (a block read returned 0 bytes). Pops the return address of the
+; ReadHuffmanSymbol call (a nonlocal exit), closes the handle and returns from LoadSqzFile.
+; Out: AX = SqzOutputSegment.
+HuffmanStreamEnd:
     pop ax
-    mov byte ptr cs:byte_2877, 1
-    mov bx, word ptr cs:cvar_1204
+    mov byte ptr cs:DosCallActive, 1
+    mov bx, word ptr cs:SqzFileHandle
     mov ah, 3Eh
     int 21h
-    dec byte ptr cs:byte_2877
+    dec byte ptr cs:DosCallActive
     mov ax, seg DATA
     mov ds, ax
-    mov ax, word ptr cs:cvar_1206
+    mov ax, word ptr cs:SqzOutputSegment
     ret
-cvar_1204 label word
+SqzFileHandle label word
 ; DATA: SQZ loader: file handle (cs:1204) and output segment (cs:1206)
     db 00h, 00h
-cvar_1206 label word
+SqzOutputSegment label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-loc_1208:
+; LZW path of LoadSqzFile (header byte 1 == 10h). Seeks to 0, reads the 4-byte header to
+; SqzOutputSegment:000Eh, checks (byte1 & F0h) == 10h, sizes the output, and decodes.
+; In: SqzFileHandle, SqzOutputSegment. Out: AX = SqzOutputSegment, file closed.
+; Notes: The seek result is not checked. Paragraphs = (size >> 4) + 1 with size =
+;        ((byte0 & 0Fh) << 16) | word(byte2). Output is not size-checked; END (101h) ends it.
+LoadLzwStream:
     xor dx, dx
     xor cx, cx
     mov ax, 4200h
-    mov byte ptr cs:byte_2877, 1
+    mov byte ptr cs:DosCallActive, 1
     int 21h
-    mov byte ptr cs:byte_2877, 0
+    mov byte ptr cs:DosCallActive, 0
     mov ax, seg DATA
     mov es, ax
-    mov ax, word ptr cs:cvar_1206
+    mov ax, word ptr cs:SqzOutputSegment
     mov ds, ax
     mov cx, 4
     mov dx, 0Eh
-    mov bx, word ptr cs:cvar_1204
+    mov bx, word ptr cs:SqzFileHandle
     mov ah, 3Fh
-    mov byte ptr cs:byte_2877, 1
+    mov byte ptr cs:DosCallActive, 1
     int 21h
     jae loc_1242
-    jmp near ptr loc_0FFF
+    jmp near ptr ReportReadError
 loc_1242:
-    mov byte ptr cs:byte_2877, 0
+    mov byte ptr cs:DosCallActive, 0
     mov al, byte ptr ds:[0Fh]
     and al, 0F0h
     cmp al, 10h
     je loc_1254
-    jmp near ptr loc_1414
+    jmp near ptr LoadLzssStream
 loc_1254:
     xor di, di
     mov bx, word ptr ds:[0Eh]
@@ -2503,25 +2736,27 @@ loc_1260:
     inc ax
     add ax, word ptr es:[2875h]
     mov word ptr es:[2875h], ax
-    cmp word ptr cs:cvar_0006, ax
+    cmp word ptr cs:ConventionalTopSeg, ax
     ja loc_127A
     jmp near ptr loc_06D5
 loc_127A:
     mov ds, ax
-    mov ax, word ptr cs:cvar_1206
+    mov ax, word ptr cs:SqzOutputSegment
     mov es, ax
     mov word ptr ds:[0], di
     mov word ptr ds:[2], di
 loc_128A:
-    call sub_133C
-    call sub_134E
+; LZW restart after CLEAR (100h) and at stream start: resets the dictionary, reads a code.
+; A first code of 101h ends the stream with empty output. Otherwise its low byte is emitted.
+    call ResetLzwDictionary
+    call ReadLzwCode
     cmp ax, 101h
     je loc_12A7
     mov word ptr ds:[5], ax
     mov byte ptr ds:[4], al
     stosb
 loc_129C:
-    call sub_134E
+    call ReadLzwCode
     cmp ax, 100h
     je loc_128A
     cmp ax, 101h
@@ -2572,27 +2807,39 @@ loc_12EF:
     mov word ptr [bx+2C10h], dx
     inc word ptr ds:[0Ch]
 loc_1315:
+; Reached when the next free code is 1000h or more (dictionary full): no entry is added, the
+; previous code is still saved, and decoding continues at 12 bits.
     mov ax, word ptr ds:[7]
     mov word ptr ds:[5], ax
     jmp near ptr loc_129C
 loc_131E:
-    mov byte ptr cs:byte_2877, 1
-    mov bx, word ptr cs:cvar_1204
+    mov byte ptr cs:DosCallActive, 1
+    mov bx, word ptr cs:SqzFileHandle
     mov ah, 3Eh
     int 21h
-    dec byte ptr cs:byte_2877
+    dec byte ptr cs:DosCallActive
     mov ax, seg DATA
     mov ds, ax
-    mov ax, word ptr cs:cvar_1206
+    mov ax, word ptr cs:SqzOutputSegment
     ret
 
-sub_133C:
+; Resets the LZW state: code width 9, next free code 102h, threshold 200h.
+; In: DS = LZW work segment (the paragraph after the output block).
+; Out: DS:0Ah = 200h, DS:09h = 9, DS:0Ch = 102h.
+ResetLzwDictionary:
     mov word ptr ds:[0Ah], 200h
     mov byte ptr ds:[9], 9
     mov word ptr ds:[0Ch], 102h
     ret
 
-sub_134E:
+; Reads the next LZW code (9..12 bits, MSB first) and returns it.
+; In: DS = LZW work segment: DS:0Ch next free code, DS:0Ah width threshold, DS:09h width.
+; Out: AX = code. CF/flags as after the last compare.
+; Notes: Width grows by one when next free code == threshold (equality; threshold doubles; no
+;        growth past 12 bits). Bit position DS:02h (bit 0 = DS:000Eh); bit limit DS:00h =
+;        (bytes read + 2) * 8. On a short limit, the old block's last 2 bytes (DS:1C0Eh) are
+;        carried to DS:000Eh and 1C00h bytes are read to DS:0010h. A 0-byte read is not detected.
+ReadLzwCode:
     mov ax, word ptr ds:[0Ch]
     cmp word ptr ds:[0Ah], ax
     jne loc_1366
@@ -2616,14 +2863,14 @@ loc_1366:
     mov si, bx
     mov ax, word ptr ds:[1C0Eh]
     mov word ptr ds:[0Eh], ax
-    mov bx, word ptr cs:cvar_1204
+    mov bx, word ptr cs:SqzFileHandle
     mov ah, 3Fh
-    mov byte ptr cs:byte_2877, 1
+    mov byte ptr cs:DosCallActive, 1
     int 21h
     jae loc_13AA
-    jmp near ptr loc_0FFF
+    jmp near ptr ReportReadError
 loc_13AA:
-    dec byte ptr cs:byte_2877
+    dec byte ptr cs:DosCallActive
     inc ax
     inc ax
     shl ax, 1
@@ -2668,49 +2915,57 @@ loc_13F6:
     shr ax, cl
     or al, dh
     ret
-cvar_1409 label word
+XmsBytesLeftLow label word
 ; DATA: EMS/XMS copy state: dword cs:1409, words 140D/1410/1412, mode byte 140F
     db 00h, 00h
-cvar_140B label word
+XmsBytesLeftHigh label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-cvar_140D label word
+EmsNextLogicalPage label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-cvar_140F label byte
+LzssSourceMode label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
-cvar_1410 label word
+LzssChunkBytes label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-cvar_1412 label word
+LzssRefillThreshold label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-loc_1414:
+; LZSS path of LoadSqzFile (bytes 0-1 = B4 4C). Seeks to 0 (checked), reads the 17-byte header
+; to SqzOutputSegment:0000 (not checked), tests the signature bytes 4..7 (9Dh 89h 64h 6Ch),
+; sizes the output, reads the first stream chunk to DS:0000, and enters DecodeLzssStream.
+; In: SqzFileHandle. Out: via DecodeLzssStream (AX = SqzOutputSegment, mode 0).
+; Notes: Header byte 9 (00/01) is not read by any code here. Paragraphs = ((byte14>>2)<<16 |
+;        word(15..16)) >> 4 + 1 (see the report). Chunk = LzssChunkBytes (loc_149D).
+LoadLzssStream:
     xor dx, dx
     xor cx, cx
     mov ax, 4200h
-    mov byte ptr cs:byte_2877, 1
+    mov byte ptr cs:DosCallActive, 1
     int 21h
     jae loc_1428
-    jmp near ptr loc_0FD9
+    jmp near ptr ReportSqzError
 loc_1428:
-    dec byte ptr cs:byte_2877
+; The 17-byte header read has no carry test. A failed read is caught only if the signature at
+; bytes 4..7 is wrong. Bytes 2..3 and 8..13 are never read.
+    dec byte ptr cs:DosCallActive
     mov ax, seg DATA
     mov es, ax
-    mov ax, word ptr cs:cvar_1206
+    mov ax, word ptr cs:SqzOutputSegment
     mov ds, ax
     mov cx, 11h
     xor dx, dx
-    mov bx, word ptr cs:cvar_1204
+    mov bx, word ptr cs:SqzFileHandle
     mov ah, 3Fh
-    inc byte ptr cs:byte_2877
+    inc byte ptr cs:DosCallActive
     int 21h
-    dec byte ptr cs:byte_2877
+    dec byte ptr cs:DosCallActive
     cmp word ptr ds:[4], 899Dh
     je loc_145B
 loc_1458:
-    jmp near ptr loc_0FD9
+    jmp near ptr ReportSqzError
 loc_145B:
     cmp word ptr ds:[6], 6C64h
     jne loc_1458
@@ -2728,7 +2983,7 @@ loc_1471:
     mov word ptr es:[2875h], ax
     mov ds, ax
     mov dx, 0F000h
-    sub ax, word ptr cs:cvar_0006
+    sub ax, word ptr cs:ConventionalTopSeg
     jb loc_1490
     jmp near ptr loc_06D5
 loc_1490:
@@ -2739,38 +2994,47 @@ loc_1490:
     shl ax, cl
     mov dx, ax
 loc_149D:
-    mov word ptr cs:cvar_1410, dx
+; LzssChunkBytes = min(0F000h, (cs:0006 - end) * 16); LzssRefillThreshold = chunk - 80h, which
+; wraps unsigned when the chunk is under 80h (no refills then; not reachable with shipped data).
+    mov word ptr cs:LzssChunkBytes, dx
     add dx, 0
     sub dx, 80h
-    mov word ptr cs:cvar_1412, dx
-    mov es, word ptr cs:cvar_1206
+    mov word ptr cs:LzssRefillThreshold, dx
+    mov es, word ptr cs:SqzOutputSegment
     xor di, di
     mov si, 0
-    inc byte ptr cs:byte_2877
-    mov bx, word ptr cs:cvar_1204
-    mov cx, word ptr cs:cvar_1410
+    inc byte ptr cs:DosCallActive
+    mov bx, word ptr cs:SqzFileHandle
+    mov cx, word ptr cs:LzssChunkBytes
     mov dx, 0
     mov ah, 3Fh
     int 21h
     jae loc_14D3
-    jmp near ptr loc_0FD9
+    jmp near ptr ReportSqzError
 loc_14D3:
-    dec byte ptr cs:byte_2877
+    dec byte ptr cs:DosCallActive
 
-sub_14D8:
+; LZSS core: decodes the bit stream at DS:SI into ES:DI until the end marker.
+; In: DS:SI = stream start (SI = 0 for the file path, 11h for memory and XMS sources, the EMS
+;     page offset + 11h for EMS), ES:DI = output (DI = 0), LzssSourceMode = 0..3 (section 4).
+; Out: mode 0: handle closed, AX = SqzOutputSegment, DS = DATA. Modes 1..3: AX = DATA segment,
+;      DS = DATA, nothing closed.
+; Notes: No output size check; the end marker (short match, distance byte FFh) stops it. Copies
+;        read ES:[(DI + distance) & 0FFFFh]. Callers: 04D2 (mode 1), 0533 (mode 2), 068B (mode 3).
+DecodeLzssStream:
     mov dl, 10h
     lodsw
     xchg bp, ax
     xor cx, cx
     jmp short loc_14EF
 loc_14E0:
-    call sub_1700
+    call LzssNextBitWord
     jmp short loc_14F5
 loc_14E5:
-    call sub_1700
+    call LzssNextBitWord
     jmp short loc_1500
 loc_14EA:
-    call sub_1700
+    call LzssNextBitWord
     jmp short loc_150C
 loc_14EF:
     shr bp, 1
@@ -2817,22 +3081,22 @@ loc_1524:
 loc_152C:
     jmp near ptr loc_15D7
 loc_152F:
-    call sub_1700
+    call LzssNextBitWord
     jmp short loc_1553
 loc_1534:
-    call sub_1700
+    call LzssNextBitWord
     jmp short loc_155B
 loc_1539:
-    call sub_1700
+    call LzssNextBitWord
     jmp short loc_1567
 loc_153E:
-    call sub_1700
+    call LzssNextBitWord
     jmp short loc_156F
 loc_1543:
-    call sub_1700
+    call LzssNextBitWord
     jmp short loc_1583
 loc_1548:
-    call sub_1700
+    call LzssNextBitWord
     jmp short loc_1524
 loc_154D:
     shr bp, 1
@@ -2910,32 +3174,34 @@ loc_15BA:
     add cx, 11h
     jmp near ptr loc_1514
 loc_15C3:
-    call sub_1700
+    call LzssNextBitWord
     jmp short loc_158D
 loc_15C8:
-    call sub_1700
+    call LzssNextBitWord
     jmp short loc_1597
 loc_15CD:
-    call sub_1700
+    call LzssNextBitWord
     jmp short loc_15A5
 loc_15D2:
-    call sub_1700
+    call LzssNextBitWord
     jmp short loc_15B1
 loc_15D7:
-    cmp byte ptr cs:cvar_140F, 0
+; LZSS exit. Mode 0 closes the handle (loc_15E5) and returns SqzOutputSegment. Modes 1..3 return
+; with AX = DATA's segment and do not close the handle (none of their own is open).
+    cmp byte ptr cs:LzssSourceMode, 0
     je loc_15E5
     mov ax, seg DATA
     mov ds, ax
     ret
 loc_15E5:
-    mov byte ptr cs:byte_2877, 1
-    mov bx, word ptr cs:cvar_1204
+    mov byte ptr cs:DosCallActive, 1
+    mov bx, word ptr cs:SqzFileHandle
     mov ah, 3Eh
     int 21h
-    dec byte ptr cs:byte_2877
+    dec byte ptr cs:DosCallActive
     mov ax, seg DATA
     mov ds, ax
-    mov ax, word ptr cs:cvar_1206
+    mov ax, word ptr cs:SqzOutputSegment
     ret
 loc_1603:
     cmp di, 0F000h
@@ -2945,14 +3211,18 @@ loc_1603:
     add ax, 800h
     mov es, ax
 loc_1614:
-    cmp si, word ptr cs:cvar_1412
-    ja loc_1622
+    cmp si, word ptr cs:LzssRefillThreshold
+    ja RefillXmsChunk
     lodsw
     xchg bp, ax
     shr dl, 1
     mov dl, 10h
     ret
-loc_1622:
+; Mode-3 input refill from extended memory. Rewinds XmsSourceOffset by the unread bytes
+; (LzssChunkBytes - SI), adds them back to XmsBytesLeft, then moves min(XmsBytesLeft, chunk)
+; bytes with XmsDriverEntry AH=0Bh (EMB at DATA:0B21h) into DS:0000.
+; Notes: Result AX != 1 -> ReportXmsError. XmsBytesLeft is a 32-bit count of unmoved bytes.
+RefillXmsChunk:
     push ax
     push bx
     push cx
@@ -2962,36 +3232,36 @@ loc_1622:
     push ds
     push es
     push bp
-    mov ax, word ptr cs:cvar_1410
+    mov ax, word ptr cs:LzssChunkBytes
     sub si, ax
     neg si
     mov dx, seg DATA
     mov ds, dx
-    sub word ptr word_0B27, si
-    sbb word ptr word_0B29, 0
-    add word ptr cs:cvar_1409, si
-    adc word ptr cs:cvar_140B, 0
-    cmp word ptr cs:cvar_140B, 0
+    sub word ptr XmsSourceOffsetLow, si
+    sbb word ptr XmsSourceOffsetHigh, 0
+    add word ptr cs:XmsBytesLeftLow, si
+    adc word ptr cs:XmsBytesLeftHigh, 0
+    cmp word ptr cs:XmsBytesLeftHigh, 0
     jne loc_165F
-    cmp word ptr cs:cvar_1409, ax
+    cmp word ptr cs:XmsBytesLeftLow, ax
     jae loc_165F
-    mov ax, word ptr cs:cvar_1409
+    mov ax, word ptr cs:XmsBytesLeftLow
 loc_165F:
-    sub word ptr cs:cvar_1409, ax
-    sbb word ptr cs:cvar_140B, 0
-    mov word ptr word_0B21, ax
+    sub word ptr cs:XmsBytesLeftLow, ax
+    sbb word ptr cs:XmsBytesLeftHigh, 0
+    mov word ptr XmsMoveLength, ax
     mov si, 0B21h
     mov ah, 0Bh
-    inc byte ptr cs:byte_2877
-    call dword ptr dword_0B17
+    inc byte ptr cs:DosCallActive
+    call dword ptr XmsDriverEntry
     cmp ax, 1
     je loc_1683
-    jmp near ptr loc_0FEC
+    jmp near ptr ReportXmsError
 loc_1683:
-    dec byte ptr cs:byte_2877
-    mov ax, word ptr word_0B21
-    add word ptr word_0B27, ax
-    adc word ptr word_0B29, 0
+    dec byte ptr cs:DosCallActive
+    mov ax, word ptr XmsMoveLength
+    add word ptr XmsSourceOffsetLow, ax
+    adc word ptr XmsSourceOffsetHigh, 0
     pop bp
     pop es
     pop ds
@@ -3010,18 +3280,21 @@ loc_16A3:
     mov ax, es
     add ax, 800h
     mov es, ax
-    cmp ax, word ptr cs:cvar_0006
+    cmp ax, word ptr cs:ConventionalTopSeg
     jb loc_16BE
     jmp near ptr loc_06D5
 loc_16BE:
     cmp si, 7F80h
-    jae loc_16CB
+    jae RemapEmsPair
     lodsw
     xchg bp, ax
     shr dl, 1
     mov dl, 10h
     ret
-loc_16CB:
+; Mode-2 input refill: maps the next EMS logical page pair (EmsNextLogicalPage, +1) to physical
+; pages 0 and 1 with INT 67h AH=44h and EmsHandle, then SI -= 4000h.
+; Notes: No status check on the INT 67h calls.
+RemapEmsPair:
     push ax
     push bx
     push cx
@@ -3029,9 +3302,9 @@ loc_16CB:
     push ds
     mov ax, seg DATA
     mov ds, ax
-    mov dx, word ptr word_0B55
-    mov bx, word ptr cs:cvar_140D
-    inc word ptr cs:cvar_140D
+    mov dx, word ptr EmsHandle
+    mov bx, word ptr cs:EmsNextLogicalPage
+    inc word ptr cs:EmsNextLogicalPage
     mov ax, 4400h
     int 67h
     inc bx
@@ -3045,24 +3318,35 @@ loc_16CB:
     pop ax
     jmp short loc_1735
 
+; Dead fragment: a copy of the LZSS bit step that falls through to LzssNextBitWord. Reached by
+; no instruction (it follows an unconditional jump). Kept for the byte image.
 unused_16F9:
     shr bp, 1
     dec dl
-    je sub_1700
+    je LzssNextBitWord
     ret
 
-sub_1700:
+; Advances the LZSS bit reader by one 16-bit word and refreshes the window for the source mode.
+; In: CF = the bit just taken from BP (carried through the refill); DL = 0.
+; Out: BP = next word, DL = 16, CF = that carried bit, SI += 2 (or reset by a refill).
+; Modes: 1 plain fetch. 2 (EMS): if DI >= F000h shift ES (fatal if ES >= cs:0006); if
+;        SI >= 7F80h RemapEmsPair. 3 (XMS): if DI >= F000h shift ES; if SI > threshold
+;        RefillXmsChunk. 0 (file): if SI >= threshold RefillFileChunk (no DI test that time);
+;        else if DI >= C000h shift ES.
+; Notes: Window tests run once per word, not per byte: a word's worth of output can pass the
+;        threshold (at most a few hundred bytes).
+LzssNextBitWord:
     rcl dl, 1
-    cmp byte ptr cs:cvar_140F, 1
+    cmp byte ptr cs:LzssSourceMode, 1
     je loc_1735
-    cmp byte ptr cs:cvar_140F, 2
+    cmp byte ptr cs:LzssSourceMode, 2
     je loc_16A3
-    cmp byte ptr cs:cvar_140F, 3
+    cmp byte ptr cs:LzssSourceMode, 3
     jne loc_171D
     jmp near ptr loc_1603
 loc_171D:
-    cmp si, word ptr cs:cvar_1412
-    jae loc_173C
+    cmp si, word ptr cs:LzssRefillThreshold
+    jae RefillFileChunk
     cmp di, 0C000h
     jb loc_1735
     sub di, 8000h
@@ -3075,16 +3359,19 @@ loc_1735:
     shr dl, 1
     mov dl, 10h
     ret
-loc_173C:
+; Mode-0 input refill: moves the unread tail (DS:SI..LzssChunkBytes) to DS:0000 and reads SI
+; bytes from the file after it; SI = 0. Read failure -> ReportSqzError.
+; Notes: A short read near EOF is not detected; the buffer tail then holds stale bytes.
+RefillFileChunk:
     push bx
     push cx
     push dx
     push di
-    mov cx, word ptr cs:cvar_1412
+    mov cx, word ptr cs:LzssRefillThreshold
     add cx, 80h
     sub cx, si
     mov di, 0
-    mov ax, word ptr cs:cvar_1410
+    mov ax, word ptr cs:LzssChunkBytes
     sub ax, cx
     push es
     push ds
@@ -3092,14 +3379,14 @@ loc_173C:
     rep movsb
     pop es
     mov dx, di
-    mov bx, word ptr cs:cvar_1204
+    mov bx, word ptr cs:SqzFileHandle
     mov cx, ax
     mov ah, 3Fh
-    inc byte ptr cs:byte_2877
+    inc byte ptr cs:DosCallActive
     int 21h
-    dec byte ptr cs:byte_2877
+    dec byte ptr cs:DosCallActive
     jae loc_1776
-    jmp near ptr loc_0FD9
+    jmp near ptr ReportSqzError
 loc_1776:
     mov si, 0
     pop di
@@ -3108,7 +3395,12 @@ loc_1776:
     pop bx
     jmp short loc_1735
 
-sub_177F:
+; Exchanges IVT 08h and 09h (es:0020h..0027h) with the four words at cs:Int08SwapSlot. The first
+; call installs SpeakerTimerIsr (08h) and KeyboardIsr (09h) and leaves the BIOS vectors in the
+; slot; the second call (quit path in KeyboardIsr) restores the BIOS vectors. Also stores the
+; INT 03h segment in word_2381 and clears KeyDownTable (128 bytes at DATA:27F4h).
+; In/Out: none. Interrupts are off during the exchange; flags are restored; DS and ES preserved.
+SwapInt08Int09Vectors:
     push ax
     push cx
     push di
@@ -3157,7 +3449,7 @@ loc_17C0:
     mov ds, ax
     add word ptr word_27F0, 1
     adc word ptr word_27F2, 0
-    cmp byte ptr ds:byte_2877, 0
+    cmp byte ptr ds:DosCallActive, 0
     jne loc_181A
     mov ax, 40h
     mov ds, ax
@@ -3195,9 +3487,17 @@ loc_181A:
     pop di
     pop ds
     pop ax
-    jmp dword ptr cs:cvar_027A
+    jmp dword ptr cs:Int08SwapSlot
 
-sub_1823:
+; INT 09h keyboard handler (installed by SwapInt08Int09Vectors). Reads port 60h into
+; LastScanCode, acknowledges the keyboard (port 61h bit 7 pulse), sets KeyDownTable[code & 7Fh]
+; to FFh on make and 00h on break, sends EOI, IRET. F3 (3Dh) toggles cvar_1D6E bit 0 (sound on);
+; ESC (01h) with DATA:2877 = 0 runs the quit: SwapInt08Int09Vectors (restore), EMS free
+; (INT 67h AH=45h, EmsHandle), XMS free (AH=0Ah), text mode, the credit line at DATA:094Ah,
+; a wait on PIT ch0, zeroing of cs:0000..1937h and about 350 KB above the code, PIC unmask, and
+; INT 21h AH=4Ch from interrupt context.
+; Notes: the code after that INT 21h (out 64h,0FEh and a far jump to F000:FFF0) is unreachable.
+KeyboardIsr:
     push ds
     push bx
     push ax
@@ -3212,47 +3512,47 @@ sub_1823:
     out 61h, al
     mov al, ah
     out 61h, al
-    mov byte ptr byte_2874, bl
+    mov byte ptr LastScanCode, bl
     cmp bl, 1
     jne loc_184B
-    cmp byte ptr cs:byte_2877, 0
+    cmp byte ptr cs:DosCallActive, 0
 loc_184B:
     je loc_1850
     jmp near ptr loc_1976
 loc_1850:
-    inc byte ptr byte_2877
-    cmp byte ptr cs:cvar_1D6D, 0
+    inc byte ptr DosCallActive
+    cmp byte ptr cs:SbDetected, 0
     je loc_18B3
-    mov al, byte ptr cs:cvar_1D6E
+    mov al, byte ptr cs:SoundState
     and al, 3
     cmp al, 3
     jne loc_1885
-    mov byte ptr cs:cvar_1D6E, 0
-    mov cl, byte ptr byte_0E70
+    mov byte ptr cs:SoundState, 0
+    mov cl, byte ptr SbIrqLine
     mov al, 0FEh
     rol al, cl
     out 21h, al
     mov al, 20h
     out 20h, al
-    mov al, byte ptr byte_0B5D
+    mov al, byte ptr SbIrqCount
     sti
 loc_187E:
-    cmp byte ptr byte_0B5D, al
+    cmp byte ptr SbIrqCount, al
     je loc_187E
     cli
 loc_1885:
-    mov bl, byte ptr byte_0E70
+    mov bl, byte ptr SbIrqLine
     add bl, 8
     xor bh, bh
     shl bx, 1
     shl bx, 1
     xor ax, ax
     mov es, ax
-    mov ax, word ptr word_0E71
+    mov ax, word ptr SbSavedIrqOffset
     mov word ptr es:[bx], ax
-    mov ax, word ptr word_0E73
+    mov ax, word ptr SbSavedIrqSegment
     mov word ptr es:[bx+2], ax
-    mov dx, word ptr cs:cvar_0276
+    mov dx, word ptr cs:SbWritePort
     mov cx, 0FFFFh
 loc_18AB:
     in al, dx
@@ -3263,7 +3563,7 @@ loc_18AB:
 loc_18B3:
     mov ax, seg DATA
     mov ds, ax
-    mov dx, word ptr word_0B55
+    mov dx, word ptr EmsHandle
     cmp dx, 55AAh
     je loc_18D0
     mov bp, 3
@@ -3275,13 +3575,13 @@ loc_18C5:
     dec bp
     jne loc_18C5
 loc_18D0:
-    mov dx, word ptr word_0B1F
+    mov dx, word ptr XmsHandle
     cmp dx, 55AAh
     je loc_18EA
     mov ah, 0Ah
-    inc byte ptr cs:byte_2877
-    call dword ptr dword_0B17
-    dec byte ptr cs:byte_2877
+    inc byte ptr cs:DosCallActive
+    call dword ptr XmsDriverEntry
+    dec byte ptr cs:DosCallActive
 loc_18EA:
     mov ax, 3
     int 10h
@@ -3316,7 +3616,7 @@ loc_1917:
     ja loc_1917
     mov ax, 3
     int 10h
-    call sub_177F
+    call SwapInt08Int09Vectors
     mov al, 0Ah
     out 42h, al
     xor al, al
@@ -3354,31 +3654,31 @@ loc_1949:
 loc_1976:
     cmp bl, 3Dh
     jne loc_19B0
-    xor byte ptr cs:cvar_1D6E, 1
-    cmp byte ptr cs:cvar_1D6D, 1
+    xor byte ptr cs:SoundState, 1
+    cmp byte ptr cs:SbDetected, 1
     je loc_19A3
-    cmp byte ptr cs:cvar_1D6C, 1
+    cmp byte ptr cs:AdLibEnabled, 1
     je loc_19B0
     in al, 61h
     and al, 0FCh
-    test byte ptr cs:cvar_1D6E, 1
+    test byte ptr cs:SoundState, 1
     je loc_199F
     or al, 3
 loc_199F:
     out 61h, al
     jmp short loc_19B0
 loc_19A3:
-    test byte ptr cs:cvar_1D6E, 1
+    test byte ptr cs:SoundState, 1
     je loc_19B0
-    call sub_214E
+    call StartSbBlock
     jmp short loc_19B0
 loc_19B0:
     and bl, 7Fh
     xor bh, bh
-    mov al, byte ptr byte_2874
+    mov al, byte ptr LastScanCode
     cbw
     not ah
-    mov byte ptr [bx+byte_27F4], ah
+    mov byte ptr [bx+KeyDownTable], ah
     mov al, 20h
     out 20h, al
     pop ax
@@ -3386,7 +3686,13 @@ loc_19B0:
     pop ds
     iret
 
-unused_19C7:
+; Unused: no caller. Copy-protection check for the original disk. Compares the first byte of the
+; INT 03h handler with 0CDh (INT opcode, debugger test), probes disk sectors through
+; UnusedProtectionDiskProbe and on failure shows the "run with the original disk" text (DATA:2387h)
+; or resets the machine (out 64h,0FEh; far jump F000:FFF0). Erases itself with
+; UnusedWipeProtectionCode. Stores the INT 03h vector in cs:1AFBh (used as the far-call slot by
+; UnusedProtectionDiskIo).
+UnusedProtectionCheck:
     push ax
     push bx
     push cx
@@ -3430,24 +3736,24 @@ loc_1A1F:
     mov ds, ax
     mov es, ax
     mov byte ptr byte_23CD, 0
-    call sub_1B03
+    call UnusedProtectionDiskProbe
     jae loc_1A95
-    call sub_1B03
+    call UnusedProtectionDiskProbe
     jae loc_1A95
     xor byte ptr byte_23CD, 1
-    call sub_1B03
+    call UnusedProtectionDiskProbe
     jae loc_1A95
-    call sub_1B03
+    call UnusedProtectionDiskProbe
     jae loc_1A95
     mov ax, seg DATA
     mov ds, ax
     push cs
     pop es
-    mov word ptr word_2875, 0
+    mov word ptr NextFreeSegment, 0
     mov di, 26FAh
     mov cx, 800h
     rep stosb
-    call sub_1BF9
+    call UnusedWipeProtectionCode
     xor ax, ax
     mov es, ax
     mov word ptr es:[0Ch], 0FFF0h
@@ -3466,10 +3772,10 @@ loc_1A1F:
     mov al, 2Dh
     int 10h
     mov dx, word ptr word_27D2
-    call sub_1BD5
-    jmp near ptr loc_104F
+    call UnusedPrintHexWord
+    jmp near ptr HaltWithMessage
 loc_1A95:
-    call sub_1BF9
+    call UnusedWipeProtectionCode
     cmp byte ptr ds:byte_27D4, 1
     je loc_1AAC
     mov ah, 19h
@@ -3492,7 +3798,11 @@ loc_1AAC:
     pop ax
     ret
 
-sub_1ABB:
+; Unused: reached only from UnusedProtectionDiskProbe. For AH = 02h it calls through the far
+; pointer at cs:1AFBh with PUSHF (the INT 13h-shaped call; the slot is the INT 03h vector per
+; UnusedProtectionCheck, so the intended target is unclear). Other AH values use the placeholder
+; far call at cs:1AF9h (encoded as lcall 0:0). In: INT 13h registers. Out: AX stored at DATA:27CFh.
+UnusedProtectionDiskIo:
     cmp ah, 2
     jne loc_1AF9
     push ax
@@ -3538,17 +3848,21 @@ loc_1AF9:
     mov word ptr ds:[27CFh], ax
     ret
 
-sub_1B03:
+; Unused: reached only from UnusedProtectionCheck. Reads sectors through UnusedProtectionDiskIo
+; at several cylinder/head positions, checks the words 4C42h and 3255h in the read buffer
+; (DATA:23CEh, 23D0h) and records the outcome in byte_27CE, byte_27D1 and word_27D2.
+; Out: CF=0 when the signature matches, else CF=1. Clobbers AX, BX, CX, DX, DI.
+UnusedProtectionDiskProbe:
     mov dl, byte ptr byte_23CD
     xor ah, ah
-    call sub_1ABB
+    call UnusedProtectionDiskIo
     mov ax, 201h
     mov bx, 23CEh
     mov cx, 2
     mov dl, byte ptr byte_23CD
     mov dh, 0
     mov byte ptr byte_27CE, 1
-    call sub_1ABB
+    call UnusedProtectionDiskIo
     jb loc_1B82
     mov byte ptr byte_27D4, 0
     mov ax, 2701h
@@ -3566,7 +3880,7 @@ loc_1B48:
     mov bx, 23CEh
     mov ch, byte ptr byte_23CC
     mov dh, byte ptr byte_23CB
-    call sub_1ABB
+    call UnusedProtectionDiskIo
     jb loc_1B82
     inc cl
     cmp cl, 0Ah
@@ -3574,7 +3888,7 @@ loc_1B48:
     mov ax, 201h
     mov cl, 0F7h
     mov dl, byte ptr byte_23CD
-    call sub_1ABB
+    call UnusedProtectionDiskIo
     mov byte ptr byte_27CE, 3
     jae loc_1B82
     mov byte ptr byte_27CE, 4
@@ -3617,7 +3931,9 @@ loc_1BC2:
     clc
     ret
 
-sub_1BD5:
+; Unused: reached only from UnusedProtectionCheck. Prints DX as four hex digits through INT 10h
+; teletype output. In: DX. Out: none.
+UnusedPrintHexWord:
     mov cx, 4
 loc_1BD8:
     xor al, al
@@ -3639,7 +3955,10 @@ loc_1BF0:
     loop loc_1BD8
     ret
 
-sub_1BF9:
+; Unused: reached only from the protection routines. Zeroes the code bytes from cs:19C7h up to
+; the return address on the stack (the caller's offset), so the protection code erases itself.
+; In: return offset at [SP]. Out: none. Clobbers BP.
+UnusedWipeProtectionCode:
     mov bp, sp
     mov ax, word ptr [bp]
     mov bp, 19C7h
@@ -3650,7 +3969,10 @@ loc_1C01:
     jne loc_1C01
     ret
 
-sub_1C0C:
+; Sets CpuClass: 0 = 8086/8088 (shift count not masked), 2 = 80186/80286 (count masked, 386 opcode
+; faults), 3 = 80386 or later. Hooks INT 06h (IVT 0018h) to CpuProbeInt06Handler and restores it.
+; In: none. Out: CpuClass; DX = 02C5h (left over). Interrupts are disabled and re-enabled (STI).
+ProbeCpuClass:
     cli
     push ds
     push es
@@ -3667,17 +3989,19 @@ sub_1C0C:
     shl al, cl
     cmp al, 1
     je loc_1C40
-    mov byte ptr cs:cvar_0005, 0
+    mov byte ptr cs:CpuClass, 0
     jmp short loc_1C54
 loc_1C40:
     P386
     xor eax, eax
     P8086
-    mov byte ptr cs:cvar_0005, 3
+    mov byte ptr cs:CpuClass, 3
     jmp short loc_1C54
 
-sub_1C4B:
-    mov byte ptr cs:cvar_0005, 2
+; INT 06h (invalid opcode) handler while ProbeCpuClass runs: sets CpuClass = 2, discards the
+; three-word fault frame (ADD SP,6) and falls into ProbeCpuClass's restore code (loc_1C54).
+CpuProbeInt06Handler:
+    mov byte ptr cs:CpuClass, 2
     add sp, 6
 loc_1C54:
     mov dx, 2C5h
@@ -3688,13 +4012,18 @@ loc_1C54:
     pop ds
     ret
 
-sub_1C65:
+; Waits until TimerTickCount has advanced by 3 or more since word_27EE, then stores the
+; new count in word_27EE. Called from sub_44FB (MODULE2).
+; In: none. Out: word_27EE = TimerTickCount; byte_6BE7 incremented when the advance was exactly 3.
+; Notes: busy-wait with no timeout. The advance is |word_27EE - TimerTickCount| (16-bit).
+;        Only an advance of exactly 3 increments byte_6BE7; larger advances do not.
+WaitSoundTicks:
     mov ax, seg DATA
     mov ds, ax
     mov byte ptr byte_6BE7, 0
 loc_1C6F:
     mov ax, word ptr word_27EE
-    sub ax, word ptr cs:cvar_1D67
+    sub ax, word ptr cs:TimerTickCount
     jns loc_1C7B
     neg ax
 loc_1C7B:
@@ -3703,15 +4032,18 @@ loc_1C7B:
     ja loc_1C86
     inc byte ptr byte_6BE7
 loc_1C86:
-    mov ax, word ptr cs:cvar_1D67
+    mov ax, word ptr cs:TimerTickCount
     mov word ptr word_27EE, ax
     ret
 
-sub_1C8E:
+; Writes AL to the DSP write port (SbWritePort), busy-waiting while bit 7 is set.
+; In: AL = byte. Out: none. Preserves all registers.
+; Notes: no timeout. Used after DetectSoundBlaster succeeded (SbIrqHandler, StartSbBlock).
+DspWriteWait:
     push ax
     push dx
     mov ah, al
-    mov dx, word ptr cs:cvar_0276
+    mov dx, word ptr cs:SbWritePort
 loc_1C97:
     in al, dx
     test al, 80h
@@ -3722,13 +4054,21 @@ loc_1C97:
     pop ax
     ret
 
-sub_1CA2:
+; Writes AL to the DSP with a bounded wait: 10 rounds of up to 65535 polls of bit 7
+; of SbWritePort.
+; In: AL = byte. Out: CF=0 written; CF=1 on timeout. Preserves AX, BX, CX, DX.
+; Notes: on timeout the routine unhooks the probe ISRs if hooked (ToggleIrqProbeHooks),
+;        restores the PIC mask from PicMaskSaved, sets text mode 03h, prints the message at
+;        ds:0973h ("Sound Blaster does not work correctly."), then calls sub_105F (message at
+;        91Dh, waits for scan code 1Ch, then jumps to sub_447D). CF=1 is therefore not a
+;        clean failure return.
+DspWriteChecked:
     push ax
     push dx
     push cx
     push bx
     mov ah, al
-    mov dx, word ptr cs:cvar_0276
+    mov dx, word ptr cs:SbWritePort
     mov bx, 0Ah
 loc_1CB0:
     mov cx, 0FFFFh
@@ -3748,18 +4088,18 @@ loc_1CB3:
 loc_1CC3:
     dec bx
     jne loc_1CB0
-    cmp byte ptr cs:cvar_1F90, 0
+    cmp byte ptr cs:IrqProbeHooked, 0
     je loc_1CD1
-    call sub_1F91
+    call ToggleIrqProbeHooks
 loc_1CD1:
-    mov al, byte ptr byte_0E6F
+    mov al, byte ptr PicMaskSaved
     out 21h, al
     mov ax, 3
     int 10h
     mov ah, 9
     mov dx, 973h
     int 21h
-    call sub_105F
+    call WaitRetryPrompt
     pop bx
     pop cx
     pop dx
@@ -3767,11 +4107,19 @@ loc_1CD1:
     stc
     ret
 
-sub_1CEB:
+; OPL2 (AdLib) register write: AL = register, AH = value. Writes address port 388h, then
+; data port 389h, with a busy-wait after each. Loop counts depend on the CPU class byte
+; cs:[5] (set by the CPU probe):
+;   cs:[5] < 3 (8086/286): 5 loops after the address write, 35 after the data write.
+;   cs:[5] >= 3 (386+):    40 loops after the address write, 280 after the data write.
+; In: AL, AH. Out: none. Preserves all registers (flags changed).
+; Notes: the OPL needs about 3.3 us after an address and 23 us after data; a port must
+;        wait at least that long.
+OplWriteRegister:
     push dx
     push ax
     push cx
-    cmp byte ptr cs:cvar_0005, 3
+    cmp byte ptr cs:CpuClass, 3
     jae loc_1D0C
     mov dx, 388h
     out dx, al
@@ -3805,11 +4153,18 @@ loc_1D1C:
     pop dx
     ret
 
-sub_1D22:
+; Detects an OPL2 by its timer flags. Sequence: reg 01h = 20h; reg 04h = 63h (both timers
+; masked and started), then poll status 388h for 65535 reads expecting bits 6 and 5 clear;
+; reg 04h = 23h, expect status & 60h == 40h (timer 1 expired); reg 04h = 43h, expect
+; status & 60h == 20h (timer 2 expired).
+; In: none. Out: CF=0 OPL2 present; CF=1 not found. Clobbers AX, CX, DX.
+; Notes: timer counts (regs 02h/03h) are never written; detection uses their power-on values.
+;        Timer 2 is left running (reg 04h = 43h); no IRQ is enabled (reg 04h bit 7 clear).
+DetectAdLib:
     mov ax, 2001h
-    call sub_1CEB
+    call OplWriteRegister
     mov ax, 6304h
-    call sub_1CEB
+    call OplWriteRegister
     mov dx, 388h
     mov cx, 0FFFFh
 loc_1D34:
@@ -3818,7 +4173,7 @@ loc_1D34:
     jne loc_1D65
     loop loc_1D34
     mov ax, 2304h
-    call sub_1CEB
+    call OplWriteRegister
     mov cx, 0FFFFh
 loc_1D44:
     in al, dx
@@ -3829,7 +4184,7 @@ loc_1D44:
     jmp short loc_1D65
 loc_1D4F:
     mov ax, 4304h
-    call sub_1CEB
+    call OplWriteRegister
     mov cx, 0FFFFh
 loc_1D58:
     in al, dx
@@ -3844,7 +4199,7 @@ loc_1D63:
 loc_1D65:
     stc
     ret
-cvar_1D67 label word
+TimerTickCount label word
 ; DATA: timer/sound counters and flags
     db 00h, 00h
 cvar_1D69 label word
@@ -3853,17 +4208,37 @@ cvar_1D69 label word
 cvar_1D6B label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
-cvar_1D6C label byte
+AdLibEnabled label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
-cvar_1D6D label byte
+SbDetected label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
-cvar_1D6E label byte
+SoundState label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
 
-sub_1D6F:
+; Finds a Sound Blaster and prepares 8-bit DMA playback. Steps:
+;  1. Scan DSP bases 210h, 220h .. 260h: reset (base+6), read base+0Ah == AAh once
+;     base+0Eh bit 7 is set. Stores SbBasePort, SbReadPort, SbWritePort, SbAckPort.
+;  2. PIC mask 53h; ToggleIrqProbeHooks (counting ISRs on IRQ 2,3,5,7); 10 x WaitCrtRetrace.
+;  3. TC C1h; DMA ch1 page 0 offset 0 count 17 (mode 49h); DSP 14h 10h 00h; 2 x
+;     WaitCrtRetrace; unhook. Exactly one probe counter equal to 1 gives SbIrqLine
+;     (= counter index k, IRQ k, INT 08h+k).
+;  4. PIC mask = PicMaskSaved and not (1 shl k). INT 08h+k := SbIrqHandler (old vector
+;     saved to SbSavedIrqOffset/Segment).
+;  5. If cs:[3] bit 40h is clear: if (cs:[6] - SS) >= 7D00h, ModuleSegment = NextFreeSegment
+;     and NextFreeSegment += 105Ch paragraphs; else message at ds:09A6h ("not enough memory"),
+;     bit 40h set, no allocation (cs:[6] is an R1 word; its units are not verified here).
+;  6. SFX bank (SfxBankParagraphs*16 bytes) converted in place to 6-bit; volume table built
+;     at 12C1h.
+;  7. DMA records for buffers A (10C9h) and B (1171h) built with LinearDmaAddress; mode 49h.
+;  8. D1h speaker on; TC 89h (8403 Hz); SoundState bit 0 set.
+; In: none. Out: CF=0 success; CF=1 failure, PIC mask restored and probe ISRs unhooked.
+; Notes: no SB at all returns CF=1 silently; a DSP write timeout goes through
+;        DspWriteChecked. Bases 270h and above are not tried. ES=0 (set by
+;        ToggleIrqProbeHooks) is needed by WaitCrtRetrace.
+DetectSoundBlaster:
     mov ax, seg DATA
     mov ds, ax
     mov dx, 216h
@@ -3884,53 +4259,57 @@ loc_1D8D:
     in al, dx
     and al, 80h
     loope loc_1D8D
-    jcxz loc_1DC7
+    jcxz DetectSbNextBase
     and dl, 0F0h
     or dl, 0Ah
     in al, dx
     cmp al, 0AAh
-    jne loc_1DC7
+    jne DetectSbNextBase
     and dl, 0F0h
-    mov word ptr cs:cvar_0272, dx
-    mov ax, word ptr cs:cvar_0272
+    mov word ptr cs:SbBasePort, dx
+    mov ax, word ptr cs:SbBasePort
     mov dx, ax
     or dl, 0Ah
-    mov word ptr cs:cvar_0274, dx
+    mov word ptr cs:SbReadPort, dx
     mov dx, ax
     or dl, 0Ch
-    mov word ptr cs:cvar_0276, dx
+    mov word ptr cs:SbWritePort, dx
     or al, 0Eh
-    mov word ptr cs:cvar_0278, ax
+    mov word ptr cs:SbAckPort, ax
     jmp short loc_1DD9
-loc_1DC7:
+DetectSbNextBase:
     and dl, 0F0h
     add dl, 16h
     cmp dl, 6Fh
     jb loc_1D77
-loc_1DD2:
-    mov al, byte ptr byte_0E6F
+DetectSbFail:
+; quirk: CF=1 return leaves SoundState bit 0 clear and the PIC mask restored (PicMaskSaved).
+; quirk: the probe hooks are removed on the normal paths; a DspWriteChecked timeout does its
+; quirk: own unhook and then calls sub_105F, so the caller sees CF=1 only when the DSP never
+; quirk: answered.
+    mov al, byte ptr PicMaskSaved
     out 21h, al
     stc
     ret
 loc_1DD9:
     mov al, 53h
     out 21h, al
-    call sub_1F91
+    call ToggleIrqProbeHooks
     mov cx, 0Ah
 loc_1DE3:
-    call sub_1F70
+    call WaitCrtRetrace
     loop loc_1DE3
     mov al, 0D1h
-    call sub_1CA2
-    jb loc_1DD2
+    call DspWriteChecked
+    jb DetectSbFail
     xor bx, bx
     xor dl, dl
     mov al, 40h
-    call sub_1CA2
-    jb loc_1DD2
+    call DspWriteChecked
+    jb DetectSbFail
     mov al, 0C1h
-    call sub_1CA2
-    jb loc_1DD2
+    call DspWriteChecked
+    jb DetectSbFail
     mov al, 5
     out 0Ah, al
     mov al, 0
@@ -3950,22 +4329,22 @@ loc_1DE3:
     mov al, 1
     out 0Ah, al
     mov al, 14h
-    call sub_1CA2
-    jb loc_1DD2
+    call DspWriteChecked
+    jb DetectSbFail
     mov ax, 10h
     mov al, al
-    call sub_1CA2
-    jb loc_1DD2
+    call DspWriteChecked
+    jb DetectSbFail
     mov al, ah
     mov al, al
-    call sub_1CA2
-    jb loc_1DD2
-    call sub_1F70
-    call sub_1F70
-    call sub_1F91
+    call DspWriteChecked
+    jb DetectSbFail
+    call WaitCrtRetrace
+    call WaitCrtRetrace
+    call ToggleIrqProbeHooks
     mov al, 0D3h
-    call sub_1CA2
-    jb loc_1DD2
+    call DspWriteChecked
+    jb DetectSbFail
     mov si, 0E67h
     mov bx, 0FFFFh
     mov cx, 8
@@ -3974,7 +4353,7 @@ loc_1E59:
     jne loc_1E6A
     or bx, bx
     js loc_1E65
-    jmp near ptr loc_1DD2
+    jmp near ptr DetectSbFail
 loc_1E65:
     mov bx, 8
     sub bx, cx
@@ -3983,14 +4362,14 @@ loc_1E6A:
     loop loc_1E59
     or bx, bx
     jns loc_1E74
-    jmp near ptr loc_1DD2
+    jmp near ptr DetectSbFail
 loc_1E74:
-    mov byte ptr byte_0E70, bl
+    mov byte ptr SbIrqLine, bl
     mov cl, bl
     mov al, 1
     shl al, cl
     not al
-    and al, byte ptr byte_0E6F
+    and al, byte ptr PicMaskSaved
     out 21h, al
     mov ax, seg DATA
     mov es, ax
@@ -4016,7 +4395,7 @@ loc_1E92:
     jne loc_1E90
     xor ax, ax
     mov es, ax
-    mov bl, byte ptr byte_0E70
+    mov bl, byte ptr SbIrqLine
     add bl, 8
     xor bh, bh
     shl bx, 1
@@ -4024,24 +4403,24 @@ loc_1E92:
     cli
     mov ax, 204Dh
     xchg word ptr es:[bx], ax
-    mov word ptr word_0E71, ax
+    mov word ptr SbSavedIrqOffset, ax
     mov ax, cs
     xchg word ptr es:[bx+2], ax
-    mov word ptr word_0E73, ax
+    mov word ptr SbSavedIrqSegment, ax
     sti
     mov dx, ds
     mov cx, 10C9h
-    call sub_2026
-    mov byte ptr byte_10BB, cl
-    mov word ptr word_10BC, dx
+    call LinearDmaAddress
+    mov byte ptr DmaPageA, cl
+    mov word ptr DmaOffsetA, dx
     mov dx, ds
     mov cx, 1171h
-    call sub_2026
-    mov byte ptr byte_10BE, cl
-    mov word ptr word_10BF, dx
-    test word ptr cs:cvar_0003, 40h
+    call LinearDmaAddress
+    mov byte ptr DmaPageB, cl
+    mov word ptr DmaOffsetB, dx
+    test word ptr cs:OptionBits, 40h
     jne loc_1F2F
-    mov ax, word ptr cs:cvar_0006
+    mov ax, word ptr cs:ConventionalTopSeg
     mov dx, ss
     sub ax, dx
     cmp ax, 7D00h
@@ -4051,18 +4430,18 @@ loc_1E92:
     mov ah, 9
     mov dx, 9A6h
     int 21h
-    call sub_105F
-    or byte ptr cs:cvar_0003, 40h
+    call WaitRetryPrompt
+    or byte ptr cs:OptionBits, 40h
     jmp short loc_1F2F
 loc_1F23:
-    mov ax, word ptr word_2875
-    mov word ptr word_0B5E, ax
-    add word ptr word_2875, 105Ch
+    mov ax, word ptr NextFreeSegment
+    mov word ptr ModuleSegment, ax
+    add word ptr NextFreeSegment, 105Ch
 loc_1F2F:
-    mov ax, word ptr word_0B59
+    mov ax, word ptr SfxBankSegment
     mov es, ax
     xor di, di
-    mov ax, word ptr word_0B5B
+    mov ax, word ptr SfxBankParagraphs
     mov cl, 4
     shl ax, cl
     mov cx, ax
@@ -4073,25 +4452,31 @@ loc_1F3F:
     shr al, 1
     stosb
     loop loc_1F3F
-    or byte ptr cs:cvar_1D6E, 1
+    or byte ptr cs:SoundState, 1
     mov al, 0D1h
-    call sub_1CA2
+    call DspWriteChecked
     jae loc_1F5B
-    jmp near ptr loc_1DD2
+    jmp near ptr DetectSbFail
 loc_1F5B:
     mov al, 40h
-    call sub_1CA2
+    call DspWriteChecked
     jae loc_1F65
-    jmp near ptr loc_1DD2
+    jmp near ptr DetectSbFail
 loc_1F65:
     mov al, 89h
-    call sub_1CA2
+    call DspWriteChecked
     jae loc_1F6F
-    jmp near ptr loc_1DD2
+    jmp near ptr DetectSbFail
 loc_1F6F:
     ret
 
-sub_1F70:
+; Waits for the start of the next retrace interval: finishes the current one, then waits
+; for the next.
+; Colour CRTC (base 3D4h): input status 3DAh bit 3 (vertical). Mono (3B4h): 3BAh bit 0
+; (horizontal).
+; In: ES = 0 (BIOS CRTC base read at 0040:0063h). Out: none. Preserves AX, DX.
+; Notes: monochrome adapters are paced by horizontal retrace in this code.
+WaitCrtRetrace:
     push ax
     push dx
     mov dx, word ptr es:[463h]
@@ -4111,12 +4496,18 @@ loc_1F88:
     pop dx
     pop ax
     ret
-cvar_1F90 label byte
+IrqProbeHooked label byte
 ; DATA: toggle flag (not at 1F91)
     db 00h
 
-sub_1F91:
-    not byte ptr cs:cvar_1F90
+; Toggles the IRQ probe: exchanges IVT entries INT 08h..0Fh (es:[20h+4*i]) with the eight
+; dword entries at IrqVectorTable (ds:0E47h). Entries holding FFFF:FFFF are skipped.
+; Flips IrqProbeHooked (nonzero = hooked). Calling it twice restores the vectors.
+; In: none. Out: ES = 0, DS = DATA, IrqProbeHooked toggled. Clobbers AX, CX, DX, SI, DI.
+; Notes: interrupts are disabled during the exchange. After the first call the table holds
+;        the original BIOS vectors, which the chained probe ISRs jump to.
+ToggleIrqProbeHooks:
+    not byte ptr cs:IrqProbeHooked
     cli
     xor ax, ax
     mov es, ax
@@ -4144,10 +4535,15 @@ loc_1FC4:
     sti
     ret
 
-sub_1FCE:
+; IRQ-probe counter for IRQ 2 (INT 0Ah): acknowledges the SB (read SbAckPort), increments
+; IrqProbeCounts[2] (ds:0E69h), sends EOI, then jumps to the original vector at ds:0E4Fh.
+; In: DS must be DATA (the handler uses the interrupted DS). Out: none (the chained
+; handler IRETs).
+; Notes: the counter is a byte; DetectSoundBlaster needs exactly one counter equal to 1.
+CountSbIrq2:
     push ax
     push dx
-    mov dx, word ptr cs:cvar_0278
+    mov dx, word ptr cs:SbAckPort
     in al, dx
     inc byte ptr ds:[0E69h]
     mov al, 20h
@@ -4156,10 +4552,12 @@ sub_1FCE:
     pop ax
     jmp dword ptr ds:[0E4Fh]
 
-sub_1FE4:
+; IRQ-probe counter for IRQ 3 (INT 0Bh): ack, IrqProbeCounts[3] (ds:0E6Ah), EOI, chain
+; through ds:0E53h. In: DS = DATA. Out: none (chained handler IRETs).
+CountSbIrq3:
     push ax
     push dx
-    mov dx, word ptr cs:cvar_0278
+    mov dx, word ptr cs:SbAckPort
     in al, dx
     inc byte ptr ds:[0E6Ah]
     mov al, 20h
@@ -4168,10 +4566,12 @@ sub_1FE4:
     pop ax
     jmp dword ptr ds:[0E53h]
 
-sub_1FFA:
+; IRQ-probe counter for IRQ 5 (INT 0Dh): ack, IrqProbeCounts[5] (ds:0E6Ch), EOI, chain
+; through ds:0E5Bh. In: DS = DATA. Out: none (chained handler IRETs).
+CountSbIrq5:
     push ax
     push dx
-    mov dx, word ptr cs:cvar_0278
+    mov dx, word ptr cs:SbAckPort
     in al, dx
     inc byte ptr ds:[0E6Ch]
     mov al, 20h
@@ -4180,10 +4580,14 @@ sub_1FFA:
     pop ax
     jmp dword ptr ds:[0E5Bh]
 
-sub_2010:
+; IRQ-probe counter for IRQ 7 (INT 0Fh): ack, IrqProbeCounts[7] (ds:0E6Eh), EOI, chain
+; through ds:0E63h. In: DS = DATA. Out: none (chained handler IRETs).
+CountSbIrq7:
+; quirk: the four probe ISRs use the interrupted DS. They are safe only because detection
+; quirk: runs with DS = DATA.
     push ax
     push dx
-    mov dx, word ptr cs:cvar_0278
+    mov dx, word ptr cs:SbAckPort
     in al, dx
     inc byte ptr ds:[0E6Eh]
     mov al, 20h
@@ -4192,7 +4596,14 @@ sub_2010:
     pop ax
     jmp dword ptr ds:[0E63h]
 
-sub_2026:
+; Converts segment:offset into the DMA page and offset of the 168-byte block that starts
+; there. In: DX = segment, CX = offset. Out: CL = page (linear bits 16-19), DX = linear
+; bits 0-15 (linear = DX*16 + CX). Preserves AX.
+; Notes: if DX > FF57h (the block would cross a 64K boundary) it recomputes with DATA:1219h,
+;        but callers keep the mixer buffer pointers at 10C9h/1171h, so DMA and mixer then
+;        disagree. Dormant unless the low word of DATA*16+10C9h or DATA*16+1171h exceeds FF57h.
+;        If DATA*16+1219h also exceeds FF57h the routine loops forever.
+LinearDmaAddress:
     push ax
     rol dx, 1
     rol dx, 1
@@ -4209,11 +4620,24 @@ sub_2026:
     jbe loc_204C
     mov dx, seg DATA
     mov cx, 1219h
-    jmp short sub_2026
+    jmp short LinearDmaAddress
 loc_204C:
     ret
 
-sub_204D:
+; SB 8-bit DMA completion ISR (vector INT 08h + SbIrqLine). Once per 168-byte block:
+;  1. Ack (read SbAckPort), SbIrqCount++.
+;  2. Exit unless SoundState & 3 == 3 (device ready and output started).
+;  3. Swap PlayBuffer/MixBuffer and PlayDmaRecord/MixDmaRecord.
+;  4. Program DMA ch1 from PlayDmaRecord; DSP 14h A7h 00h (168 bytes).
+;  5. If cs:[3] bit 40h is clear: TrackerTick.
+;  6. Fill MixBuffer: SFX bytes (SfxBytesLeft) or zeros, to 168 bytes.
+;  7. If cs:[3] bit 40h is clear: MixChannel for channels 0-2, and channel 3 only when no
+;     SFX remains.
+;  8. EOI (out 20h, 20h), IRET. Registers preserved.
+; In: none (IRQ context, IF=0). Out: none.
+; Notes: see the R3 proposal header for the exact byte order and the overrun and stale-byte
+;        cases.
+SbIrqHandler:
     push ax
     push bx
     push cx
@@ -4227,22 +4651,22 @@ sub_204D:
     mov ax, seg DATA
     mov ds, ax
     mov es, ax
-    mov dx, word ptr cs:cvar_0278
+    mov dx, word ptr cs:SbAckPort
     in al, dx
-    inc byte ptr byte_0B5D
-    mov al, byte ptr cs:cvar_1D6E
+    inc byte ptr SbIrqCount
+    mov al, byte ptr cs:SoundState
     and al, 3
     cmp al, 3
-    je loc_2075
-    jmp near ptr loc_2140
-loc_2075:
-    mov ax, word ptr word_10C1
-    xchg word ptr word_10C5, ax
-    mov word ptr word_10C1, ax
-    mov ax, word ptr word_10C3
-    xchg word ptr word_10C7, ax
-    mov word ptr word_10C3, ax
-    mov bx, word ptr word_10C3
+    je SbIrqPlay
+    jmp near ptr SbIrqExit
+SbIrqPlay:
+    mov ax, word ptr PlayBuffer
+    xchg word ptr MixBuffer, ax
+    mov word ptr PlayBuffer, ax
+    mov ax, word ptr PlayDmaRecord
+    xchg word ptr MixDmaRecord, ax
+    mov word ptr PlayDmaRecord, ax
+    mov bx, word ptr PlayDmaRecord
     mov al, 5
     out 0Ah, al
     mov al, 0
@@ -4260,31 +4684,33 @@ loc_2075:
     mov al, 1
     out 0Ah, al
     mov al, 14h
-    call sub_1C8E
+    call DspWriteWait
     mov ax, 0A7h
     mov al, al
-    call sub_1C8E
+    call DspWriteWait
     mov al, ah
     mov al, al
-    call sub_1C8E
-    test word ptr cs:cvar_0003, 40h
+    call DspWriteWait
+    test word ptr cs:OptionBits, 40h
     jne loc_20CF
-    call sub_227C
+    call TrackerTick
 loc_20CF:
     mov ax, seg DATA
     mov ds, ax
     mov es, ax
-    mov di, word ptr ds:word_10C5
-    mov cx, word ptr word_1006
-    jcxz loc_2112
+    mov di, word ptr ds:MixBuffer
+    mov cx, word ptr SfxBytesLeft
+    jcxz SfxSilenceBlock
     cmp cx, 0A8h
-    jb loc_20E9
+    jb SfxCopyBlock
     mov cx, 0A8h
-loc_20E9:
-    sub word ptr word_1006, cx
+SfxCopyBlock:
+; quirk: odd SFX remainder n: (n-1) bytes copied, the last source byte dropped, and bytes
+; quirk: A6h-A7h of the block not written.
+    sub word ptr SfxBytesLeft, cx
     mov ax, cx
-    mov si, word ptr word_1004
-    mov ds, word ptr word_0B59
+    mov si, word ptr SfxPlayPos
+    mov ds, word ptr SfxBankSegment
     shr cx, 1
     rep movsw
     sub ax, 0A8h
@@ -4295,26 +4721,26 @@ loc_20E9:
     rep stosw
     mov ax, es
     mov ds, ax
-    mov word ptr word_1004, si
+    mov word ptr SfxPlayPos, si
     jmp short loc_2119
-loc_2112:
+SfxSilenceBlock:
     xor ax, ax
     mov cx, 54h
     rep stosw
 loc_2119:
-    test word ptr cs:cvar_0003, 40h
-    jne loc_2140
+    test word ptr cs:OptionBits, 40h
+    jne SbIrqExit
     xor bx, bx
-    call sub_218F
+    call MixChannel
     mov bx, 2
-    call sub_218F
+    call MixChannel
     mov bx, 4
-    call sub_218F
-    cmp word ptr ds:word_1006, 0
-    jne loc_2140
+    call MixChannel
+    cmp word ptr ds:SfxBytesLeft, 0
+    jne SbIrqExit
     mov bx, 6
-    call sub_218F
-loc_2140:
+    call MixChannel
+SbIrqExit:
     mov al, 20h
     out 20h, al
     pop bp
@@ -4328,11 +4754,14 @@ loc_2140:
     pop ax
     iret
 
-sub_214E:
+; Starts the first 168-byte block from PlayDmaRecord (no swap, no mixing): DMA ch1 is
+; programmed, then DSP 14h A7h 00h. In: none. Out: none. Preserves all registers.
+; Notes: callers set SoundState bit 1 afterwards. Uses DspWriteWait (no timeout).
+StartSbBlock:
     push ax
     push bx
     push dx
-    mov bx, word ptr word_10C3
+    mov bx, word ptr PlayDmaRecord
     mov al, 5
     out 0Ah, al
     mov al, 0
@@ -4350,37 +4779,46 @@ sub_214E:
     mov al, 1
     out 0Ah, al
     mov al, 14h
-    call sub_1C8E
+    call DspWriteWait
     mov ax, 0A7h
     mov al, al
-    call sub_1C8E
+    call DspWriteWait
     mov al, ah
     mov al, al
-    call sub_1C8E
+    call DspWriteWait
     pop dx
     pop bx
     pop ax
     ret
 
-sub_218F:
-    mov word ptr word_0B62, bx
+; Adds one MOD channel into MixBuffer (168 bytes) and advances its sample position.
+; In: BX = channel offset (0, 2, 4, 6). State: ChannelPos, ChannelEnd, ChannelInstrument,
+;     ChannelVolume, ChannelStep, ChannelPhase (arrays indexed by channel offset).
+; Out: ChannelPos, ChannelEnd, ChannelPhase updated. Preserves BX and all registers except SP.
+; Per output byte: out = (out + VolumeTable[volume*64 + sample]) mod 256, then pos advances
+;   by 1 + the signed integer part of (phase + step); phase keeps its low 8 bits.
+; Notes: ChannelPos FFFFh = silent. SP is used as the limit (SP = sample offset + ChannelEnd)
+;        and restored at the end; interrupts must stay disabled. Wrap and overrun cases are
+;        documented at MixChannelWrap, MixChannelOneShotFade and MixChannelStore.
+MixChannel:
+    mov word ptr MixChannelOffset, bx
     mov di, bx
-    mov dx, word ptr [bx+word_0BBA]
+    mov dx, word ptr [bx+ChannelVolume]
     shl dx, 1
     shl dx, 1
     shl dx, 1
     shl dx, 1
     shl dx, 1
     shl dx, 1
-    mov bp, word ptr [bx+word_0BAA]
-    mov ax, word ptr [bx+word_0B8A]
+    mov bp, word ptr [bx+ChannelStep]
+    mov ax, word ptr [bx+ChannelPos]
     cmp ax, 0FFFFh
     jne loc_21B5
     jmp near ptr loc_227B
 loc_21B5:
-    mov cx, word ptr [bx+word_0B92]
+    mov cx, word ptr [bx+ChannelEnd]
     sub cx, ax
-    mov bx, word ptr [bx+word_0B9A]
+    mov bx, word ptr [bx+ChannelInstrument]
     shl bx, 1
     shl bx, 1
     shl bx, 1
@@ -4389,12 +4827,12 @@ loc_21B5:
     add si, ax
     mov bx, dx
     add bx, 12C1h
-    mov dx, word ptr [di+word_0BCA]
-    mov word ptr word_0B60, sp
+    mov dx, word ptr [di+ChannelPhase]
+    mov word ptr MixSavedSp, sp
     mov sp, cx
     add sp, si
     mov cx, 0A8h
-    mov di, word ptr ds:word_10C5
+    mov di, word ptr ds:MixBuffer
 loc_21E6:
     lods byte ptr es:[si]
     xlat
@@ -4406,49 +4844,60 @@ loc_21E6:
     cbw
     add si, ax
     cmp si, sp
-    ja loc_21FD
+    ja MixChannelWrap
     loop loc_21E6
-    jmp short loc_2239
-loc_21FD:
-    mov word ptr word_10B9, bx
-    mov bx, word ptr word_0B62
-    mov bx, word ptr [bx+word_0B9A]
+    jmp short MixChannelStore
+MixChannelWrap:
+; quirk: loop wrap (sample end inside a block, loop length > 2 bytes): si := loop-start field
+; quirk: (raw BD6h, relative to the sample start, read through the sample segment, so it is
+; quirk: off by the far-pointer offset); ChannelEnd not updated; the wrap iteration does not
+; quirk: decrement CX (one extra output byte past the 168-byte block); the new end is stored
+; quirk: at ds:(ChannelEnd + 16*instrument_index) instead of this channel's ChannelEnd.
+    mov word ptr MixSavedVolumeRow, bx
+    mov bx, word ptr MixChannelOffset
+    mov bx, word ptr [bx+ChannelInstrument]
     shl bx, 1
     shl bx, 1
     shl bx, 1
     shl bx, 1
     mov ax, word ptr [bx+word_0BD8]
     cmp ax, 2
-    jbe loc_222A
+    jbe MixChannelOneShotFade
     mov si, word ptr [bx+word_0BD6]
     add ax, si
-    mov word ptr [bx+word_0B92], ax
-    mov bx, word ptr word_10B9
+    mov word ptr [bx+ChannelEnd], ax
+    mov bx, word ptr MixSavedVolumeRow
     jmp short loc_21E6
-loc_222A:
+MixChannelOneShotFade:
+; quirk: one-shot sample (loop length <= 2 bytes) ends inside the block: the previous output
+; quirk: byte P is added to the following bytes as P, P-1, ... until P == 0 or the block is
+; quirk: full, then the channel goes silent.
     mov al, byte ptr [di-1]
     or al, al
-    je loc_2239
+    je MixChannelStore
 loc_2231:
     add byte ptr [di], al
     inc di
     dec ax
-    je loc_2239
+    je MixChannelStore
     loop loc_2231
-loc_2239:
-    mov sp, word ptr word_0B60
+MixChannelStore:
+; quirk: at block end a looping channel uses ChannelEnd (updated correctly here, unlike
+; quirk: MixChannelWrap). A channel whose ChannelEnd was not updated after a mid-block wrap
+; quirk: keeps the old end for the rest of this block.
+    mov sp, word ptr MixSavedSp
     mov ax, ds
     mov es, ax
-    mov bx, word ptr word_0B62
+    mov bx, word ptr MixChannelOffset
     mov di, bx
-    mov word ptr [di+word_0BCA], dx
-    mov bx, word ptr [bx+word_0B9A]
+    mov word ptr [di+ChannelPhase], dx
+    mov bx, word ptr [bx+ChannelInstrument]
     shl bx, 1
     shl bx, 1
     shl bx, 1
     shl bx, 1
     sub si, word ptr [bx+word_0BDA]
-    cmp word ptr [di+word_0B92], si
+    cmp word ptr [di+ChannelEnd], si
     ja loc_2277
     mov si, 0FFFFh
     mov ax, word ptr [bx+word_0BD8]
@@ -4456,19 +4905,32 @@ loc_2239:
     jbe loc_2277
     mov si, word ptr [bx+word_0BD6]
     add ax, si
-    mov word ptr [di+word_0B92], ax
+    mov word ptr [di+ChannelEnd], ax
 loc_2277:
-    mov word ptr [di+word_0B8A], si
+    mov word ptr [di+ChannelPos], si
 loc_227B:
     ret
 
-sub_227C:
+; Advances the MOD sequencer by one tick (one 168-byte block, 50 Hz). Called from
+; SbIrqHandler.
+; 1. Volume slides: channels with a nonzero ChannelVolumeSlide get
+;    ChannelVolume += slide, clamped to 0..64.
+; 2. SongTickCount--; if nonzero return; otherwise SongTickCount = SongSpeed.
+; 3. Processes row SongRow of pattern OrderTable[SongOrderPos] for channels 0-3
+;    (ProcessChannelCell). es = ModuleSegment + pattern*64; si = SongRow*16 +
+;    PatternDataOffset, latched before the channels.
+; 4. SongRow++; at 64: SongOrderPos++ (kept if its low byte <= SongLength, else 0),
+;    SongRow = 0.
+; In/Out: state above. Clobbers all registers.
+; Notes: Bxx/Dxx change the row/order used for the next row only (row pointer latched).
+;        The order wrap compares only the low byte of the new position (cmp byte, al).
+TrackerTick:
     xor di, di
 loc_227E:
-    mov ax, word ptr [di+word_0BC2]
+    mov ax, word ptr [di+ChannelVolumeSlide]
     or ax, ax
     je loc_229A
-    add ax, word ptr [di+word_0BBA]
+    add ax, word ptr [di+ChannelVolume]
     jns loc_228E
     xor ax, ax
 loc_228E:
@@ -4476,62 +4938,69 @@ loc_228E:
     jle loc_2296
     mov ax, 40h
 loc_2296:
-    mov word ptr [di+word_0BBA], ax
+    mov word ptr [di+ChannelVolume], ax
 loc_229A:
     inc di
     inc di
     cmp di, 8
     jb loc_227E
-    dec byte ptr byte_0B85
+    dec byte ptr SongTickCount
     jne loc_230F
-    mov al, byte ptr byte_0B84
-    mov byte ptr byte_0B85, al
-    mov bx, word ptr word_0B86
+    mov al, byte ptr SongSpeed
+    mov byte ptr SongTickCount, al
+    mov bx, word ptr SongOrderPos
     xor al, al
-    mov ah, byte ptr [bx+byte_0DC7]
+    mov ah, byte ptr [bx+OrderTable]
     inc bx
     shr ax, 1
     shr ax, 1
-    add ax, word ptr word_0B5E
+    add ax, word ptr ModuleSegment
     mov es, ax
-    mov si, word ptr word_0B88
+    mov si, word ptr SongRow
     shl si, 1
     shl si, 1
     shl si, 1
     shl si, 1
-    add si, word ptr word_0DC5
+    add si, word ptr PatternDataOffset
     xor di, di
-    call sub_2311
+    call ProcessChannelCell
     add si, 4
     inc di
     inc di
-    call sub_2311
+    call ProcessChannelCell
     add si, 4
     inc di
     inc di
-    call sub_2311
+    call ProcessChannelCell
     add si, 4
     inc di
     inc di
-    call sub_2311
-    inc word ptr word_0B88
-    cmp word ptr ds:word_0B88, 40h
+    call ProcessChannelCell
+    inc word ptr SongRow
+    cmp word ptr ds:SongRow, 40h
     jne loc_230F
-    mov ax, word ptr word_0B86
+    mov ax, word ptr SongOrderPos
     inc ax
-    cmp byte ptr byte_0DC2, al
+    cmp byte ptr SongLength, al
     jae loc_2306
     xor ax, ax
 loc_2306:
-    mov word ptr word_0B86, ax
-    mov word ptr word_0B88, 0
+    mov word ptr SongOrderPos, ax
+    mov word ptr SongRow, 0
 loc_230F:
     ret
 loc_2310:
     ret
 
-sub_2311:
-    mov word ptr [di+word_0BC2], 0
+; Decodes one 4-byte cell at ES:SI and applies it to the channel at DI (channel offset).
+; In: ES:SI = cell (word0 = note index, byte2/byte3 = instrument/effect), DI = channel
+;     offset.
+; Out: channel fields updated (see TrackerTick notes); SI unchanged.
+; Notes: ChannelVolumeSlide is cleared first, even for empty cells. Instrument-only cells
+;        restart the sample at position 0 and reset volume and phase, with no note. The
+;        effect is dispatched for any nonzero cell with AL = parameter.
+ProcessChannelCell:
+    mov word ptr [di+ChannelVolumeSlide], 0
     mov ax, word ptr es:[si]
     mov dx, word ptr es:[si+2]
     mov bx, ax
@@ -4548,40 +5017,43 @@ sub_2311:
     or bl, bh
     xor bh, bh
     and dh, 0Fh
-    mov word ptr [di+word_0BA2], dx
+    mov word ptr [di+ChannelEffect], dx
     or bx, bx
     je loc_236D
     dec bx
-    mov word ptr [di+word_0B9A], bx
+    mov word ptr [di+ChannelInstrument], bx
     shl bx, 1
     shl bx, 1
     shl bx, 1
     shl bx, 1
-    mov word ptr [di+word_0B8A], 0
-    mov cx, word ptr [bx+word_0BD2]
-    mov word ptr [di+word_0B92], cx
+    mov word ptr [di+ChannelPos], 0
+    mov cx, word ptr [bx+InstrumentTable]
+    mov word ptr [di+ChannelEnd], cx
     mov cx, word ptr [bx+word_0BD4]
-    mov word ptr [di+word_0BBA], cx
-    mov word ptr [di+word_0BCA], 0
+    mov word ptr [di+ChannelVolume], cx
+    mov word ptr [di+ChannelPhase], 0
 loc_236D:
     and ax, 7FFFh
     je loc_2382
-    mov word ptr [di+word_0BB2], ax
+    mov word ptr [di+ChannelNote], ax
     mov bx, ax
     shl bx, 1
-    mov ax, word ptr [bx+word_0EBB]
-    mov word ptr [di+word_0BAA], ax
+    mov ax, word ptr [bx+StepTable]
+    mov word ptr [di+ChannelStep], ax
 loc_2382:
-    mov ax, word ptr [di+word_0BA2]
+    mov ax, word ptr [di+ChannelEffect]
     mov bl, ah
     xor bh, bh
     shl bx, 1
-    jmp word ptr [bx+dtbl_0B64]
+    jmp word ptr [bx+EffectJumpTable]
 
-sub_2390:
+; Effect handler for commands 0-9 and 0Eh (not implemented in PRE2). RET.
+IgnoreEffect:
     ret
 
-sub_2391:
+; Axy (cmd 0Ah): if x (high nibble of AL) is nonzero the slide is +x, else -y (16-bit).
+; In: AL = parameter, DI = channel. Out: ChannelVolumeSlide[DI] set.
+EffectVolumeSlide:
     mov ah, al
     shr ah, 1
     shr ah, 1
@@ -4594,33 +5066,43 @@ sub_2391:
 loc_23A3:
     neg ax
 loc_23A5:
-    mov word ptr [di+word_0BC2], ax
+    mov word ptr [di+ChannelVolumeSlide], ax
     ret
 
-sub_23AA:
+; Bxx (cmd 0Bh): SongOrderPos = AL (0..255, not range-checked), SongRow = FFFFh (the next
+; row is 0).
+; In: AL. Out: SongOrderPos, SongRow.
+EffectPositionJump:
     xor ah, ah
-    mov word ptr word_0B86, ax
-    mov word ptr word_0B88, 0FFFFh
+    mov word ptr SongOrderPos, ax
+    mov word ptr SongRow, 0FFFFh
     ret
 
-sub_23B6:
+; Cxx (cmd 0Ch): ChannelVolume[DI] = min(AL, 64) (AL >= 80h gives 64).
+; In: AL, DI. Out: ChannelVolume[DI].
+EffectSetVolume:
     cbw
     cmp ax, 40h
     jbe loc_23BF
     mov ax, 40h
 loc_23BF:
-    mov word ptr [di+word_0BBA], ax
+    mov word ptr [di+ChannelVolume], ax
     ret
 
-sub_23C4:
+; Dxx (cmd 0Dh): SongRow = AL - 1 (decimal, not BCD; AL = 0 gives FFFFh), SongOrderPos++.
+; The next row is therefore AL. Rows above 63 read past the pattern (no range check).
+; A row of 64 triggers the row-64 wrap, which adds a second order increment.
+EffectPatternBreak:
     dec al
     cbw
-    mov word ptr word_0B88, ax
-    inc word ptr word_0B86
+    mov word ptr SongRow, ax
+    inc word ptr SongOrderPos
     ret
 
-sub_23CF:
-    mov byte ptr byte_0B84, al
+; Fxx (cmd 0Fh): SongSpeed = AL, applied at the next row reload. No tempo mode: any value
+; is a speed. Speed 0 reloads 0, so the countdown wraps and each row lasts 256 ticks.
+EffectSetSpeed:
+    mov byte ptr SongSpeed, al
     ret
 CODE ends
 DATA segment word public 'DATA'
@@ -4632,7 +5114,7 @@ DATA segment word public 'DATA'
     db 'FRONT.SQZ', 0
 ; DATA: text
     db 'CASTLE.SQZ', 0
-word_0037 label word
+ClockYear label word
 ; UNKNOWN: not yet classified as code or data
     db 0BCh, 07h
 word_0039 label word
@@ -4642,6 +5124,12 @@ word_003B label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
 word_003D label word
+; quirk: sub_0008 stores the KEYB.SQZ segment here, then resets NextFreeSegment to that segment,
+; so ALLFONTS.SQZ decompresses at the same segment and this word ends as the ALLFONTS segment.
+; The later store at cs:00F8 (mov ds:[3Dh], ax) runs with DS = that segment, so it writes the
+; segment value into ALLFONTS offset 3Dh, not into DATA. DATA:003D already holds the same value,
+; so the DATA word is right and only ALLFONTS byte 3Dh-3Eh is overwritten. The same label is used
+; as a displacement base in PollInputState ([si+word_003D]); rename with care.
 ; UNKNOWN: not yet classified as code or data
     db 00h
 byte_003E label byte
@@ -4729,52 +5217,52 @@ byte_083E label byte
     db 'KOOL.TRK', 0
 ; DATA: text
     db 'BOULA.TRK', 0
-byte_0A98 label byte
+ResourceSlotList label byte
 ; UNKNOWN: not yet classified as code or data
     db 0Dh, 05h, 06h, 01h, 02h, 07h, 11h, 0Bh, 0Ch, 00h, 0Fh, 03h
     db 08h, 09h, 0Ah, 04h, 10h, 0Eh
-byte_0AAA label byte
+ResourceSizeKb label byte
 ; UNKNOWN: not yet classified as code or data
     db 1Eh, 04h, 05h, 2Dh, 1Ch, 24h, 0Ah, 2Dh, 15h, 16h, 1Eh, 0Bh
     db 13h, 19h, 1Bh, 17h, 1Ah, 13h
-byte_0ABC label byte
+ResourceFlags label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h, 02h, 02h, 00h, 00h, 08h, 0Ah, 08h, 08h, 00h, 00h, 08h
     db 08h, 00h, 00h, 00h, 00h, 00h
-word_0ACE label word
+ResourceAddressTable label word
 ; UNKNOWN: not yet classified as code or data
     db 72 dup(0)
 byte_0B16 label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
-dword_0B17 label dword
+XmsDriverEntry label dword
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
 word_0B19 label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_0B1B label word
+XmsNextOffsetKb label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_0B1D label word
+XmsFreeKb label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_0B1F label word
+XmsHandle label word
 ; UNKNOWN: not yet classified as code or data
     db 0AAh, 55h
-word_0B21 label word
+XmsMoveLength label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
 word_0B23 label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_0B25 label word
+XmsSourceHandle label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_0B27 label word
+XmsSourceOffsetLow label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_0B29 label word
+XmsSourceOffsetHigh label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
 word_0B2B label word
@@ -4793,93 +5281,99 @@ word_0B40 label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 45h, 4Dh, 4Dh
     db 58h, 58h, 58h, 58h, 30h
-word_0B51 label word
+EmsFrameSegment label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_0B53 label word
+EmsFreeKb label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_0B55 label word
+EmsHandle label word
 ; UNKNOWN: not yet classified as code or data
     db 0AAh, 55h
-word_0B57 label word
+EmsNextOffsetKb label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_0B59 label word
+SfxBankSegment label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_0B5B label word
+SfxBankParagraphs label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-byte_0B5D label byte
+SbIrqCount label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
-word_0B5E label word
+ModuleSegment label word
+; Set at cs:1F23 (outside R1) to NextFreeSegment, then NextFreeSegment += 105Ch: a window of
+; 105Ch paragraphs at the heap top that PageInResource copies resources into.
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_0B60 label word
+MixSavedSp label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_0B62 label word
+MixChannelOffset label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-dtbl_0B64 label word
-    dw offset sub_2390
-    dw offset sub_2390
-    dw offset sub_2390
-    dw offset sub_2390
-    dw offset sub_2390
-    dw offset sub_2390
-    dw offset sub_2390
-    dw offset sub_2390
-    dw offset sub_2390
-    dw offset sub_2390
-    dw offset sub_2391
-    dw offset sub_23AA
-    dw offset sub_23B6
-    dw offset sub_23C4
-    dw offset sub_2390
-    dw offset sub_23CF
-byte_0B84 label byte
+EffectJumpTable label word
+; Sixteen word entries, index = effect command: 0-9 and 0Eh IgnoreEffect, 0Ah
+; EffectVolumeSlide, 0Bh EffectPositionJump, 0Ch EffectSetVolume, 0Dh EffectPatternBreak,
+; 0Fh EffectSetSpeed.
+    dw offset IgnoreEffect
+    dw offset IgnoreEffect
+    dw offset IgnoreEffect
+    dw offset IgnoreEffect
+    dw offset IgnoreEffect
+    dw offset IgnoreEffect
+    dw offset IgnoreEffect
+    dw offset IgnoreEffect
+    dw offset IgnoreEffect
+    dw offset IgnoreEffect
+    dw offset EffectVolumeSlide
+    dw offset EffectPositionJump
+    dw offset EffectSetVolume
+    dw offset EffectPatternBreak
+    dw offset IgnoreEffect
+    dw offset EffectSetSpeed
+SongSpeed label byte
 ; UNKNOWN: not yet classified as code or data
     db 01h
-byte_0B85 label byte
+SongTickCount label byte
 ; UNKNOWN: not yet classified as code or data
     db 01h
-word_0B86 label word
+SongOrderPos label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_0B88 label word
+SongRow label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_0B8A label word
+ChannelPos label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-word_0B92 label word
+ChannelEnd label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-word_0B9A label word
+ChannelInstrument label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-word_0BA2 label word
+ChannelEffect label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-word_0BAA label word
+ChannelStep label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-word_0BB2 label word
+ChannelNote label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-word_0BBA label word
+ChannelVolume label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-word_0BC2 label word
+ChannelVolumeSlide label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-word_0BCA label word
+ChannelPhase label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-word_0BD2 label word
+InstrumentTable label word
+; DATA: instrument records: 31 x 16 bytes (see InstrumentTable comment in R3 header)
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
 word_0BD4 label word
@@ -4897,51 +5391,58 @@ word_0BDA label word
 word_0BDC label word
 ; UNKNOWN: not yet classified as code or data
     db 486 dup(0)
-byte_0DC2 label byte
+SongLength label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
-byte_0DC3 label byte
+PatternCount label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
-byte_0DC4 label byte
+InstrumentCount label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
-word_0DC5 label word
+PatternDataOffset label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-byte_0DC7 label byte
+OrderTable label byte
+; DATA: song order table: OrderTable[pos] = pattern number (SongLength entries used)
 ; UNKNOWN: not yet classified as code or data
     db 128 dup(0)
+IrqVectorTable label dword
 ; UNKNOWN: not yet classified as code or data
     db 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh
-    dd sub_1FCE
-    dd sub_1FE4
+    dd CountSbIrq2
+    dd CountSbIrq3
 ; UNKNOWN: not yet classified as code or data
     db 0FFh, 0FFh, 0FFh, 0FFh
-    dd sub_1FFA
+    dd CountSbIrq5
 ; UNKNOWN: not yet classified as code or data
     db 0FFh, 0FFh, 0FFh, 0FFh
-    dd sub_2010
+    dd CountSbIrq7
+IrqProbeCounts label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-byte_0E6F label byte
+PicMaskSaved label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
-byte_0E70 label byte
+SbIrqLine label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
-word_0E71 label word
+SbSavedIrqOffset label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_0E73 label word
+SbSavedIrqSegment label word
 ; UNKNOWN: not yet classified as code or data
-    db 00h, 00h, 58h, 03h, 28h, 03h, 0FAh, 02h, 0D0h, 02h, 0A6h, 02h
+    db 00h, 00h
+PeriodTable label word
+; UNKNOWN: not yet classified as code or data
+    db 58h, 03h, 28h, 03h, 0FAh, 02h, 0D0h, 02h, 0A6h, 02h
     db 80h, 02h, 5Ch, 02h, 3Ah, 02h, 1Ah, 02h, 0FCh, 01h, 0E0h, 01h
     db 0C5h, 01h, 0ACh, 01h, 94h, 01h, 7Dh, 01h, 68h, 01h, 53h, 01h
     db 40h, 01h, 2Eh, 01h, 1Dh, 01h, 0Dh, 01h, 0FEh, 00h, 0F0h, 00h
     db 0E2h, 00h, 0D6h, 00h, 0CAh, 00h, 0BEh, 00h, 0B4h, 00h, 0AAh, 00h
     db 0A0h, 00h, 97h, 00h, 8Fh, 00h, 87h, 00h, 7Fh, 00h, 78h, 00h
-word_0EBB label word
+StepTable label word
+; DATA: note step table: 37 signed words, StepTable[n] for note n = 1..36 (index 0 unused)
 ; UNKNOWN: not yet classified as code or data
     db 71h, 00h, 7Fh, 0FFh, 87h, 0FFh, 8Fh, 0FFh, 98h, 0FFh, 0A1h, 0FFh
     db 0ABh, 0FFh, 0B5h, 0FFh, 0C0h, 0FFh, 0CBh, 0FFh, 0D7h, 0FFh, 0E4h, 0FFh
@@ -4974,10 +5475,10 @@ word_0EBB label word
     db 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h
 ; UNKNOWN: not yet classified as code or data
     db 21 dup(0)
-word_1004 label word
+SfxPlayPos label word
 ; UNKNOWN: not yet classified as code or data
     db 0FFh, 0FFh
-word_1006 label word
+SfxBytesLeft label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 0FFh
 word_1009 label word
@@ -4989,7 +5490,7 @@ word_100B label word
     db 0E6h, 19h, 00h, 00h, 0B2h, 0Ah, 00h, 00h, 12h, 09h, 00h, 00h
     db 00h, 00h, 00h, 00h, 0D2h, 35h, 00h, 00h, 0C4h, 06h, 00h, 00h
     db 86h, 1Ch, 00h, 00h, 2Eh, 0Eh
-word_1035 label word
+SpeakerSequencePtr label word
 ; UNKNOWN: not yet classified as code or data
     db 0FFh, 0FFh, 70h, 17h, 70h, 17h, 08h, 00h, 9Ch, 0FFh, 08h, 00h
     db 40h, 1Fh, 40h, 1Fh, 0Ah, 00h, 2Ch, 01h, 0Ah, 00h, 0E8h, 03h
@@ -5002,35 +5503,37 @@ word_1035 label word
     db 0Ah, 00h, 2Ch, 01h, 0Ah, 00h, 0E8h, 03h, 0E8h, 03h, 0Ah, 00h
     db 28h, 00h, 0Ah, 00h, 0E8h, 03h, 0E8h, 03h, 0Ah, 00h, 14h, 00h
     db 0Ah, 00h, 0E8h, 03h, 0E8h, 03h, 0Ah, 00h, 28h, 00h, 0Ah, 00h
-word_10B9 label word
+MixSavedVolumeRow label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-byte_10BB label byte
+DmaPageA label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
-word_10BC label word
+DmaOffsetA label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-byte_10BE label byte
+DmaPageB label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
-word_10BF label word
+DmaOffsetB label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_10C1 label word
+PlayBuffer label word
 ; UNKNOWN: not yet classified as code or data
     db 0C9h, 10h
-word_10C3 label word
+PlayDmaRecord label word
 ; UNKNOWN: not yet classified as code or data
     db 0BBh, 10h
-word_10C5 label word
+MixBuffer label word
 ; UNKNOWN: not yet classified as code or data
     db 71h, 11h
-word_10C7 label word
+MixDmaRecord label word
 ; UNKNOWN: not yet classified as code or data
     db 0BEh, 10h
 ; UNKNOWN: not yet classified as code or data
-    db 3663 dup(0)
+    db 504 dup(0)
+; DATA: volume table: VolumeTable[v*64+s] = (v*s)>>6, v = 0..64, s = 0..63
+    db 3159 dup(0)
 word_1F18 label word
 ; UNKNOWN: not yet classified as code or data
     db 1001 dup(0)
@@ -5047,12 +5550,13 @@ word_1F18 label word
     db 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh
     db 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh
 word_2381 label word
+; Written by SwapInt08Int09Vectors (INT 03h segment) and never read.
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_2383 label word
+TextByteColumn label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_2385 label word
+TextRowOffset label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
 ; DATA: text
@@ -5153,7 +5657,7 @@ word_27F0 label word
 word_27F2 label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-byte_27F4 label byte
+KeyDownTable label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
 byte_27F6 label byte
@@ -5251,16 +5755,16 @@ byte_286F label byte
 byte_2870 label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h
-byte_2874 label byte
+LastScanCode label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
-word_2875 label word
+NextFreeSegment label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-byte_2877 label byte
+DosCallActive label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
-byte_2878 label byte
+RawLoadInProgress label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
 byte_2879 label byte
@@ -5279,11 +5783,11 @@ byte_287D label byte
     db 00h, 38h, 30h, 00h, 34h, 2Ch, 00h, 34h, 24h, 00h, 2Ch, 24h
     db 00h, 24h, 1Ch, 00h, 20h, 18h, 00h, 18h, 14h, 00h, 14h, 10h
     db 00h
-word_28AE label word
+PictureSegment label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 01h, 02h, 03h, 04h, 05h, 06h, 07h, 08h, 09h
     db 0Ah, 0Bh, 0Ch, 0Dh, 0Eh, 0Fh, 00h
-word_28C1 label word
+RandomSeed label word
 ; UNKNOWN: not yet classified as code or data
     db 34h, 12h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
 ; DATA: text
@@ -5329,13 +5833,13 @@ word_28C1 label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 01h, 02h, 03h, 04h, 05h, 06h, 07h, 08h, 09h, 0Ah, 0Bh
     db 0Ch, 0Dh, 0Eh, 0Fh, 00h
-word_2A74 label word
+CollectTotalMain label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
 word_2A76 label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_2A78 label word
+CollectTotalDecor label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
 word_2A7A label word
@@ -5435,31 +5939,31 @@ word_2A7A label word
     db 28h, 38h, 28h, 00h, 08h, 00h, 00h, 00h, 38h, 30h, 08h, 00h
     db 14h, 00h, 00h, 20h, 00h, 08h, 30h, 08h, 34h, 20h, 14h, 14h
     db 18h, 1Ch, 1Ch, 20h, 24h, 28h, 28h, 2Ch, 38h, 38h, 38h
-byte_2CEC label byte
+WindRandA label byte
 ; UNKNOWN: not yet classified as code or data
     db 05h
-byte_2CED label byte
+WindRandB label byte
 ; UNKNOWN: not yet classified as code or data
     db 22h
-byte_2CEE label byte
+WindRandC label byte
 ; UNKNOWN: not yet classified as code or data
     db 86h
-word_2CEF label word
+WindRandWord label word
 ; UNKNOWN: not yet classified as code or data
     db 8Dh, 0E5h
-word_2CF1 label word
+ExpandDstSegment label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_2CF3 label word
+ExpandSrcSegment label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-byte_2CF5 label byte
+MapRows label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
 byte_2CF6 label byte
 ; UNKNOWN: not yet classified as code or data
     db 0FFh, 0Ch, 0Bh, 0Ah, 0FFh, 0FFh, 00h, 0FFh, 0FFh, 0Eh
-word_2D00 label word
+LevelPaletteTable label word
 ; UNKNOWN: not yet classified as code or data
     db 0FCh, 2Bh, 5Ch, 2Ch, 0CCh, 2Bh, 9Ch, 2Bh, 0Ch, 2Bh, 6Ch, 2Bh
     db 0ACh, 2Ah, 3Ch, 2Bh, 0DCh, 2Ah, 0DCh, 2Ah, 8Ch, 2Ch, 8Ch, 2Ch
@@ -5468,11 +5972,11 @@ byte_2D20 label byte
 ; UNKNOWN: not yet classified as code or data
     db 09h, 09h, 00h, 00h, 00h, 0Dh, 04h, 04h, 0Ah, 0Dh, 10h, 10h
     db 10h, 09h, 0Eh, 04h
-byte_2D30 label byte
+LevelMapRowsTable label byte
 ; UNKNOWN: not yet classified as code or data
     db 31h, 68h, 31h, 2Dh, 80h, 80h, 80h, 56h, 6Eh, 0Ch, 18h, 33h
     db 33h, 26h, 0ADh, 54h
-word_2D40 label word
+LevelScriptTable label word
 ; UNKNOWN: not yet classified as code or data
     db 60h, 2Dh, 60h, 2Dh, 60h, 2Dh, 60h, 2Dh, 60h, 2Dh, 60h, 2Dh
     db 60h, 2Dh, 60h, 2Dh, 60h, 2Dh, 60h, 2Dh, 60h, 2Dh, 60h, 2Dh
@@ -5481,47 +5985,47 @@ word_2D40 label word
     db 01h, 00h, 0FFh, 00h, 0FFh, 0FFh, 0B8h, 01h, 01h, 00h, 28h, 00h
     db 70h, 03h, 06h, 00h, 64h, 00h, 28h, 05h, 01h, 00h, 0FFh, 00h
     db 0FFh, 0FFh
-byte_2D8A label byte
+CurrentLevel label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h, 4Ch, 45h, 56h, 45h, 4Ch
-byte_2D90 label byte
+LevelFileChar label byte
 ; DATA: text
     db '0.SQZ', 0
 byte_2D96 label byte
 ; UNKNOWN: not yet classified as code or data
     db 30h, 30h, 30h, 31h, 31h, 31h, 32h, 33h, 33h, 30h, 34h, 34h
     db 34h, 35h, 30h, 32h, 42h, 41h, 43h, 4Bh
-byte_2DAA label byte
+BackFileChar label byte
 ; DATA: text
     db '0.SQZ', 0
-word_2DB0 label word
+ScreenRowBytes label word
 ; UNKNOWN: not yet classified as code or data
     db 28h, 00h, 00h, 00h
-word_2DB4 label word
+SpriteDataSegment label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h
-word_2DBA label word
+RingTileOffset label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_2DBC label word
+ScriptPointer label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_2DBE label word
+ScriptFrameCounter label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_2DC0 label word
+IrisSpeed label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_2DC2 label word
+IrisSpeedCounter label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
 word_2DC4 label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_2DC6 label word
+IrisCenterY label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_2DC8 label word
+IrisCenterX label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
 word_2DCA label word
@@ -5530,70 +6034,71 @@ word_2DCA label word
 word_2DCC label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_2DCE label word
+IrisAngleIndex label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_2DD0 label word
+IrisRadius label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
 word_2DD2 label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h
-word_2DD6 label word
+DisplayPage label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_2DD8 label word
+DrawPage label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_2DDA label word
+LevelSegment label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_2DDC label word
+SpriteSheetSegment label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h
-word_2DE0 label word
+PrevCameraCol label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_2DE2 label word
+PrevCameraRow label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_2DE4 label word
+CameraCol label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_2DE6 label word
+CameraRow label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_2DE8 label word
+ColumnRing label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_2DEA label word
+RowRing label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_2DEC label word
+SpriteRelY label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_2DEE label word
+CurrentObject label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h
-byte_2DF2 label byte
+VisibleTileFlags label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
-byte_2DF3 label byte
+MixedTileCount label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
-byte_2DF4 label byte
+GridDirtyFlag label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
-byte_2DF5 label byte
+ScrollAnimCounter label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
-word_2DF6 label word
+BackdropCursor label word
 ; UNKNOWN: not yet classified as code or data
     db 8194 dup(0)
-byte_4DF8 label byte
+TileClassTable label byte
 ; UNKNOWN: not yet classified as code or data
     db 274 dup(0)
-word_4F0A label word
+RenderSlots label word
+; DATA: render slot records, 116 x 18 bytes (slot 1 = player; +4 word, FFFFh = empty)
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
 word_4F0C label word
@@ -5606,10 +6111,10 @@ word_4F0E label word
 byte_4F1B label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
-word_4F1C label word
+PlayerX label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_4F1E label word
+PlayerY label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
 word_4F20 label word
@@ -5754,15 +6259,17 @@ word_5694 label word
     db 00h
 byte_5695 label byte
 ; UNKNOWN: not yet classified as code or data
-    db 2227 dup(0)
-word_5F48 label word
+    db 157 dup(0)
+; UNKNOWN: not yet classified as code or data
+    db 2070 dup(0)
+FrameDataOffsets label word
 ; UNKNOWN: not yet classified as code or data
     db 914 dup(0)
 word_62DA label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h
-word_62E8 label word
+FrameDataSegments label word
 ; UNKNOWN: not yet classified as code or data
     db 914 dup(0)
 word_667A label word
@@ -5796,7 +6303,7 @@ byte_6889 label byte
 byte_688A label byte
 ; UNKNOWN: not yet classified as code or data
     db 254 dup(0)
-byte_6988 label byte
+AnimTileFlags label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
 word_6989 label word
@@ -5813,16 +6320,16 @@ word_6B14 label word
 word_6BAB label word
 ; UNKNOWN: not yet classified as code or data
     db 0AAh, 55h
-word_6BAD label word
+CheckpointX label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_6BAF label word
+CheckpointY label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
 word_6BB1 label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-byte_6BBD label byte
+AnimVisibleFlag label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
 word_6BBE label word
@@ -5834,10 +6341,10 @@ byte_6BC0 label byte
 byte_6BC1 label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
-word_6BC2 label word
+AnimRemapPtr label word
 ; UNKNOWN: not yet classified as code or data
     db 88h, 66h
-byte_6BC4 label byte
+FineScroll label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
 byte_6BC5 label byte
@@ -5882,10 +6389,10 @@ byte_6BD2 label byte
 byte_6BD3 label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
-byte_6BD4 label byte
+AnimTickCounter label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
-byte_6BD5 label byte
+SnowFrameTick label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h
 byte_6BD9 label byte
@@ -5927,10 +6434,10 @@ byte_6BEA label byte
 word_6BEB label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-byte_6BED label byte
+HScrollDir label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
-byte_6BEE label byte
+VScrollActive label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h
 word_6BF1 label word
@@ -5939,10 +6446,10 @@ word_6BF1 label word
 byte_6BF3 label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h
-word_6BF6 label word
+SnowWind label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_6BF8 label word
+ShakeRows label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
 word_6BFA label word
@@ -6020,7 +6527,7 @@ byte_6CA7 label byte
 byte_6CA8 label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
-word_6CA9 label word
+FlakeTable label word
 ; UNKNOWN: not yet classified as code or data
     db 676 dup(0)
 ; UNKNOWN: not yet classified as code or data
@@ -6032,7 +6539,7 @@ word_6CA9 label word
     db 0E8h, 03h, 00h, 00h, 10h, 27h, 01h, 00h, 0A0h, 86h, 0Fh, 00h
     db 40h, 42h, 98h, 00h, 80h, 96h, 0F5h, 05h, 00h, 0E1h, 9Ah, 3Bh
     db 00h, 0CAh, 91h, 1Ch, 0F2h, 1Bh, 0E3h, 1Ch, 6Ch, 1Ch, 1Dh, 1Ch
-byte_6F90 label byte
+SineTable label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h, 01h, 03h, 04h, 06h, 07h, 09h, 0Ah, 0Ch, 0Eh, 0Fh, 11h
     db 12h, 14h, 15h, 17h, 18h, 19h, 1Bh, 1Ch, 1Eh, 1Fh, 20h, 22h
@@ -6075,10 +6582,10 @@ byte_7090 label byte
     db 28h, 29h, 2Ah, 2Ch, 2Dh, 2Eh, 2Fh, 30h, 31h, 32h, 33h, 34h
     db 35h, 36h, 36h, 37h, 38h, 39h, 39h, 3Ah, 3Bh, 3Bh, 3Ch, 3Ch
     db 3Dh, 3Dh, 3Eh, 3Eh, 3Eh, 3Fh, 3Fh, 3Fh, 3Fh, 3Fh, 3Fh, 3Fh
-byte_7190 label byte
+FrameWidths label byte
 ; UNKNOWN: not yet classified as code or data
     db 28h
-byte_7191 label byte
+FrameHeights label byte
 ; UNKNOWN: not yet classified as code or data
     db 24h, 20h, 23h, 18h, 24h
 ; DATA: text
@@ -6162,10 +6669,10 @@ byte_7191 label byte
 word_7522 label word
 ; UNKNOWN: not yet classified as code or data
     db 28h, 22h, 20h, 1Ah, 30h, 17h, 00h, 00h
-byte_752A label byte
+FrameHotX label byte
 ; UNKNOWN: not yet classified as code or data
     db 14h
-byte_752B label byte
+FrameHotY label byte
 ; UNKNOWN: not yet classified as code or data
     db 24h, 10h, 23h, 0Ch, 24h, 10h, 24h, 10h, 25h, 10h, 25h, 0Fh
     db 24h, 10h, 23h, 0Fh, 23h, 0Fh, 23h, 0Ch, 23h, 10h, 26h, 14h
@@ -6427,38 +6934,48 @@ word_7DA9 label word
 byte_7F5E label byte
 ; UNKNOWN: not yet classified as code or data
     db 256 dup(0)
-byte_805E label byte
+TileFlagsTable label byte
 ; UNKNOWN: not yet classified as code or data
     db 256 dup(0)
-word_815E label word
+LevelPropHeader label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_8160 label word
+LevelStartX label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_8162 label word
+LevelStartY label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_8164 label word
+CameraLeftLimit label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-byte_8166 label byte
+LevelFlags label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
 word_8167 label word
 ; UNKNOWN: not yet classified as code or data
-    db 2850 dup(0)
-word_8C89 label word
+    db 652 dup(0)
+; DATA: proximity trigger records, 15 x 10 bytes (+0 map offset, +2 width, +3 rows)
+    db 150 dup(0)
+; UNKNOWN: not yet classified as code or data
+    db 2048 dup(0)
+SpriteBankA label word
 ; UNKNOWN: not yet classified as code or data
     db 35h, 00h
-word_8C8B label word
+SpriteBankB label word
 ; UNKNOWN: not yet classified as code or data
     db 38h, 01h
+; DATA: secret-tile patch records, 80 x 5 bytes (+0 new tile, +1 saved tile, +3 offset)
 ; UNKNOWN: not yet classified as code or data
     db 400 dup(0)
 byte_8E1D label byte
 ; UNKNOWN: not yet classified as code or data
-    db 986 dup(0)
+    db 256 dup(0)
+; DATA: effect source records, 70 x 7 bytes (+4 word X, FFFFh = inactive)
+    db 490 dup(0)
+; DATA: terrain entity records, 16 x 15 bytes (+4 word X, FFFFh = inactive)
+; UNKNOWN: not yet classified as code or data
+    db 240 dup(0)
 word_91F7 label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
@@ -6984,11 +7501,13 @@ word_A519 label word
     db 3Ah, 12h, 22h, 3Ah, 12h, 22h, 3Ah, 12h
 ; DATA: text
     db '"???', 0
+; DATA: VGA DAC palette: 16 RGB triples (6-bit) for RunGameOverScreen
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 38h, 28h, 20h, 28h, 18h, 10h, 20h, 10h, 08h
     db 04h, 00h, 1Ch, 28h, 00h, 08h, 00h, 04h, 10h, 38h, 30h, 08h
     db 00h, 14h, 00h, 00h, 20h, 00h, 08h, 30h, 08h, 34h, 20h, 14h
     db 00h, 10h, 24h, 14h, 20h, 24h, 20h, 28h, 2Ch, 38h, 38h, 38h
+; UNKNOWN: not yet classified as code or data
     db 47h, 41h, 4Dh, 45h, 4Fh, 56h, 45h, 52h, 01h, 00h, 01h, 00h
     db 02h, 00h, 02h, 00h, 03h, 00h, 03h, 00h, 02h, 00h, 02h, 00h
     db 0F0h, 0FFh, 26h, 00h, 26h, 00h, 26h, 00h, 26h, 00h, 25h, 00h
@@ -6997,17 +7516,23 @@ word_A519 label word
     db 81h, 00h, 81h, 00h, 81h, 00h, 82h, 00h, 82h, 00h, 82h, 00h
     db 83h, 00h, 83h, 00h, 83h, 00h, 0EEh, 0FFh
 ; DATA: text
-    db '--1234567890----A-E-----------A-DF------------C-B-------------------------------------------------------------------------------', 0
+    db '--1234567890----A-E-----------A-DF------------C-B-------------------------------------------------------------------------------'
+; DATA: VGA DAC palette: 16 RGB triples (6-bit) for the map screen (INT 10h 1012h)
+    db 0
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 38h, 28h, 20h, 28h, 18h, 10h, 20h, 10h, 08h, 10h
     db 28h, 38h, 28h, 00h, 08h, 00h, 00h, 00h, 38h, 30h, 08h, 00h
     db 14h, 00h, 00h, 20h, 00h, 08h, 30h, 08h, 34h, 20h, 14h, 14h
-    db 18h, 1Ch, 1Ch, 20h, 24h, 28h, 28h, 2Ch, 38h, 38h, 38h, 08h
+    db 18h, 1Ch, 1Ch, 20h, 24h, 28h, 28h, 2Ch, 38h, 38h, 38h
+; DATA: VGA DAC palette: 16 RGB triples (6-bit) for RunCallbackMapScreen
+; UNKNOWN: not yet classified as code or data
+    db 08h
     db 10h, 1Ch, 00h, 04h, 04h, 0Ch, 14h, 20h, 10h, 18h, 20h, 38h
     db 30h, 08h, 38h, 30h, 08h, 38h, 30h, 08h, 38h, 30h, 08h, 34h
     db 20h, 14h, 34h, 20h, 14h, 34h, 20h, 14h, 34h, 20h, 14h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
 word_B148 label word
+; DATA: map stage node table: 10 word pairs (x in pixels, y) for stages 0..9
 ; UNKNOWN: not yet classified as code or data
     db 05h, 00h
 word_B14A label word
@@ -7026,48 +7551,68 @@ word_B14A label word
     db 'BEGINNER', 0
 ; DATA: text
     db ' EXPERT ', 0
-byte_B197 label byte
+ExpertFlag label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
 byte_B198 label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
-word_B199 label word
+PrevMapScrollX label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_B19B label word
+PrevMapScrollY label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_B19D label word
+MapScrollX label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_B19F label word
+MapScrollY label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_B1A1 label word
+ScreenStartOffset label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_B1A3 label word
+PrevScreenStartOffset label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-byte_B1A5 label byte
-; UNKNOWN: not yet classified as code or data
-    db 00h, 00h, 00h
-word_B1A8 label word
-; UNKNOWN: not yet classified as code or data
-    db 00h, 00h
-byte_B1AA label byte
+WavePhase label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
-byte_B1AB label byte
+TextCursorOffset label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+CodeInputCount label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+CodeEntryState label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
+TextAdvance label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+TextFontBank label word
+; UNKNOWN: not yet classified as code or data
     db 2 dup(?)
-word_B1AE label word
-    db 4 dup(?)
-byte_B1B2 label byte
-    db 9 dup(?)
-byte_B1BB label byte
+FrameCallback label word
+    db 2 dup(?)
+CodeErrorTimer label word
+; UNKNOWN: not yet classified as code or data
+    db 2 dup(?)
+ScreenExitRequested label byte
+    db 1 dup(?)
+CodeHistory0 label word
+; UNKNOWN: not yet classified as code or data
+    db 2 dup(?)
+CodeHistory1 label word
+; UNKNOWN: not yet classified as code or data
+    db 2 dup(?)
+CodeHistory2 label word
+; UNKNOWN: not yet classified as code or data
+    db 2 dup(?)
+CodeValue label word
+; UNKNOWN: not yet classified as code or data
+    db 2 dup(?)
+ScreenFirstFrame label byte
     db 1 dup(?)
 DATA ends
-end sub_0008
+end ProgramEntry

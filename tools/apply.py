@@ -50,6 +50,19 @@ def find_label(name):
             if pat.match(l): return p, lines, n
     raise SystemExit(f'label {name} not found')
 
+PLACEHOLDER = re.compile(r'^(sub|loc|unused|cvar|tbl|byte|word|dword|dtbl)_([0-9A-F]{4})$', re.I)
+
+def by_address(name):
+    """A placeholder label renamed by an earlier proposal: find today's label at its address."""
+    m = PLACEHOLDER.match(name)
+    if not m: raise SystemExit(f'label {name} not found')
+    kind, off = m.group(1).lower(), int(m.group(2), 16)
+    lin = off + (0x9FF0 if kind in ('byte', 'word', 'dword', 'dtbl') else 0x200)
+    import where
+    hits = [n for n, l in where.labels().items() if l == lin]
+    if not hits: raise SystemExit(f'label {name} not found (no label at its address)')
+    return hits[0]
+
 def main():
     a = sys.argv[1:]
     ops = parse(Path(a[0]).read_text(encoding='latin-1'))
@@ -60,14 +73,23 @@ def main():
         for o in ops: print(o[:3])
         return
     if renames:
-        import rename
+        import rename, symtab
+        every = set()
+        for p in main_sources():
+            for line in p.read_text(encoding='latin-1').splitlines(): every |= {x.upper() for x in symtab.IDENT.findall(symtab.code_text(line))}
+        skipped = [(o, n) for o, n in renames if o.upper() not in every and n.upper() in every]
+        for o, n in skipped: print(f'skip rename {o} -> {n}: already applied')
+        renames = [r for r in renames if r not in skipped]
+    if renames:
         rename.rename_all(renames)
     for o in ops:
         if o[0] in ('comment', 'note'):
             name = o[1]
             try: p, lines, n = find_label(name)
             except SystemExit:
-                p, lines, n = find_label(alias.get(name.upper(), name))
+                try: p, lines, n = find_label(alias.get(name.upper(), name))
+                except SystemExit:
+                    p, lines, n = find_label(by_address(name))
             if o[0] == 'comment':
                 k = n
                 while k > 0 and lines[k - 1].startswith(';') and not lines[k - 1].startswith(('; UNKNOWN', '; DATA:', '; module interface', '; end module')): k -= 1

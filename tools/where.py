@@ -77,10 +77,10 @@ def main():
 if __name__ == '__main__':
     main()
 
-def labels():
-    """Every label in the last build: NAME (upper case) -> linear image offset."""
+def labels(case=False):
+    """Every label in the last build: NAME (upper case unless case=True) -> linear offset."""
     out = {}
     for lin, mod, n, text in rows():
         m = re.match(r'^([A-Za-z_@$?][\w@$?]*)(?::|\s+label\s)', text)
-        if m: out.setdefault(m.group(1).upper(), lin)
+        if m: out.setdefault(m.group(1) if case else m.group(1).upper(), lin)
     return out
