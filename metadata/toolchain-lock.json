@@ -1,0 +1,44 @@
+{
+  "assembler": "TASM 1.0 (C:/tools/tasm-1.00/files/disk04/TASM.EXE); candidate, historical assembler unknown",
+  "files": [
+    {
+      "path": "toolchain/TASM.EXE",
+      "sha256": "754b70821e4bac4997f398e3bdcee0f046a42cc3dad89cfbe0138f67d5b6142b",
+      "size": 97876
+    },
+    {
+      "path": "toolchain/TLINK.EXE",
+      "sha256": "997fcac6089fa88f3d868bdaf8bd65bd44c5aa83885a1d61e73f77808bd4f8f7",
+      "size": 21717
+    },
+    {
+      "path": "toolchain/nmlgcdos/msdos.exe",
+      "sha256": "f7f6cb0a3e816c5edb13112d327c1bddbf7463fe7bf9a005ca1eb5317751bd02",
+      "size": 686592
+    },
+    {
+      "path": "toolchain/msdos-i86/msdos.exe",
+      "sha256": "9a89681083c955304e80a6da6db481796947dd9698b297ffbab31061e1df96f5",
+      "size": 671232
+    },
+    {
+      "path": "toolchain/ndisasm.exe",
+      "sha256": "5789e415cc0a62b2211dd11c2bbd87225ce300ac45afb8e899f6dc8557bdcbbb",
+      "size": 1094991
+    },
+    {
+      "path": "toolchain/msys-2.0.dll",
+      "sha256": "53fadcc7eac1dcf3c6fe99ddcc2962409e83b6d9a20ae7bc484b6ebde0008344",
+      "size": 2983134
+    },
+    {
+      "path": "toolchain/NASM-LICENSE.txt",
+      "sha256": "1563996c52e220e15ef2418e67d39488255aa8c28c89e617074d3afe3ee329e0",
+      "size": 1521
+    }
+  ],
+  "linker": "TLINK 2.0 (C:/tools/tasm-1.00/files/disk04/TLINK.EXE); matches the original header signature FB 20 rj",
+  "python": "Python 3.10+; capstone (pip) is needed only by the bootstrap tools explore.py/gen.py",
+  "runners": "nmlgc MS-DOS Player for TASM, i86 MS-DOS Player for TLINK (copied from overkill_recon/toolchain)",
+  "schema": 1
+}

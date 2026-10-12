@@ -1,0 +1,10 @@
+build/
+**/__pycache__/
+*.pyc
+# Private original inputs and historical tool binaries are local task inputs.
+assets/*.EXE
+assets/*.SQZ
+assets/*.TRK
+toolchain/TASM.EXE
+toolchain/TLINK.EXE
+.claude/

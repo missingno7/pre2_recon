@@ -1,0 +1,2 @@
+# Preserve exact file bytes across checkouts (hash verification).
+* -text whitespace=cr-at-eol

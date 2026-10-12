@@ -1,0 +1,271 @@
+{
+  "files": [
+    {
+      "path": "assets/ALLFONTS.SQZ",
+      "sha256": "1d2816450dc5364970bdd946f0ce19a25aec61947ce799533fa7d3c341e30f21",
+      "size": 4097
+    },
+    {
+      "path": "assets/BACK0.SQZ",
+      "sha256": "82f182c1c310a252d5b6cf8cd06b0f0a0e6d2c18ed79aa17bcd52b7b29269773",
+      "size": 6449
+    },
+    {
+      "path": "assets/BACK1.SQZ",
+      "sha256": "9bc41189d6f67abf3ab89860a55d67e957c8948af55a0cc2367f540e2887c8ef",
+      "size": 16423
+    },
+    {
+      "path": "assets/BACK2.SQZ",
+      "sha256": "67b033452db693c21eec33b41eb8b2c93669994efa13a8bd169eccd91d978336",
+      "size": 15400
+    },
+    {
+      "path": "assets/BACK3.SQZ",
+      "sha256": "d1c73b8ebb6ad1aefabd97ee489f6edce5fb66aa1ff7bb989e1772f2de198d2e",
+      "size": 19233
+    },
+    {
+      "path": "assets/BACK4.SQZ",
+      "sha256": "96bf56446fdfb7da51aeca9c9889290c405b85d042687c555c23b9b032f82264",
+      "size": 13257
+    },
+    {
+      "path": "assets/BACK5.SQZ",
+      "sha256": "e369e6e41299e10068b8d8efdf087f486447d50b734ec43403d70432f4dbfd8a",
+      "size": 13636
+    },
+    {
+      "path": "assets/BOULA.TRK",
+      "sha256": "032289f344d0b9aaccd76aaf353f3ebb1f417fed83d057cf55e73ed58103476c",
+      "size": 18762
+    },
+    {
+      "path": "assets/BRAVO.TRK",
+      "sha256": "52d9ad5a31df5bd33bf9ef02ca892962135002ee2ce4848a6100f428d22a8703",
+      "size": 23057
+    },
+    {
+      "path": "assets/CARTE.TRK",
+      "sha256": "fa9daf1da2952cfabbca0eb98953bdfd327537e6b00e011f6e4860b57bc25793",
+      "size": 4237
+    },
+    {
+      "path": "assets/CASTLE.SQZ",
+      "sha256": "70fded89bd9458b768ad90802ea2fbeb38032a1b7a162338769d9ba7564e784d",
+      "size": 23233
+    },
+    {
+      "path": "assets/CODE.TRK",
+      "sha256": "32d588e1057cf1fe854e698cf20662d6679bcdb9d6cc5b6e1ea1c5dbb9704e1e",
+      "size": 3491
+    },
+    {
+      "path": "assets/FINAL.TRK",
+      "sha256": "0b4c1d9f167172fb79886a668ddc423c09dbee7be8960f7ef3c4154f60eff664",
+      "size": 27545
+    },
+    {
+      "path": "assets/FRONT.SQZ",
+      "sha256": "e552bfbf6d7c9033a99b29fb58ab6c2f83eb59ed05871fac8d95e874876c902a",
+      "size": 14539
+    },
+    {
+      "path": "assets/GAMEOVER.SQZ",
+      "sha256": "18e4cdf0719bba85cec912041454b739c94608d90e97d70ae928bdfe0cc6c0f2",
+      "size": 10553
+    },
+    {
+      "path": "assets/GLACE.TRK",
+      "sha256": "9d5f26ca38247382f213518107c9ea687957a1d0d0422d510bff46e6c3834482",
+      "size": 28396
+    },
+    {
+      "path": "assets/KEYB.SQZ",
+      "sha256": "8fdb04aa361f0f1fec6b449b0ac328b32b72798af22c106fe91583a4119d6d63",
+      "size": 521
+    },
+    {
+      "path": "assets/KOOL.TRK",
+      "sha256": "c13d730754fdcb3e86e9e2248c8c3b224a2adeb1fcd9b3ac2ad9f78fef6b566a",
+      "size": 26532
+    },
+    {
+      "path": "assets/LEVEL1.SQZ",
+      "sha256": "750c7472958155e0d86a6f43d79e95cfa2ef5168e8e7b974139ca984fd3453ea",
+      "size": 7328
+    },
+    {
+      "path": "assets/LEVEL2.SQZ",
+      "sha256": "85f3d989dc45cfc71cde9bd0a3eb6fcb7cb8cdfeb30bf9399d8e4bd4390da646",
+      "size": 14157
+    },
+    {
+      "path": "assets/LEVEL3.SQZ",
+      "sha256": "d42ddc604df6c2d1abe5c006ac07cb9529ef1db4f0c42b84e2ca4a41137972c6",
+      "size": 15756
+    },
+    {
+      "path": "assets/LEVEL4.SQZ",
+      "sha256": "3f768b4199b6a1e429595847d68ead23c2ee152ca8fcae0cac09c2d4820ec1e7",
+      "size": 22432
+    },
+    {
+      "path": "assets/LEVEL5.SQZ",
+      "sha256": "54bf86a2077b558e254edca31967873a7114618b0a91d432cdbfa322e75900df",
+      "size": 31405
+    },
+    {
+      "path": "assets/LEVEL6.SQZ",
+      "sha256": "3277b17201a829742aec7651dd882279749a7875e843933a9edc8919eadac1b5",
+      "size": 17922
+    },
+    {
+      "path": "assets/LEVEL7.SQZ",
+      "sha256": "c83cef14e0b942fc8c816c85ce404b2491496517c688714df6b81503666c3063",
+      "size": 12100
+    },
+    {
+      "path": "assets/LEVEL8.SQZ",
+      "sha256": "66edb33517b73cd1d7295624ea0a601f131c08494a83927e9ab63467befcd7e2",
+      "size": 32432
+    },
+    {
+      "path": "assets/LEVEL9.SQZ",
+      "sha256": "49f4b56f80a3642501a7230263a7a6ffa6b573a15242fa586a9c021333975d7e",
+      "size": 26252
+    },
+    {
+      "path": "assets/LEVELA.SQZ",
+      "sha256": "d7ba4e57a6407ae151af0e1e2ab68bc93eb6ae3d0a52d3075b599c4844357c8a",
+      "size": 20060
+    },
+    {
+      "path": "assets/LEVELB.SQZ",
+      "sha256": "b8837edaf9847bcc250f6a69aff398e34796de305e4e187bb1efab90859a25eb",
+      "size": 1739
+    },
+    {
+      "path": "assets/LEVELC.SQZ",
+      "sha256": "740a327cdbaf970e267f0ae25fb33132f030a3dfa11e8f91205ee3303be0bdfd",
+      "size": 1547
+    },
+    {
+      "path": "assets/LEVELD.SQZ",
+      "sha256": "9f5cb83da77e08844d54240557d78baf290e009f4d9b3f70f9a23dd222acb109",
+      "size": 1798
+    },
+    {
+      "path": "assets/LEVELE.SQZ",
+      "sha256": "c8bf87f56135a91179f1e75e469961b8bf23a443eb8dccfe276c8e7f2bf6da94",
+      "size": 17621
+    },
+    {
+      "path": "assets/LEVELF.SQZ",
+      "sha256": "75c92c6b29aa9c85278572a1320fd30a72e987fd3689750e9f7fbc7c3a2db161",
+      "size": 5276
+    },
+    {
+      "path": "assets/LEVELG.SQZ",
+      "sha256": "52844782c87c22921abcf0bf1d22367810ba8674746e70f065ba15cf58120d65",
+      "size": 6079
+    },
+    {
+      "path": "assets/LEVELH.SQZ",
+      "sha256": "a630b15f92a7611a371d4dd06b4242a05cddff4722aa375bdb44cce132cd2a9e",
+      "size": 39424
+    },
+    {
+      "path": "assets/LEVELI.SQZ",
+      "sha256": "7601f2641b4a2bab5bdf0a2913a6a0fc43f4138855d6b398370ab1b9a90355a7",
+      "size": 24312
+    },
+    {
+      "path": "assets/MAP.SQZ",
+      "sha256": "952d98d5d2dd4a064ccadd34e04ed9adcdc935e0d687f2eee61bb7c251e7aaa0",
+      "size": 36121
+    },
+    {
+      "path": "assets/MENU.SQZ",
+      "sha256": "3ddcffa50f4df80c692ae9b48e41efc6b579292b2993bba394c849e042582031",
+      "size": 21201
+    },
+    {
+      "path": "assets/MENU2.SQZ",
+      "sha256": "464ccc6ac61ad5a8a106c3b4800d72396f2b3c060553afb981de6b0c369b961d",
+      "size": 18930
+    },
+    {
+      "path": "assets/MINES.TRK",
+      "sha256": "b0c57532e4afabd8b15c0aab043b90064a94772be76a3fbfcba118414adfb3ec",
+      "size": 21577
+    },
+    {
+      "path": "assets/MONSTER.TRK",
+      "sha256": "3533bce9d49bbad156d8b90662565e17f664e1d8344fd44ddfa2a5f4f707c1a0",
+      "size": 24751
+    },
+    {
+      "path": "assets/MOTIF.SQZ",
+      "sha256": "fa3a9785e9fa1288e71e4edf91e45db3dd0b0eacac968062d5c5edba0d2ab8d1",
+      "size": 9396
+    },
+    {
+      "path": "assets/MYSTERY.TRK",
+      "sha256": "47219dbc4aff86c8c5bc6d5c3430d5b243c4b8d0c3609318dcb04a7e1c30cadf",
+      "size": 29937
+    },
+    {
+      "path": "assets/PRE2.EXE",
+      "sha256": "4f25a6a32e24b577b64b93e79a161b23d5aadbb46b780d8e1928957e5be10dbb",
+      "size": 87452
+    },
+    {
+      "path": "assets/PRE2.SQZ",
+      "sha256": "c9be809bafde6c22724963bc4c1f366ca94b2e84ad895fcb7e22b3fe5fcdae6b",
+      "size": 47508
+    },
+    {
+      "path": "assets/PRES.TRK",
+      "sha256": "956c54a838dbe0f4d23499017e3d98b313e917e5a5efbad44a768f761985b4a7",
+      "size": 30103
+    },
+    {
+      "path": "assets/PRESENT.SQZ",
+      "sha256": "0055011dbf9d3cd5f50ce3139bf68595916ee57fc56d353f16f2132b84c22796",
+      "size": 36739
+    },
+    {
+      "path": "assets/PRESENTA.TRK",
+      "sha256": "dd4b7840301f128c95f9bb24afb8fcbf95b5e2c33e19b9a2647e59ecb90c0c5c",
+      "size": 45927
+    },
+    {
+      "path": "assets/SAMPLE.SQZ",
+      "sha256": "44bf0ce46992e0d4c0b830928ae5e43b38f824a9b3004e75c347beca8b5d6fcd",
+      "size": 55917
+    },
+    {
+      "path": "assets/SPRITES.SQZ",
+      "sha256": "829990e2dd27708bc986c074217f0142b574361f92246742ec420bb4f114ed0a",
+      "size": 93621
+    },
+    {
+      "path": "assets/THEEND.SQZ",
+      "sha256": "9db4f672025daa845edf3f3e9a0ea6d2e1c01aa3b69d20a30832d59ef6143c2e",
+      "size": 13549
+    },
+    {
+      "path": "assets/TITUS.SQZ",
+      "sha256": "80213e0f9fcc613bde4956ec390e43fa672c33ce4f527e46dddd9d4dc4e5266d",
+      "size": 5676
+    },
+    {
+      "path": "assets/UNION.SQZ",
+      "sha256": "a2451f64ab46fc4b8566f3dc4a411c1244644dc1be3ca029ba3abbaa32410d6d",
+      "size": 45272
+    }
+  ],
+  "schema": 1,
+  "source": "D:/Games/DOS/dos_recosystem/legacy/pre2_port/assets (same PRE2.EXE as pre2_forged/assets)"
+}
