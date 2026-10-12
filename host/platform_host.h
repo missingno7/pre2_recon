@@ -21,4 +21,7 @@ void host_shutdown(void);
 extern void (*host_input_script)(uint64_t polls, void (*key)(uint8_t));
 extern uint64_t host_stop_after_ns;
 extern void (*host_report)(void);
+extern int host_fast_vga;            /* --fast-vga: VGA accesses take no bus time */
+extern int host_fast_load;           /* --fast-load: file loads take no time */
+extern const char *host_shots_dir;   /* --shots DIR: periodic frame dumps (diagnostics) */
 #endif

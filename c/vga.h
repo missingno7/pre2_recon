@@ -30,6 +30,13 @@ typedef struct VgaState {
 extern VgaState pre2_vga;
 /* Native host: supplies input status 1 (3DAh) from real time; tests leave it unset. */
 extern uint8_t (*vga_status_hook)(void);
+/* Native host: runs before every register access, so the host's CRT timeline (start address
+ * latch at vertical retrace, frame scan-out at display start) sees each write in time
+ * order; tests leave it unset. */
+extern void (*vga_access_hook)(void);
+/* Counts of CPU accesses to video memory and to VGA ports (the native host charges them
+ * ISA bus time); not VGA state. */
+extern uint32_t vga_mem_accesses, vga_io_accesses;
 
 void    vga_reset(void);
 uint8_t vga_read(uint16_t offset);              /* CPU read at A000:offset */
@@ -37,6 +44,7 @@ void    vga_write(uint16_t offset, uint8_t v);  /* CPU write at A000:offset */
 uint8_t vga_in(uint16_t port);
 void    vga_out(uint16_t port, uint8_t v);
 int     vga_port(uint16_t port);                /* nonzero for ports the model owns */
+void    vga_bios_mode_set(uint8_t al);          /* INT 10h AH=00h on the model (vga_bios.c) */
 
 /* MOVSB and XCHG with A000h:off through the model: a read loads the latches, then the write
  * (XCHG returns the old byte). */

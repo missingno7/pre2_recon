@@ -20,6 +20,10 @@ void platform_poll(void);
 void platform_tick_wait(void);
 /* Native host: called by platform_poll (waiting = 0) and platform_tick_wait (waiting = 1). */
 extern void (*pre2_host_poll)(int waiting);
+/* Native host: called by the DOS file service after each open (opens = 1) and read (bytes
+ * transferred), so the host can let the time pass that loading took on a period machine,
+ * with interrupts arriving meanwhile. Unset in the tests (loads take no time). */
+extern void (*pre2_host_io)(uint32_t opens, uint32_t bytes);
 uint16_t platform_conventional_kb(void);   /* INT 12h: conventional memory in KiB */
 void bios_set_mode(uint8_t mode);
 void bios_set_palette(uint16_t seg, uint16_t off);

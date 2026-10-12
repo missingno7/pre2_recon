@@ -14,6 +14,10 @@ that reads 0 by default).
 """
 import ctypes, random, zlib
 from difftest import Case
+import sys as _sys
+from common import ROOT as _ROOT
+_sys.path.insert(0, str(_ROOT/'tests'))
+import _bios as bios
 from common import ROOT
 from emu import DATA_SEG, CODE_SEG
 
@@ -40,7 +44,7 @@ def bios10(m):
     ax = m.reg('AX')
     ah, al = ax >> 8, ax & 0xFF
     if ah == 0x00:                                   # set video mode
-        m.wb(0x49, al, seg=0x40)
+        bios.set_mode(m, al)
         return None
     if ah == 0x10 and al == 0x02:                    # attribute palette + overscan
         table = m.read(m.reg('ES'), m.reg('DX'), 17)

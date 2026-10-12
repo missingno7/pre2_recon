@@ -5,6 +5,8 @@
 
 VgaState pre2_vga;
 uint8_t (*vga_status_hook)(void) = 0;
+void (*vga_access_hook)(void) = 0;
+uint32_t vga_mem_accesses, vga_io_accesses;
 
 EXPORT VgaState *pre2_vga_state(void) { return &pre2_vga; }
 EXPORT uint32_t pre2_vga_state_size(void) { return sizeof(VgaState); }
@@ -24,6 +26,7 @@ static int chain4(void) { return pre2_vga.seq[4] & 0x08; }
 EXPORT uint8_t vga_read(uint16_t offset)
 {
     VgaState *v = &pre2_vga;
+    vga_mem_accesses++;
     if (chain4()) {
         uint16_t a = offset >> 2;
         for (int p = 0; p < 4; p++) v->latch[p] = v->plane[p][a];
@@ -55,6 +58,7 @@ static uint8_t alu(uint8_t value, uint8_t latch)
 EXPORT void vga_write(uint16_t offset, uint8_t value)
 {
     VgaState *v = &pre2_vga;
+    vga_mem_accesses++;
     if (chain4()) {
         int p = offset & 3;
         if (v->seq[2] & (1 << p)) v->plane[p][offset >> 2] = value;
@@ -92,6 +96,8 @@ EXPORT int vga_port(uint16_t port) { return port >= 0x3C0 && port <= 0x3DA; }
 EXPORT uint8_t vga_in(uint16_t port)
 {
     VgaState *v = &pre2_vga;
+    vga_io_accesses++;
+    if (vga_access_hook) vga_access_hook();
     switch (port) {
     case 0x3C1: return v->attr[v->attr_index & 0x1F];
     case 0x3C4: return v->seq_index;
@@ -123,6 +129,8 @@ EXPORT uint8_t vga_in(uint16_t port)
 EXPORT void vga_out(uint16_t port, uint8_t value)
 {
     VgaState *v = &pre2_vga;
+    vga_io_accesses++;
+    if (vga_access_hook) vga_access_hook();
     switch (port) {
     case 0x3C0:
         if (!v->attr_flipflop) v->attr_index = value; else v->attr[v->attr_index & 0x1F] = value;

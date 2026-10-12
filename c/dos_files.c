@@ -1,9 +1,11 @@
 /* DOS file services the game uses (INT 21h 3Dh open, 3Eh close, 3Fh read, 42h seek),
  * over host files in a resource directory. Same handle numbering, error codes and
  * request log as tools/emu.py:DosFiles, so differential tests can compare the request
- * sequence. The native host uses the same service. */
+ * sequence. The native host uses the same service, and charges each open and read the
+ * time it took on a period machine (pre2_host_io, see platform.h). */
 #include "pre2.h"
 #include "dos_files.h"
+#include "platform.h"
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
@@ -47,6 +49,7 @@ int dos_open(uint16_t seg, uint16_t off, uint16_t *ax)
     if (h - 5 >= MAX_FILES) { fclose(f); *ax = 4; return 1; }
     files[h - 5].f = f; files[h - 5].used = 1;
     *ax = (uint16_t)h;
+    if (pre2_host_io) pre2_host_io(1, 0);
     return 0;
 }
 
@@ -70,6 +73,7 @@ int dos_read(uint16_t h, uint16_t seg, uint16_t off, uint16_t count, uint16_t *a
     for (size_t i = 0; i < n; i++) wr8(seg, (uint16_t)(off + i), buf[i]);
     char line[60]; snprintf(line, sizeof line, "read,%u,%u,%u", h, count, (unsigned)n); logf_(line);
     *ax = (uint16_t)n;
+    if (pre2_host_io) pre2_host_io(0, (uint32_t)n);
     return 0;
 }
 

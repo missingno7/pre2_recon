@@ -15,12 +15,14 @@
  */
 #include "pre2.h"
 #include "ports.h"
+#include "vga.h"
 #include "platform.h"
 
 #define ATTR_PAS 0x20u
 
 /* The native host installs pre2_host_poll; the test model leaves it unset. */
 void (*pre2_host_poll)(int waiting) = 0;
+void (*pre2_host_io)(uint32_t opens, uint32_t bytes) = 0;
 
 void platform_poll(void) { if (pre2_host_poll) pre2_host_poll(0); }
 
@@ -36,9 +38,27 @@ void platform_tick_wait(void)
 
 uint16_t platform_conventional_kb(void) { return 640; }
 
-void bios_set_mode(uint8_t mode)
+/* INT 10h AH=00h: the VGA part (registers, default palette, memory clear) is the model's
+ * vga_bios_mode_set; the BIOS data area fields below are the ones a mode set writes.
+ * tests/bios.py does the same for the oracle side. */
+void bios_set_mode(uint8_t al)
 {
-    wr8(0x0040, 0x0049, mode);                 /* BIOS data area: current video mode */
+    uint8_t mode = al & 0x7F;
+    uint16_t cols = 40, page = 0x2000, rows = 24, charh = 8;
+    if (mode == 0x03) { cols = 80; page = 0x1000; charh = 16; }
+    else if (mode == 0x12) { cols = 80; page = 0xA000; rows = 29; charh = 16; }
+    else if (mode == 0x13) { page = 0xFA00; }
+    vga_bios_mode_set(al);
+    wr8(0x0040, 0x0049, mode);
+    wr16(0x0040, 0x004A, cols);
+    wr16(0x0040, 0x004C, page);
+    wr16(0x0040, 0x004E, 0);
+    for (uint16_t i = 0; i < 16; i++) wr8(0x0040, (uint16_t)(0x0050 + i), 0);
+    wr8(0x0040, 0x0062, 0);
+    wr16(0x0040, 0x0063, 0x03D4);
+    wr8(0x0040, 0x0084, (uint8_t)rows);
+    wr16(0x0040, 0x0085, charh);
+    wr8(0x0040, 0x0087, (uint8_t)((rd8(0x0040, 0x0087) & 0x7F) | (al & 0x80)));
 }
 
 void bios_set_palette(uint16_t seg, uint16_t off)
