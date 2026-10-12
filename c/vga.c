@@ -4,6 +4,7 @@
 #include <string.h>
 
 VgaState pre2_vga;
+uint8_t (*vga_status_hook)(void) = 0;
 
 EXPORT VgaState *pre2_vga_state(void) { return &pre2_vga; }
 EXPORT uint32_t pre2_vga_state_size(void) { return sizeof(VgaState); }
@@ -110,6 +111,7 @@ EXPORT uint8_t vga_in(uint16_t port)
     case 0x3D5: return v->crtc[v->crtc_index & 31];
     case 0x3DA: {
         v->attr_flipflop = 0;
+        if (vga_status_hook) return vga_status_hook();     /* native host: real-time retrace */
         uint32_t n = v->status_reads++;
         uint8_t retrace = v->retrace_period && ((n / v->retrace_period) & 1) ? 0x08 : 0x00;
         return (uint8_t)(retrace | (retrace ? 0x01 : (n & 1)));

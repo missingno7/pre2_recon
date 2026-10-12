@@ -18,6 +18,8 @@
 void platform_poll(void);
 /* One failed check of WaitSoundTicks' tick wait: where the timer interrupt can run. */
 void platform_tick_wait(void);
+/* Native host: called by platform_poll (waiting = 0) and platform_tick_wait (waiting = 1). */
+extern void (*pre2_host_poll)(int waiting);
 uint16_t platform_conventional_kb(void);   /* INT 12h: conventional memory in KiB */
 void bios_set_mode(uint8_t mode);
 void bios_set_palette(uint16_t seg, uint16_t off);

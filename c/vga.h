@@ -28,6 +28,8 @@ typedef struct VgaState {
 } VgaState;
 
 extern VgaState pre2_vga;
+/* Native host: supplies input status 1 (3DAh) from real time; tests leave it unset. */
+extern uint8_t (*vga_status_hook)(void);
 
 void    vga_reset(void);
 uint8_t vga_read(uint16_t offset);              /* CPU read at A000:offset */

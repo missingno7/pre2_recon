@@ -14,6 +14,7 @@
 #include "vga.h"
 #include "sqz.h"
 #include "system.h"
+#include "sound.h"
 #include "render.h"
 #include "platform.h"
 
@@ -104,8 +105,7 @@ int PageInResource(uint16_t slot)
 /* loc_046F: the sound update that ends ActivateResourceSlot. */
 static int resource_sound_update(void)
 {
-    if (CB(CS_SoundState) & 1)
-        return platform_sb_start_block();        /* StartSbBlock: boundary */
+    if (CB(CS_SoundState) & 1) StartSbBlock();
     SET_CB(CS_SoundState, CB(CS_SoundState) | 2);
     return SYS_OK;
 }
@@ -257,8 +257,9 @@ void SetLevelPalette(void)
 
 void WaitForButtonPressRelease(void)
 {
-    do PollInputState(); while ((DB(DS_byte_2832) | DB(DS_byte_27E8)) == 0);
-    do PollInputState(); while ((DB(DS_byte_27E8) | DB(DS_byte_2832)) != 0);
+    /* the keyboard interrupt changes the polled state: the host delivers it at platform_poll */
+    do { platform_poll(); PollInputState(); } while ((DB(DS_byte_2832) | DB(DS_byte_27E8)) == 0);
+    do { platform_poll(); PollInputState(); } while ((DB(DS_byte_27E8) | DB(DS_byte_2832)) != 0);
 }
 
 void PrintDecimalWord(uint16_t dx)
@@ -492,7 +493,7 @@ int KeyboardIsr(void)
     if (code == F3_SCAN) {                       /* F3 toggles the sound-on bit */
         SET_CB(CS_SoundState, CB(CS_SoundState) ^ 1);
         if (CB(CS_SbDetected) == 1) {
-            if (CB(CS_SoundState) & 1) return SYS_UNSUPPORTED;   /* StartSbBlock: boundary */
+            if (CB(CS_SoundState) & 1) StartSbBlock();
         } else if (CB(CS_AdLibEnabled) != 1) {
             uint8_t al = (uint8_t)(port_in8(KBD_CTRL_PORT) & 0xFC);
             if (CB(CS_SoundState) & 1) al |= 3;

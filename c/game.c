@@ -36,6 +36,12 @@
 
 #define PSP_SEG (LOAD_SEG - 0x10u)
 
+/* Instrumentation for the host (not game state): the top-level step running now, and the
+ * number of main-loop frames run. */
+const char *pre2_phase = "start";
+uint32_t pre2_frames_run;
+#define STEP(call) (pre2_phase = #call, call)
+
 /* ES as the original would hold it at loc_01C4 for the CurrentLevel >= 0Ah path; set by
  * the code that leads there. GAME_ES_UNKNOWN makes the fill fail loudly instead of guessing. */
 #define GAME_ES_UNKNOWN 0xFFFFFFFFu
@@ -91,10 +97,10 @@ int ProgramEntry(void)
     SwapInt08Int09Vectors();
     SET_CW(CS_ConventionalTopSeg, (uint16_t)(platform_conventional_kb() << 6));   /* INT 12h */
     { int carry; ReadClockYear(&carry); }
-    ProbeCpuClass();
-    CalibrateJoystick();
-    if ((r = CheckVgaAdapter())) return r;
-    SetLevelVideoMode();
+    STEP(ProbeCpuClass());
+    STEP(CalibrateJoystick());
+    if ((r = STEP(CheckVgaAdapter()))) return r;
+    STEP(SetLevelVideoMode());
     if ((r = load(0x000C, &seg))) return r;             /* KEYB.SQZ */
     SET_DW(DS_NextFreeSegment, seg);
     SET_DW(DS_word_003D, seg);
@@ -105,17 +111,17 @@ int ProgramEntry(void)
     /* quirk: DS is still the KEYB segment here (push ds/pop ds around the load), so the
      * result goes to KEYB:003Dh, which is also where ALLFONTS was just loaded */
     wr16(keyb, 0x3D, seg);
-    ShowLateYearCredits();
-    if ((r = InitSoundDevices())) return r;
-    if ((r = ShowTitusScreen())) return r;
+    STEP(ShowLateYearCredits());
+    if ((r = STEP(InitSoundDevices()))) return r;
+    if ((r = STEP(ShowTitusScreen()))) return r;
     if ((r = ActivateResourceSlot(3))) return r;
-    if ((r = ShowPresentTitle())) return r;
-    if ((r = InitResourceMemory())) return r;
+    if ((r = STEP(ShowPresentTitle()))) return r;
+    if ((r = STEP(InitResourceMemory()))) return r;
     if (CW(CS_OptionBits) & 2) {
         if ((r = load(0x0022, &seg))) return r;         /* FRONT.SQZ */
         SET_DW(DS_word_003B, seg);
     }
-    if ((r = LoadSpriteSheet())) return r;
+    if ((r = STEP(LoadSpriteSheet()))) return r;
     SET_DW(DS_word_0039, DW(DS_NextFreeSegment));
     level_es = GAME_ES_UNKNOWN;
     return LevelRestart(DW(DS_NextFreeSegment));
@@ -128,15 +134,15 @@ int LevelRestart(uint16_t ax)
     for (;;) {
         SET_DW(DS_NextFreeSegment, DW(DS_word_0039));
         if (ax) {
-            FadeOutPaletteToBlack();
-            SetLevelVideoMode();
+            STEP(FadeOutPaletteToBlack());
+            STEP(SetLevelVideoMode());
             SET_DB(DS_Lives, 2);
             SET_DB(DS_BonusLetterMask, 0);
             SET_DB(DS_PlayerAttackPower, 0x14);
             SET_DB(DS_PlayerWeaponType, 0);
             SET_DB(DS_byte_6CA8, 0);
             if ((r = ActivateResourceSlot(3))) return r;
-            if ((r = RunFrontEnd())) return r;
+            if ((r = STEP(RunFrontEnd()))) return r;
             level_es = GAME_ES_UNKNOWN;
         }
         uint8_t level = DB(DS_CurrentLevel);
@@ -146,13 +152,13 @@ int LevelRestart(uint16_t ax)
             SET_DW(DS_LevelSegment, seg);
             /* BX at the call: LoadSqzFile leaves the file handle in BX (its close) */
             ShowMode13PictureFadeIn(0xFF, CW(CS_SqzFileHandle));
-            WaitForButtonPressRelease();
+            STEP(WaitForButtonPressRelease());
             ax = 1;
             continue;
         }
         if (DB(DS_CurrentLevel) < 0x0A) {
-            SetLevelVideoMode();
-            ShowWorldMapScrollIn();
+            STEP(SetLevelVideoMode());
+            STEP(ShowWorldMapScrollIn());
             level_es = 0xA000u;
         }
         if ((r = LevelStart(level_es))) return r;
@@ -169,7 +175,7 @@ int LevelStart(uint32_t es)
 {
     int r;
     if ((r = ActivateResourceSlot(DB((uint16_t)(DS_byte_2D20 + DB(DS_CurrentLevel)))))) return r;
-    if (DB(DS_CurrentLevel) < 0x0A) SetLevelVideoMode();
+    if (DB(DS_CurrentLevel) < 0x0A) STEP(SetLevelVideoMode());
     if ((r = fill_render_slots(es))) return r;
     if ((r = LoadLevel(DB(DS_CurrentLevel)))) return r;
     SetLevelPalette();
@@ -191,9 +197,12 @@ int LevelStart(uint32_t es)
 
 /* One iteration of MainFrameLoop. Returns 0 to continue, 1 when UpdateLevelState set CF
  * (*ax_out = its AX: LevelRestart follows), or an error status. */
+
+
 int MainFrameStep(uint16_t *ax_out)
 {
     int r;
+    pre2_frames_run++;
     {
         UpdatePopupRing();
         UpdateFollowerSlots();
@@ -232,6 +241,7 @@ int MainFrameStep(uint16_t *ax_out)
 int MainFrameLoop(uint16_t *ax_out)
 {
     int r;
+    pre2_phase = "MainFrameLoop";
     while ((r = MainFrameStep(ax_out)) == 0) { }
     return r == 1 ? 0 : r;
 }

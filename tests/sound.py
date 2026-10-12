@@ -443,3 +443,15 @@ def module_cases():
     return out
 
 CASES = (mix_cases() + effect_cases() + cell_cases() + tick_cases() + block_cases() + module_cases())
+
+# StartSbBlock (cs:214E): DMA channel 1 and DSP 14h for the first block (the record the
+# game prepared: +0 page byte, +1 address word).
+def _start_block(page, addr, rec=0x10BB):
+    def setup(m):
+        m.ww(m.code('SbWritePort'), 0x22C, seg=0x1030)
+        m.ww(m.data('PlayDmaRecord'), rec)
+        m.wb(rec, page); m.ww(rec + 1, addr)
+    return setup
+for page, addr in ((0x02, 0x4C99), (0x0F, 0xFFF0), (0x00, 0x0000)):
+    CASES.append(Case(f'StartSbBlock: page {page:02X}h address {addr:04X}h', 'StartSbBlock', 'c_StartSbBlock',
+                      setup=_start_block(page, addr)))

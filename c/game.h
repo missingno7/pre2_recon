@@ -9,5 +9,7 @@ int ProgramEntry(void);
 int LevelRestart(uint16_t ax);
 int LevelStart(uint32_t es);
 int MainFrameStep(uint16_t *ax_out);
-int MainFrameLoop(uint16_t *ax_out);   /* returns 0 when UpdateLevelState requests a restart */
+int MainFrameLoop(uint16_t *ax_out);
+extern uint32_t pre2_frames_run;   /* MainFrameStep calls so far (host instrumentation) */
+extern const char *pre2_phase;     /* top-level step running now (host instrumentation) */   /* returns 0 when UpdateLevelState requests a restart */
 #endif

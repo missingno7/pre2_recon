@@ -19,13 +19,20 @@
 
 #define ATTR_PAS 0x20u
 
-void platform_poll(void) { }
+/* The native host installs pre2_host_poll; the test model leaves it unset. */
+void (*pre2_host_poll)(int waiting) = 0;
+
+void platform_poll(void) { if (pre2_host_poll) pre2_host_poll(0); }
 
 /* Test tick model (off by default): each failed check of the frame wait advances
  * TimerTickCount by one, as tools/difftest.py's tick_model hook does on the oracle side. */
 static int tick_model;                              /* test configuration, not game state */
 EXPORT void pre2_platform_tick_model(int on) { tick_model = on; }
-void platform_tick_wait(void) { if (tick_model) SET_CW(CS_TimerTickCount, (uint16_t)(CW(CS_TimerTickCount) + 1)); }
+void platform_tick_wait(void)
+{
+    if (pre2_host_poll) { pre2_host_poll(1); return; }
+    if (tick_model) SET_CW(CS_TimerTickCount, (uint16_t)(CW(CS_TimerTickCount) + 1));
+}
 
 uint16_t platform_conventional_kb(void) { return 640; }
 

@@ -29,4 +29,5 @@ void EffectPositionJump(uint8_t al);
 void EffectSetVolume(uint16_t ch, uint8_t al);
 void EffectPatternBreak(uint8_t al);
 void EffectSetSpeed(uint8_t al);
+void StartSbBlock(void);       /* cs:214E: DMA channel 1 + DSP 14h for the first block */
 #endif

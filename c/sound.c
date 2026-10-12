@@ -37,6 +37,7 @@
  */
 #include "pre2.h"
 #include "sound.h"
+#include "startup.h"
 #include "ports.h"
 #include "platform.h"
 
@@ -295,6 +296,26 @@ void WaitSoundTicks(void)
     SET_DW(DS_word_27EE, CW(CS_TimerTickCount));
 }
 
+/* StartSbBlock (cs:214E): start the first 168-byte block from PlayDmaRecord without mixing:
+ * DMA channel 1 masked, flip-flop cleared, address and page from the record (+1 word, +0
+ * byte), count A7h, unmasked; then DSP 14h with length A7h 00h (single-cycle 8-bit). */
+void StartSbBlock(void)
+{
+    uint16_t bx = DW(DS_PlayDmaRecord);
+    port_out8(0x0A, 5);
+    port_out8(0x0C, 0);
+    uint16_t addr = DW((uint16_t)(bx + 1));
+    port_out8(0x02, (uint8_t)addr);
+    port_out8(0x02, (uint8_t)(addr >> 8));
+    port_out8(0x83, DB(bx));
+    port_out8(0x03, 0xA7);
+    port_out8(0x03, 0x00);
+    port_out8(0x0A, 1);
+    DspWriteWait(0x14);
+    DspWriteWait(0xA7);
+    DspWriteWait(0x00);
+}
+
 /* ---- differential-test adapters (tests/sound.py) ----------------------------------
  * The harness enters a routine with SP = 0200h and a near return address at 01FEh;
  * the entry SP values below are those addresses (MixSavedSp is written from them).
@@ -359,4 +380,5 @@ EXPORT int c_EffectSetSpeed(Regs *r)
     EffectSetSpeed((uint8_t)r->ax);
     return 0;
 }
+EXPORT int c_StartSbBlock(Regs *r) { (void)r; StartSbBlock(); return 0; }
 EXPORT int c_WaitSoundTicks(Regs *r) { WaitSoundTicks(); r->ds = DATA_SEG; return 0; }
