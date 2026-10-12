@@ -21,6 +21,11 @@ def parts():
 
 def rows():
     """Every listing row with an offset: (linear, file, source line number, text)."""
+    lsts = list(BUILD.glob('*.LST'))
+    newest = max(p.stat().st_mtime for p in (ROOT/'src').glob('*.ASM'))
+    if not lsts or min(p.stat().st_mtime for p in lsts) < newest:
+        import build            # listings older than the source: rebuild first
+        build.assemble()
     starts = {(seg, mod): lin for lin, seg, mod in parts()}
     out = []
     import lst
@@ -28,12 +33,16 @@ def rows():
         mod = path.stem + '.ASM'
         src = (ROOT/'src'/mod).read_text(encoding='latin-1').splitlines()
         offs = lst.parse(path.read_text(encoding='latin-1'), src, mod)
-        seg = None
+        seg, pending = None, []
         for n, (text, off) in enumerate(zip(src, offs), 1):
             m = re.match(r'^(\w+) segment\b', text.strip(), re.I)
-            if m: seg = m.group(1).upper(); continue
+            if m: seg = m.group(1).upper(); pending = []; continue
             if re.match(r'^\w+ ends\b', text.strip(), re.I): seg = None; continue
+            if off is None and re.match(r'^\w+\s+label\s', text): pending.append((n, text))
             if off is not None and seg and (seg, mod) in starts:
+                for pn, ptext in pending:   # `X label T` rows show no offset: use the next row's
+                    out.append((starts[(seg, mod)] + off, mod, pn, ptext.rstrip()))
+                pending = []
                 out.append((starts[(seg, mod)] + off, mod, n, text.rstrip()))
     return sorted(out)
 
@@ -67,3 +76,11 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+def labels():
+    """Every label in the last build: NAME (upper case) -> linear image offset."""
+    out = {}
+    for lin, mod, n, text in rows():
+        m = re.match(r'^([A-Za-z_@$?][\w@$?]*)(?::|\s+label\s)', text)
+        if m: out.setdefault(m.group(1).upper(), lin)
+    return out

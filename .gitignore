@@ -8,3 +8,4 @@ assets/*.TRK
 toolchain/TASM.EXE
 toolchain/TLINK.EXE
 .claude/
+c/pre2_sym.h
