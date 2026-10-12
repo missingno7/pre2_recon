@@ -26,6 +26,9 @@ void UpdateBurstParticles(void);
 void TickDebrisSlots(void);
 int  FindFreeProjectileSlot(uint16_t *si_out);
 
+/* One step of the 16-colour DAC fade (cs:6772h). */
+void StepPaletteFade(void);
+
 /* Tile handlers reached through the DATA tables (DI = map cell, see player.c). */
 void LandPlayerOnGround(uint16_t di);
 void GroundTileSnapOrFall(uint16_t di);
@@ -36,4 +39,16 @@ int  RedrawTileIfVisible(uint16_t ax, uint16_t di);
 void TriggerPlayerRespawnCore(void);
 void IncrementPlayerLives(void);
 void sub_67D7(void);
+
+/* Trail record at PopupRingHead for the position (AX, DX) (cs:5E41). */
+void EmitPlayerTrailAt(uint16_t ax, uint16_t dx);
+
+/* Steps the animation script at BX (cs:638B): a negative word is a relative jump. */
+void AdvancePlayerAnim(uint16_t bx);
+
+/* Moves |PlayerVelX| toward zero by 0Ch >> MotionShift (cs:6333). */
+void ApplyPlayerFriction(void);
+
+/* Soft-landing tail (cs:64DF). */
+void FinishPlayerLanding(void);
 #endif

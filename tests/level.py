@@ -6,11 +6,9 @@ LEVELn.SQZ (shared with tests/render.py: level_state, base, set_cam, bios10), so
 backdrop, class tables, map, patch lists and render slots are the shipped data. Compared: DATA,
 code-segment variables, the VGA planes and latches (every case) and the extra ranges listed.
 
-Not covered (region edge, see c/level.h): the branches that enter other regions' routines are
-left out, because the oracle would run ASM the C side cannot yet run: PlayDeathBounce (RespawnState
-1, EndSignal 1), ShowEndingPicture (EndSignal 0FFh), GameOverPath (demo flag set on the exit or
-respawn path), TryCaveTrigger's hit path (BuildEffectDrawList, UpdateObjects), the proximity trigger
-redraw (RedrawTileIfVisible), SpawnDebrisElement and IncrementPlayerLives (a score block not yet
+Not covered (region edge, see c/level.h): the branches that enter routines of the intro and
+credits gates (ShowEndingPicture, GameOverPath: TryShowIntroKeyed and ShowIntroPicture are not
+translated and return LEVEL_UNSUPPORTED), SpawnDebrisElement and IncrementPlayerLives (a score block not yet
 awarded), and TestHitboxOverlap (a landing). UpdateHud's divide fault (quotient above FFFFh) is a
 quirk documented in c/level.c and is not run: the oracle would take the #DE interrupt.
 """
@@ -365,6 +363,11 @@ def trigger_cases():
                    'c_UpdateProximityTriggers', level=4, setup=prox(52, 0x0800, 0x0600, 1, (near, far))))
     cs.append(case('UpdateProximityTriggers: fired triggers, tick 1 (no reveal step)', 'UpdateProximityTriggers',
                    'c_UpdateProximityTriggers', level=5, setup=prox(53, 0x0800, 0x0600, 1, (fired, far))))
+    # tick 0 and 4 (SnowFrameTick & 3 == 0): the reveal step runs, with RedrawTileIfVisible in AX/DI form
+    cs.append(case('UpdateProximityTriggers: fired triggers, reveal step (tick 0)', 'UpdateProximityTriggers',
+                   'c_UpdateProximityTriggers', level=5, setup=prox(55, 0x0800, 0x0600, 0, (fired, far))))
+    cs.append(case('UpdateProximityTriggers: fired, near and idle triggers, reveal step (tick 4)', 'UpdateProximityTriggers',
+                   'c_UpdateProximityTriggers', level=5, setup=prox(56, 0x0800, 0x0600, 4, (fired, near, idle))))
     cs.append(case('UpdateProximityTriggers: fired triggers, tick 2 (no reveal step)', 'UpdateProximityTriggers',
                    'c_UpdateProximityTriggers', level=5, setup=prox(54, 0x0800, 0x0600, 2, (fired, idle))))
     for px, py in ((0x0000, 0x0000), (0x7FF0, 0x0FF0), (0xFFF0, 0x00F0), (0x0130, 0x0240)):

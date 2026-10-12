@@ -35,4 +35,14 @@ void    vga_write(uint16_t offset, uint8_t v);  /* CPU write at A000:offset */
 uint8_t vga_in(uint16_t port);
 void    vga_out(uint16_t port, uint8_t v);
 int     vga_port(uint16_t port);                /* nonzero for ports the model owns */
+
+/* MOVSB and XCHG with A000h:off through the model: a read loads the latches, then the write
+ * (XCHG returns the old byte). */
+static inline void vga_movsb(uint16_t si, uint16_t di) { vga_write(di, vga_read(si)); }
+static inline uint8_t vga_xchg(uint16_t off, uint8_t v)
+{
+    uint8_t old = vga_read(off);
+    vga_write(off, v);
+    return old;
+}
 #endif

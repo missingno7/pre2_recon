@@ -38,6 +38,7 @@
 #include "pre2.h"
 #include "sound.h"
 #include "ports.h"
+#include "platform.h"
 
 #define VOLUME_TABLE DS_VolumeTable   /* 65 rows of 64 bytes, filled at SB set-up (loc_1E90) */
 
@@ -275,6 +276,25 @@ void TrackerTick(void)
     SET_DW(DS_SongRow, 0);
 }
 
+/* ---- sound timing (moved from render.c: cs:1C65, MODULE1) ------------------------------ */
+
+/* WaitSoundTicks (MODULE1 cs:1C6F): busy-wait until TimerTickCount is 3 or more away from
+ * word_27EE (|difference| in 16 bits), then store the count. byte_6BE7 counts the advances
+ * of exactly 3. The wait polls platform_poll(); a host that never advances the tick loops
+ * forever, as the original does. */
+void WaitSoundTicks(void)
+{
+    SET_DB(DS_byte_6BE7, 0);
+    for (;;) {
+        uint16_t ax = (uint16_t)(DW(DS_word_27EE) - CW(CS_TimerTickCount));
+        if (ax & 0x8000) ax = (uint16_t)(-ax);            /* jns / neg */
+        if (ax < 3) { platform_poll(); continue; }
+        if (ax == 3) SET_DB(DS_byte_6BE7, (uint8_t)(DB(DS_byte_6BE7) + 1));
+        break;
+    }
+    SET_DW(DS_word_27EE, CW(CS_TimerTickCount));
+}
+
 /* ---- differential-test adapters (tests/sound.py) ----------------------------------
  * The harness enters a routine with SP = 0200h and a near return address at 01FEh;
  * the entry SP values below are those addresses (MixSavedSp is written from them).
@@ -339,3 +359,4 @@ EXPORT int c_EffectSetSpeed(Regs *r)
     EffectSetSpeed((uint8_t)r->ax);
     return 0;
 }
+EXPORT int c_WaitSoundTicks(Regs *r) { WaitSoundTicks(); r->ds = DATA_SEG; return 0; }

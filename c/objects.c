@@ -10,10 +10,8 @@
  * (CW(CS_ChildHandlerTable + index)) and switches on it: a word that is not one of the 26
  * handler entries is reported as OBJ_DISPATCH_UNSUPPORTED instead of being run.
  *
- * Routines outside the region that these routines call (TestHitboxOverlap, SpawnEffectBurst,
- * RandomDebrisFrame, SpawnFourDebrisParticles, sub_93B2 with sub_93F6 and sub_94DC,
- * TriggerPlayerRespawnCore, StepRandomSeed) are static copies under their ASM labels.
- */
+ * Routines of the other regions are called through their owners' headers (effects.h,
+ * player.h, sprites.h). */
 #include "pre2.h"
 #include "render.h"
 #include "system.h"
@@ -21,6 +19,7 @@
 #include "objects.h"
 #include "effects.h"
 #include "player.h"
+#include "sprites.h"
 
 /* ---- layout ---------------------------------------------------------------------------- */
 
@@ -52,7 +51,6 @@ static uint8_t  neg8(uint8_t v)   { return (uint8_t)(0u - v); }
 static uint16_t abs16(uint16_t v) { return (int16_t)v < 0 ? neg16(v) : v; }
 static uint16_t sar16(uint16_t v, unsigned n) { return (uint16_t)((int16_t)v >> n); }
 static uint8_t  sar8(uint8_t v, unsigned n)   { return (uint8_t)((int8_t)v >> n); }
-static uint16_t cbw(uint8_t v) { return (uint16_t)(int16_t)(int8_t)v; }
 static uint8_t  sat_inc8(uint8_t v) { return v == 0xFF ? 0xFF : (uint8_t)(v + 1); }  /* add/sbb */
 static uint8_t  sat_dec8(uint8_t v) { return v == 0 ? 0 : (uint8_t)(v - 1); }        /* sub/adc */
 
@@ -61,17 +59,6 @@ void DrainPlayerEnergy(void);
 void SpawnDriftParticle(void);
 void SpawnFallingParticle(void);
 void IncrementBossCounter(void);
-
-/* ---- routines outside the region (static copies) ----------------------------------------- */
-
-/* StepRandomSeed (cs:26CF): RandomSeed = ror3(RandomSeed + 9248h); returns the new AX. */
-static uint16_t StepRandomSeed(void)
-{
-    uint16_t ax = (uint16_t)(DW(DS_RandomSeed) + 0x9248u);
-    ax = (uint16_t)((ax >> 3) | (ax << 13));
-    SET_DW(DS_RandomSeed, ax);
-    return ax;
-}
 
 /* ---- scripts, pools, culling, timers --------------------------------------------------- */
 
@@ -1935,11 +1922,6 @@ int UpdateObjects(void)
     return OBJ_OK;
 }
 /* ---- register adapters (differential tests, tests/objects.py) ---------------------------- */
-static void set_cf(Regs *r, int cf)
-{
-    r->flags = cf ? (uint16_t)(r->flags | FLAG_CF) : (uint16_t)(r->flags & ~FLAG_CF);
-}
-
 EXPORT int c_UpdateObjects(Regs *r) { int st = UpdateObjects(); r->ds = DATA_SEG; return st; }
 
 EXPORT int c_UpdateGroundChild(Regs *r) { int st = UpdateGroundChild(r->si); r->ds = DATA_SEG; return st; }
@@ -2046,7 +2028,6 @@ EXPORT int c_ApplyBossPartContact(Regs *r) { ApplyBossPartContact(r->di); r->ds 
 
 
 
-EXPORT int c_copy_StepRandomSeed(Regs *r) { r->ax = StepRandomSeed(); r->ds = DATA_SEG; return 0; }
 
 EXPORT int c_BossHit(Regs *r) { BossHit(r->si); r->ds = DATA_SEG; return 0; }
 

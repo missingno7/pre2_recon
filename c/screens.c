@@ -29,6 +29,8 @@
 #include "system.h"
 #include "sqz.h"
 #include "screens.h"
+#include "player.h"
+#include "effects.h"
 
 #define SEG_VGA        0xA000u
 #define ATTR_PAS_PEL   0x33u         /* attribute index 13h with PAS set: pel pan */
@@ -66,7 +68,6 @@ static void mw_wr(uint16_t seg, uint16_t off, uint16_t v)  /* low byte first */
 }
 
 static uint8_t  rol8(uint8_t v, unsigned n)  { return (uint8_t)((v << n) | (v >> (8 - n))); }
-static uint16_t rol16(uint16_t v, unsigned n) { return (uint16_t)((v << n) | (v >> (16 - n))); }
 static uint16_t ror16(uint16_t v, unsigned n) { return (uint16_t)((v >> n) | (v << (16 - n))); }
 
 /* A busy-wait on the retrace or the timer that the host may pump. */
@@ -1110,9 +1111,6 @@ static void loc_8F96(void);
 static void loc_9002(void);
 static void intro_setup(void);
 static void intro_group_setup(void);
-static void AdvancePlayerAnim(uint16_t bx);
-static void StepSpriteAnimation(uint16_t si);
-static void RestoreBackdropToDrawPage(void);
 
 /* Scene set-up: backdrop save and the player and follower state (before the walk-in). */
 static void intro_setup(void)
@@ -1221,24 +1219,8 @@ static void loc_9002(void)
     } while ((int16_t)DW(DS_PlayerX) >= 0);
 }
 
-/* Advances one render slot's animation script (AdvancePlayerAnim, cs:6381 is in the player
- * region; kept here as a static copy): BX = script pointer; a negative word is a relative jump. */
-static void AdvancePlayerAnim(uint16_t bx)
-{
-    uint16_t ax = DW(bx);
-    if (ax & 0x8000) {
-        bx = (uint16_t)(bx + ax);
-        ax = DW(bx);
-    }
-    SET_DB(DS_FrameFlagsRaw, (uint8_t)(ax >> 8));
-    uint8_t ah = (uint8_t)((ax >> 8) & 0x1F);
-    ah |= (uint8_t)(DB(DS_PlayerFacing) & 0x80);
-    SET_DW(DS_PlayerFrameWord, (uint16_t)(ah << 8 | (uint8_t)ax));
-    SET_DW(DS_PlayerAnimPtr, (uint16_t)(bx + 2));
-}
-
 /* Advances a render slot's animation script and writes its frame (si = render slot). */
-static void StepSpriteAnimation(uint16_t si)
+void StepSpriteAnimation(uint16_t si)
 {
     uint16_t bx = DW((uint16_t)(si + 0x0C));
     uint16_t ax = DW(bx);
@@ -1259,7 +1241,7 @@ static void StepSpriteAnimation(uint16_t si)
 /* Copies 1F40h bytes of each VRAM plane from the saved backdrop (3F40h) to the draw page.
  * Leaves DS = A000h, as the original does (the caller reads DS-relative data only after
  * restoring DS, see RunLevelIntroScene). */
-static void RestoreBackdropToDrawPage(void)
+void RestoreBackdropToDrawPage(void)
 {
     SetLatchCopyMode();
     uint16_t di = DW(DS_DrawPage);
@@ -1321,4 +1303,15 @@ EXPORT int c_SetPictureCopyPointers(Regs *r)
     r->si = 0; r->es = SEG_VGA; r->di = 0;
     return 0;
 }
+EXPORT int c_StepSpriteAnimation(Regs *r) { StepSpriteAnimation(r->si); return 0; }
+
+/* DS and ES end at A000h; SI, DI, CX and AX are restored by the original's pops. */
+EXPORT int c_RestoreBackdropToDrawPage(Regs *r)
+{
+    RestoreBackdropToDrawPage();
+    r->ds = 0xA000;
+    r->es = 0xA000;
+    return 0;
+}
+
 EXPORT int c_FadeOutPaletteToBlack(Regs *r) { (void)r; FadeOutPaletteToBlack(); return 0; }

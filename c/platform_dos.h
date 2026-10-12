@@ -12,10 +12,7 @@ enum PlatformStatus {
     PLAT_UNSUPPORTED = 300      /* boundary service not modelled (see system.h) */
 };
 
-/* INT 10h AX=1012h: sets `count` DAC registers from `first`, each three bytes (R, G, B)
- * read from seg:off onward (16-bit offset wrap). Written as the BIOS does it: port 3C8h
- * for the index, then 3C9h for each component, so the VGA model holds the palette. */
-int platform_dac_set_block(uint16_t seg, uint16_t off, uint16_t first, uint16_t count);
+/* The DAC block write (INT 10h AX=1012h) is bios_set_dac_block in platform.h. */
 
 /* INT 67h AH=44h/4401h: map the pages of EMS handle `handle` for a resource whose
  * ResourceAddressTable entry is `source`. Not modelled: PLAT_UNSUPPORTED. */

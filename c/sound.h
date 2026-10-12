@@ -17,6 +17,9 @@ void SbMixBlock(uint16_t sp);
 /* One 50 Hz tracker tick (volume slides, row countdown, row processing). */
 void TrackerTick(void);
 
+/* Busy-waits for the 50 Hz tick to advance by 3 or more (moved from render.c). */
+void WaitSoundTicks(void);
+
 /* Applies the 4-byte cell at es:si to channel `ch` (channel offset). */
 void ProcessChannelCell(uint16_t es, uint16_t si, uint16_t ch);
 

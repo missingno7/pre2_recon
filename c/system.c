@@ -15,6 +15,7 @@
 #include "sqz.h"
 #include "system.h"
 #include "render.h"
+#include "platform.h"
 
 #define RESOURCE_NAMES   0x09E0u    /* DATA: NUL-terminated resource names, PRES.TRK first */
 #define RF(slot)         ((uint16_t)(DS_ResourceFlags + (slot)))
@@ -237,7 +238,7 @@ int ActivateResourceSlot(uint16_t slot)
 void SetDacBlock0To15IfFlag(uint16_t seg, uint16_t dx)
 {
     if (CB(CS_OptionVByte) == 5)                 /* never 5 in the shipped paths (see ASM) */
-        platform_dac_set_block(seg, dx, 0, 0x10);
+        bios_set_dac_block(0, 0x10, seg, dx);
 }
 
 void SetStartupPalette(void)
@@ -249,7 +250,7 @@ void SetLevelPalette(void)
 {
     uint16_t bx = (uint16_t)(DB(DS_CurrentLevel) << 1);
     uint16_t dx = DW((uint16_t)(DS_LevelPaletteTable + bx));
-    platform_dac_set_block(DATA_SEG, dx, 0, 0x10);
+    bios_set_dac_block(0, 0x10, DATA_SEG, dx);
 }
 
 /* ---- text (cs:0BF7h..0CB2h) -------------------------------------------------------------- */

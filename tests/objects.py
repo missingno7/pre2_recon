@@ -517,7 +517,7 @@ def level9_cases():
 # -- copies of routines outside the region (checked against the oracle) -----------------------
 def copies_cases():
     cs = []
-    cs.append(case('StepRandomSeed: seed 1234h', 'StepRandomSeed', 'c_copy_StepRandomSeed', level=4,
+    cs.append(case('StepRandomSeed: seed 1234h', 'StepRandomSeed', 'c_StepRandomSeed', level=4,
                    setup=lambda m: m.ww(m.data('RandomSeed'), 0x1234), out_regs=('AX',)))
     for lab, sd in [('a', 0x0000), ('b', 0xFFFF), ('c', 0x8001)]:
         cs.append(case(f'TriggerPlayerRespawnCore: lives {lab}', 'TriggerPlayerRespawnCore', 'c_TriggerPlayerRespawnCore',

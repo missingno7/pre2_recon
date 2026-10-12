@@ -4,7 +4,8 @@
  * handlers as labelled blocks of that function), the debris and effect pools, follower
  * hits, the ambient draw list, the cell-change groups and timers, the hitbox test, sprite
  * animation steps, the backdrop and picture pointers and the SQZ-table helpers sub_93F6,
- * sub_93B2, sub_94DC. The front-end screens with their own frame loops are not here.
+ * sub_93B2, sub_94DC and the password code. The front-end screens with their own frame loops,
+ * the picture and backdrop copies (screens.c) and the routines of the other regions are not here.
  *
  * Shared tails are kept as the ASM has them: TickCellChangeTimer jumps into the apply body
  * of ApplyCellChangeRecord (loc_8B77) and ends through its CF exits; the countdown tail
@@ -13,66 +14,17 @@
  *
  * Quirks preserved (see the comments at each site): SpawnEffectBurst with CX = 0 fills every
  * free record (DEC wraps), the sub_94DC table search has no bound (a missing key never
- * returns), SkipScriptToMarker has no bound, DestroyObjectWithDebris reads the table count
- * with a 16-bit DS index and RestoreBackdropToDrawPage leaves DS
- * pointing at the picture segments (reported through the adapters), and ApplyCellChangeRecord
- * writes the level map at cell offset row*256+col.
+ * returns), SkipScriptToMarker (objects.c) has no bound, DestroyObjectWithDebris reads the table
+ * count with a 16-bit DS index, and ApplyCellChangeRecord writes the level map at cell offset
+ * row*256+col.
  */
 #include "pre2.h"
 #include "vga.h"
 #include "system.h"
 #include "render.h"
+#include "player.h"
+#include "objects.h"
 #include "effects.h"
-
-/* ---- callees outside this region (static copies; see effects.h) ------------------------ */
-
-/* EmitPlayerTrailAt (cs:5E41): trail record at PopupRingHead, ring wraps at 4FBEh. */
-static void EmitPlayerTrailAt(uint16_t ax, uint16_t dx)
-{
-    uint16_t bx = DW(DS_PopupRingHead);
-    SET_DW(bx, ax);
-    SET_DW((uint16_t)(bx + 2), dx);
-    SET_DW((uint16_t)(bx + 4), 0x35);
-    bx = (uint16_t)(bx - 0x12);
-    if (bx < 0x4F76) bx = 0x4FBE;
-    SET_DW(DS_PopupRingHead, bx);
-}
-
-/* TriggerPlayerRespawnCore (cs:65B3). */
-static void TriggerPlayerRespawnCore(void)
-{
-    if (DB(DS_RespawnState) != 0) return;
-    if (DB(DS_Lives) == 0) { SET_DB(DS_EndSignal, 1); return; }
-    SET_DB(DS_Lives, (uint8_t)(DB(DS_Lives) - 1));
-    SET_DB(DS_Energy, 0);
-    SET_DB(DS_RespawnState, 2);
-}
-
-/* IncrementPlayerLives (cs:65D6). The original addresses Lives as [si+byte_0666] with
- * si = 2172h, which is DS 27D8h = Lives. Above 63h it writes IRET to the first byte of
- * DrawSpriteObjects before it increments (only reachable when the count is already above
- * 63h on entry). */
-static void IncrementPlayerLives(void)
-{
-    uint8_t l = DB(DS_Lives);
-    if (l == 0x63) return;
-    if (l > 0x63) SET_CB(CS_DrawSpriteObjects, 0xCF);
-    SET_DB(DS_Lives, (uint8_t)(l + 1));
-}
-
-/* SkipScriptToMarker (cs:80CB): DI+0Ch moves past the next word 7D00h (no bound). */
-static void SkipScriptToMarker(uint16_t di)
-{
-    uint16_t si = DW((uint16_t)(di + 0x0C));
-    do { si = (uint16_t)(si + 2); } while (DW(si) != 0x7D00);
-    si = (uint16_t)(si + 2);
-    SET_DW((uint16_t)(di + 0x0C), si);
-}
-
-static void set_cf(Regs *r, int cf)
-{
-    r->flags = (uint16_t)((r->flags & ~FLAG_CF) | (cf ? FLAG_CF : 0));
-}
 
 /* ---- SpawnDebrisElement (cs:8875) ------------------------------------------------------- */
 
@@ -977,45 +929,6 @@ void SpawnPlayerBurst(void)
     SpawnEffectBurst(0x30, &dx, cx);
 }
 
-/* ---- Picture and backdrop copy (cs:926E, cs:9071) -------------------------------------- */
-
-/* RestoreBackdropToDrawPage (cs:9071): copies 1F40h bytes of each plane from A000:3F40h
- * (saved backdrop) to the draw page. The original leaves DS = ES = A000h (not restored);
- * the adapter reports that. Preserves AX, CX, SI, DI. */
-void RestoreBackdropToDrawPage(void)
-{
-    SetLatchCopyMode();
-    uint16_t si = 0x3F40;
-    uint16_t di = DW(DS_DrawPage);
-    for (int n = 0; n < 0x1F40; n++) {
-        uint8_t v = vga_read(si);
-        vga_write(di, v);
-        si = (uint16_t)(si + 1);
-        di = (uint16_t)(di + 1);
-    }
-}
-
-/* ---- StepSpriteAnimation (cs:9047) ------------------------------------------------------ */
-
-/* In: SI = sprite record (+9 flags: bit 80h is OR-ed into the frame's high bit, +0Ch script
- * pointer, +4 frame output). A negative script word is a relative jump. */
-void StepSpriteAnimation(uint16_t si)
-{
-    uint16_t bx = DW((uint16_t)(si + 0x0C));
-    uint16_t ax = DW(bx);
-    if ((int16_t)ax < 0) {
-        bx = (uint16_t)(bx + ax);
-        ax = DW(bx);
-    }
-    ax = (uint16_t)((ax & 0x1FFF) + 0x138);
-    uint8_t dh = DB((uint16_t)(si + 9)) & 0x80;
-    uint8_t ah = (uint8_t)(ax >> 8) | dh;
-    ax = (uint16_t)((ah << 8) | (ax & 0xFF));
-    SET_DW((uint16_t)(si + 4), ax);
-    bx = (uint16_t)(bx + 2);
-    SET_DW((uint16_t)(si + 0x0C), bx);
-}
-
 /* ---- sub_94DC, sub_93F6, sub_93B2 (SQZ-table helpers at cs:93B2..94DB) ------------------ */
 
 /* sub_94DC: searches the 6-byte records at A6EDh for (DX, AX); returns the record's third
@@ -1115,6 +1028,47 @@ uint16_t sub_93B2(uint16_t si, uint16_t *di_out)
     return si;
 }
 
+/* ---- password code (moved from render.c: MODULE3 cs:932F ComputePasswordCode) ------------- */
+
+/* ComputePasswordCode: depends on the BIOS seed (F000:FFF0..FFFF folded, option ROMs at
+ * C000 and up, each 80h bytes, folded in 16-byte steps) and on CpuClass. A ROM with length
+ * byte 0 never advances the segment (the original loops forever there); a non-ROM segment
+ * advances 400h. AX in, AX out. */
+uint16_t ComputePasswordCode(uint16_t ax_in)
+{
+    if (DB(DS_BiosSeedReady) == 0) {
+        uint8_t dl = 0, dh = 0;
+        for (uint16_t si = 0xFFF0; ; si++) {              /* add dl / sbb dh share the carry */
+            uint8_t b = rd8(0xF000, si);
+            uint16_t t = (uint16_t)dl + b;
+            uint8_t carry = (uint8_t)(t >> 8);
+            dl = (uint8_t)t;
+            dh = (uint8_t)(dh - b - carry);
+            if ((uint16_t)(si + 1) == 0) break;
+        }
+        uint16_t seg = 0xC000;
+        for (;;) {
+            if (rd16(seg, 0) == 0xAA55) {
+                for (uint16_t si = 0; si < 0x80; si++) {
+                    dl = (uint8_t)(dl + rd8(seg, si));
+                    dh = (uint8_t)(dh ^ rd8(seg, si));
+                }
+                uint16_t bx = (uint16_t)((uint16_t)rd8(seg, 2) << 8) >> 3;   /* bh * 32 */
+                seg = (uint16_t)(seg + bx);                                  /* ROM: no 400h step */
+            } else {
+                seg = (uint16_t)(seg + 0x400);
+            }
+            if ((uint8_t)(seg >> 8) >= 0xF0) break;
+        }
+        uint16_t dx = (uint16_t)(dh << 8 | dl);
+        if (dx == 0) dx = 0x20;
+        SET_DW(DS_BiosSeed, dx);
+        SET_DB(DS_BiosSeedReady, 1);
+    }
+    uint16_t ax = (uint16_t)((ax_in ^ 0x55A3u) * DW(DS_BiosSeed));
+    return rol16(ax, CB(CS_CpuClass));
+}
+
 /* ---- Differential-test adapters ---------------------------------------------------------- */
 
 EXPORT int c_ProcessPlayerContacts(Regs *r) { ProcessPlayerContacts(); r->ds = DATA_SEG; return 0; }
@@ -1155,16 +1109,6 @@ EXPORT int c_SpawnEffectBurst(Regs *r)
 }
 
 EXPORT int c_TestHitboxOverlap(Regs *r) { set_cf(r, TestHitboxOverlap(r->si, r->di)); return 0; }
-EXPORT int c_StepSpriteAnimation(Regs *r) { StepSpriteAnimation(r->si); return 0; }
-
-/* DS and ES end at A000h; SI, DI, CX and AX are restored by the original's pops. */
-EXPORT int c_RestoreBackdropToDrawPage(Regs *r)
-{
-    RestoreBackdropToDrawPage();
-    r->ds = 0xA000;
-    r->es = 0xA000;
-    return 0;
-}
 
 EXPORT int c_sub_93F6(Regs *r) { r->si = sub_93F6(r->si); r->ds = DATA_SEG; r->es = DATA_SEG; return 0; }
 
@@ -1180,3 +1124,4 @@ EXPORT int c_sub_93B2(Regs *r)
 
 EXPORT int c_sub_94DC(Regs *r) { r->ax = sub_94DC(r->dx, r->ax); return 0; }
 EXPORT int c_SpawnFourDebrisParticles(Regs *r) { SpawnFourDebrisParticles(); r->ds = DATA_SEG; return 0; }
+EXPORT int c_ComputePasswordCode(Regs *r) { r->ax = ComputePasswordCode(r->ax); r->ds = DATA_SEG; return 0; }

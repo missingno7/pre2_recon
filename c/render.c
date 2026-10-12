@@ -16,23 +16,11 @@
 #include "system.h"
 #include "platform.h"
 #include "render.h"
+#include "player.h"
+#include "sound.h"
+#include "effects.h"
 
 /* ---- helpers ------------------------------------------------------------------------- */
-
-/* MOVSB with ds = es = A000h: the read loads the latches, then the write. */
-static void vmem_movsb(uint16_t si, uint16_t di)
-{
-    uint8_t v = vga_read(si);
-    vga_write(di, v);
-}
-
-/* XCHG byte ptr es:[off], v: read then write; returns the old byte. */
-static uint8_t vmem_xchg(uint16_t off, uint8_t v)
-{
-    uint8_t old = vga_read(off);
-    vga_write(off, v);
-    return old;
-}
 
 /* OUT DX, AX: AL to port, AH to port+1 (port_out16 does the same, VGA or not). */
 #define OUT_AX(port, ax) port_out16((port), (ax))
@@ -62,8 +50,8 @@ void CopyColumnStrip(uint16_t di)
     uint16_t si = (uint16_t)(di + DW(DS_DrawPage));
     di = (uint16_t)(di + DW(DS_DisplayPage));
     for (int line = 0; line < 0xB0; line++) {
-        vmem_movsb(si, di); si++; di++;
-        vmem_movsb(si, di); si++; di++;
+        vga_movsb(si, di); si++; di++;
+        vga_movsb(si, di); si++; di++;
         di = (uint16_t)(di + 0x26);
         si = (uint16_t)(si + 0x26);
     }
@@ -150,7 +138,7 @@ void BlackoutSpan(uint16_t bx, uint16_t cx, uint16_t dx)
         port_out16(0x3CE, 0x0803);                   /* function select: AND */
         uint8_t al = (uint8_t)~(uint8_t)(0xFFu >> cl);
         cx = width;                                  /* pop cx */
-        (void)vmem_xchg(di, al);
+        (void)vga_xchg(di, al);
         di++;
         port_out16(0x3CE, 0x0005);                   /* write mode 0 */
         port_out16(0x3CE, 0x0003);                   /* replace */
@@ -169,7 +157,7 @@ void BlackoutSpan(uint16_t bx, uint16_t cx, uint16_t dx)
     if (tail != 0) {
         port_out16(0x3CE, 0x0803);
         uint8_t al = (uint8_t)(0xFFu >> tail);
-        (void)vmem_xchg(di, al);
+        (void)vga_xchg(di, al);
     }
 }
 
@@ -180,7 +168,7 @@ void RunIrisClose(void)
     uint16_t di = DW(DS_DisplayPage);
     uint16_t si = DW(DS_DrawPage);
     SetLatchCopyMode();
-    for (int k = 0; k < 0x1F40; k++) { vmem_movsb(si, di); si++; di++; }
+    for (int k = 0; k < 0x1F40; k++) { vga_movsb(si, di); si++; di++; }
 
     /* render slots 2.. to empty (+4 = FFFFh). The second loop writes two entries more
      * than the first (0x73 against 0x71); it is not redundant. */
@@ -295,8 +283,8 @@ uint16_t RestoreTileBackdrop(uint16_t di)
     uint16_t di0 = di;
     uint16_t si = (uint16_t)(DW(DS_BackdropCursor) - (uint16_t)(0x28u * DB(DS_FineScroll)));
     for (int row = 0; row < 16; row++) {
-        vmem_movsb(si, di); si++; di++;
-        vmem_movsb(si, di); si++; di++;
+        vga_movsb(si, di); si++; di++;
+        vga_movsb(si, di); si++; di++;
         if (row < 15) {
             di = (uint16_t)(di + 0x26);
             si = (uint16_t)(si + 0x26);
@@ -334,8 +322,8 @@ uint16_t BlitTileCell(uint16_t ax, uint16_t di)
     if (cls == 0) {
         uint16_t si = (uint16_t)(tile * 32u + TILE_CACHE_VRAM);
         for (int row = 0; row < 16; row++) {
-            vmem_movsb(si, di); si++; di++;
-            vmem_movsb(si, di); si++; di++;
+            vga_movsb(si, di); si++; di++;
+            vga_movsb(si, di); si++; di++;
             if (row < 15) di = (uint16_t)(di + 0x26);    /* add di, bp (bp = 26h) */
         }
         return (uint16_t)(di - 0x258);
@@ -352,8 +340,8 @@ uint16_t BlitTileCell(uint16_t ax, uint16_t di)
     port_out16(0x3CE, 0x0803);                   /* function AND */
     for (int row = 0; row < 16; row++) {
         uint16_t w = DW((uint16_t)(mask + 2 * row));   /* DATA, through DS */
-        (void)vmem_xchg((uint16_t)(dd + 40 * row), (uint8_t)w);
-        (void)vmem_xchg((uint16_t)(dd + 40 * row + 1), (uint8_t)(w >> 8));
+        (void)vga_xchg((uint16_t)(dd + 40 * row), (uint8_t)w);
+        (void)vga_xchg((uint16_t)(dd + 40 * row + 1), (uint8_t)(w >> 8));
     }
     port_out16(0x3CE, 0x0003);                   /* function replace */
     port_out8(0x3CE, 0x04);                      /* read map select index */
@@ -636,8 +624,8 @@ void DrawForegroundTile(uint16_t ax, uint16_t bx)
                                 rd16(seg, (uint16_t)(b + 0x40)) | rd16(seg, (uint16_t)(b + 0x60)));
         w = (uint16_t)~w;
         sp = (uint16_t)(b + 2);
-        (void)vmem_xchg((uint16_t)(di + 40 * k), (uint8_t)w);
-        (void)vmem_xchg((uint16_t)(di + 40 * k + 1), (uint8_t)(w >> 8));
+        (void)vga_xchg((uint16_t)(di + 40 * k), (uint8_t)w);
+        (void)vga_xchg((uint16_t)(di + 40 * k + 1), (uint8_t)(w >> 8));
     }
     sp = si;                                    /* sub si, 20h: back to plane 0 */
     port_out16(0x3CE, 0x0003);                  /* function replace */
@@ -770,8 +758,8 @@ void UpdateWindAndFlakes(void)
         }
         bx = (uint16_t)(bx + DW(DS_DrawPage));
         uint16_t shifted = (uint16_t)(0x302u << cl);
-        (void)vmem_xchg(bx, (uint8_t)shifted);
-        if (dx > bp) (void)vmem_xchg((uint16_t)(bx + 0x28), (uint8_t)(shifted >> 8));
+        (void)vga_xchg(bx, (uint8_t)shifted);
+        if (dx > bp) (void)vga_xchg((uint16_t)(bx + 0x28), (uint8_t)(shifted >> 8));
         dx = (uint16_t)(dx - 1);
     } while (dx != 0);
     uint16_t bx = (uint16_t)(NextWindRandom() << 1);
@@ -1054,18 +1042,18 @@ void CopyRingWindowToPage(void)
     si = (uint16_t)(si + 0x28u * DB(DS_FineScroll));
     if (bp == 0) { uint16_t t = bp; bp = bx; bx = t; }     /* or bp, bp; jne; xchg bx, bp */
     do {                                                   /* loc_3AA3: first part rows */
-        for (int k = 0; k < dl; k++) { vmem_movsb(si, di); si++; di++; }
+        for (int k = 0; k < dl; k++) { vga_movsb(si, di); si++; di++; }
         si = (uint16_t)(si - 0x28);
-        for (int k = 0; k < dh; k++) { vmem_movsb(si, di); si++; di++; }
+        for (int k = 0; k < dh; k++) { vga_movsb(si, di); si++; di++; }
         si = (uint16_t)(si + 0x28);
         bp = (uint16_t)(bp - 1);
     } while (bp != 0);
     if (bx != 0) {                                         /* second part from the ring top */
         si = (uint16_t)(0x3F40 + dh);
         do {                                               /* loc_3ABD */
-            for (int k = 0; k < dl; k++) { vmem_movsb(si, di); si++; di++; }
+            for (int k = 0; k < dl; k++) { vga_movsb(si, di); si++; di++; }
             si = (uint16_t)(si - 0x28);
-            for (int k = 0; k < dh; k++) { vmem_movsb(si, di); si++; di++; }
+            for (int k = 0; k < dh; k++) { vga_movsb(si, di); si++; di++; }
             si = (uint16_t)(si + 0x28);
             bx = (uint16_t)(bx - 1);
         } while (bx != 0);
@@ -1081,101 +1069,6 @@ void CopyRingWindowToPage(void)
             p = (uint16_t)(p + 2);
         }
     }
-}
-
-/* ---- palette fade and timing --------------------------------------------------------- */
-
-#define FADE_TARGET_PALETTE  0xACB7u   /* 48-byte target DAC block (no label) */
-
-/* StepPaletteFade (cs:6772): one step of the 16-colour DAC fade. */
-void StepPaletteFade(void)
-{
-    if ((DB(DS_FadeOutActive) | DB(DS_FadeInActive)) == 0) return;
-    SET_DB(DS_PaletteFadeStep, (uint8_t)(DB(DS_PaletteFadeStep) + 1));
-    uint16_t si = DW((uint16_t)(DS_LevelPaletteTable + 2 * DB(DS_CurrentLevel)));
-    port_out8(0x3C8, 0);
-    uint16_t bx = FADE_TARGET_PALETTE;
-    uint16_t bp = 0;
-    if (DB(DS_FadeInActive) != 0) { uint16_t t = si; si = bx; bx = t; }
-    uint8_t step = DB(DS_PaletteFadeStep);
-    for (int k = 0; k < 0x30; k++) {
-        uint8_t src = DB(si);
-        si = (uint16_t)(si + 1);
-        uint8_t tgt = DB(bx);
-        uint8_t dl = step, dh = step;
-        uint8_t al = (uint8_t)(src - tgt);
-        if (al & 0x80) { al = (uint8_t)(-al); dh = (uint8_t)(-dh); }
-        uint8_t out;
-        if (al > dl) { out = (uint8_t)(src - dh); bp++; }
-        else out = tgt;
-        port_out8(0x3C9, out);
-        bx = (uint16_t)(bx + 1);
-    }
-    if (bp == 0) { SET_DB(DS_FadeOutActive, 0); SET_DB(DS_FadeInActive, 0); }
-}
-
-/* WaitSoundTicks (MODULE1 cs:1C6F): busy-wait until TimerTickCount is 3 or more away from
- * word_27EE (|difference| in 16 bits), then store the count. byte_6BE7 counts the advances
- * of exactly 3. The wait polls platform_poll(); a host that never advances the tick loops
- * forever, as the original does. */
-void WaitSoundTicks(void)
-{
-    SET_DB(DS_byte_6BE7, 0);
-    for (;;) {
-        uint16_t ax = (uint16_t)(DW(DS_word_27EE) - CW(CS_TimerTickCount));
-        if (ax & 0x8000) ax = (uint16_t)(-ax);            /* jns / neg */
-        if (ax < 3) { platform_poll(); continue; }
-        if (ax == 3) SET_DB(DS_byte_6BE7, (uint8_t)(DB(DS_byte_6BE7) + 1));
-        break;
-    }
-    SET_DW(DS_word_27EE, CW(CS_TimerTickCount));
-}
-
-/* ---- password code (MODULE3 cs:9341 ComputePasswordCode) ----------------------------- */
-
-static uint16_t rol16(uint16_t v, unsigned n)
-{
-    n &= 15;
-    return n ? (uint16_t)((v << n) | (v >> (16 - n))) : v;
-}
-
-/* ComputePasswordCode: depends on the BIOS seed (F000:FFF0..FFFF folded, option ROMs at
- * C000 and up, each 80h bytes, folded in 16-byte steps) and on CpuClass. A ROM with length
- * byte 0 never advances the segment (the original loops forever there); a non-ROM segment
- * advances 400h. AX in, AX out. */
-uint16_t ComputePasswordCode(uint16_t ax_in)
-{
-    if (DB(DS_BiosSeedReady) == 0) {
-        uint8_t dl = 0, dh = 0;
-        for (uint16_t si = 0xFFF0; ; si++) {              /* add dl / sbb dh share the carry */
-            uint8_t b = rd8(0xF000, si);
-            uint16_t t = (uint16_t)dl + b;
-            uint8_t carry = (uint8_t)(t >> 8);
-            dl = (uint8_t)t;
-            dh = (uint8_t)(dh - b - carry);
-            if ((uint16_t)(si + 1) == 0) break;
-        }
-        uint16_t seg = 0xC000;
-        for (;;) {
-            if (rd16(seg, 0) == 0xAA55) {
-                for (uint16_t si = 0; si < 0x80; si++) {
-                    dl = (uint8_t)(dl + rd8(seg, si));
-                    dh = (uint8_t)(dh ^ rd8(seg, si));
-                }
-                uint16_t bx = (uint16_t)((uint16_t)rd8(seg, 2) << 8) >> 3;   /* bh * 32 */
-                seg = (uint16_t)(seg + bx);                                  /* ROM: no 400h step */
-            } else {
-                seg = (uint16_t)(seg + 0x400);
-            }
-            if ((uint8_t)(seg >> 8) >= 0xF0) break;
-        }
-        uint16_t dx = (uint16_t)(dh << 8 | dl);
-        if (dx == 0) dx = 0x20;
-        SET_DW(DS_BiosSeed, dx);
-        SET_DB(DS_BiosSeedReady, 1);
-    }
-    uint16_t ax = (uint16_t)((ax_in ^ 0x55A3u) * DW(DS_BiosSeed));
-    return rol16(ax, CB(CS_CpuClass));
 }
 
 /* ---- level fix-ups (cs:3EAD..40BB) -------------------------------------------------- */
@@ -1498,7 +1391,6 @@ void unused_443E(void) { }
 
 /* ---- differential-test adapters (register contract -> C arguments) -------------------- */
 
-static void set_cf(Regs *r, int cf) { r->flags = cf ? (uint16_t)(r->flags | FLAG_CF) : (uint16_t)(r->flags & ~FLAG_CF); }
 
 EXPORT int c_EnableVideoOutput(Regs *r) { EnableVideoOutput(); r->ds = DATA_SEG; return 0; }
 EXPORT int c_DisableVideoOutput(Regs *r) { DisableVideoOutput(); r->ds = DATA_SEG; return 0; }
@@ -1539,9 +1431,6 @@ EXPORT int c_LoadLevelTileSet(Regs *r) { r->si = LoadLevelTileSet(); r->ds = DAT
 EXPORT int c_UploadSpriteTiles(Regs *r) { UploadSpriteTiles(); r->ds = DATA_SEG; return 0; }
 EXPORT int c_ClassifyTileCache(Regs *r) { ClassifyTileCache(); r->ds = DATA_SEG; return 0; }
 EXPORT int c_BuildAnimatedTileTables(Regs *r) { BuildAnimatedTileTables(); r->ds = DATA_SEG; return 0; }
-EXPORT int c_StepPaletteFade(Regs *r) { StepPaletteFade(); r->ds = DATA_SEG; return 0; }
-EXPORT int c_WaitSoundTicks(Regs *r) { WaitSoundTicks(); r->ds = DATA_SEG; return 0; }
-EXPORT int c_ComputePasswordCode(Regs *r) { r->ax = ComputePasswordCode(r->ax); r->ds = DATA_SEG; return 0; }
 EXPORT int c_ApplySecretTilePatches(Regs *r) { ApplySecretTilePatches(); r->ds = DATA_SEG; return 0; }
 EXPORT int c_RebaseEntitySpriteRefs(Regs *r) { RebaseEntitySpriteRefs(); r->ds = DATA_SEG; return 0; }
 EXPORT int c_ScrollEffectSources(Regs *r) { ScrollEffectSources(); r->ds = DATA_SEG; return 0; }

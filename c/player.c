@@ -4,9 +4,9 @@
  * the collision and tile contact (UpdatePlayerCollision, UpdatePlayerTileContact), the side and
  * ground and ceiling tile handlers, the player physics helpers, the animation helpers, the
  * projectile, burst-particle and debris updates, and the unused routines of the range.
- * Callees outside the region and not yet in c/: UpdatePlayerRenderSlot (cs:484E, level
- * region), SpawnEffectBurst (cs:8D1Bh.., effects region) and the TryShowCredits gate (cs:247Bh,
- * MODULE2). StepPaletteFade (cs:6772h) is in render.c and not repeated here.
+ * Callees outside the region are called through their owners' headers: UpdatePlayerRenderSlot
+ * (level.h), SpawnEffectBurst (effects.h) and the TryShowCredits gate (sprites.h).
+ * StepPaletteFade (cs:6772h) is in this region and is defined here.
  *
  * Dispatch: every `call word ptr [bx+Table]` reads the word from the DATA table in pre2_mem
  * and switches on it against the CS_<Label> offsets (invoke). A word that is not one of the
@@ -37,12 +37,16 @@
  *   - CeilingTileHeadBump: the position record pointer word_6BB1 is used as a DS pointer.
  *   - Output of ApplyWindDrift floors VelX at 0FFA0h (-96) and never clamps the top.
  *   - IncrementPlayerLives writes 0CFh (IRET) to cs:26FAh when the count is above 63h.
- * Boundary: TryShowCredits passes the gate only with keys that cannot be driven by these tests
- * (credits path), and the credits status is returned instead of running it.
+ * Boundary: TryShowCredits (sprites.c) passes the gate only with keys that cannot be driven by
+ * these tests (credits path); the credits status is returned instead of running it.
  */
 #include <stdbool.h>
 #include "pre2.h"
+#include "ports.h"
 #include "render.h"
+#include "effects.h"
+#include "level.h"
+#include "sprites.h"
 #include "system.h"
 #include "player.h"
 
@@ -62,27 +66,19 @@ static void inc8_sat(uint16_t off) { uint8_t v = DB(off); SET_DB(off, v == 0xFF 
 static void dec16_sat(uint16_t off) { uint16_t v = DW(off); SET_DW(off, v == 0 ? 0 : (uint16_t)(v - 1)); }
 static void inc16_sat(uint16_t off) { uint16_t v = DW(off); SET_DW(off, v == 0xFFFF ? 0xFFFF : (uint16_t)(v + 1)); }
 
-/* Level-region and effects-region callees, translated here (see the header note). */
-static void UpdatePlayerRenderSlot(void);
-static void SpawnEffectBurst(uint16_t ax, uint16_t dx, uint16_t cx);
-static int  TryShowCredits(void);
 static void WaitFrameSyncFlag(void);
 
 /* Forward declarations for the state and tile handlers. */
 static void MaybeEmitPlayerTrail(void);
 static void EmitPlayerTrail(void);
-static void EmitPlayerTrailAt(uint16_t ax, uint16_t dx);
 static uint16_t SetPlayerAnim(uint8_t al, uint16_t bx);
 static uint16_t SetPlayerAnimLocked(uint8_t al, uint16_t bx);
-static void AdvancePlayerAnim(uint16_t bx);
 static void ApplyPlayerAcceleration(uint16_t bp);
 static void ApplyWindDrift(void);
 static void ApplyPlayerGravity(uint16_t bp);
-static void ApplyPlayerFriction(void);
 static void ApplyAirMotionAnim(void);
 static void SetPlayerAirborne(void);
 static void BlockPlayerHorizontal(void);
-static void FinishPlayerLanding(void);
 static void RecordWallImpact(void);
 static void SideTileBlockStop(uint16_t di);
 static void ApplyProjectileHeavy(uint16_t si);
@@ -129,101 +125,6 @@ static uint16_t unused_6760(uint16_t si);
 #define PARTICLE_BASE          0x50A8u
 #define PARTICLE_END           0x52E8u
 #define DEBRIS_BASE            0x5450u
-
-/* ---- UpdatePlayerRenderSlot (cs:484E, level region) ---------------------------------- */
-
-static void UpdatePlayerRenderSlot(void)
-{
-    if (DB(DS_PlayerAltModeFlag) == 0) return;                 /* jmp loc_4906 */
-    if (DB(DS_PlayerAirFlags) != 0) {
-        SET_DW(DS_PlayerFrameWord, DW(DS_PlayerFrameWord) & 0x8000u);
-        uint16_t dx = 0x30;
-        uint16_t ax = DW(DS_PlayerVelX);
-        if (S16(ax) < 0) ax = U16(-ax);
-        if (ax <= 0x40) { dx++; if (ax <= 0x20) dx++; }
-        uint8_t al = DB(DS_AltMomentumStep);
-        if (al < 3) dx = U16((uint8_t)(0x33 - al));             /* mov dl, 33h; sub dl, al */
-        SET_DW(DS_PlayerFrameWord, DW(DS_PlayerFrameWord) | dx);
-    }
-    /* loc_488C: pose table at 7B29h, 6-byte records (key, frame, dx, dy); key 0 ends */
-    uint16_t si = 0x7B29u;
-    uint16_t ax = DW(DS_PlayerFrameWord);
-    uint8_t dl = (uint8_t)(ax >> 8);                             /* dl = frame high byte */
-    ax = U16((ax & 0x00FF) | (ax & 0x1F00u));                    /* and ah, 1Fh */
-    uint8_t bl = (uint8_t)(DB(DS_byte_27EA) | DB(DS_byte_27EB));
-    if (bl == 0) {
-        uint8_t am = DB(DS_AltMomentumStep);
-        if (am != 3) {
-            int8_t step = (am < 3) ? 1 : -1;                     /* jb: 1; else neg bl */
-            SET_DB(DS_AltMomentumStep, (uint8_t)(am + step));
-        }
-    }
-    for (;;) {
-        uint16_t cx = DW(U16(si));
-        if (cx == 0) return;                                     /* jcxz loc_4906 */
-        if (ax != cx) { si = U16(si + 6); continue; }
-        int16_t cxs = (int8_t)DB(U16(si + 4));                    /* mov al,[si+4]; cbw */
-        cx = U16(cxs);
-        ax = DW(U16(si + 2));
-        if (ax >= 0x79) {
-            uint16_t idx = DB(DS_AltMomentumStep);
-            ax = DW(U16(DS_word_7B1B + 2 * idx));
-        }
-        if (dl & CODE_SIGN_BIT_7) { ax = U16((ax & 0x00FF) | (((ax >> 8) | (dl & 0x80)) << 8)); cx = U16(-S16(cx)); }
-        if (DB(DS_StrokeCounter) > 0x18 && (ax & 0xFF) < 0x79) ax = U16(ax + 1);
-        SET_DW(DS_PlayerSprite, ax);
-        SET_DW(DS_RenderSlots, U16(DW(DS_PlayerX) + cx));
-        int16_t ay = (int8_t)DB(U16(si + 5));
-        SET_DW(DS_PlayerRenderY, U16(ay + DW(DS_PlayerY)));
-        return;
-    }
-}
-
-/* ---- the credits gate (cs:247Bh, MODULE2): gate only ---------------------------------
- * CF = 1 (returned 1) when the key-state gate fails: nothing is drawn. The gate passes only on
- * a key set this translation does not run: PLAYER_CREDITS is returned instead. */
-static int TryShowCredits(void)
-{
-    uint8_t al = DB(DS_byte_2811) & DB(DS_byte_282C) & DB(DS_byte_2805);
-    if (al == 0) return 1;
-    for (uint16_t bx = 1; bx < 0x7F; bx++) {
-        if (bx == 0x11 || bx == 0x1D || bx == 0x38) continue;
-        if (DB(U16(DS_KeyDownTable + bx)) != 0) return 1;
-    }
-    return PLAYER_CREDITS;
-}
-
-/* ---- SpawnEffectBurst (cs:8D1Bh, effects region): fill up to CX free particle records -------- */
-
-static void SpawnEffectBurst(uint16_t ax, uint16_t dx, uint16_t cx)
-{
-    uint16_t di = 0;
-    uint16_t bx = PARTICLE_BASE;
-    for (;;) {
-        if (DW(U16(bx + 4)) == 0xFFFF) {
-            SET_DW(U16(bx + 4), DW(DS_EffectFrame));
-            SET_DB(U16(bx + 0x11), 0);
-            SET_DW(U16(bx + 0x0C), 0xC6);
-            SET_DW(U16(bx), DW(DS_EffectOriginX));
-            SET_DW(U16(bx + 2), DW(DS_EffectOriginY));
-            SET_DW(U16(bx + 6), ax);
-            SET_DW(U16(bx + 0x0E), dx);
-            SET_DW(U16(bx + 9), 0xFFFF);
-            ax = U16(-S16(ax));
-            di = U16(di + 1);
-            if (di & 1) {                                         /* jne loc_8D69 */
-            } else {
-                if (di > 0x0C) ax = 0;                            /* ja: xor ax,ax */
-                ax = U16(ax - 0x10);
-                dx = U16(dx - 0x10);
-            }
-            cx = U16(cx - 1);
-            if (cx == 0) return;
-        }
-        bx = U16(bx + 0x12);
-        if (bx >= PARTICLE_END) return;
-    }
-}
 
 /* ---- the state-table dispatch ----------------------------------------------------------- */
 
@@ -299,7 +200,7 @@ int UpdatePlayer(uint16_t cx_in)
         return PLAYER_OK;
     }
     int cr = TryShowCredits();
-    if (cr == PLAYER_CREDITS) return PLAYER_CREDITS;      /* DrawStatusBarBackground not reached */
+    if (cr == SPR_CREDITS) return PLAYER_CREDITS;         /* DrawStatusBarBackground not reached */
     WaitFrameSyncFlag();
     PollInputState();                                      /* preserves CX and SI */
 
@@ -697,7 +598,7 @@ void LandPlayerOnGround(uint16_t di)
     FinishPlayerLanding();
 }
 
-static void FinishPlayerLanding(void)
+void FinishPlayerLanding(void)
 {
     dec8_sat(DS_JumpCooldown);
     SET_DB(DS_JumpFrame, 0);
@@ -813,7 +714,8 @@ void sub_67D7(void)
         SET_DW(DS_EffectOriginX, DW(DS_PlayerX));
         SET_DW(DS_EffectOriginY, U16(DW(DS_PlayerY) - 0x70));
         SET_DW(DS_EffectFrame, 0x6E);
-        SpawnEffectBurst(0, 0, 1);
+        uint16_t dx = 0;
+        SpawnEffectBurst(0, &dx, 1);
         SET_DB(DS_BonusLetterMask, 0);
         SET_DB(DS_byte_6BFF, 1);
         SET_DB(DS_BonusFlashTimer, 0x2C);
@@ -823,6 +725,38 @@ void sub_67D7(void)
         SET_DB(DS_byte_6CA8, DB(DS_byte_6CA8) & 0xC7);
         SET_DW(DS_word_6BE2, 0x294);
     }
+}
+
+/* StepPaletteFade (cs:6772h): one step of the 16-colour DAC fade. Moves each of the 48 DAC
+ * components of the level palette one step toward the target block at ds:ACB7h (or back, when
+ * FadeInActive is set), writing through the port model; clears both fade flags when no
+ * component moved (moved here from render.c: the region of cs:6772h). */
+#define FADE_TARGET_PALETTE  0xACB7u   /* 48-byte target DAC block (no label) */
+
+void StepPaletteFade(void)
+{
+    if ((DB(DS_FadeOutActive) | DB(DS_FadeInActive)) == 0) return;
+    SET_DB(DS_PaletteFadeStep, (uint8_t)(DB(DS_PaletteFadeStep) + 1));
+    uint16_t si = DW((uint16_t)(DS_LevelPaletteTable + 2 * DB(DS_CurrentLevel)));
+    port_out8(0x3C8, 0);
+    uint16_t bx = FADE_TARGET_PALETTE;
+    uint16_t bp = 0;
+    if (DB(DS_FadeInActive) != 0) { uint16_t t = si; si = bx; bx = t; }
+    uint8_t step = DB(DS_PaletteFadeStep);
+    for (int k = 0; k < 0x30; k++) {
+        uint8_t src = DB(si);
+        si = (uint16_t)(si + 1);
+        uint8_t tgt = DB(bx);
+        uint8_t dl = step, dh = step;
+        uint8_t al = (uint8_t)(src - tgt);
+        if (al & 0x80) { al = (uint8_t)(-al); dh = (uint8_t)(-dh); }
+        uint8_t out;
+        if (al > dl) { out = (uint8_t)(src - dh); bp++; }
+        else out = tgt;
+        port_out8(0x3C9, out);
+        bx = (uint16_t)(bx + 1);
+    }
+    if (bp == 0) { SET_DB(DS_FadeOutActive, 0); SET_DB(DS_FadeInActive, 0); }
 }
 
 /* Waits for the frame sync flag (byte 280Dh): returns when it is zero, else waits for it to clear,
@@ -877,8 +811,9 @@ static void ApplyPlayerGravity(uint16_t bp)
     SET_DW(DS_PlayerVelY, bp);
 }
 
-/* Moves |PlayerVelX| toward zero by 0Ch >> MotionShift, floored at 0, sign kept. */
-static void ApplyPlayerFriction(void)
+/* Moves |PlayerVelX| toward zero by 0Ch >> MotionShift, floored at 0, sign kept. The shift count
+ * is CL masked to 5 bits (the oracle's 386 shift; the game writes MotionShift 0..3 only). */
+void ApplyPlayerFriction(void)
 {
     uint8_t ch = 0;
     uint16_t ax = DW(DS_PlayerVelX);
@@ -886,7 +821,7 @@ static void ApplyPlayerFriction(void)
         ax = U16(-ax);
         ch = 1;
     }
-    unsigned cl = DB(DS_MotionShift);
+    unsigned cl = DB(DS_MotionShift) & 0x1Fu;          /* the 386 shift count is masked to 5 bits */
     uint16_t dx = (cl >= 16) ? 0 : U16(0x0C >> cl);
     if (ax >= dx) ax = U16(ax - dx);
     else ax = 0;
@@ -915,7 +850,7 @@ static uint16_t SetPlayerAnim(uint8_t al, uint16_t bx)
 }
 
 /* Steps the animation script at BX: a negative word is a relative jump. */
-static void AdvancePlayerAnim(uint16_t bx)
+void AdvancePlayerAnim(uint16_t bx)
 {
     uint16_t ax = DW(bx);
     if (S16(ax) < 0) {
@@ -963,7 +898,7 @@ static void EmitPlayerTrail(void)
     EmitPlayerTrailAt(DW(DS_PlayerX), DW(DS_PlayerY));
 }
 
-static void EmitPlayerTrailAt(uint16_t ax, uint16_t dx)
+void EmitPlayerTrailAt(uint16_t ax, uint16_t dx)
 {
     uint16_t bx = DW(DS_PopupRingHead);
     SET_DW(bx, ax);
@@ -1444,11 +1379,6 @@ void TickDebrisSlots(void)
 
 /* ---- adapters (differential tests) ------------------------------------------------------ */
 
-static void set_cf_(Regs *r, int cf)
-{
-    r->flags = (uint16_t)((r->flags & ~FLAG_CF) | (cf ? FLAG_CF : 0));
-}
-
 EXPORT int c_UpdatePlayer(Regs *r) { int st = UpdatePlayer(r->cx); r->ds = DATA_SEG; return st; }
 EXPORT int c_UpdatePlayerCollision(Regs *r) { int st = UpdatePlayerCollision(); r->ds = DATA_SEG; return st; }
 EXPORT int c_UpdatePlayerTileContact(Regs *r) { int st = UpdatePlayerTileContact(r->bx); r->ds = DATA_SEG; return st; }
@@ -1460,7 +1390,7 @@ EXPORT int c_FindFreeProjectileSlot(Regs *r)
     uint16_t si = 0;
     int cf = FindFreeProjectileSlot(&si);
     r->si = si;
-    set_cf_(r, cf);
+    set_cf(r, cf);
     r->ds = DATA_SEG;
     return 0;
 }
@@ -1470,12 +1400,14 @@ EXPORT int c_CeilingTileHeadBump(Regs *r) { CeilingTileHeadBump(r->di); r->ds = 
 EXPORT int c_SideTileWallImpactHandler(Regs *r) { SideTileWallImpactHandler(r->di); r->ds = DATA_SEG; return 0; }
 EXPORT int c_RedrawTileIfVisible(Regs *r)
 {
-    set_cf_(r, RedrawTileIfVisible(r->ax, r->di));
+    set_cf(r, RedrawTileIfVisible(r->ax, r->di));
     r->ds = DATA_SEG;
     return 0;
 }
 EXPORT int c_TriggerPlayerRespawnCore(Regs *r) { TriggerPlayerRespawnCore(); r->ds = DATA_SEG; return 0; }
 EXPORT int c_IncrementPlayerLives(Regs *r) { IncrementPlayerLives(); r->ds = DATA_SEG; return 0; }
+EXPORT int c_ApplyPlayerFriction(Regs *r) { ApplyPlayerFriction(); r->ds = DATA_SEG; return 0; }
 EXPORT int c_sub_67D7(Regs *r) { sub_67D7(); r->ds = DATA_SEG; return 0; }
-EXPORT int c_unused_66D3(Regs *r) { set_cf_(r, unused_66D3(r->si, r->di)); r->ds = DATA_SEG; return 0; }
+EXPORT int c_unused_66D3(Regs *r) { set_cf(r, unused_66D3(r->si, r->di)); r->ds = DATA_SEG; return 0; }
 EXPORT int c_unused_6760(Regs *r) { r->ax = unused_6760(r->si); r->ds = DATA_SEG; return 0; }
+EXPORT int c_StepPaletteFade(Regs *r) { StepPaletteFade(); r->ds = DATA_SEG; return 0; }

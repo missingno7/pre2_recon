@@ -14,12 +14,8 @@
  * UpdateLevelState, the 65536-iteration terminator fill of UpdateTerrainEntities when all seven
  * slots are used, and the popup ring masking its free marker before the test.
  *
- * Region edge: AdvancePlayerAnim, ApplyPlayerFriction, FinishPlayerLanding and StepRandomSeed
- * are short leaves translated here as static functions. The other callees are weak stubs
- * declared in level.h (see its note).
- */
-#include <stdio.h>
-#include <stdlib.h>
+ * Callees of the other regions (player, objects, effects, screens, sprites) are called through
+ * their owners' headers. Boundaries that are not translated return LEVEL_UNSUPPORTED (level.h). */
 #include "pre2.h"
 #include "vga.h"
 #include "ports.h"
@@ -27,6 +23,10 @@
 #include "sprites.h"
 #include "sqz.h"
 #include "system.h"
+#include "effects.h"
+#include "objects.h"
+#include "player.h"
+#include "screens.h"
 #include "level.h"
 
 /* ---- constants without labels (offsets inside DATA or the HUD graphic) -------------------- */
@@ -49,35 +49,10 @@
 
 /* ---- helpers --------------------------------------------------------------------------- */
 
-/* MOVSB with ES = DS = A000h: the read loads the latches, then the write. */
-static void vmem_movsb(uint16_t si, uint16_t di) { vga_write(di, vga_read(si)); }
-
-/* XCHG es:[off], v: read then write; returns the old byte. */
-static uint8_t vmem_xchg(uint16_t off, uint8_t v)
-{
-    uint8_t old = vga_read(off);
-    vga_write(off, v);
-    return old;
-}
-
 /* Sequencer map mask (index 2) to plane_mask. */
 static void map_mask(uint8_t plane_mask) { port_out16(0x3C4, (uint16_t)((uint16_t)plane_mask << 8 | 0x02)); }
 
 static void hud_dirty_inc(void) { SET_CB(CS_HudDirtyCount, (uint8_t)(CB(CS_HudDirtyCount) + 1)); }
-
-static int set_cf(Regs *r, int cf)
-{
-    if (cf) r->flags = (uint16_t)(r->flags | FLAG_CF);
-    else r->flags = (uint16_t)(r->flags & ~FLAG_CF);
-    return 0;
-}
-
-/* Edge stub reached: the owning region is not translated yet (see level.h). */
-static void region_edge(const char *name)
-{
-    fprintf(stderr, "level.c: region edge %s is not translated yet\n", name);
-    abort();
-}
 
 /* ---- HUD (cs:454E..4803, 46EE, 47C0) --------------------------------------------------- */
 
@@ -106,7 +81,7 @@ void DrawStatusBarBackground(void)
     SetLatchCopyMode();
     uint16_t si = dst;
     uint16_t di = (uint16_t)(display + 0x1B80u);
-    for (unsigned k = 0; k < 0x398u; k++) { vmem_movsb(si, di); si++; di++; }
+    for (unsigned k = 0; k < 0x398u; k++) { vga_movsb(si, di); si++; di++; }
 }
 
 /* Restores the BONUS letter row background (6 bytes by 23 rows, four planes) from the HUD sheet
@@ -296,14 +271,12 @@ dirty_check:
         SetLatchCopyMode();
         uint16_t si = (uint16_t)(0x1B80u + DW(DS_DrawPage));
         uint16_t di = (uint16_t)(0x1B80u + DW(DS_DisplayPage));
-        for (unsigned k = 0; k < 0x398u; k++) { vmem_movsb(si, di); si++; di++; }
+        for (unsigned k = 0; k < 0x398u; k++) { vga_movsb(si, di); si++; di++; }
     }
     return 0;
 }
 
 /* ---- player render slot and terrain entities (cs:484E..4AF9) -------------------------- */
-
-static void FinishPlayerLanding(void);
 
 /* Chooses the player's pose frame and display position from the pose word PlayerFrameWord (pose
  * key in its low 13 bits) and the pose table at 7B29h (6-byte records: key, frame, dx, dy; key 0
@@ -548,7 +521,7 @@ void UpdateEffectParticles(void)
             if (ax < 0x140) {
                 uint8_t mask = (uint8_t)(0x80u >> (ax & 7));
                 di = (uint16_t)(di + (ax >> 3) + DW(DS_DrawPage));
-                vmem_xchg(di, mask);
+                vga_xchg(di, mask);
             }
         }
         SET_DW(si, 0xFFFF);                        /* loc_4C1D: freed after the plot (quirk) */
@@ -592,53 +565,6 @@ static int level_finish(uint16_t *ax_out)
     ResetLevelState();
     *ax_out = 0;
     return 1;
-}
-
-/* AdvancePlayerAnim (cs:638B, player region): steps the script at BX (a negative word is a
- * relative jump); the frame word and PlayerAnimPtr are updated. Translated here as a leaf. */
-static void AdvancePlayerAnim(uint16_t bx)
-{
-    uint16_t ax = DW(bx);
-    if ((int16_t)ax < 0) { bx = (uint16_t)(bx + ax); ax = DW(bx); }
-    SET_DB(DS_FrameFlagsRaw, (uint8_t)(ax >> 8));
-    uint8_t ah = (uint8_t)((ax >> 8) & 0x1F) | (uint8_t)(DB(DS_PlayerFacing) & 0x80);
-    SET_DW(DS_PlayerFrameWord, (uint16_t)(ah << 8 | (ax & 0xFF)));
-    bx = (uint16_t)(bx + 2);
-    SET_DW(DS_PlayerAnimPtr, bx);
-}
-
-/* ApplyPlayerFriction (cs:6333, player region): moves |PlayerVelX| toward zero by 0Ch >> MotionShift,
- * floored at zero, sign kept. Translated here as a leaf. */
-static void ApplyPlayerFriction(void)
-{
-    uint16_t ax = DW(DS_PlayerVelX);
-    int neg = 0;
-    if ((int16_t)ax < 0) { ax = (uint16_t)(0u - ax); neg = 1; }
-    unsigned sh = DB(DS_MotionShift) & 0x1Fu;
-    uint16_t dx = sh >= 16 ? 0 : (uint16_t)(0x0Cu >> sh);
-    if (ax >= dx) ax = (uint16_t)(ax - dx); else ax = 0;
-    if (neg) ax = (uint16_t)(0u - ax);
-    SET_DW(DS_PlayerVelX, ax);
-}
-
-/* FinishPlayerLanding (cs:64DF, player region): soft-landing tail (translated here as a leaf). */
-static void FinishPlayerLanding(void)
-{
-    uint8_t c = DB(DS_JumpCooldown);
-    SET_DB(DS_JumpCooldown, c > 0 ? (uint8_t)(c - 1) : 0);
-    SET_DB(DS_JumpFrame, 0);
-    SET_DB(DS_AirborneFlag, 2);
-    SET_DW(DS_LastLandY, DW(DS_PlayerY));
-}
-
-/* StepRandomSeed (cs:26CF, MODULE2 leaf): RandomSeed = ror3(RandomSeed + 9248h). Returns AX = the
- * new seed, as the ASM leaves it in AX. */
-static uint16_t StepRandomSeed(void)
-{
-    uint16_t v = (uint16_t)(DW(DS_RandomSeed) + 0x9248u);
-    v = (uint16_t)((v >> 3) | (v << 13));
-    SET_DW(DS_RandomSeed, v);
-    return v;
 }
 
 /* Death bounce: 60 frames of a hop. Hides the player, moves PlayerX by +/-5 (away from the view
@@ -905,7 +831,7 @@ static int LifeLostPath(uint16_t *ax_out)
 /* Game over: the intro gate, the game-over screen, then score, level and lives are reset. */
 static int GameOverPath(uint16_t *ax_out)
 {
-    TryShowIntroKeyed();
+    if (TryShowIntroKeyed() == SPR_UNSUPPORTED) return LEVEL_UNSUPPORTED;
     ActivateResourceSlot(0x11);
     RunGameOverScreen();
     SET_DW(DS_PlayerFrameWord, 0x0D);
@@ -964,10 +890,10 @@ static int ShowEndingPicture(uint16_t *ax_out)
     uint16_t seg = 0;
     LoadSqzFile(0x6BA0, &seg);
     SET_DW(DS_LevelSegment, seg);
-    ShowMode13PictureFadeIn(seg, 0, 0x10);
+    ShowMode13PictureFadeIn(0x10, 0);       /* SI = 0 and CL = 10h; BX is not an input of the ASM */
     WaitForButtonPressRelease();
     FadeOutPaletteToBlack();
-    ShowIntroPicture();
+    if (ShowIntroPicture() == SPR_UNSUPPORTED) return LEVEL_UNSUPPORTED;
     *ax_out = 1;
     return 1;
 }
@@ -1207,8 +1133,9 @@ void UpdateProximityTriggers(void)
             do {                                      /* rows of the reveal block */
                 uint8_t n = cols;
                 do {
-                    wr8(es, di, rd8(es, (uint16_t)(di + 0x100u)));
-                    RedrawTileIfVisible(di);
+                    uint8_t t = rd8(es, (uint16_t)(di + 0x100u));
+                    wr8(es, di, t);
+                    RedrawTileIfVisible((uint16_t)(((uint16_t)n << 8) | t), di);
                     di++;
                     n--;
                 } while (n != 0);
@@ -1221,7 +1148,7 @@ void UpdateProximityTriggers(void)
             do {                                      /* one step of the trigger bank */
                 uint8_t v = rd8(DW(DS_NextFreeSegment), bx);
                 wr8(es, di, v);
-                RedrawTileIfVisible(di);
+                RedrawTileIfVisible(v, di);                 /* AH = 0 after the row loop */
                 di++; bx++;
                 n--;
             } while (n != 0);
@@ -1306,7 +1233,7 @@ void UpdateFireflies(void)
         if (ax >= 0x140) continue;
         uint8_t mask = (uint8_t)(0x80u >> (ax & 7));
         di = (uint16_t)(di + (ax >> 3) + DW(DS_DrawPage));
-        vmem_xchg(di, mask);
+        vga_xchg(di, mask);
     }
     port_out16(0x3CE, 0x0001);
 }
@@ -1529,15 +1456,17 @@ EXPORT int c_BlitHudSpriteGlyph(Regs *r) { BlitHudSpriteGlyph((uint8_t)r->ax, r-
 EXPORT int c_FormatDecimal32(Regs *r) { FormatDecimal32(r->cx, r->dx); r->ds = DATA_SEG; return 0; }
 EXPORT int c_UpdatePlayerRenderSlot(Regs *r) { UpdatePlayerRenderSlot(); r->ds = DATA_SEG; return 0; }
 EXPORT int c_UpdateTerrainEntities(Regs *r) { UpdateTerrainEntities(); r->ds = DATA_SEG; return 0; }
-EXPORT int c_TryLandOnTerrainEntity(Regs *r) { int cf = TryLandOnTerrainEntity(r->di); r->ds = DATA_SEG; return set_cf(r, cf); }
+EXPORT int c_TryLandOnTerrainEntity(Regs *r) { int cf = TryLandOnTerrainEntity(r->di); r->ds = DATA_SEG; set_cf(r, cf); return 0; }
 EXPORT int c_UpdateEffectParticles(Regs *r) { UpdateEffectParticles(); r->ds = DATA_SEG; return 0; }
 EXPORT int c_UpdateCameraShake(Regs *r) { UpdateCameraShake(); r->ds = DATA_SEG; return 0; }
 EXPORT int c_UpdateLevelState(Regs *r)
 {
     uint16_t ax = 0;
     int cf = UpdateLevelState(&ax);
+    if (cf == LEVEL_UNSUPPORTED) return cf;               /* boundary: the status is the result */
     r->ax = ax; r->ds = DATA_SEG;
-    return set_cf(r, cf);
+    set_cf(r, cf);
+    return 0;
 }
 EXPORT int c_PlayDeathBounce(Regs *r) { PlayDeathBounce(); r->ds = DATA_SEG; return 0; }
 EXPORT int c_RenderTallyPercent(Regs *r) { RenderTallyPercent(); r->ds = DATA_SEG; return 0; }
@@ -1565,36 +1494,6 @@ EXPORT int c_RestartFromCheckpoint(Regs *r)
     uint16_t ax = 0;
     int cf = RestartFromCheckpoint(&ax);
     r->ax = ax; r->ds = DATA_SEG;
-    return set_cf(r, cf);
+    set_cf(r, cf);
+    return 0;
 }
-
-/* ---- region edge: weak stubs (replaced by the owning region's strong definition) -------- */
-
-__attribute__((weak)) int TestHitboxOverlap(uint16_t si, uint16_t di)
-{ (void)si; (void)di; region_edge("TestHitboxOverlap"); return 0; }
-__attribute__((weak)) int RedrawTileIfVisible(uint16_t di)
-{ (void)di; region_edge("RedrawTileIfVisible"); return 0; }
-__attribute__((weak)) void IncrementPlayerLives(void)
-{ region_edge("IncrementPlayerLives"); }
-__attribute__((weak)) void SpawnDebrisElement(uint16_t ax, uint16_t si)
-{ (void)ax; (void)si; region_edge("SpawnDebrisElement"); }
-__attribute__((weak)) void TickDebrisSlots(void)
-{ region_edge("TickDebrisSlots"); }
-__attribute__((weak)) void UpdateBurstParticles(void)
-{ region_edge("UpdateBurstParticles"); }
-__attribute__((weak)) void UpdatePlayerProjectiles(void)
-{ region_edge("UpdatePlayerProjectiles"); }
-__attribute__((weak)) void UpdateObjects(void)
-{ region_edge("UpdateObjects"); }
-__attribute__((weak)) void BuildEffectDrawList(void)
-{ region_edge("BuildEffectDrawList"); }
-__attribute__((weak)) void ShowMode13PictureFadeIn(uint16_t seg, uint16_t si, uint8_t count)
-{ (void)seg; (void)si; (void)count; region_edge("ShowMode13PictureFadeIn"); }
-__attribute__((weak)) void FadeOutPaletteToBlack(void)
-{ region_edge("FadeOutPaletteToBlack"); }
-__attribute__((weak)) int TryShowIntroKeyed(void)
-{ region_edge("TryShowIntroKeyed"); return 0; }
-__attribute__((weak)) int ShowIntroPicture(void)
-{ region_edge("ShowIntroPicture"); return 0; }
-__attribute__((weak)) void RunGameOverScreen(void)
-{ region_edge("RunGameOverScreen"); }

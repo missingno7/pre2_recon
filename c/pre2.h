@@ -51,5 +51,21 @@ typedef struct Regs {
 #define FLAG_CF 0x0001u
 #define FLAG_ZF 0x0040u
 
+/* Register-contract helpers shared by the adapters and the ASM-shaped leaves. */
+static inline void set_cf(Regs *r, int cf)
+{
+    r->flags = cf ? (uint16_t)(r->flags | FLAG_CF) : (uint16_t)(r->flags & ~FLAG_CF);
+}
+
+/* cbw: AL sign-extended to AX. */
+static inline uint16_t cbw(uint8_t al) { return (uint16_t)(int16_t)(int8_t)al; }
+
+/* ROL r16, n with the count masked to 4 bits (the rotation is modulo 16 on the 186+ CPUs). */
+static inline uint16_t rol16(uint16_t v, unsigned n)
+{
+    n &= 15;
+    return n ? (uint16_t)((v << n) | (v >> (16 - n))) : v;
+}
+
 #include "pre2_sym.h"
 #endif

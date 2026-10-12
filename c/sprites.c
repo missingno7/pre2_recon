@@ -25,17 +25,8 @@
 #define LO(x) ((uint8_t)((x) & 0xFFu))
 #define HI(x) ((uint8_t)((x) >> 8))
 
-/* cbw: AL sign-extended to AX. */
-static uint16_t cbw(uint8_t al) { return (uint16_t)(int16_t)(int8_t)al; }
-
-/* XCHG with memory at A000h:off (a read that loads the latches, then the write); returns
- * the old byte. The scasb/stosb pairs of the original are the same read-then-write. */
-static uint8_t vmem_xchg(uint16_t off, uint8_t v)
-{
-    uint8_t old = vga_read(off);
-    vga_write(off, v);
-    return old;
-}
+/* XCHG with memory at A000h:off (vga_xchg): the scasb/stosb pairs of the original are the same
+ * read-then-write. */
 
 /* XLAT through cs:[BX] with BX = BITREV_TABLE. */
 static uint8_t bitrev(uint8_t v) { return CB((uint16_t)(BITREV_TABLE + v)); }
@@ -78,7 +69,7 @@ static void mirror_clear_aligned(Blit *b)
         do {
             uint8_t v = bitrev(rd8(b->src, b->si));
             b->si--;
-            (void)vmem_xchg(b->di, (uint8_t)~v);
+            (void)vga_xchg(b->di, (uint8_t)~v);
             b->di++;
         } while (--cx != 0);
         b->si = (uint16_t)(b->si + 2u * cbw(b->vis));
@@ -107,7 +98,7 @@ static void mirror_or_aligned(Blit *b)
             do {
                 uint8_t v = bitrev(rd8(b->src, b->si));
                 b->si--;
-                (void)vmem_xchg(b->di, v);
+                (void)vga_xchg(b->di, v);
                 b->di++;
             } while (--cx != 0);
             b->si = (uint16_t)(b->si + 2u * cbw(b->vis));
@@ -130,13 +121,13 @@ static void mirror_clear_partial(Blit *b)
             uint8_t v = bitrev(rd8(b->src, b->si));
             b->si--;
             dl = v;
-            (void)vmem_xchg(b->di, (uint8_t)~((v & b->ch) | ah));
+            (void)vga_xchg(b->di, (uint8_t)~((v & b->ch) | ah));
             b->di++;
             dl &= rmask;
             ah = dl;
         } while (--cl != 0);
         ah = (uint8_t)~ah;
-        (void)vmem_xchg(b->di, ah);
+        (void)vga_xchg(b->di, ah);
         b->si = (uint16_t)(b->si + 2u * cbw(b->vis));
         b->di = (uint16_t)(b->di - bp);
     } while (row_dec() != 0);
@@ -165,12 +156,12 @@ static void mirror_or_partial(Blit *b)
                 uint8_t v = bitrev(rd8(b->src, b->si));
                 b->si--;
                 dl = v;
-                (void)vmem_xchg(b->di, (uint8_t)((v & b->ch) | ah));
+                (void)vga_xchg(b->di, (uint8_t)((v & b->ch) | ah));
                 b->di++;
                 dl &= rmask;
                 ah = dl;
             } while (--cl != 0);
-            (void)vmem_xchg(b->di, ah);
+            (void)vga_xchg(b->di, ah);
             b->si = (uint16_t)(b->si + 2u * cbw(b->vis));
             b->di = (uint16_t)(b->di - bp);
         } while (row_dec() != 0);
@@ -198,7 +189,7 @@ static void mirror_clear_clip(Blit *b)
             v = bitrev(rd8(b->src, b->si));
             b->si--;
             dl = v;
-            (void)vmem_xchg(b->di, (uint8_t)~((v & b->ch) | ah));
+            (void)vga_xchg(b->di, (uint8_t)~((v & b->ch) | ah));
             b->di++;
         }
         for (;;) {                              /* loc_2ACB */
@@ -208,11 +199,11 @@ static void mirror_clear_clip(Blit *b)
             v = bitrev(rd8(b->src, b->si));
             b->si--;
             dl = v;
-            (void)vmem_xchg(b->di, (uint8_t)~((v & b->ch) | ah));
+            (void)vga_xchg(b->di, (uint8_t)~((v & b->ch) | ah));
             b->di++;
         }
         ah = (uint8_t)((uint8_t)~ah | CB(CS_EdgeByteInvert));
-        (void)vmem_xchg(b->di, ah);
+        (void)vga_xchg(b->di, ah);
         uint8_t rb = CB(CS_SpriteRowBytes);
         b->si = (uint16_t)(b->si + cbw(rb));
         b->si = (uint16_t)(b->si + (uint8_t)(rb - CB(CS_SpriteRightClipBytes)));
@@ -250,7 +241,7 @@ static void mirror_or_clip(Blit *b)
                 v = bitrev(rd8(b->src, b->si));
                 b->si--;
                 dl = v;
-                (void)vmem_xchg(b->di, (uint8_t)((v & b->ch) | ah));
+                (void)vga_xchg(b->di, (uint8_t)((v & b->ch) | ah));
                 b->di++;
             }
             for (;;) {                          /* loc_2B7A */
@@ -260,11 +251,11 @@ static void mirror_or_clip(Blit *b)
                 v = bitrev(rd8(b->src, b->si));
                 b->si--;
                 dl = v;
-                (void)vmem_xchg(b->di, (uint8_t)((v & b->ch) | ah));
+                (void)vga_xchg(b->di, (uint8_t)((v & b->ch) | ah));
                 b->di++;
             }
             ah &= CB(CS_EdgeByteInvert);
-            (void)vmem_xchg(b->di, ah);
+            (void)vga_xchg(b->di, ah);
             uint8_t rb = CB(CS_SpriteRowBytes);
             b->si = (uint16_t)(b->si + cbw(rb));
             b->si = (uint16_t)(b->si + (uint8_t)(rb - CB(CS_SpriteRightClipBytes)));
@@ -309,7 +300,7 @@ static void straight_clear_aligned(Blit *b)
         do {
             uint8_t v = (uint8_t)~rd8(b->src, b->si);
             b->si++;
-            (void)vmem_xchg(b->di, v);
+            (void)vga_xchg(b->di, v);
             b->di++;
         } while (--cx != 0);
         b->di = (uint16_t)(b->di - bp);
@@ -336,7 +327,7 @@ static void straight_or_aligned(Blit *b)
             do {
                 uint8_t v = rd8(b->src, b->si);
                 b->si++;
-                (void)vmem_xchg(b->di, v);
+                (void)vga_xchg(b->di, v);
                 b->di++;
             } while (--cx != 0);
             b->di = (uint16_t)(b->di - bp);
@@ -358,13 +349,13 @@ static void straight_clear_partial(Blit *b)
             uint8_t v = rd8(b->src, b->si);
             b->si++;
             bl = v;
-            (void)vmem_xchg(b->di, (uint8_t)~((v & b->ch) | ah));
+            (void)vga_xchg(b->di, (uint8_t)~((v & b->ch) | ah));
             b->di++;
             bl &= rmask;
             ah = bl;
         } while (--cl != 0);
         ah = (uint8_t)~ah;
-        (void)vmem_xchg(b->di, ah);
+        (void)vga_xchg(b->di, ah);
         b->di = (uint16_t)(b->di - bp);
     } while (--dl != 0);
 }
@@ -392,12 +383,12 @@ static void straight_or_partial(Blit *b)
                 uint8_t v = rd8(b->src, b->si);
                 b->si++;
                 bl = v;
-                (void)vmem_xchg(b->di, (uint8_t)((v & b->ch) | ah));
+                (void)vga_xchg(b->di, (uint8_t)((v & b->ch) | ah));
                 b->di++;
                 bl &= rmask;
                 ah = bl;
             } while (--cl != 0);
-            (void)vmem_xchg(b->di, ah);
+            (void)vga_xchg(b->di, ah);
             b->di = (uint16_t)(b->di - bp);
         } while (--dl != 0);
         al = (uint8_t)(al << 1);                 /* mov al,CPM; shl al,1: the memory byte is not shifted */
@@ -424,7 +415,7 @@ static void straight_clear_clip(Blit *b)
             v = rd8(b->src, b->si);
             b->si++;
             bl = v;
-            (void)vmem_xchg(b->di, (uint8_t)~((v & b->ch) | ah));
+            (void)vga_xchg(b->di, (uint8_t)~((v & b->ch) | ah));
             b->di++;
         }
         for (;;) {                              /* loc_2D08 */
@@ -434,11 +425,11 @@ static void straight_clear_clip(Blit *b)
             v = rd8(b->src, b->si);
             b->si++;
             bl = v;
-            (void)vmem_xchg(b->di, (uint8_t)~((v & b->ch) | ah));
+            (void)vga_xchg(b->di, (uint8_t)~((v & b->ch) | ah));
             b->di++;
         }
         ah = (uint8_t)((uint8_t)~ah | CB(CS_EdgeByteInvert));
-        (void)vmem_xchg(b->di, ah);
+        (void)vga_xchg(b->di, ah);
         b->si = (uint16_t)(b->si + cbw(CB(CS_SpriteRightClipBytes)));
         b->di = (uint16_t)(b->di - bp);
     } while (--dl != 0);
@@ -473,7 +464,7 @@ static void straight_or_clip(Blit *b)
                 v = rd8(b->src, b->si);
                 b->si++;
                 bl = v;
-                (void)vmem_xchg(b->di, (uint8_t)((v & b->ch) | ah));
+                (void)vga_xchg(b->di, (uint8_t)((v & b->ch) | ah));
                 b->di++;
             }
             for (;;) {                          /* loc_2D9F */
@@ -483,11 +474,11 @@ static void straight_or_clip(Blit *b)
                 v = rd8(b->src, b->si);
                 b->si++;
                 bl = v;
-                (void)vmem_xchg(b->di, (uint8_t)((v & b->ch) | ah));
+                (void)vga_xchg(b->di, (uint8_t)((v & b->ch) | ah));
                 b->di++;
             }
             ah &= CB(CS_EdgeByteInvert);
-            (void)vmem_xchg(b->di, ah);
+            (void)vga_xchg(b->di, ah);
             b->si = (uint16_t)(b->si + cbw(CB(CS_SpriteRightClipBytes)));
             b->di = (uint16_t)(b->di - bp);
         } while (--dl != 0);
@@ -776,6 +767,48 @@ int LoadSpriteSheet(void)
 }
 
 /* ---- differential-test adapters ---------------------------------------------------------- */
+
+/* ---- routines of other regions moved here (their ASM labels lie in cs:23D4..3033) ------------ */
+
+/* StepRandomSeed (cs:26CF, MODULE2 leaf): RandomSeed = ror3(RandomSeed + 9248h). Returns AX = the
+ * new seed, as the ASM leaves it in AX. */
+uint16_t StepRandomSeed(void)
+{
+    uint16_t ax = (uint16_t)(DW(DS_RandomSeed) + 0x9248u);
+    ax = (uint16_t)((ax >> 3) | (ax << 13));
+    SET_DW(DS_RandomSeed, ax);
+    return ax;
+}
+
+/* The credits gate (cs:247Bh, MODULE2): gate only. Returns 1 (CF set) when the key-state gate
+ * fails: nothing is drawn. The gate passes only on a key set this translation does not run: the
+ * credits path is not run and SPR_CREDITS is returned instead (UpdatePlayer stops the frame). */
+int TryShowCredits(void)
+{
+    uint8_t al = DB(DS_byte_2811) & DB(DS_byte_282C) & DB(DS_byte_2805);
+    if (al == 0) return 1;
+    for (uint16_t bx = 1; bx < 0x7F; bx++) {
+        if (bx == 0x11 || bx == 0x1D || bx == 0x38) continue;
+        if (DB((uint16_t)(DS_KeyDownTable + bx)) != 0) return 1;
+    }
+    return SPR_CREDITS;
+}
+
+/* Keyed intro gate (cs:25C7, MODULE2): not translated. Returns SPR_UNSUPPORTED: the caller
+ * stops at this boundary and the intro is not run. */
+int TryShowIntroKeyed(void)
+{
+    return SPR_UNSUPPORTED;
+}
+
+/* Intro picture (cs:25F6, MODULE2): not translated. Returns SPR_UNSUPPORTED (see above). */
+int ShowIntroPicture(void)
+{
+    return SPR_UNSUPPORTED;
+}
+
+/* ---- differential-test adapters (tests/objects.py) ---------------------------------------- */
+EXPORT int c_StepRandomSeed(Regs *r) { r->ax = StepRandomSeed(); r->ds = DATA_SEG; return 0; }
 
 EXPORT int c_LoadSpriteSheet(Regs *r)
 {

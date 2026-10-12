@@ -48,4 +48,10 @@ uint16_t ShowMode13PictureFadeIn(uint8_t count, uint16_t bx);
 uint16_t SetPictureCopyPointers(void);
 void FadeOutPaletteToBlack(void);
 
+/* Advances a render slot's animation script and writes its frame (si = render slot; cs:9047). */
+void StepSpriteAnimation(uint16_t si);
+
+/* Copies 1F40h bytes of each VRAM plane from the saved backdrop (3F40h) to the draw page (cs:9071). */
+void RestoreBackdropToDrawPage(void);
+
 #endif

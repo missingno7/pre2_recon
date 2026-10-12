@@ -17,4 +17,7 @@ enum ObjectStatus {
 
 int UpdateObjects(void);
 
+/* Script pointer of record DI moves past the next 7D00h marker word (cs:80CB). */
+void SkipScriptToMarker(uint16_t di);
+
 #endif

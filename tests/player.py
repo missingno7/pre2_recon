@@ -372,6 +372,12 @@ def projectile_cases():
     def free(m):
         for k in range(4):
             m.ww(m.data('word_4F2E') + 0x12 * k + 4, 0xFFFF)
+    # ApplyPlayerFriction: the game writes MotionShift 0..3 only, but the count is CL in full:
+    # the oracle masks it to 5 bits (386 shift), so 20h and 21h shift like 0 and 1.
+    for sh in (0x20, 0x21, 0x3F, 0xFF):
+        for vx in (0x0005, 0xFFF0, 0x0000):
+            cs.append(mk(f'ApplyPlayerFriction: MotionShift {sh:02X}, VelX {vx:04X}', 'ApplyPlayerFriction',
+                         'c_ApplyPlayerFriction', setup=lambda m, sh=sh, vx=vx: (B(m, 'MotionShift', sh), W(m, 'PlayerVelX', vx))))
     cs.append(mk('projectile update: kinds 0 and 1 live, one freed (flag bit 5 clear)', 'UpdatePlayerProjectiles',
                  'c_UpdatePlayerProjectiles', setup=mixed, level=0))
     cs.append(mk('projectile update: all four slots free', 'UpdatePlayerProjectiles',
