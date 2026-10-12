@@ -37,7 +37,11 @@ _dll = None
 def dll():
     global _dll
     if _dll is None:
-        _dll = ctypes.CDLL(str(cbuild.build()))
+        import os                  # a private copy: a loaded DLL is locked on Windows
+        for old in (ROOT/'build'/'c').glob('pre2core_*.dll'):
+            try: old.unlink()
+            except OSError: pass
+        _dll = ctypes.CDLL(str(cbuild.build(ROOT/'build'/'c'/f'pre2core_{os.getpid()}.dll')))
         _dll.pre2_memory.restype = ctypes.POINTER(ctypes.c_uint8 * MEM_SIZE)
         _dll.pre2_files_reset.argtypes = [ctypes.c_char_p]
         _dll.pre2_files_log.restype = ctypes.c_char_p
