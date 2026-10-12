@@ -5116,13 +5116,13 @@ DATA segment word public 'DATA'
 ; DATA: text
     db 'CASTLE.SQZ', 0
 ClockYear label word
-; UNKNOWN: not yet classified as code or data
+; DATA: ClockYear: initialized state: year word, set by ReadClockYear; image 07BCh (1980)
     db 0BCh, 07h
 word_0039 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by ProgramEntry at run time; zero initially; read by ShowIntroPicture, TryShowIntroKeyed +1
     db 00h, 00h
 word_003B label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by ProgramEntry at run time; zero initially; read by DrawForegroundTile
     db 00h, 00h
 word_003D label word
 ; quirk: sub_0008 stores the KEYB.SQZ segment here, then resets NextFreeSegment to that segment,
@@ -5131,28 +5131,28 @@ word_003D label word
 ; segment value into ALLFONTS offset 3Dh, not into DATA. DATA:003D already holds the same value,
 ; so the DATA word is right and only ALLFONTS byte 3Dh-3Eh is overwritten. The same label is used
 ; as a displacement base in PollInputState ([si+word_003D]); rename with care.
-; UNKNOWN: not yet classified as code or data
+; DATA: word_003D: segment word set by ProgramEntry (KEYB.SQZ = ALLFONTS segment); low byte
     db 00h
 byte_003E label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: word_003D high byte; PollInputState also uses [si+byte_003E] as the count base of the log
     db 00h
 word_003F label word
-; UNKNOWN: not yet classified as code or data
+; DATA: input log: (value,count) byte pairs from 003Fh, seeded by 800h bytes of KEYB.SQZ; PollInputState appends and decodes entries; cursor word_287A
     db 00h
 byte_0040 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: input log bytes 0040h..00FFh of the (value,count) array from 003Fh; PollInputState (seeded from KEYB.SQZ)
     db 192 dup(0)
 word_0100 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: input log bytes 0100h..0665h of the (value,count) array from 003Fh; PollInputState (seeded from KEYB.SQZ)
     db 1382 dup(0)
 byte_0666 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: input log bytes 0666h..083Ch of the (value,count) array from 003Fh; PollInputState (seeded from KEYB.SQZ)
     db 471 dup(0)
 byte_083D label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: expert-mode flag saved with the log; RunFrontEnd stores ExpertFlag here
     db 00h
 byte_083E label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: level id saved with the log; PollInputState stores CurrentLevel at log start
     db 00h, 00h
 ; DATA: text
     db 'FATAL: Not enough memory$'
@@ -5168,11 +5168,11 @@ byte_083E label byte
     db 'FATAL: read error !$'
 ; DATA: text
     db 'SWAP MESSAGE: Insert the disk with $'
-; UNKNOWN: not yet classified as code or data
+; DATA: string table: CR LF (0Ah 0Dh) between two $-terminated messages; no direct reference
     db 0Ah, 0Dh
 ; DATA: text
     db 'PRESS ESC TO RESET & DEBUG.$'
-; UNKNOWN: not yet classified as code or data
+; DATA: string table: CR LF (0Ah 0Dh) between two $-terminated messages; no direct reference
     db 0Ah, 0Dh
 ; DATA: text
     db 'Press RETURN to continue or ESC to cancel.$'
@@ -5219,100 +5219,100 @@ byte_083E label byte
 ; DATA: text
     db 'BOULA.TRK', 0
 ResourceSlotList label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: table: resource slot order, 18 x byte (image = load order); read by InitResourceMemory
     db 0Dh, 05h, 06h, 01h, 02h, 07h, 11h, 0Bh, 0Ch, 00h, 0Fh, 03h
     db 08h, 09h, 0Ah, 04h, 10h, 0Eh
 ResourceSizeKb label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: table: resource size in KB per slot, 18 x byte; read by PageInResource and loaders
     db 1Eh, 04h, 05h, 2Dh, 1Ch, 24h, 0Ah, 2Dh, 15h, 16h, 1Eh, 0Bh
     db 13h, 19h, 1Bh, 17h, 1Ah, 13h
 ResourceFlags label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: initialized state: resource location code per slot, 18 x byte (bits 02h and 04h)
     db 00h, 02h, 02h, 00h, 00h, 08h, 0Ah, 08h, 08h, 00h, 00h, 08h
     db 08h, 00h, 00h, 00h, 00h, 00h
 ResourceAddressTable label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: 18 x word per slot: resource address (segment, EMS page or XMS KB offset)
     db 72 dup(0)
 byte_0B16 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by PageInResource at run time; zero initially
     db 00h
 XmsDriverEntry label dword
-; UNKNOWN: not yet classified as code or data
+; DATA: XmsDriverEntry: offset word of the XMS driver far pointer (INT 2Fh AX=4310h)
     db 00h, 00h
 word_0B19 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: word_0B19: segment word of XmsDriverEntry (INT 2Fh AX=4310h), set by InitResourceMemory
     db 00h, 00h
 XmsNextOffsetKb label word
-; UNKNOWN: not yet classified as code or data
+; DATA: XmsNextOffsetKb: workspace: set by InitResourceMemory at run time; zero initially; read by LoadResourceToXms
     db 00h, 00h
 XmsFreeKb label word
-; UNKNOWN: not yet classified as code or data
+; DATA: XmsFreeKb: workspace: set by InitResourceMemory at run time; zero initially
     db 00h, 00h
 XmsHandle label word
-; UNKNOWN: not yet classified as code or data
+; DATA: XmsHandle: workspace: set by InitResourceMemory at run time; initial bytes AA 55; read by KeyboardIsr, LoadResourceToXms +1
     db 0AAh, 55h
 XmsMoveLength label word
-; UNKNOWN: not yet classified as code or data
+; DATA: XmsMoveLength: workspace: set by LoadResourceToXms, LzssNextBitWord +2 at run time; zero initially
     db 00h, 00h
 word_0B23 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by LoadResourceToXms, PageInResource at run time; zero initially
     db 00h, 00h
 XmsSourceHandle label word
-; UNKNOWN: not yet classified as code or data
+; DATA: XmsSourceHandle: workspace: set by LoadResourceToXms, PageInResource at run time; zero initially
     db 00h, 00h
 XmsSourceOffsetLow label word
-; UNKNOWN: not yet classified as code or data
+; DATA: XmsSourceOffsetLow: workspace: set by LoadResourceToXms, LzssNextBitWord +2 at run time; zero initially
     db 00h, 00h
 XmsSourceOffsetHigh label word
-; UNKNOWN: not yet classified as code or data
+; DATA: XmsSourceOffsetHigh: workspace: set by LoadResourceToXms, LzssNextBitWord +2 at run time; zero initially
     db 00h, 00h
 word_0B2B label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by LoadResourceToXms, PageInResource at run time; zero initially
     db 00h, 00h
 word_0B2D label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by LoadResourceToXms, PageInResource at run time; zero initially
     db 00h, 00h
 word_0B2F label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by LoadResourceToXms, PageInResource at run time; zero initially
     db 16 dup(0)
 byte_0B3F label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: read by PageInResource; no direct writer found; zero initially
     db 00h
 word_0B40 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: string field: EMS device name EMMXXXX0 at 0B49h, compared by the EMS check (loc_08F7)
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 45h, 4Dh, 4Dh
     db 58h, 58h, 58h, 58h, 30h
 EmsFrameSegment label word
-; UNKNOWN: not yet classified as code or data
+; DATA: EmsFrameSegment: workspace: set by InitResourceMemory at run time; zero initially; read by LoadResourceToEms, PageInResource
     db 00h, 00h
 EmsFreeKb label word
-; UNKNOWN: not yet classified as code or data
+; DATA: EmsFreeKb: workspace: set by InitResourceMemory at run time; zero initially
     db 00h, 00h
 EmsHandle label word
-; UNKNOWN: not yet classified as code or data
+; DATA: EmsHandle: workspace: set by InitResourceMemory at run time; initial bytes AA 55; read by KeyboardIsr, LoadResourceToEms +3
     db 0AAh, 55h
 EmsNextOffsetKb label word
-; UNKNOWN: not yet classified as code or data
+; DATA: EmsNextOffsetKb: workspace: set by LoadResourceToEms at run time; zero initially
     db 00h, 00h
 SfxBankSegment label word
-; UNKNOWN: not yet classified as code or data
+; DATA: SfxBankSegment: workspace: set by InitSoundDevices at run time; zero initially; read by DetectSoundBlaster, SampleTimerIsr +1
     db 00h, 00h
 SfxBankParagraphs label word
-; UNKNOWN: not yet classified as code or data
+; DATA: SfxBankParagraphs: workspace: set by InitSoundDevices at run time; zero initially; read by DetectSoundBlaster
     db 00h, 00h
 SbIrqCount label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: SbIrqCount: workspace: set by SbIrqHandler at run time; zero initially; read by KeyboardIsr
     db 00h
 ModuleSegment label word
 ; Set at cs:1F23 (outside R1) to NextFreeSegment, then NextFreeSegment += 105Ch: a window of
 ; 105Ch paragraphs at the heap top that PageInResource copies resources into.
-; UNKNOWN: not yet classified as code or data
+; DATA: ModuleSegment: workspace: set by DetectSoundBlaster at run time; zero initially; read by ActivateResourceSlot, PageInResource +1
     db 00h, 00h
 MixSavedSp label word
-; UNKNOWN: not yet classified as code or data
+; DATA: MixSavedSp: workspace: set by MixChannel at run time; zero initially
     db 00h, 00h
 MixChannelOffset label word
-; UNKNOWN: not yet classified as code or data
+; DATA: MixChannelOffset: workspace: set by MixChannel at run time; zero initially
     db 00h, 00h
 EffectJumpTable label word
 ; Sixteen word entries, index = effect command: 0-9 and 0Eh IgnoreEffect, 0Ah
@@ -5335,107 +5335,105 @@ EffectJumpTable label word
     dw offset IgnoreEffect
     dw offset EffectSetSpeed
 SongSpeed label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: SongSpeed: workspace: set by ActivateResourceSlot, EffectSetSpeed at run time; initial bytes 01; read by TrackerTick
     db 01h
 SongTickCount label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: SongTickCount: workspace: set by ActivateResourceSlot, TrackerTick at run time; initial bytes 01
     db 01h
 SongOrderPos label word
-; UNKNOWN: not yet classified as code or data
+; DATA: SongOrderPos: workspace: set by ActivateResourceSlot, EffectPatternBreak +2 at run time; zero initially
     db 00h, 00h
 SongRow label word
-; UNKNOWN: not yet classified as code or data
+; DATA: SongRow: workspace: set by ActivateResourceSlot, EffectPatternBreak +2 at run time; zero initially
     db 00h, 00h
 ChannelPos label word
-; UNKNOWN: not yet classified as code or data
+; DATA: ChannelPos: 4 x word per channel (index = channel offset 0,2,4,6); workspace: set by MixChannel, ProcessChannelCell at run time; zero initially
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
 ChannelEnd label word
-; UNKNOWN: not yet classified as code or data
+; DATA: ChannelEnd: 4 x word per channel (index = channel offset 0,2,4,6); workspace: set by MixChannel, ProcessChannelCell at run time; zero initially
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
 ChannelInstrument label word
-; UNKNOWN: not yet classified as code or data
+; DATA: ChannelInstrument: 4 x word per channel (index = channel offset 0,2,4,6); workspace: set by ProcessChannelCell at run time; zero initially; read by MixChannel
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
 ChannelEffect label word
-; UNKNOWN: not yet classified as code or data
+; DATA: ChannelEffect: 4 x word per channel (index = channel offset 0,2,4,6); workspace: set by ProcessChannelCell at run time; zero initially
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
 ChannelStep label word
-; UNKNOWN: not yet classified as code or data
+; DATA: ChannelStep: 4 x word per channel (index = channel offset 0,2,4,6); workspace: set by ProcessChannelCell at run time; zero initially; read by MixChannel
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
 ChannelNote label word
-; UNKNOWN: not yet classified as code or data
+; DATA: ChannelNote: 4 x word per channel (index = channel offset 0,2,4,6); workspace: set by ProcessChannelCell at run time; zero initially
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
 ChannelVolume label word
-; UNKNOWN: not yet classified as code or data
+; DATA: ChannelVolume: 4 x word per channel (index = channel offset 0,2,4,6); workspace: set by EffectSetVolume, ProcessChannelCell +1 at run time; zero initially; read by MixChannel
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
 ChannelVolumeSlide label word
-; UNKNOWN: not yet classified as code or data
+; DATA: ChannelVolumeSlide: 4 x word per channel (index = channel offset 0,2,4,6); workspace: set by EffectVolumeSlide, ProcessChannelCell at run time; zero initially; read by TrackerTick
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
 ChannelPhase label word
-; UNKNOWN: not yet classified as code or data
+; DATA: ChannelPhase: 4 x word per channel (index = channel offset 0,2,4,6); workspace: set by MixChannel, ProcessChannelCell at run time; zero initially
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
 InstrumentTable label word
 ; DATA: instrument records: 31 x 16 bytes (see InstrumentTable comment in R3 header)
-; UNKNOWN: not yet classified as code or data
     db 00h, 00h
 word_0BD4 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by ActivateResourceSlot at run time; zero initially; read by ProcessChannelCell
     db 00h, 00h
 word_0BD6 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by ActivateResourceSlot at run time; zero initially; read by MixChannel
     db 00h, 00h
 word_0BD8 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by ActivateResourceSlot at run time; zero initially; read by MixChannel
     db 00h, 00h
 word_0BDA label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by ActivateResourceSlot at run time; zero initially; read by MixChannel
     db 00h, 00h
 word_0BDC label word
-; UNKNOWN: not yet classified as code or data
+; DATA: InstrumentTable records 0BD2h..0DC1h (31 x 16 bytes), tail from record 0 +0Ah
     db 486 dup(0)
 SongLength label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: SongLength: workspace: set by ActivateResourceSlot at run time; zero initially; read by TrackerTick
     db 00h
 PatternCount label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: PatternCount: workspace: set by ActivateResourceSlot at run time; zero initially
     db 00h
 InstrumentCount label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: InstrumentCount: workspace: set by ActivateResourceSlot at run time; zero initially
     db 00h
 PatternDataOffset label word
-; UNKNOWN: not yet classified as code or data
+; DATA: PatternDataOffset: workspace: set by ActivateResourceSlot at run time; zero initially; read by TrackerTick
     db 00h, 00h
 OrderTable label byte
 ; DATA: song order table: OrderTable[pos] = pattern number (SongLength entries used)
-; UNKNOWN: not yet classified as code or data
     db 128 dup(0)
 IrqVectorTable label dword
-; UNKNOWN: not yet classified as code or data
+; DATA: IrqVectorTable: dword per IRQ 0..3: FFFFFFFFh, FFFFFFFFh, CountSbIrq2, CountSbIrq3 (LEN also covers dw/dd rows)
     db 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh
     dd CountSbIrq2
     dd CountSbIrq3
-; UNKNOWN: not yet classified as code or data
+; DATA: IrqVectorTable: dword per IRQ 4..5: FFFFFFFFh, CountSbIrq5 (LEN also covers dw/dd rows)
     db 0FFh, 0FFh, 0FFh, 0FFh
     dd CountSbIrq5
-; UNKNOWN: not yet classified as code or data
+; DATA: IrqVectorTable: dword per IRQ 6..7: FFFFFFFFh, CountSbIrq7 (LEN also covers dw/dd rows)
     db 0FFh, 0FFh, 0FFh, 0FFh
     dd CountSbIrq7
 IrqProbeCounts label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: IrqProbeCounts: byte per IRQ 0..7; incremented by the probe ISRs (IRQ 2, 3, 5, 7)
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
 PicMaskSaved label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: PicMaskSaved: workspace: set by InitSoundDevices at run time; zero initially; read by DetectSoundBlaster, DspWriteChecked
     db 00h
 SbIrqLine label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: SbIrqLine: workspace: set by DetectSoundBlaster at run time; zero initially; read by KeyboardIsr
     db 00h
 SbSavedIrqOffset label word
-; UNKNOWN: not yet classified as code or data
+; DATA: SbSavedIrqOffset: workspace: set by DetectSoundBlaster at run time; zero initially; read by KeyboardIsr
     db 00h, 00h
 SbSavedIrqSegment label word
-; UNKNOWN: not yet classified as code or data
+; DATA: SbSavedIrqSegment: workspace: set by DetectSoundBlaster at run time; zero initially; read by KeyboardIsr
     db 00h, 00h
 PeriodTable label word
-; UNKNOWN: not yet classified as code or data
+; DATA: PeriodTable: 35 x word MOD period values (0358h..0078h); written at run time by loc_0425
     db 58h, 03h, 28h, 03h, 0FAh, 02h, 0D0h, 02h, 0A6h, 02h
     db 80h, 02h, 5Ch, 02h, 3Ah, 02h, 1Ah, 02h, 0FCh, 01h, 0E0h, 01h
     db 0C5h, 01h, 0ACh, 01h, 94h, 01h, 7Dh, 01h, 68h, 01h, 53h, 01h
@@ -5444,7 +5442,6 @@ PeriodTable label word
     db 0A0h, 00h, 97h, 00h, 8Fh, 00h, 87h, 00h, 7Fh, 00h, 78h, 00h
 StepTable label word
 ; DATA: note step table: 37 signed words, StepTable[n] for note n = 1..36 (index 0 unused)
-; UNKNOWN: not yet classified as code or data
     db 71h, 00h, 7Fh, 0FFh, 87h, 0FFh, 8Fh, 0FFh, 98h, 0FFh, 0A1h, 0FFh
     db 0ABh, 0FFh, 0B5h, 0FFh, 0C0h, 0FFh, 0CBh, 0FFh, 0D7h, 0FFh, 0E4h, 0FFh
     db 0F1h, 0FFh, 00h, 00h, 0Fh, 00h, 1Fh, 00h, 30h, 00h, 43h, 00h
@@ -5454,7 +5451,7 @@ StepTable label word
     db 0C9h, 02h
 ; DATA: text
     db '?72/,*(', 27h, '&$'
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: 224 bytes of descending values 23h..01h; no direct reference found
     db 23h, 22h, 21h, 21h, 20h, 1Fh, 1Eh, 1Eh, 1Dh, 1Ch, 1Ch, 1Bh
     db 1Bh, 1Ah, 1Ah, 19h, 19h, 19h, 18h, 18h, 17h, 17h, 17h, 16h
     db 16h, 16h, 15h, 15h, 15h, 15h, 14h, 14h, 14h, 14h, 13h, 13h
@@ -5474,26 +5471,28 @@ StepTable label word
     db 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h
     db 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h
     db 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h
-; UNKNOWN: not yet classified as code or data
+; DATA: padding/unused: no reference found (searched routine accessors); zero
     db 21 dup(0)
 SfxPlayPos label word
-; UNKNOWN: not yet classified as code or data
+; DATA: SfxPlayPos: workspace: set by SampleTimerIsr, SbIrqHandler +1 at run time; initial bytes FF FF
     db 0FFh, 0FFh
 SfxBytesLeft label word
-; UNKNOWN: not yet classified as code or data
+; DATA: SfxBytesLeft: workspace: set by SampleTimerIsr, SbIrqHandler +1 at run time; initial bytes 00 00 FF
     db 00h, 00h, 0FFh
 word_1009 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: SfxTable: 11 x 4 bytes {src word, len word} at 1009h+4*k; record 0 src word
     db 00h, 00h
 word_100B label word
-; UNKNOWN: not yet classified as code or data
+; DATA: SfxTable: record fields of records 0..10 (src/len words); read by StartSoundEffect
     db 8Eh, 18h, 00h, 00h, 80h, 1Ch, 00h, 00h, 5Eh, 23h, 00h, 00h
     db 0E6h, 19h, 00h, 00h, 0B2h, 0Ah, 00h, 00h, 12h, 09h, 00h, 00h
     db 00h, 00h, 00h, 00h, 0D2h, 35h, 00h, 00h, 0C4h, 06h, 00h, 00h
     db 86h, 1Ch, 00h, 00h, 2Eh, 0Eh
 SpeakerSequencePtr label word
-; UNKNOWN: not yet classified as code or data
-    db 0FFh, 0FFh, 70h, 17h, 70h, 17h, 08h, 00h, 9Ch, 0FFh, 08h, 00h
+; DATA: SpeakerSequencePtr: word, FFFFh = idle; written by SpeakerTimerIsr, StartSoundEffect
+    db 0FFh, 0FFh
+; DATA: SpeakerSequence records: 13 x 10 bytes from 1037h+10*DL (StartSoundEffect)
+    db 70h, 17h, 70h, 17h, 08h, 00h, 9Ch, 0FFh, 08h, 00h
     db 40h, 1Fh, 40h, 1Fh, 0Ah, 00h, 2Ch, 01h, 0Ah, 00h, 0E8h, 03h
     db 0E8h, 03h, 12h, 00h, 0D4h, 0FEh, 12h, 00h, 40h, 1Fh, 40h, 1Fh
     db 08h, 00h, 64h, 00h, 08h, 00h, 0E8h, 03h, 0E8h, 03h, 06h, 00h
@@ -5505,41 +5504,45 @@ SpeakerSequencePtr label word
     db 28h, 00h, 0Ah, 00h, 0E8h, 03h, 0E8h, 03h, 0Ah, 00h, 14h, 00h
     db 0Ah, 00h, 0E8h, 03h, 0E8h, 03h, 0Ah, 00h, 28h, 00h, 0Ah, 00h
 MixSavedVolumeRow label word
-; UNKNOWN: not yet classified as code or data
+; DATA: MixSavedVolumeRow: workspace: set by MixChannel at run time; zero initially
     db 00h, 00h
 DmaPageA label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: DmaPageA: workspace: set by DetectSoundBlaster at run time; zero initially
     db 00h
 DmaOffsetA label word
-; UNKNOWN: not yet classified as code or data
+; DATA: DmaOffsetA: workspace: set by DetectSoundBlaster at run time; zero initially
     db 00h, 00h
 DmaPageB label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: DmaPageB: workspace: set by DetectSoundBlaster at run time; zero initially
     db 00h
 DmaOffsetB label word
-; UNKNOWN: not yet classified as code or data
+; DATA: DmaOffsetB: workspace: set by DetectSoundBlaster at run time; zero initially
     db 00h, 00h
 PlayBuffer label word
-; UNKNOWN: not yet classified as code or data
+; DATA: PlayBuffer: word pointer, initial 10C9h (sample buffer A); set by SbIrqHandler
     db 0C9h, 10h
 PlayDmaRecord label word
-; UNKNOWN: not yet classified as code or data
+; DATA: PlayDmaRecord: workspace: set by SbIrqHandler at run time; initial bytes BB 10; read by StartSbBlock
     db 0BBh, 10h
 MixBuffer label word
-; UNKNOWN: not yet classified as code or data
+; DATA: MixBuffer: word pointer, initial 1171h (sample buffer B); read by MixChannel
     db 71h, 11h
 MixDmaRecord label word
-; UNKNOWN: not yet classified as code or data
+; DATA: MixDmaRecord: workspace: set by SbIrqHandler at run time; initial bytes BE 10
     db 0BEh, 10h
-; UNKNOWN: not yet classified as code or data
-    db 504 dup(0)
+; DATA: sample buffer A: 168 bytes, PlayBuffer initially points here (DMA block)
+    db 168 dup(0)
+; DATA: sample buffer B: 168 bytes, MixBuffer initially points here (DMA block)
+    db 168 dup(0)
+; DATA: sample buffer C: 168 bytes, LinearDmaAddress fallback block; zero
+    db 168 dup(0)
 VolumeTable label byte
 ; DATA: volume table: VolumeTable[v*64+s] = (v*s)>>6, v = 0..64, s = 0..63
     db 3159 dup(0)
 word_1F18 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: padding/unused: no DATA reference; word_1F18 is a VRAM offset (ds=A000h) in RunCallbackMapScreen
     db 1001 dup(0)
-; UNKNOWN: not yet classified as code or data
+; DATA: table: 128 bytes, character per index ('1'..'0' at 02h..0Bh); no direct reference found
     db 2Dh, 2Dh, 31h, 32h, 33h, 34h, 35h, 36h, 37h, 38h, 39h, 30h
     db 2Dh, 2Dh, 2Dh, 2Dh, 41h, 2Dh, 45h, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh
     db 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 41h, 2Dh, 44h, 46h, 2Dh, 2Dh
@@ -5553,250 +5556,250 @@ word_1F18 label word
     db 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh
 word_2381 label word
 ; Written by SwapInt08Int09Vectors (INT 03h segment) and never read.
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: written by SwapInt08Int09Vectors (INT 03h segment), never read; zero
     db 00h, 00h
 TextByteColumn label word
-; UNKNOWN: not yet classified as code or data
+; DATA: TextByteColumn: workspace: set by DrawFontChar, ShowCreditsScreen +1 at run time; zero initially
     db 00h, 00h
 TextRowOffset label word
-; UNKNOWN: not yet classified as code or data
+; DATA: TextRowOffset: workspace: set by ShowCreditsScreen, ShowLateYearCredits at run time; zero initially; read by DrawFontChar
     db 00h, 00h
 ; DATA: text
     db 'YOU MUST RUN THE GAME WITH THE ORIGINAL DISK #1 IN ANY DRIVE! err.#$'
 byte_23CB label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by UnusedProtectionDiskProbe at run time; zero initially
     db 00h
 byte_23CC label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by UnusedProtectionDiskProbe at run time; zero initially
     db 00h
 byte_23CD label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by UnusedProtectionCheck at run time; zero initially; read by UnusedProtectionDiskProbe
     db 00h
 word_23CE label word
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: read by UnusedProtectionDiskProbe; no direct writer found; zero initially
     db 00h, 00h
 word_23D0 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: read by UnusedProtectionDiskProbe; no direct writer found; zero initially
     db 1022 dup(0)
 byte_27CE label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by UnusedProtectionDiskProbe at run time; zero initially
     db 00h
 word_27CF label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by UnusedProtectionDiskProbe at run time; zero initially
     db 00h, 00h
 byte_27D1 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by UnusedProtectionDiskProbe at run time; zero initially; read by UnusedProtectionCheck
     db 00h
 word_27D2 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by UnusedProtectionDiskProbe at run time; zero initially; read by UnusedProtectionCheck
     db 00h, 00h
 byte_27D4 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by UnusedProtectionCheck, UnusedProtectionDiskProbe at run time; zero initially
     db 00h
 byte_27D5 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by PrintDecimalWord at run time; zero initially
     db 00h
 Energy label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: Energy: workspace: set by DrainPlayerEnergy, ProcessPlayerContacts +3 at run time; zero initially; read by UpdateHud
     db 00h, 00h
 Lives label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: Lives: workspace: set by ProgramEntry, TriggerPlayerRespawnCore at run time; zero initially; read by UpdateHud
     db 00h
 byte_27D9 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by CalibrateJoystick at run time; zero initially; read by ReadJoystickTimes
     db 00h
 word_27DA label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by CalibrateJoystick at run time; zero initially; read by ReadJoystickTimes
     db 00h, 00h
 word_27DC label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by CalibrateJoystick at run time; zero initially; read by PollInputState
     db 00h, 00h
 word_27DE label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by CalibrateJoystick at run time; zero initially; read by PollInputState
     db 00h, 00h
 word_27E0 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by CalibrateJoystick at run time; zero initially; read by PollInputState
     db 00h, 00h
 word_27E2 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by CalibrateJoystick at run time; zero initially; read by PollInputState
     db 00h, 00h
 byte_27E4 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by CalibrateJoystick at run time; zero initially; read by ReadJoystickTimes
     db 00h
 byte_27E5 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by CalibrateJoystick at run time; zero initially
     db 00h
 byte_27E6 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by CalibrateJoystick at run time; zero initially
     db 00h
 byte_27E7 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by CalibrateJoystick at run time; initial bytes 02
     db 02h
 byte_27E8 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by PollInputState, ReadJoystickTimes at run time; zero initially; read by RunGameOverScreen, ShowCreditsTimed +3
     db 00h
 byte_27E9 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by PollInputState, ReadJoystickTimes at run time; zero initially; read by UpdatePlayerStateCharge, UpdatePlayerStateIdle +1
     db 00h
 byte_27EA label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by PollInputState at run time; zero initially; read by CheckPlayerBossContact, ProcessPlayerContacts +3
     db 00h
 byte_27EB label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by PollInputState at run time; zero initially; read by UpdatePlayer, UpdatePlayerRenderSlot
     db 00h
 byte_27EC label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by PollInputState at run time; zero initially; read by UpdatePlayer, UpdatePlayerStateCharge +2
     db 00h
 byte_27ED label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by PollInputState at run time; zero initially; read by UpdatePlayer, UpdatePlayerStateCharge +2
     db 00h
 word_27EE label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by WaitSoundTicks at run time; zero initially
     db 00h, 00h
 word_27F0 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by RunFrontEnd, RunGameOverScreen +3 at run time; zero initially; read by UpdatePlayerStateCharge, UpdatePlayerStateIdle +1
     db 00h, 00h
 word_27F2 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by RunFrontEnd, SampleTimerIsr +1 at run time; zero initially
     db 00h, 00h
 KeyDownTable label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: KeyDownTable: workspace: set by KeyboardIsr at run time; zero initially; read by TryShowCredits, TryShowIntroKeyed
     db 00h, 00h
 byte_27F6 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: read by RunFrontEnd; no direct writer found; zero initially
     db 00h
 byte_27F7 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: read by RunFrontEnd; no direct writer found; zero initially
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h
 byte_2804 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: read by PollInputState; no direct writer found; zero initially
     db 00h
 byte_2805 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: read by TryShowCredits; no direct writer found; zero initially
     db 00h
 byte_2806 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: read by TryShowIntroKeyed; no direct writer found; zero initially
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h
 byte_280D label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: read by WaitFrameSyncFlag; no direct writer found; zero initially
     db 00h, 00h, 00h
 byte_2810 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: read by PollInputState, RunFrontEnd; no direct writer found; zero initially
     db 00h
 byte_2811 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: read by TryShowCredits, TryShowIntroKeyed; no direct writer found; zero initially
     db 00h
 byte_2812 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: read by PollInputState; no direct writer found; zero initially
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
 byte_281A label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: read by PollInputState; no direct writer found; zero initially
     db 00h
 byte_281B label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: read by PollInputState; no direct writer found; zero initially
     db 00h, 00h
 byte_281D label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: read by PollInputState; no direct writer found; zero initially
     db 00h, 00h
 byte_281F label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: read by PollInputState; no direct writer found; zero initially
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h
 byte_282C label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: read by TryShowCredits, TryShowIntroKeyed; no direct writer found; zero initially
     db 00h
 byte_282D label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: read by PollInputState, RunFrontEnd; no direct writer found; zero initially
     db 00h, 00h
 RespawnRequestFlag label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: RespawnRequestFlag: purpose unknown: read by UpdatePlayer; no direct writer found; zero initially
     db 00h
 byte_2830 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: read by UpdatePlayer; no direct writer found; zero initially
     db 00h, 00h
 byte_2832 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: read by WaitForButtonPressRelease; no direct writer found; zero initially
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
 byte_283C label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: read by PollInputState; no direct writer found; zero initially
     db 00h, 00h
 byte_283E label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: read by PollInputState; no direct writer found; zero initially
     db 00h
 byte_283F label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: read by PollInputState; no direct writer found; zero initially
     db 00h
 byte_2840 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: read by PollInputState; no direct writer found; zero initially
     db 00h
 byte_2841 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: read by PollInputState; no direct writer found; zero initially
     db 00h
 byte_2842 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: read by PollInputState; no direct writer found; zero initially
     db 00h, 00h
 byte_2844 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: read by PollInputState; no direct writer found; zero initially
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h
 byte_284B label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: read by PollInputState; no direct writer found; zero initially
     db 29 dup(0)
 byte_2868 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: read by PollInputState; no direct writer found; zero initially
     db 00h, 00h, 00h, 00h, 00h
 byte_286D label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: read by PollInputState; no direct writer found; zero initially
     db 00h
 byte_286E label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: read by PollInputState; no direct writer found; zero initially
     db 00h
 byte_286F label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: read by PollInputState; no direct writer found; zero initially
     db 00h
 byte_2870 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: read by PollInputState; no direct writer found; zero initially
     db 00h, 00h, 00h, 00h
 LastScanCode label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: LastScanCode: workspace: set by KeyboardIsr, ProgramEntry +2 at run time; zero initially; read by PollInputState
     db 00h
 NextFreeSegment label word
-; UNKNOWN: not yet classified as code or data
+; DATA: NextFreeSegment: workspace: set by ActivateResourceSlot, CheckVgaAdapter +17 at run time; zero initially; read by RestoreSceneryMap, RunCallbackMapScreen +3
     db 00h, 00h
 DosCallActive label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: DosCallActive: workspace: set by KeyboardIsr at run time; zero initially; read by SampleTimerIsr, SpeakerTimerIsr
     db 00h
 RawLoadInProgress label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: RawLoadInProgress: workspace: set by LoadRawFile, LoadSqzFile at run time; zero initially
     db 00h
 byte_2879 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by RunFrontEnd at run time; zero initially; read by ActivateResourceSlot, PollInputState +2
     db 00h
 word_287A label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by PollInputState, RunFrontEnd at run time; zero initially
     db 00h, 00h
 byte_287C label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by PollInputState, RunFrontEnd at run time; zero initially
     db 00h
 byte_287D label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by PollInputState, RunFrontEnd at run time; initial non-zero bytes
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 3Ch, 00h, 00h, 3Ch
     db 00h, 00h, 3Ch, 00h, 3Ch, 3Ch, 1Ch, 3Ch, 3Ch, 0Ch, 3Ch, 38h
     db 00h, 38h, 30h, 00h, 34h, 2Ch, 00h, 34h, 24h, 00h, 2Ch, 24h
     db 00h, 24h, 1Ch, 00h, 20h, 18h, 00h, 18h, 14h, 00h, 14h, 10h
     db 00h
 PictureSegment label word
-; UNKNOWN: not yet classified as code or data
+; DATA: PictureSegment: workspace: set by ShowIntroPicture, TryShowIntroKeyed at run time; initial non-zero bytes
     db 00h, 00h, 00h, 01h, 02h, 03h, 04h, 05h, 06h, 07h, 08h, 09h
     db 0Ah, 0Bh, 0Ch, 0Dh, 0Eh, 0Fh, 00h
 RandomSeed label word
-; UNKNOWN: not yet classified as code or data
+; DATA: RandomSeed: workspace: set by StepRandomSeed at run time; initial non-zero bytes
     db 34h, 12h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
 ; DATA: text
     db 'YEAAA > > >', 0
 ; DATA: text
     db 'MY GAME IS STILL WORKING IN', 0
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: no reference found (searched routine accessors); initial bytes 20 3C 3C 00; hex refs ULE2:232
     db 20h, 3Ch, 3Ch, 00h
 ; DATA: text
     db 'PROGRAMMED IN 1992 ON AT >286 12MHZ>', 0
@@ -5826,65 +5829,65 @@ RandomSeed label word
     db 'LEVELH.SQZ', 0
 ; DATA: text
     db 'LEVELI.SQZ', 0
-; UNKNOWN: not yet classified as code or data
+; DATA: padding/unused: no reference found (searched routine accessors)
     db 00h
 ; DATA: text
     db 'SPRITES.SQZ', 0
 ; DATA: text
     db 'FATAL! : Video not 100% compatible VGA !$'
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: no reference found (searched routine accessors); initial non-zero bytes; hex refs ULE2:4251
     db 00h, 01h, 02h, 03h, 04h, 05h, 06h, 07h, 08h, 09h, 0Ah, 0Bh
     db 0Ch, 0Dh, 0Eh, 0Fh, 00h
 CollectTotalMain label word
-; UNKNOWN: not yet classified as code or data
+; DATA: CollectTotalMain: workspace: set by ApplySecretTilePatches, LoadLevel at run time; zero initially; read by RenderTallyPercent
     db 00h, 00h
 word_2A76 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by ApplyCellChangeRecord, LoadLevel +1 at run time; zero initially; read by RenderTallyPercent
     db 00h, 00h
 CollectTotalDecor label word
-; UNKNOWN: not yet classified as code or data
+; DATA: CollectTotalDecor: workspace: set by LoadLevel at run time; zero initially; read by RenderTallyPercent
     db 00h, 00h
 word_2A7A label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by LoadLevel, ProcessPlayerContacts at run time; initial non-zero bytes; read by RenderTallyPercent
     db 00h, 00h, 00h, 00h, 00h, 38h, 28h, 20h, 28h, 18h, 10h, 20h
     db 10h, 08h, 10h, 28h, 38h, 28h, 00h, 08h, 05h, 05h, 05h, 38h
     db 30h, 08h, 00h, 18h, 10h, 08h, 20h, 0Ch, 08h, 30h, 18h, 10h
     db 10h, 10h, 18h, 18h, 18h
 ; DATA: text
     db '   (((888', 0
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: no reference found (searched routine accessors); initial non-zero bytes
     db 00h, 00h, 38h, 28h, 20h, 28h, 18h, 10h, 20h, 10h, 08h, 18h
     db 18h, 24h, 28h, 00h, 08h, 00h, 00h, 00h, 38h, 30h, 08h, 18h
     db 1Ch, 2Ch, 18h, 24h, 2Ch, 28h, 30h, 38h, 34h, 20h, 14h, 00h
     db 18h, 14h, 00h, 24h, 1Ch, 14h
 ; DATA: text
     db '4,<<8', 0
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: no reference found (searched routine accessors); initial non-zero bytes
     db 00h, 00h, 38h, 28h, 20h, 28h, 18h, 10h, 20h, 10h, 08h, 0Ch
     db 08h, 14h, 28h, 00h, 08h, 00h, 00h, 00h, 38h, 30h, 08h, 00h
     db 0Eh, 00h, 00h, 14h, 00h, 00h, 1Ah, 00h, 0Ch, 0Ah, 02h, 14h
     db 18h, 14h, 1Ch
 ; DATA: text
     db '  ,(,<<8', 0
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: no reference found (searched routine accessors); initial non-zero bytes
     db 00h, 00h, 38h, 28h, 20h, 28h, 18h, 10h, 20h, 10h, 08h, 10h
     db 28h, 38h, 28h, 00h, 08h, 04h, 04h, 00h, 38h, 30h, 08h, 18h
     db 00h, 00h, 28h, 04h, 00h, 3Ch, 14h, 00h, 34h, 20h, 14h, 20h
     db 14h, 24h, 28h, 1Ch
 ; DATA: text
     db '<,,<48<', 0
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: no reference found (searched routine accessors); initial non-zero bytes
     db 00h, 00h, 38h, 28h, 20h, 28h, 18h, 10h, 20h, 10h, 08h, 10h
     db 28h, 38h, 28h, 00h, 08h, 04h, 04h, 04h, 38h, 30h, 08h, 00h
     db 10h, 10h, 00h, 20h, 10h, 08h, 30h, 08h, 14h, 08h, 00h, 00h
     db 18h, 14h, 00h, 24h, 1Ch, 14h
 ; DATA: text
     db '4,<<<', 0
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: no reference found (searched routine accessors); initial non-zero bytes
     db 00h, 00h, 3Ch, 24h, 14h, 2Ch, 0Ch, 00h, 1Ch, 08h, 04h
 ; DATA: text
     db '<0((', 0
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: no reference found (searched routine accessors); initial non-zero bytes
     db 08h, 04h, 04h, 04h, 3Ch, 2Ch, 08h, 08h, 18h, 00h, 18h, 20h
     db 0Ch, 28h, 2Ch, 10h, 34h, 18h, 10h, 24h, 08h, 18h, 2Ch, 18h
     db 24h
@@ -5892,23 +5895,23 @@ word_2A7A label word
     db '4$'
 ; DATA: text
     db '0<48', 0
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: no reference found (searched routine accessors); initial non-zero bytes
     db 00h, 00h, 38h, 28h, 20h, 28h, 18h, 10h, 20h, 10h, 08h, 10h
     db 28h, 38h, 28h, 00h, 08h, 04h, 04h, 04h, 38h, 30h, 08h, 00h
     db 14h, 14h, 00h, 20h, 14h, 08h, 30h, 1Ch, 34h, 20h, 14h, 04h
     db 08h, 1Ch, 10h, 14h, 30h, 14h, 24h
 ; DATA: text
     db '8,4<', 0
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: no reference found (searched routine accessors); initial non-zero bytes
     db 00h, 00h, 38h, 28h, 20h, 28h, 18h, 10h, 20h, 10h, 08h
 ; DATA: text
     db '(4<(', 0
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: no reference found (searched routine accessors); initial non-zero bytes
     db 08h, 04h, 04h, 04h, 38h, 30h, 08h, 00h, 14h, 18h, 00h, 20h
     db 1Ch, 00h, 30h, 28h, 08h, 14h, 0Ch, 14h, 1Ch, 14h
 ; DATA: text
     db ' ( (0(8<8', 0
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: no reference found (searched routine accessors); initial non-zero bytes
     db 00h, 00h, 38h, 28h, 20h, 28h, 18h, 10h, 20h, 10h, 08h, 24h
     db 28h, 3Ch, 28h, 00h, 08h, 04h, 04h, 04h, 38h, 30h, 08h, 00h
     db 18h, 10h, 08h, 20h, 0Ch, 08h, 30h, 18h, 14h, 10h, 0Ch, 1Ch
@@ -5916,71 +5919,70 @@ word_2A7A label word
     db 00h, 00h, 38h, 28h, 20h, 28h, 18h, 10h, 20h, 10h, 08h
 ; DATA: text
     db ',(<(', 0
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: no reference found (searched routine accessors); initial non-zero bytes
     db 08h, 04h, 04h, 04h, 38h, 30h, 08h, 1Ch, 00h, 14h, 2Ch, 14h
     db 1Ch, 3Ch, 1Ch, 1Ch, 0Ch, 10h, 18h, 10h, 14h, 20h, 14h, 1Ch
     db 2Ch, 1Ch
 ; DATA: text
     db '(4,8<', 0
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: no reference found (searched routine accessors); initial non-zero bytes
     db 00h, 00h, 38h, 28h, 20h, 28h, 18h, 10h, 20h, 10h, 08h, 10h
     db 28h, 38h, 28h, 00h, 08h, 00h, 00h, 00h, 38h, 30h, 08h, 00h
     db 18h, 10h, 08h, 20h, 0Ch, 08h, 30h, 18h, 10h, 10h, 10h, 18h
     db 18h, 18h
 ; DATA: text
     db '   (((888', 0
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: no reference found (searched routine accessors); initial non-zero bytes
     db 00h, 00h, 38h, 28h, 20h, 28h, 18h, 10h, 20h, 10h, 08h, 10h
     db 28h, 38h, 28h, 00h, 08h, 00h, 00h, 00h, 38h, 30h, 08h, 00h
     db 14h, 00h, 00h, 20h, 00h, 08h, 30h, 08h, 34h, 20h, 14h, 1Ch
     db 08h, 08h, 28h, 14h, 14h
 ; DATA: text
     db '<((888', 0
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: no reference found (searched routine accessors); initial non-zero bytes
     db 00h, 00h, 38h, 28h, 20h, 28h, 18h, 10h, 20h, 10h, 08h, 10h
     db 28h, 38h, 28h, 00h, 08h, 00h, 00h, 00h, 38h, 30h, 08h, 00h
     db 14h, 00h, 00h, 20h, 00h, 08h, 30h, 08h, 34h, 20h, 14h, 14h
     db 18h, 1Ch, 1Ch, 20h, 24h, 28h, 28h, 2Ch, 38h, 38h, 38h
 WindRandA label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: WindRandA: workspace: set by NextWindRandom, ProgramEntry at run time; initial bytes 05
     db 05h
 WindRandB label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: WindRandB: workspace: set by NextWindRandom, ProgramEntry at run time; initial bytes 22
     db 22h
 WindRandC label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: WindRandC: workspace: set by NextWindRandom, ProgramEntry at run time; initial bytes 86
     db 86h
 WindRandWord label word
-; UNKNOWN: not yet classified as code or data
+; DATA: WindRandWord: workspace: set by NextWindRandom, ProgramEntry at run time; initial bytes 8D E5
     db 8Dh, 0E5h
 ExpandDstSegment label word
-; UNKNOWN: not yet classified as code or data
+; DATA: ExpandDstSegment: workspace: set by LoadSpriteSheet at run time; zero initially
     db 00h, 00h
 ExpandSrcSegment label word
-; UNKNOWN: not yet classified as code or data
+; DATA: ExpandSrcSegment: workspace: set by LoadSpriteSheet at run time; zero initially
     db 00h, 00h
 MapRows label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: MapRows: workspace: set by LoadLevelTileSet at run time; zero initially; read by ScrollViewDown, SpawnChildOnPlayerBox +3
     db 00h
 WarpLevelTable label byte
 ; DATA: WarpLevelTable: level slot 0..9 -> level/map id (0Ah..0Eh); 0FFh = none
-; UNKNOWN: not yet classified as code or data
     db 0FFh, 0Ch, 0Bh, 0Ah, 0FFh, 0FFh, 00h, 0FFh, 0FFh, 0Eh
 LevelPaletteTable label word
-; UNKNOWN: not yet classified as code or data
+; DATA: LevelPaletteTable: initialized state: read by CheckVgaAdapter, SetLevelPalette +3; no direct writer found; initial non-zero bytes
     db 0FCh, 2Bh, 5Ch, 2Ch, 0CCh, 2Bh, 9Ch, 2Bh, 0Ch, 2Bh, 6Ch, 2Bh
     db 0ACh, 2Ah, 3Ch, 2Bh, 0DCh, 2Ah, 0DCh, 2Ah, 8Ch, 2Ch, 8Ch, 2Ch
     db 8Ch, 2Ch, 0BCh, 2Ch, 0DCh, 2Ah, 0ACh, 2Ah
 byte_2D20 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: table: resource slot per level, byte_2D20[level] (16 x byte); read by LevelRestart
     db 09h, 09h, 00h, 00h, 00h, 0Dh, 04h, 04h, 0Ah, 0Dh, 10h, 10h
     db 10h, 09h, 0Eh, 04h
 LevelMapRowsTable label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: LevelMapRowsTable: initialized state: read by LoadLevelTileSet; no direct writer found; initial non-zero bytes
     db 31h, 68h, 31h, 2Dh, 80h, 80h, 80h, 56h, 6Eh, 0Ch, 18h, 33h
     db 33h, 26h, 0ADh, 54h
 LevelScriptTable label word
-; UNKNOWN: not yet classified as code or data
+; DATA: LevelScriptTable: initialized state: read by LoadLevel, ResetLevelState; no direct writer found; initial non-zero bytes
     db 60h, 2Dh, 60h, 2Dh, 60h, 2Dh, 60h, 2Dh, 60h, 2Dh, 60h, 2Dh
     db 60h, 2Dh, 60h, 2Dh, 60h, 2Dh, 60h, 2Dh, 60h, 2Dh, 60h, 2Dh
     db 60h, 2Dh, 60h, 2Dh, 60h, 2Dh, 76h, 2Dh, 0FFh, 0FFh, 0B8h, 01h
@@ -5989,568 +5991,569 @@ LevelScriptTable label word
     db 70h, 03h, 06h, 00h, 64h, 00h, 28h, 05h, 01h, 00h, 0FFh, 00h
     db 0FFh, 0FFh
 CurrentLevel label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: CurrentLevel: workspace: set by LoadLevel, ProcessPlayerContacts +2 at run time; initial non-zero bytes; read by BuildDecorList, CheckVgaAdapter +16
     db 00h, 4Ch, 45h, 56h, 45h, 4Ch
 LevelFileChar label byte
 ; DATA: text
     db '0.SQZ', 0
 byte_2D96 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: table: back-file character per level (byte_2D96[level], 20 x byte); read by LoadLevel
     db 30h, 30h, 30h, 31h, 31h, 31h, 32h, 33h, 33h, 30h, 34h, 34h
     db 34h, 35h, 30h, 32h, 42h, 41h, 43h, 4Bh
 BackFileChar label byte
 ; DATA: text
     db '0.SQZ', 0
 ScreenRowBytes label word
-; UNKNOWN: not yet classified as code or data
+; DATA: ScreenRowBytes: workspace: set by DrawSpriteObjects at run time; initial bytes 28 00 00 00
     db 28h, 00h, 00h, 00h
 SpriteDataSegment label word
-; UNKNOWN: not yet classified as code or data
+; DATA: SpriteDataSegment: workspace: set by LoadSpriteSheet at run time; zero initially
     db 00h, 00h, 00h, 00h, 00h, 00h
 RingTileOffset label word
-; UNKNOWN: not yet classified as code or data
+; DATA: RingTileOffset: workspace: set by ComputeRingTileOffset at run time; zero initially; read by AnimateTiles, CopyRingWindowToPage +4
     db 00h, 00h
 ScriptPointer label word
-; UNKNOWN: not yet classified as code or data
+; DATA: ScriptPointer: workspace: set by LoadLevel, ResetLevelState +1 at run time; zero initially
     db 00h, 00h
 ScriptFrameCounter label word
-; UNKNOWN: not yet classified as code or data
+; DATA: ScriptFrameCounter: workspace: set by LoadLevel, ResetLevelState +1 at run time; zero initially
     db 00h, 00h
 IrisSpeed label word
-; UNKNOWN: not yet classified as code or data
+; DATA: IrisSpeed: workspace: set by RunIrisClose at run time; zero initially
     db 00h, 00h
 IrisSpeedCounter label word
-; UNKNOWN: not yet classified as code or data
+; DATA: IrisSpeedCounter: workspace: set by RunIrisClose at run time; zero initially
     db 00h, 00h
 word_2DC4 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by RunIrisClose at run time; zero initially
     db 00h, 00h
 IrisCenterY label word
-; UNKNOWN: not yet classified as code or data
+; DATA: IrisCenterY: workspace: set by RunIrisClose at run time; zero initially
     db 00h, 00h
 IrisCenterX label word
-; UNKNOWN: not yet classified as code or data
+; DATA: IrisCenterX: workspace: set by RunIrisClose at run time; zero initially
     db 00h, 00h
 word_2DCA label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by RunIrisClose at run time; zero initially
     db 00h, 00h
 word_2DCC label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by RunIrisClose at run time; zero initially
     db 00h, 00h
 IrisAngleIndex label word
-; UNKNOWN: not yet classified as code or data
+; DATA: IrisAngleIndex: workspace: set by RunIrisClose at run time; zero initially
     db 00h, 00h
 IrisRadius label word
-; UNKNOWN: not yet classified as code or data
+; DATA: IrisRadius: workspace: set by RunIrisClose at run time; zero initially
     db 00h, 00h
 word_2DD2 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by RunIrisClose at run time; zero initially
     db 00h, 00h, 00h, 00h
 DisplayPage label word
-; UNKNOWN: not yet classified as code or data
+; DATA: DisplayPage: workspace: set by CheckVgaAdapter, FlipDisplayPage +2 at run time; zero initially; read by ClearDisplayPage, ClearStaggeredBlocks +5
     db 00h, 00h
 DrawPage label word
-; UNKNOWN: not yet classified as code or data
+; DATA: DrawPage: workspace: set by CheckVgaAdapter, FlipDisplayPage +2 at run time; zero initially; read by BlackoutSpan, ClearBonusLetterRow +15
     db 00h, 00h
 LevelSegment label word
-; UNKNOWN: not yet classified as code or data
+; DATA: LevelSegment: workspace: set by LoadLevel, ProgramEntry +4 at run time; zero initially; read by AnimateTiles, ApplyCellChangeRecord +20
     db 00h, 00h
 SpriteSheetSegment label word
-; UNKNOWN: not yet classified as code or data
+; DATA: SpriteSheetSegment: workspace: set by LoadLevel at run time; zero initially; read by UploadSpriteTiles
     db 00h, 00h, 00h, 00h
 PrevCameraCol label word
-; UNKNOWN: not yet classified as code or data
+; DATA: PrevCameraCol: workspace: set by ApplyCellChangeRecord, ClassifyTileCache +5 at run time; zero initially
     db 00h, 00h
 PrevCameraRow label word
-; UNKNOWN: not yet classified as code or data
+; DATA: PrevCameraRow: workspace: set by RedrawOverlayTiles at run time; zero initially
     db 00h, 00h
 CameraCol label word
-; UNKNOWN: not yet classified as code or data
+; DATA: CameraCol: workspace: set by EnterLevelView, RunGameOverScreen +4 at run time; zero initially; read by AnimateTiles, ApplyCellChangeRecord +21
     db 00h, 00h
 CameraRow label word
-; UNKNOWN: not yet classified as code or data
+; DATA: CameraRow: workspace: set by EnterLevelView, RunGameOverScreen +4 at run time; zero initially; read by AnimateTiles, ApplyCellChangeRecord +16
     db 00h, 00h
 ColumnRing label word
-; UNKNOWN: not yet classified as code or data
+; DATA: ColumnRing: workspace: set by EnterLevelView, ScrollViewLeft +1 at run time; zero initially; read by AnimateTiles, CopyRingWindowToPage +5
     db 00h, 00h
 RowRing label word
-; UNKNOWN: not yet classified as code or data
+; DATA: RowRing: workspace: set by EnterLevelView, ScrollViewDown +1 at run time; zero initially; read by ComputeRingTileOffset, CopyRingWindowToPage
     db 00h, 00h
 SpriteRelY label word
-; UNKNOWN: not yet classified as code or data
+; DATA: SpriteRelY: workspace: set by DrawSpriteObjects at run time; zero initially
     db 00h, 00h
 CurrentObject label word
-; UNKNOWN: not yet classified as code or data
+; DATA: CurrentObject: workspace: set by DrawSpriteObjects at run time; zero initially
     db 00h, 00h, 00h, 00h
 VisibleTileFlags label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: VisibleTileFlags: workspace: set by AnimateTiles, RedrawOverlayTiles at run time; zero initially; read by DrawForegroundOverSprites
     db 00h
 MixedTileCount label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: MixedTileCount: workspace: set by ClassifyTileCache at run time; zero initially
     db 00h
 GridDirtyFlag label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: GridDirtyFlag: workspace: set by ApplyCellChangeRecord, ClassifyTileCache +4 at run time; zero initially; read by UpdateVerticalCamera
     db 00h
 ScrollAnimCounter label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: ScrollAnimCounter: workspace: set by RedrawOverlayTiles, ScrollViewDown +1 at run time; zero initially
     db 00h
 BackdropCursor label word
-; UNKNOWN: not yet classified as code or data
-    db 8194 dup(0)
+; DATA: BackdropCursor: word (backdrop restore pointer); zero initially
+    db 2 dup(0)
+; DATA: workspace: 2000h-byte mask area at 2DF8h (add bx,2DF8h at MODULE2 3194); zero
+    db 8192 dup(0)
 TileClassTable label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: TileClassTable: workspace: set by ClassifyTileCache at run time; zero initially; read by BlitTileCell, RedrawOverlayTiles +1
     db 274 dup(0)
 RenderSlots label word
 ; DATA: render slot records, 116 x 18 bytes (slot 1 = player; +4 word, FFFFh = empty)
-; UNKNOWN: not yet classified as code or data
     db 00h, 00h
 PlayerRenderY label word
-; UNKNOWN: not yet classified as code or data
+; DATA: PlayerRenderY (render slot 0 +2): workspace: set by UpdatePlayerRenderSlot, UpdatePlayerStateAttack +5 at run time; zero initially
     db 00h, 00h
 PlayerSprite label word
-; UNKNOWN: not yet classified as code or data
+; DATA: PlayerSprite (render slot 0 +4): workspace: set by PlayDeathBounce, UpdateLevelState +8 at run time; zero initially
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h
 byte_4F1B label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: render slot 0 +17: workspace: set by UpdatePlayer at run time; zero initially
     db 00h
 PlayerX label word
-; UNKNOWN: not yet classified as code or data
+; DATA: PlayerX (render slot 1 +0): workspace: set by BlockPlayerHorizontal, PlayDeathBounce +8 at run time; zero initially; read by ApplyBossPartContact, CheckBossHits +39
     db 00h, 00h
 PlayerY label word
-; UNKNOWN: not yet classified as code or data
+; DATA: PlayerY (render slot 1 +2): workspace: set by CeilingTileHeadBump, GroundTileReleaseLand +11 at run time; zero initially; read by CullChildAt, CullChildFarFromPlayer +37
     db 00h, 00h
 PlayerFrameWord label word
-; UNKNOWN: not yet classified as code or data
+; DATA: PlayerFrameWord (render slot 1 +4): workspace: set by AdvancePlayerAnim, ApplyAirMotionAnim +8 at run time; zero initially; read by CeilingTileHeadBump, UpdatePlayerCollision +3
     db 00h
 PlayerFrameHigh label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: PlayerFrameHigh (render slot 1 +5): purpose unknown: read by RunLevelIntroScene, UpdatePlayerStateCharge +2; no direct writer found; zero initially
     db 00h
 PlayerVelX label word
-; UNKNOWN: not yet classified as code or data
+; DATA: PlayerVelX (render slot 1 +6): workspace: set by ApplyBossPartContact, ApplyPlayerAcceleration +9 at run time; zero initially; read by UpdateHorizontalCamera, UpdatePlayer +9
     db 00h
 PlayerVelXHigh label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: PlayerVelXHigh (render slot 1 +7): purpose unknown: read by UpdateHorizontalCamera, UpdatePlayerStateCharge +2; no direct writer found; zero initially
     db 00h
 MotionShift label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: MotionShift (render slot 1 +8): workspace: set by ApplyBossPartContact, GroundTileLandSlope1 +7 at run time; zero initially; read by ApplyPlayerAcceleration, ApplyPlayerFriction
     db 00h
 PlayerFacing label word
-; UNKNOWN: not yet classified as code or data
+; DATA: PlayerFacing (render slot 1 +9): workspace: set by RunLevelIntroScene, UpdateLevelState +1 at run time; zero initially; read by AdvancePlayerAnim, ApplyAirMotionAnim +8
     db 00h, 00h
 CurrentAnimId label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: CurrentAnimId (render slot 1 +11): workspace: set by ProcessPlayerContacts, SetPlayerAnim +3 at run time; zero initially; read by UpdateCameraShake, UpdatePlayer +3
     db 00h
 PlayerAnimPtr label word
-; UNKNOWN: not yet classified as code or data
+; DATA: PlayerAnimPtr (render slot 1 +12): workspace: set by AdvancePlayerAnim, RunLevelIntroScene +6 at run time; zero initially
     db 00h, 00h
 PlayerVelY label word
-; UNKNOWN: not yet classified as code or data
+; DATA: PlayerVelY (render slot 1 +14): workspace: set by ApplyBossPartContact, ApplyPlayerGravity +17 at run time; zero initially; read by ApplyAirMotionAnim, GroundTileSnapOrFall +5
     db 00h
 byte_4F2B label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: render slot 1 +15: purpose unknown: read by ProcessPlayerContacts; no direct writer found; zero initially
     db 00h
 SubAnimKey label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: SubAnimKey (render slot 1 +16): workspace: set by ProcessPlayerContacts, ResetLevelState +5 at run time; zero initially
     db 00h
 PlayerHurtTimer label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: PlayerHurtTimer (render slot 1 +17): workspace: set by ApplyBossPartContact, PlayDeathBounce +2 at run time; zero initially; read by UpdatePlayer
     db 00h
 word_4F2E label word
-; UNKNOWN: not yet classified as code or data
+; DATA: render slot 2 +0: workspace: set by RunLevelIntroScene, UpdateLevelState at run time; zero initially
     db 00h, 00h
 word_4F30 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: render slot 2 +2: workspace: set by RunLevelIntroScene, UpdateLevelState at run time; zero initially
     db 00h, 00h
 word_4F32 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: render slot 2 +4: workspace: set by UpdateLevelState at run time; zero initially
     db 00h, 00h
 word_4F34 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: render slot 2 +6: workspace: set by RunLevelIntroScene at run time; zero initially
     db 00h, 00h, 00h
 word_4F37 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: render slot 2 +9: workspace: set by RunLevelIntroScene at run time; zero initially
     db 00h, 00h, 00h
 word_4F3A label word
-; UNKNOWN: not yet classified as code or data
+; DATA: render slot 2 +12: workspace: set by RunLevelIntroScene at run time; zero initially
     db 00h, 00h
 word_4F3C label word
-; UNKNOWN: not yet classified as code or data
+; DATA: render slot 2 +14: workspace: set by RunLevelIntroScene at run time; zero initially
     db 00h, 00h, 00h, 00h
 word_4F40 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: render slot 3 +0: workspace: set by UpdateLevelState at run time; zero initially
     db 00h, 00h
 word_4F42 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: render slot 3 +2: workspace: set by UpdateLevelState at run time; zero initially
     db 00h, 00h
 word_4F44 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: render slot 3 +4: workspace: set by UpdateLevelState at run time; zero initially
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h
 word_4F52 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: render slot 4 +0: workspace: set by UpdateLevelState at run time; zero initially
     db 00h, 00h
 word_4F54 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: render slot 4 +2: workspace: set by UpdateLevelState at run time; zero initially
     db 00h, 00h
 word_4F56 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: render slots 4..21 (18-byte records): workspace: set by AnimateTallyPotFlame, UpdateLevelState at run time; zero initially
     db 306 dup(0)
 word_5088 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: render slots 21..102 (18-byte records): workspace: set by UpdateGameOverSprites at run time; zero initially
     db 1472 dup(0)
 word_5648 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: render slot 103 +0: workspace: set by UpdateLevel5Sequence at run time; zero initially; read by UpdateBossFight
     db 00h, 00h
 word_564A label word
-; UNKNOWN: not yet classified as code or data
+; DATA: render slot 103 +2: workspace: set by UpdateLevel5Sequence at run time; zero initially; read by UpdateBossFight
     db 00h, 00h
 word_564C label word
-; UNKNOWN: not yet classified as code or data
+; DATA: render slot 103 +4: workspace: set by UpdateBossFight, UpdateLevel5Sequence at run time; zero initially
     db 00h
 byte_564D label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: render slot 103 +5: workspace: set by CheckBossHits at run time; zero initially
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h
 word_565A label word
-; UNKNOWN: not yet classified as code or data
+; DATA: render slot 104 +0: workspace: set by UpdateLevel5Sequence at run time; zero initially
     db 00h, 00h
 word_565C label word
-; UNKNOWN: not yet classified as code or data
+; DATA: render slot 104 +2: workspace: set by UpdateLevel5Sequence at run time; zero initially
     db 00h, 00h
 word_565E label word
-; UNKNOWN: not yet classified as code or data
+; DATA: render slot 104 +4: workspace: set by UpdateBossFight, UpdateLevel5Sequence at run time; zero initially
     db 00h
 byte_565F label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: render slot 104 +5: workspace: set by CheckBossHits at run time; zero initially
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h
 word_566C label word
-; UNKNOWN: not yet classified as code or data
+; DATA: render slot 105 +0: workspace: set by UpdateLevel5Sequence at run time; zero initially
     db 00h, 00h
 word_566E label word
-; UNKNOWN: not yet classified as code or data
+; DATA: render slot 105 +2: workspace: set by UpdateLevel5Sequence at run time; zero initially
     db 00h, 00h
 word_5670 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: render slot 105 +4: workspace: set by UpdateBossFight, UpdateLevel5Sequence at run time; zero initially
     db 00h
 byte_5671 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: render slot 105 +5: workspace: set by CheckBossHits at run time; zero initially
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h
 word_567E label word
-; UNKNOWN: not yet classified as code or data
+; DATA: render slot 106 +0: workspace: set by UpdateLevel5Sequence at run time; zero initially
     db 00h, 00h
 word_5680 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: render slot 106 +2: workspace: set by UpdateLevel5Sequence at run time; zero initially
     db 00h, 00h
 word_5682 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: render slot 106 +4: workspace: set by UpdateBossFight, UpdateLevel5Sequence at run time; zero initially
     db 00h
 byte_5683 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: render slot 106 +5: workspace: set by CheckBossHits at run time; zero initially
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h
 word_5690 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: render slot 107 +0: workspace: set by UpdateLevel5Sequence at run time; zero initially
     db 00h, 00h
 word_5692 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: render slot 107 +2: workspace: set by UpdateLevel5Sequence at run time; zero initially
     db 00h, 00h
 word_5694 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: render slot 107 +4: workspace: set by UpdateBossFight, UpdateLevel5Sequence at run time; zero initially
     db 00h
 byte_5695 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: render slots 107..115 (18-byte records): workspace: set by CheckBossHits at run time; zero initially
     db 157 dup(0)
-; UNKNOWN: not yet classified as code or data
+; DATA: padding/unused: render-slot loop ends at 5732h (MODULE2 2635); no reference found; zero
     db 2070 dup(0)
 FrameDataOffsets label word
-; UNKNOWN: not yet classified as code or data
+; DATA: FrameDataOffsets: workspace: set by LoadSpriteSheet at run time; zero initially; read by BlitHudSpriteGlyph, DrawSpriteObjects
     db 914 dup(0)
 word_62DA label word
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: read by ShowWorldMapScrollIn; no direct writer found; zero initially
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h
 FrameDataSegments label word
-; UNKNOWN: not yet classified as code or data
+; DATA: FrameDataSegments: workspace: set by LoadSpriteSheet at run time; zero initially; read by BlitHudSpriteGlyph, DrawSpriteObjects
     db 914 dup(0)
 word_667A label word
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: read by ShowWorldMapScrollIn; no direct writer found; zero initially
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h
 byte_6688 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by BuildAnimatedTileTables at run time; zero initially
     db 00h
 byte_6689 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by BuildAnimatedTileTables at run time; zero initially
     db 00h
 byte_668A label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by BuildAnimatedTileTables at run time; zero initially
     db 254 dup(0)
 byte_6788 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by BuildAnimatedTileTables at run time; zero initially
     db 00h
 byte_6789 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by BuildAnimatedTileTables at run time; zero initially
     db 00h
 byte_678A label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by BuildAnimatedTileTables at run time; zero initially
     db 254 dup(0)
 byte_6888 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by BuildAnimatedTileTables at run time; zero initially
     db 00h
 byte_6889 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by BuildAnimatedTileTables at run time; zero initially
     db 00h
 byte_688A label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by BuildAnimatedTileTables at run time; zero initially
     db 254 dup(0)
 AnimTileFlags label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: AnimTileFlags: workspace: set by BuildAnimatedTileTables at run time; zero initially; read by AnimateTiles
     db 00h
 word_6989 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by BuildAnimatedTileTables at run time; zero initially
     db 255 dup(0)
 word_6A88 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by RunIrisClose at run time; zero initially
     db 140 dup(0)
 word_6B14 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by RunIrisClose at run time; zero initially
     db 140 dup(0)
 ; DATA: text
     db 'THEEND.SQZ', 0
 BridgeDipTile label word
-; UNKNOWN: not yet classified as code or data
+; DATA: BridgeDipTile: workspace: set by UpdatePlayerTileContact at run time; initial bytes AA 55
     db 0AAh, 55h
 CheckpointX label word
-; UNKNOWN: not yet classified as code or data
+; DATA: CheckpointX: workspace: set by LoadLevel, ProcessPlayerContacts at run time; zero initially; read by UpdateLevelState
     db 00h, 00h
 CheckpointY label word
-; UNKNOWN: not yet classified as code or data
+; DATA: CheckpointY: workspace: set by LoadLevel, ProcessPlayerContacts at run time; zero initially; read by UpdateLevelState
     db 00h, 00h
 word_6BB1 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: read by CeilingTileHeadBump; no direct writer found; zero initially
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
 AnimVisibleFlag label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: AnimVisibleFlag: workspace: set by AnimateTiles, ApplyCellChangeRecord +2 at run time; zero initially
     db 00h
 PopupRingHead label word
-; UNKNOWN: not yet classified as code or data
+; DATA: PopupRingHead: workspace: set by EmitPlayerTrail, EmitPlayerTrailAt +2 at run time; zero initially; read by UpdatePopupRing
     db 00h, 00h
 byte_6BC0 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by UpdateFireflies, UpdateWanderingChild at run time; zero initially
     db 00h
 byte_6BC1 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by UpdateFireflies, UpdateWanderingChild at run time; zero initially
     db 00h
 AnimRemapPtr label word
-; UNKNOWN: not yet classified as code or data
+; DATA: AnimRemapPtr: workspace: set by AnimateTiles at run time; initial bytes 88 66
     db 88h, 66h
 FineScroll label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: FineScroll: workspace: set by ClearStaggeredBlocks, CopyBackdropStrip +9 at run time; zero initially; read by DrawSpriteObjects, RunIrisClose +2
     db 00h
 PlayerAltModeFlag label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: PlayerAltModeFlag: workspace: set by CheckBossHits, ProcessPlayerContacts +2 at run time; zero initially; read by ApplyAirMotionAnim, TryCaveTrigger +5
     db 00h
 MomentumCounter label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: MomentumCounter: workspace: set by UpdatePlayer at run time; zero initially
     db 00h
 PlayerAirFlags label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: PlayerAirFlags: workspace: set by ApplyBossPartContact, GroundTileReleaseLand +3 at run time; zero initially; read by ApplyPlayerGravity, UpdatePlayerRenderSlot
     db 00h
 StrokeCounter label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: StrokeCounter: workspace: set by UpdatePlayerStateCharge, UpdatePlayerStateCrouch +3 at run time; zero initially; read by UpdatePlayerRenderSlot
     db 00h
 byte_6BC9 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by DrainPlayerEnergy, ProcessPlayerContacts +1 at run time; zero initially
     db 00h
 LastLandY label word
-; UNKNOWN: not yet classified as code or data
+; DATA: LastLandY: workspace: set by FinishPlayerLanding, GroundTileReleaseLand +1 at run time; zero initially
     db 00h, 00h
 SpawnSideToggle label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: SpawnSideToggle: workspace: set by ProgramEntry, SpawnDropOverPlayer at run time; zero initially
     db 00h
 AttackRecoveryTimer label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: AttackRecoveryTimer: workspace: set by UpdatePlayer, UpdatePlayerStateAttack +5 at run time; zero initially
     db 00h
 ChargeLevel label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: ChargeLevel: workspace: set by IncrementChargeLevel, UpdatePlayer at run time; zero initially; read by UpdatePlayerStateAttack, UpdatePlayerStateCharge +4
     db 00h
 FrameFlagsRaw label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: FrameFlagsRaw: workspace: set by AdvancePlayerAnim at run time; zero initially; read by UpdatePlayerStateAttack, UpdatePlayerStateCharge +4
     db 00h
 AttackAnimLock label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: AttackAnimLock: workspace: set by ApplyBossPartContact, ProcessPlayerContacts +7 at run time; zero initially; read by ApplyAirMotionAnim, UpdateBossFight +1
     db 00h
 JumpFrame label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: JumpFrame: workspace: set by FinishPlayerLanding, GroundTileReleaseLand +2 at run time; zero initially; read by UpdatePlayerStateCharge, UpdatePlayerStateIdle
     db 00h
 FallCounter label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: FallCounter: workspace: set by GroundTileReleaseLand, LandPlayerOnGround +2 at run time; zero initially; read by ApplyAirMotionAnim, UpdatePlayerStateAttack +5
     db 00h
 PlayerActionTicks label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: PlayerActionTicks: workspace: set by UpdatePlayerStateAttack, UpdatePlayerStateCharge +4 at run time; zero initially
     db 00h
 AnimTickCounter label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: AnimTickCounter: workspace: set by AnimateTiles at run time; zero initially
     db 00h
 SnowFrameTick label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: SnowFrameTick: workspace: set by DrawSpriteObjects at run time; zero initially; read by AnimateTallyPotFlame, BuildEffectDrawList +13
     db 00h, 00h, 00h, 00h
 ScrollFollowGate label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: ScrollFollowGate: workspace: set by TryCaveTrigger at run time; zero initially; read by UpdateCameraFollow, UpdateCameraScroll +3
     db 00h, 00h
 HorizontalInputHeld label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: HorizontalInputHeld: workspace: set by UpdatePlayer at run time; zero initially; read by ApplyPlayerAcceleration
     db 00h
 VerticalInputHeld label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: VerticalInputHeld: workspace: set by UpdatePlayer at run time; zero initially
     db 00h, 00h, 00h, 00h
 JumpCooldown label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: JumpCooldown: workspace: set by ApplyAirMotionAnim, FinishPlayerLanding +2 at run time; zero initially; read by UpdatePlayerStateJump
     db 00h
 LandingBlockTimer label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: LandingBlockTimer: workspace: set by TryCaveTrigger, UpdatePlayer +2 at run time; zero initially; read by GroundTileReleaseLand
     db 00h
 word_6BE2 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by UpdatePlayer, sub_67D7 at run time; zero initially; read by ProcessPlayerContacts, UpdateObjects
     db 00h, 00h
 RespawnState label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: RespawnState: workspace: set by TriggerPlayerRespawnCore, UpdatePlayer at run time; zero initially; read by CheckPlayerBossContact, UpdateHud +2
     db 00h
 EndSignal label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: EndSignal: workspace: set by PollInputState, ShowWorldMapScrollIn +3 at run time; zero initially; read by UpdateLevelState
     db 00h
 LevelEndMode label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: LevelEndMode: workspace: set by ProcessPlayerContacts at run time; zero initially; read by UpdateLevelState
     db 00h
 byte_6BE7 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by WaitSoundTicks at run time; zero initially; read by PresentFrame
     db 00h
 byte_6BE8 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by UpdatePlayer at run time; zero initially
     db 00h, 00h
 ShakeMagnitude label byte
 ; Screen-shake amount written by the object code (values 4, 7 and 9 in this region).
-; UNKNOWN: not yet classified as code or data
+; DATA: ShakeMagnitude: workspace: set by GroundTileReleaseLand, LandPlayerOnGround +6 at run time; zero initially; read by SpawnChildOnPlayerBox, UpdateChargerChild
     db 00h
 StateFrameCounter label word
-; UNKNOWN: not yet classified as code or data
+; DATA: StateFrameCounter: workspace: set by UpdatePlayer at run time; zero initially
     db 00h, 00h
 HScrollDir label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: HScrollDir: workspace: set by UpdateHorizontalCamera at run time; zero initially; read by EnterLevelView
     db 00h
 VScrollActive label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: VScrollActive: workspace: set by UpdateVerticalCamera at run time; zero initially; read by EnterLevelView
     db 00h, 00h, 00h
 word_6BF1 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by UpdateVerticalCamera at run time; zero initially
     db 00h, 00h
 AirborneFlag label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: AirborneFlag: workspace: set by FinishPlayerLanding, GroundTileReleaseLand +4 at run time; zero initially
     db 00h, 00h, 00h
 SnowWind label word
-; UNKNOWN: not yet classified as code or data
+; DATA: SnowWind: workspace: set by UpdateWindAndFlakes at run time; zero initially; read by AnimateTiles, ApplyWindDrift
     db 00h, 00h
 ShakeRows label word
-; UNKNOWN: not yet classified as code or data
+; DATA: ShakeRows: workspace: set by CopyRingWindowToPage, RunGameOverScreen +1 at run time; zero initially; read by DrawSpriteObjects
     db 00h, 00h
 PlatformDeltaX label word
-; UNKNOWN: not yet classified as code or data
+; DATA: PlatformDeltaX: workspace: set by UpdateTerrainEntities at run time; zero initially; read by TryLandOnTerrainEntity
     db 00h, 00h
 PlatformDeltaY label word
-; UNKNOWN: not yet classified as code or data
+; DATA: PlatformDeltaY: workspace: set by UpdateTerrainEntities at run time; zero initially; read by TryLandOnTerrainEntity
     db 00h, 00h
 PlayerOnPlatform label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: PlayerOnPlatform: workspace: set by TryLandOnTerrainEntity, UpdatePlayerStateJump +1 at run time; zero initially; read by UpdateHorizontalCamera, UpdatePlayerCollision +5
     db 00h
 byte_6BFF label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by sub_67D7 at run time; zero initially
     db 00h
 BonusFlashTimer label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: BonusFlashTimer: workspace: set by UpdatePlayer, sub_67D7 at run time; zero initially; read by UpdateHud
     db 00h
 FadeOutActive label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: FadeOutActive: workspace: set by ProcessPlayerContacts, RunLevelIntroScene +2 at run time; zero initially
     db 00h
 FadeInActive label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: FadeInActive: workspace: set by ProcessPlayerContacts, RunLevelIntroScene +2 at run time; zero initially
     db 00h
 PaletteFadeStep label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: PaletteFadeStep: workspace: set by ProcessPlayerContacts, RunLevelIntroScene +2 at run time; zero initially
     db 00h
 byte_6C04 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by ProcessPlayerContacts at run time; zero initially; read by UpdateLevelState
     db 00h
 BossCounter label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: BossCounter: workspace: set by ApplyBossPartContact, IncrementBossCounter +1 at run time; zero initially
     db 00h
 BossVelX label word
-; UNKNOWN: not yet classified as code or data
+; DATA: BossVelX: workspace: set by CheckBossHits, UpdateBossFight at run time; zero initially
     db 00h, 00h
 BossVelY label word
-; UNKNOWN: not yet classified as code or data
+; DATA: BossVelY: workspace: set by CheckBossHits, UpdateBossFight at run time; zero initially
     db 00h, 00h
 word_6C0A label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by UpdateBossFight at run time; zero initially
     db 00h, 00h
 ExtraLifeBlocks label word
-; UNKNOWN: not yet classified as code or data
+; DATA: ExtraLifeBlocks: workspace: set by UpdateHud, UpdateLevelState at run time; zero initially
     db 00h, 00h
 ScoreLow label word
-; UNKNOWN: not yet classified as code or data
+; DATA: ScoreLow: workspace: set by SpawnDebrisElement, UpdateLevelState at run time; zero initially; read by RenderTallyPanel, UpdateHud
     db 00h, 00h
 ScoreHigh label word
-; UNKNOWN: not yet classified as code or data
+; DATA: ScoreHigh: workspace: set by SpawnDebrisElement, UpdateLevelState at run time; zero initially; read by RenderTallyPanel, UpdateHud
     db 00h, 00h
 ItemTallyCounts label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: ItemTallyCounts: workspace: set by ProcessPlayerContacts, UpdateLevelState at run time; zero initially
     db 140 dup(0)
 ItemTotal label word
-; UNKNOWN: not yet classified as code or data
+; DATA: ItemTotal: workspace: set by ProcessPlayerContacts, ResetItemTally at run time; zero initially; read by UpdateLevelState
     db 00h, 00h
 HudCacheScoreLow label word
-; UNKNOWN: not yet classified as code or data
+; DATA: HudCacheScoreLow: workspace: set by UpdateHud at run time; zero initially
     db 00h, 00h
 HudCacheScoreHigh label word
-; UNKNOWN: not yet classified as code or data
+; DATA: HudCacheScoreHigh: workspace: set by DrawStatusBarBackground, UpdateHud at run time; zero initially
     db 00h, 00h
 HudCacheLives label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: HudCacheLives: workspace: set by DrawStatusBarBackground, UpdateHud at run time; zero initially
     db 00h
 HudCacheEnergy label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: HudCacheEnergy: workspace: set by DrawStatusBarBackground, UpdateHud at run time; zero initially
     db 00h
 HudCacheBonus label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: HudCacheBonus: workspace: set by DrawStatusBarBackground, UpdateHud at run time; zero initially
     db 00h
 BonusLetterMask label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: BonusLetterMask: workspace: set by ProcessPlayerContacts, ProgramEntry +1 at run time; zero initially; read by UpdateHud
     db 00h
 byte_6CA8 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by ProcessPlayerContacts, ProgramEntry +1 at run time; zero initially
     db 00h
 FlakeTable label word
-; UNKNOWN: not yet classified as code or data
+; DATA: FlakeTable: workspace: set by UpdateWindAndFlakes at run time; zero initially
     db 676 dup(0)
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: no reference found (searched routine accessors); initial bytes 24
     db 24h
-; UNKNOWN: not yet classified as code or data
+; DATA: padding/unused: no reference found (searched routine accessors; hex refs ULE3:751)
     db 18 dup(0)
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: no reference found (searched routine accessors); initial non-zero bytes
     db 01h, 00h, 00h, 00h, 0Ah, 00h, 00h, 00h, 64h, 00h, 00h, 00h
     db 0E8h, 03h, 00h, 00h, 10h, 27h, 01h, 00h, 0A0h, 86h, 0Fh, 00h
     db 40h, 42h, 98h, 00h, 80h, 96h, 0F5h, 05h, 00h, 0E1h, 9Ah, 3Bh
     db 00h, 0CAh, 91h, 1Ch, 0F2h, 1Bh, 0E3h, 1Ch, 6Ch, 1Ch, 1Dh, 1Ch
 SineTable label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: SineTable: initialized state: read by RunIrisClose, SetChildOrbitPosition; no direct writer found; initial non-zero bytes
     db 00h, 01h, 03h, 04h, 06h, 07h, 09h, 0Ah, 0Ch, 0Eh, 0Fh, 11h
     db 12h, 14h, 15h, 17h, 18h, 19h, 1Bh, 1Ch, 1Eh, 1Fh, 20h, 22h
     db 23h, 24h
 ; DATA: text
     db '&', 27h, '()*,-./012345667899:;;<<==>>>???????@???????>>>==<<;;:998766543210/.-,*)(', 27h, '&$'
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: no reference found (searched routine accessors); initial non-zero bytes
     db 23h, 22h, 20h, 1Fh, 1Eh, 1Ch, 1Bh, 19h, 18h, 17h, 15h, 14h
     db 12h, 11h, 0Fh, 0Eh, 0Ch, 0Ah, 09h, 07h, 06h, 04h, 03h, 01h
     db 0FFh, 0FEh, 0FCh, 0FBh, 0F9h, 0F8h, 0F6h, 0F5h, 0F3h, 0F1h, 0F0h, 0EEh
@@ -6567,7 +6570,7 @@ SineTable label byte
 byte_7090 label byte
 ; DATA: text
     db '@???????>>>==<<;;:998766543210/.-,*)(', 27h, '&$'
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: no reference found (searched routine accessors); initial non-zero bytes
     db 23h, 22h, 20h, 1Fh, 1Eh, 1Ch, 1Bh, 19h, 18h, 17h, 15h, 14h
     db 12h, 11h, 0Fh, 0Eh, 0Ch, 0Ah, 09h, 07h, 06h, 04h, 03h, 01h
     db 00h, 0FEh, 0FCh, 0FBh, 0F9h, 0F8h, 0F6h, 0F5h, 0F3h, 0F1h, 0F0h, 0EEh
@@ -6587,14 +6590,14 @@ byte_7090 label byte
     db 35h, 36h, 36h, 37h, 38h, 39h, 39h, 3Ah, 3Bh, 3Bh, 3Ch, 3Ch
     db 3Dh, 3Dh, 3Eh, 3Eh, 3Eh, 3Fh, 3Fh, 3Fh, 3Fh, 3Fh, 3Fh, 3Fh
 FrameWidths label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: FrameWidths: initialized state: read by DrawSpriteObjects, TestHitboxOverlap; no direct writer found; initial bytes 28
     db 28h
 FrameHeights label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: FrameHeights: initialized state: read by LoadSpriteSheet, TestHitboxOverlap +2; no direct writer found; initial non-zero bytes
     db 24h, 20h, 23h, 18h, 24h
 ; DATA: text
     db ' " % % $'
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: no reference found (searched routine accessors); initial non-zero bytes
     db 20h, 23h, 20h, 23h, 20h, 23h, 18h, 23h, 20h, 26h, 28h, 1Fh
     db 30h, 1Fh, 20h, 1Fh, 20h, 24h, 18h, 20h, 28h, 1Eh, 28h, 1Fh
     db 28h, 1Fh, 20h, 1Eh, 18h, 1Eh, 20h, 1Fh, 18h, 1Eh, 18h, 20h
@@ -6671,13 +6674,13 @@ FrameHeights label byte
     db 20h, 18h, 20h, 18h, 20h, 17h, 20h, 1Bh, 20h, 1Bh, 20h, 18h
     db 18h, 18h, 20h, 14h, 30h, 1Ch, 40h, 1Ch, 30h, 1Fh, 30h, 26h
 word_7522 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: initialized state: read by ShowWorldMapScrollIn; no direct writer found; initial non-zero bytes
     db 28h, 22h, 20h, 1Ah, 30h, 17h, 00h, 00h
 FrameHotX label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: FrameHotX: initialized state: read by DrawSpriteObjects, TestHitboxOverlap; no direct writer found; initial bytes 14
     db 14h
 FrameHotY label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: FrameHotY: workspace: set by LoadSpriteSheet at run time; initial non-zero bytes; read by DrawSpriteObjects
     db 24h, 10h, 23h, 0Ch, 24h, 10h, 24h, 10h, 25h, 10h, 25h, 0Fh
     db 24h, 10h, 23h, 0Fh, 23h, 0Fh, 23h, 0Ch, 23h, 10h, 26h, 14h
     db 1Fh, 18h, 1Fh, 10h, 1Fh, 10h, 24h, 0Ch, 20h, 14h, 1Eh, 14h
@@ -6756,10 +6759,10 @@ FrameHotY label byte
     db 18h, 0Ch, 18h, 10h, 14h, 19h, 1Ch, 20h, 1Bh, 18h, 1Dh, 18h
     db 26h, 14h, 22h, 10h, 1Ah, 17h, 17h, 00h, 00h
 word_78C4 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by RunFrontEnd at run time; initial bytes 4A 79; read by UpdateVerticalCamera
     db 4Ah, 79h
 byte_78C6 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: initialized state: read by UpdateVerticalCamera; no direct writer found; initial non-zero bytes
     db 01h, 01h, 01h, 01h, 01h, 01h, 02h, 02h, 02h, 02h, 02h, 02h
     db 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h
     db 03h, 03h, 03h, 03h, 03h, 03h, 03h, 03h, 03h, 03h, 03h, 03h
@@ -6783,14 +6786,14 @@ byte_78C6 label byte
     db 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h
     db 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h
 JumpArcVelTable label word
-; UNKNOWN: not yet classified as code or data
+; DATA: JumpArcVelTable: initialized state: read by UpdatePlayerStateJump; no direct writer found; initial non-zero bytes (LEN also covers ProjectileKindHandlers)
     db 0BFh, 0FFh, 0CDh, 0FFh, 0DDh, 0FFh, 0ECh, 0FFh, 0F6h, 0FFh, 0FBh, 0FFh
     db 0FEh, 0FFh, 0FFh, 0FFh, 00h, 00h, 10h, 00h, 60h, 00h, 80h, 00h
     db 0B0h, 00h, 00h, 01h, 00h, 02h
 ProjectileKindHandlers label word
     dw offset ApplyProjectileHeavy
     dw offset ApplyProjectileLight
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: no reference found (searched routine accessors); initial non-zero bytes
     db 22h, 00h, 3Ah, 00h, 0Bh, 00h, 10h, 00h, 23h, 00h, 3Bh, 00h
     db 07h, 00h, 19h, 00h, 24h, 00h, 3Ch, 00h, 0E9h, 0FFh, 02h, 00h
     db 25h, 00h, 3Dh, 00h, 0Bh, 00h, 03h, 00h, 26h, 00h, 3Eh, 00h
@@ -6815,29 +6818,29 @@ ProjectileKindHandlers label word
     db 10h, 00h, 12h, 01h, 0FAh, 0FFh, 0EFh, 0FFh, 0AAh, 55h, 0D0h, 00h
     db 0E0h, 0FFh, 12h, 01h, 13h, 01h, 14h, 01h, 15h, 01h, 0F8h, 0FFh
 word_7B04 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: initialized state: read by UpdatePlayerStateAttack, UpdatePlayerStateCharge +4; no direct writer found; initial bytes F0 79
     db 0F0h, 79h
 byte_7B06 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: initialized state: read by UpdatePlayerStateAttack, UpdatePlayerStateCharge +4; no direct writer found; initial bytes 02
     db 02h
 byte_7B07 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: initialized state: read by UpdatePlayerStateAttack, UpdatePlayerStateCharge +4; no direct writer found; initial bytes 19
     db 19h
 byte_7B08 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: initialized state: read by UpdatePlayerStateAttack, UpdatePlayerStateCharge +4; no direct writer found; initial non-zero bytes
     db 00h, 32h, 7Ah, 06h, 1Eh, 00h, 74h, 7Ah, 06h, 14h, 01h, 0BCh
     db 7Ah, 0Ch, 1Eh, 03h
 PlayerWeaponType label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: PlayerWeaponType: workspace: set by ProcessPlayerContacts, ProgramEntry +6 at run time; initial bytes 03
     db 03h
 PlayerAttackPower label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: PlayerAttackPower: workspace: set by ProgramEntry, UpdatePlayerStateAttack +5 at run time; zero initially; read by ApplyFollowerHitToObjects, CheckBossHits +1
     db 00h
 AltMomentumStep label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: AltMomentumStep: workspace: set by UpdatePlayer, UpdatePlayerRenderSlot at run time; initial bytes 03
     db 03h
 word_7B1B label word
-; UNKNOWN: not yet classified as code or data
+; DATA: initialized state: read by UpdatePlayerRenderSlot; no direct writer found; initial non-zero bytes
     db 7Ch, 00h, 7Bh, 00h, 7Ah, 00h, 79h, 00h, 7Dh, 00h, 7Eh, 00h
     db 7Fh, 00h, 27h, 00h, 77h, 00h, 0FEh, 0EFh, 28h, 00h, 77h, 00h
     db 00h, 0F0h, 29h, 00h, 77h, 00h, 00h, 0EFh, 2Ah, 00h, 77h, 00h
@@ -6848,7 +6851,7 @@ word_7B1B label word
     db 0F5h, 0DFh, 33h, 00h, 79h, 00h, 0F3h, 0E1h, 34h, 00h, 79h, 00h
     db 0F3h, 0E1h, 00h, 00h
 InputAnimTable label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: InputAnimTable: initialized state: read by UpdatePlayer; no direct writer found; initial non-zero bytes
     db 00h, 03h, 05h, 07h, 02h, 06h, 00h, 00h, 01h, 03h, 04h, 07h
     db 02h, 06h, 01h, 00h, 01h, 03h, 04h, 07h, 02h, 06h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 09h, 00h, 0FEh, 0FFh
@@ -6880,16 +6883,16 @@ InputAnimTable label byte
     db 0E0h, 0FFh, 1Dh, 00h, 1Dh, 00h, 1Dh, 00h, 1Fh, 00h, 1Fh, 00h
     db 1Fh, 00h, 0F4h, 0FFh
 AnimSeqPtrTable label word
-; UNKNOWN: not yet classified as code or data
+; DATA: AnimSeqPtrTable: initialized state: read by SetPlayerAnim, SetPlayerAnimLocked +3; no direct writer found; initial non-zero bytes
     db 9Fh, 7Bh, 0A7h, 7Bh, 0DBh, 7Bh, 0E7h, 7Bh, 0F7h
 ; DATA: text
     db '{)|?|S|g|', 0
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: no reference found (searched routine accessors); initial non-zero bytes
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 7Dh, 7Ch, 0AFh, 7Ch, 6Bh, 7Ch, 0D1h, 7Ch
-; UNKNOWN: not yet classified as code or data
+; DATA: padding/unused: no reference found (searched routine accessors)
     db 24 dup(0)
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: no reference found (searched routine accessors); initial non-zero bytes (LEN also covers StateHandlers)
     db 0A3h, 7Bh, 0C1h, 7Bh, 00h, 00h, 0A3h, 7Bh, 0A3h, 7Bh, 0A3h, 7Bh
     db 0A3h, 7Bh, 0A3h, 7Bh
 StateHandlers label word
@@ -6902,7 +6905,7 @@ StateHandlers label word
     dw offset UpdatePlayerStateAttack
     dw offset UpdatePlayerStateAttack
     dw offset UpdatePlayerStateHurt
-; UNKNOWN: not yet classified as code or data
+; DATA: padding/unused: no reference found (searched routine accessors) (LEN also covers AltStateHandlers)
     db 46 dup(0)
 AltStateHandlers label word
     dw offset UpdatePlayerStateCrouch
@@ -6937,183 +6940,179 @@ L5Projectile label word
 ; Level-5 projectile records at 7DAFh, 5 records of 11 bytes: +0 word X, +2 word Y, +4 word frame
 ; (FFFFh = free), +6 word Y velocity (>>4 per frame), +8 word drift accumulator, +0Ah byte drift
 ; step (negated at +-20h). Mirrored into render slots 55EEh.. by UpdateLevel5Sequence.
-; UNKNOWN: not yet classified as code or data
+; DATA: L5Projectile: 55 bytes of workspace; filled with 0FFh by code at MODULE3 2021 (mov di,7DAFh)
     db 55 dup(0)
 DebrisRecord label word
 ; Debris pool at 7DE6h, 20 records of 6 bytes: +0 word X (FFFFh = free), +2 word Y, +4 byte kind
 ; (AL from SpawnDebrisLine), +5 byte phase. Walked by the effect system (sub_4B8E, bp = 20).
 ; pre2_port 4.12 names +4 angle and +5 speed; the writer here does not prove that.
-; UNKNOWN: not yet classified as code or data
+; DATA: DebrisRecord: 120 bytes of workspace; filled with 0FFh by code at MODULE3 2017 (mov di,7DE6h)
     db 120 dup(0)
 SideTileClassTable label byte
 ; DATA: side tile class table (xlat index = tile id; filled by LoadLevel)
     db 256 dup(0)
 GroundTypeTable label byte
 ; DATA: ground type table (xlat index = tile id; filled by LoadLevel)
-; UNKNOWN: not yet classified as code or data
     db 256 dup(0)
 TileFlagsTable label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: table: tile flags, 256 x byte (&0Fh handler, 40h foreground, 10h side-solid); filled by LoadLevel from the level file (step 5 copy 7E5Eh..9202h)
     db 256 dup(0)
 LevelPropHeader label word
-; UNKNOWN: not yet classified as code or data
+; DATA: LevelPropHeader: purpose unknown: read by UpdateVerticalCamera; no direct writer found; zero initially
     db 00h, 00h
 LevelStartX label word
-; UNKNOWN: not yet classified as code or data
+; DATA: LevelStartX: purpose unknown: read by LoadLevel, ResetRenderSlots; no direct writer found; zero initially
     db 00h, 00h
 LevelStartY label word
-; UNKNOWN: not yet classified as code or data
+; DATA: LevelStartY: purpose unknown: read by LoadLevel, ResetRenderSlots; no direct writer found; zero initially
     db 00h, 00h
 CameraLeftLimit label word
-; UNKNOWN: not yet classified as code or data
+; DATA: CameraLeftLimit: workspace: set by TryCaveTrigger at run time; zero initially; read by ScrollViewRight, UpdatePlayer
     db 00h, 00h
 LevelFlags label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: LevelFlags: workspace: set by TryCaveTrigger at run time; zero initially; read by EnterLevelView, GroundTileReleaseLand +9
     db 00h
 word_8167 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: table: word per tile (fg tile graphics index; 652 bytes here); filled by LoadLevel from the level file (step 5 copy 7E5Eh..9202h)
     db 652 dup(0)
 ; DATA: proximity trigger records, 15 x 10 bytes (+0 map offset, +2 width, +3 rows)
     db 150 dup(0)
-; UNKNOWN: not yet classified as code or data
+; DATA: table: entity arena, variable-stride records (byte 0 = stride, word +2 = X; stride > 32h ends); filled by LoadLevel from the level file (step 5 copy 7E5Eh..9202h)
     db 2048 dup(0)
 SpriteBankA label word
-; UNKNOWN: not yet classified as code or data
+; DATA: SpriteBankA: workspace: set by RebaseEntitySpriteRefs at run time; initial bytes 35 00; read by ScrollEffectSources
     db 35h, 00h
 SpriteBankB label word
-; UNKNOWN: not yet classified as code or data
+; DATA: SpriteBankB: workspace: set by RebaseEntitySpriteRefs at run time; initial bytes 38 01
     db 38h, 01h
 ; DATA: secret-tile patch records, 80 x 5 bytes (+0 new tile, +1 saved tile, +3 offset)
-; UNKNOWN: not yet classified as code or data
     db 400 dup(0)
 TileSolidProps label byte
 ; DATA: tile solid/slope property table (xlat index = tile id; filled by LoadLevel)
-; UNKNOWN: not yet classified as code or data
     db 256 dup(0)
 ; DATA: effect source records, 70 x 7 bytes (+4 word X, FFFFh = inactive)
     db 490 dup(0)
 ; DATA: terrain entity records, 16 x 15 bytes (+4 word X, FFFFh = inactive)
-; UNKNOWN: not yet classified as code or data
     db 240 dup(0)
 word_91F7 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: read by UpdateBossFight; no direct writer found; zero initially
     db 00h, 00h
 word_91F9 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: read by UpdateBossFight; no direct writer found; zero initially
     db 00h, 00h
 byte_91FB label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: read by ApplyBossPartContact, UpdateBossFight; no direct writer found; zero initially
     db 00h
 BossEnergy label word
-; UNKNOWN: not yet classified as code or data
+; DATA: BossEnergy: workspace: set by CheckBossHits at run time; zero initially; read by UpdateBossFight
     db 00h, 00h
 BossState label byte
 ; 0FFh = inactive; 0..5 and 7 are active states (not individually named); 6 = defeated (set when
 ; BossEnergy goes below zero).
-; UNKNOWN: not yet classified as code or data
+; DATA: BossState: workspace: set by CheckBossHits, UpdateBossFight at run time; zero initially; read by UpdateObjects
     db 00h
 BossX label word
-; UNKNOWN: not yet classified as code or data
+; DATA: BossX: workspace: set by UpdateBossFight at run time; zero initially; read by ApplyBossPartContact, CheckBossHits
     db 00h, 00h
 BossY label word
-; UNKNOWN: not yet classified as code or data
-    db 4263 dup(0)
+; DATA: BossY: word; written by UpdateBossFight; zero initially
+    db 2 dup(0)
+; DATA: purpose unknown: zero buffer after BossY; no direct reference found
+    db 4261 dup(0)
 byte_A2A8 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by TriggerCellChangeGroup at run time; zero initially
     db 80 dup(0)
 ; DATA: text
     db 'PRESENT.SQZ', 0
 ; DATA: text
     db 'TITUS.SQZ', 0
 word_A30E label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by UpdateWanderingChild at run time; zero initially
     db 00h, 00h
 word_A310 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by UpdateWanderingChild at run time; zero initially
     db 00h, 00h
 FollowerOverlapMode label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: FollowerOverlapMode: workspace: set by UpdateFollowerSlots, UpdateLevel5Sequence at run time; initial non-zero bytes; read by TestHitboxOverlap
     db 00h, 00h, 17h, 10h, 10h, 07h, 14h, 04h, 04h, 04h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h
 byte_A324 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by TryCaveTrigger, UpdateLevel5Sequence at run time; zero initially
     db 00h
 byte_A325 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by TryCaveTrigger, UpdateLevel5Sequence at run time; zero initially
     db 00h
 Level5Phase label word
-; UNKNOWN: not yet classified as code or data
+; DATA: Level5Phase: workspace: set by TryCaveTrigger, UpdateLevel5Sequence at run time; zero initially; read by SpawnChildOnPlayerBox, UpdateObjects
     db 00h, 00h
 byte_A328 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by TryCaveTrigger, UpdateLevel5Sequence at run time; zero initially
     db 00h
 byte_A329 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by TryCaveTrigger, UpdateLevel5Sequence at run time; zero initially
     db 00h
 byte_A32A label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by TryCaveTrigger, UpdateLevel5Sequence at run time; zero initially
     db 00h
 byte_A32B label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by TryCaveTrigger, UpdateLevel5Sequence at run time; zero initially
     db 00h
 byte_A32C label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by TryCaveTrigger, UpdateLevel5Sequence at run time; zero initially
     db 00h, 00h
 LastSpawnedChild label word
 ; Pointer to the child made by the latest successful spawn (set in SpawnChildAtOwner,
 ; SpawnDropOverPlayer, SpawnChildOnPlayerBox, SpawnFixedChild and SpawnChildOnApproach paths).
 ; UpdateObjects reads it to patch the new child's script pointer.
-; UNKNOWN: not yet classified as code or data
+; DATA: LastSpawnedChild: workspace: set by SpawnChildAtOwner, SpawnChildOnPlayerBox +3 at run time; zero initially; read by UpdateObjects
     db 00h, 00h
 LandingFlag label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: LandingFlag: workspace: set by TestHitboxOverlap at run time; zero initially; read by CheckPlayerBossContact, ProcessPlayerContacts +1
     db 00h
 LandingDepth label word
-; UNKNOWN: not yet classified as code or data
+; DATA: LandingDepth: workspace: set by TestHitboxOverlap at run time; zero initially; read by ProcessPlayerContacts
     db 00h, 00h
 BiosSeed label word
-; UNKNOWN: not yet classified as code or data
+; DATA: BiosSeed: workspace: set by ComputePasswordCode at run time; zero initially
     db 00h, 00h
 BiosSeedReady label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: BiosSeedReady: workspace: set by ComputePasswordCode at run time; zero initially
     db 00h
 EffectOriginX label word
-; UNKNOWN: not yet classified as code or data
+; DATA: EffectOriginX: workspace: set by DestroyObjectWithDebris, DrainPlayerEnergy +7 at run time; zero initially; read by SpawnEffectBurst
     db 00h, 00h
 EffectOriginY label word
-; UNKNOWN: not yet classified as code or data
+; DATA: EffectOriginY: workspace: set by DestroyObjectWithDebris, DrainPlayerEnergy +8 at run time; zero initially; read by SpawnEffectBurst
     db 00h, 00h
 EffectFrame label word
-; UNKNOWN: not yet classified as code or data
+; DATA: EffectFrame: workspace: set by DestroyObjectWithDebris, DrainPlayerEnergy +8 at run time; zero initially; read by SpawnEffectBurst
     db 00h, 00h
 LastEffectTick label word
-; UNKNOWN: not yet classified as code or data
+; DATA: LastEffectTick: workspace: set by TickCellChangeTimer at run time; zero initially
     db 00h, 00h
 LastDebrisSlot label word
-; UNKNOWN: not yet classified as code or data
+; DATA: LastDebrisSlot: workspace: set by SpawnDebrisElement at run time; zero initially; read by DestroyObjectWithDebris
     db 00h, 00h
 ScriptFrameFlags label byte
 ; Bits 13..15 of the last script frame command (copied by UpdateObjects). Read by child
 ; handlers after the step (UpdateLeapChild, UpdateChargerChild, CullChildAt paths).
-; UNKNOWN: not yet classified as code or data
+; DATA: ScriptFrameFlags: workspace: set by UpdateObjects at run time; zero initially; read by UpdateChargerChild, UpdateLeapChild
     db 00h
 word_A341 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by ProgramEntry, SpawnChildOnPlayerBox at run time; zero initially
     db 00h, 00h
 word_A343 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: initialized state: read by SpawnChildOnPlayerBox; no direct writer found; initial non-zero bytes
     db 78h, 00h, 64h, 00h, 0A6h, 0FFh, 6Eh, 00h, 88h, 0FFh, 28h, 00h
     db 50h, 00h, 3Ch, 00h
 BonusPointTable label word
 ; DATA: BonusPointTable: word points per item class 0..10h (10 .. 10000)
 ; DATA: score table: word per debris code 4Ah..5Ah (10,20,..,10000); ScoreLow/High += it
-; UNKNOWN: not yet classified as code or data
     db 0Ah, 00h, 14h, 00h, 1Eh, 00h, 32h, 00h, 3Ch, 00h, 46h, 00h
     db 4Bh, 00h, 50h, 00h, 64h, 00h, 0C8h, 00h, 0F4h, 01h, 20h, 03h
     db 0E8h, 03h, 0D0h, 07h, 0B8h, 0Bh, 70h, 17h, 10h, 27h
 BonusItemClass label byte
 ; DATA: BonusItemClass: byte class per tally item index 0..6Fh (word_A3E5 follows)
-; UNKNOWN: not yet classified as code or data
     db 10h, 0Fh, 0Dh, 0Eh, 0Ch, 0Ch, 0Dh, 0Eh, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 03h, 03h, 02h, 02h, 01h, 01h
     db 03h, 02h, 03h, 03h, 03h, 02h, 03h, 00h, 00h, 00h, 00h, 00h
@@ -7125,101 +7124,100 @@ BonusItemClass label byte
     db 06h, 06h, 06h, 03h, 06h, 0Ah, 07h, 05h, 05h, 0Bh, 0Ah, 08h
     db 09h, 00h, 9Ah, 9Ah
 word_A3E5 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: initialized state: read by ProcessPlayerContacts; no direct writer found; initial non-zero bytes
     db 9Bh, 00h, 0E0h, 00h, 0E1h, 00h, 2Dh, 01h, 2Eh, 01h, 2Fh, 01h
 byte_A3F1 label byte
 ; DATA: debris count table: byte i = pieces for (object phase >> 3) & 7 (6 bytes + 2 zero)
-; UNKNOWN: not yet classified as code or data
     db 01h, 02h, 03h, 04h, 06h, 08h
 BossStateTimer label word
-; UNKNOWN: not yet classified as code or data
+; DATA: BossStateTimer: workspace: set by CheckBossHits, UpdateBossFight at run time; zero initially
     db 00h, 00h
 byte_A3F9 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by UpdateBossFight at run time; zero initially; read by sub_93F6
     db 00h
 byte_A3FA label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by UpdateBossFight at run time; zero initially; read by sub_93F6
     db 00h
 BossDistX label word
-; UNKNOWN: not yet classified as code or data
+; DATA: BossDistX: workspace: set by UpdateBossFight at run time; zero initially
     db 00h, 00h
 word_A3FD label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by CheckBossHits at run time; zero initially
     db 00h, 00h
 word_A3FF label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by UpdateBossFight at run time; initial bytes 27 A4
     db 27h, 0A4h
 BossAnimPtr label word
-; UNKNOWN: not yet classified as code or data
+; DATA: BossAnimPtr: workspace: set by UpdateBossFight at run time; zero initially
     db 00h, 00h
 word_A403 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by UpdateBossFight at run time; zero initially; read by sub_93F6
     db 00h, 00h
 word_A405 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by UpdateBossFight at run time; zero initially; read by sub_93F6
     db 00h, 00h
 word_A407 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by sub_93F6 at run time; zero initially
     db 00h
 word_A408 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by sub_93F6 at run time; zero initially
     db 00h
 word_A409 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by sub_93F6 at run time; zero initially
     db 00h, 00h
 word_A40B label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by sub_93F6 at run time; zero initially
     db 00h, 00h
 word_A40D label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by sub_93F6 at run time; zero initially
     db 00h
 word_A40E label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by sub_93F6 at run time; zero initially
     db 00h
 word_A40F label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by sub_93F6 at run time; zero initially
     db 00h, 00h
 word_A411 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by sub_93F6 at run time; zero initially
     db 00h, 00h
 word_A413 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by sub_93F6 at run time; zero initially
     db 00h
 word_A414 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by sub_93F6 at run time; zero initially
     db 00h
 word_A415 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by sub_93F6 at run time; zero initially
     db 00h, 00h
 word_A417 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by sub_93F6 at run time; zero initially
     db 00h, 00h
 word_A419 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by sub_93F6 at run time; zero initially
     db 00h
 word_A41A label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by sub_93F6 at run time; zero initially
     db 00h
 word_A41B label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by sub_93F6 at run time; zero initially
     db 00h, 00h
 word_A41D label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by sub_93F6 at run time; zero initially
     db 00h, 00h
 word_A41F label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by sub_93F6 at run time; zero initially
     db 00h
 word_A420 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by sub_93F6 at run time; zero initially
     db 00h
 word_A421 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by sub_93B2 at run time; zero initially; read by CheckPlayerBossContact
     db 00h, 00h
 word_A423 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by sub_93B2 at run time; zero initially; read by CheckHazardHitsBoss, CheckPlayerBossContact
     db 00h, 00h
 word_A425 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by sub_93B2 at run time; initial non-zero bytes; read by CheckHazardHitsBoss, CheckPlayerBossContact
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 40h, 40h, 40h, 40h
     db 40h, 40h, 0F4h, 00h, 00h, 00h, 40h, 40h, 40h, 0FAh, 10h, 50h
     db 10h, 11h, 51h, 11h, 10h, 50h, 10h, 11h, 51h, 11h, 10h, 50h
@@ -7239,23 +7237,23 @@ word_A425 label word
     db 0E3h, 03h, 73h, 07h, 0B0h, 01h, 0E4h, 03h, 71h, 07h, 0B1h, 01h
     db 0E4h, 03h, 73h, 07h, 0B2h, 01h
 word_A4F7 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by RunLevel9Script at run time; initial non-zero bytes
     db 0F9h, 0A4h, 1Bh, 0A5h, 05h, 00h, 5Ah, 0A5h, 01h, 00h, 1Bh, 0A5h
     db 03h, 00h, 5Ah, 0A5h, 02h, 00h, 1Bh, 0A5h, 02h, 00h, 40h, 0A5h
     db 01h, 00h, 0FFh, 0FFh, 0E8h, 0FFh
 byte_A515 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by RunLevel9Script at run time; zero initially
     db 00h
 byte_A516 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by RunLevel9Script at run time; zero initially
     db 00h
 Level9ScriptPtr label word
 ; Level-9 bytecode cursor (RunLevel9Script). pre2_port conflict M lists this address as the boss
 ; state; the code shows a bytecode cursor (FFh/FEh/FDh opcodes).
-; UNKNOWN: not yet classified as code or data
+; DATA: Level9ScriptPtr: workspace: set by ResetLevelState, RunLevel9Script at run time; initial bytes 1B A5
     db 1Bh, 0A5h
 word_A519 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by RunLevel9Script at run time; initial non-zero bytes
     db 00h, 00h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h
     db 01h, 01h, 04h, 04h, 04h, 04h, 04h, 04h, 04h, 04h, 04h, 04h
     db 04h, 04h, 0E8h, 03h, 03h, 03h, 0FDh, 03h, 03h, 03h, 03h, 03h
@@ -7425,21 +7423,21 @@ word_A519 label word
     db 00h, 12h, 1Bh, 0Fh, 15h, 1Bh, 00h, 00h, 00h
 ; DATA: text
     db '8?.6:$'
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: no reference found (searched routine accessors); initial non-zero bytes
     db 35h, 35h, 1Bh, 30h, 2Ah, 14h, 2Bh, 1Fh, 0Dh, 26h, 14h, 08h
     db 21h, 0Ah, 03h, 1Ch, 00h, 00h, 06h, 00h, 00h, 28h, 1Ch, 14h
     db 0Eh, 0Ch, 0Eh, 06h, 0Ah, 0Ah, 3Ah, 12h, 20h, 3Ah, 12h, 20h
     db 3Ah, 12h, 20h, 28h, 00h, 08h, 3Ch, 2Ch, 10h, 34h, 20h, 00h
 ; DATA: text
     db '80(<4 <8(<<0,$'
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: no reference found (searched routine accessors); initial non-zero bytes
     db 24h, 0Ch, 10h, 04h, 10h, 18h, 08h, 14h, 20h, 0Ch, 1Ch, 28h
     db 1Ch, 20h, 2Ch, 20h, 24h
 ; DATA: text
     db '4$'
 ; DATA: text
     db ',<,0,(', 0
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: no reference found (searched routine accessors); initial non-zero bytes
     db 00h, 00h, 3Ch, 3Ch, 3Ch, 38h, 28h, 20h, 28h, 18h, 10h, 20h
     db 10h, 08h, 14h, 10h, 14h, 18h, 00h, 00h, 18h, 14h, 18h, 18h
     db 18h, 1Ch, 20h, 20h, 1Ch, 24h, 1Ch, 1Ch, 28h, 20h, 18h, 18h
@@ -7523,7 +7521,7 @@ word_A519 label word
     db '6:$'
 ; DATA: text
     db '6:$'
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: no reference found (searched routine accessors); initial non-zero bytes
     db 38h, 3Fh, 2Eh, 38h, 3Fh, 2Eh, 38h, 3Fh, 2Eh, 38h, 3Fh, 2Eh
     db 38h, 3Fh, 2Eh, 38h, 3Fh, 2Eh, 38h, 3Fh, 2Eh, 38h, 3Fh, 2Eh
     db 38h, 3Fh, 2Eh, 38h, 3Fh, 2Eh, 38h, 3Fh, 2Eh, 38h, 3Fh, 2Eh
@@ -7534,12 +7532,11 @@ word_A519 label word
 ; DATA: text
     db '"???', 0
 ; DATA: VGA DAC palette: 16 RGB triples (6-bit) for RunGameOverScreen
-; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 38h, 28h, 20h, 28h, 18h, 10h, 20h, 10h, 08h
     db 04h, 00h, 1Ch, 28h, 00h, 08h, 00h, 04h, 10h, 38h, 30h, 08h
     db 00h, 14h, 00h, 00h, 20h, 00h, 08h, 30h, 08h, 34h, 20h, 14h
     db 00h, 10h, 24h, 14h, 20h, 24h, 20h, 28h, 2Ch, 38h, 38h, 38h
-; UNKNOWN: not yet classified as code or data
+; DATA: purpose unknown: no reference found (searched routine accessors); initial non-zero bytes
     db 47h, 41h, 4Dh, 45h, 4Fh, 56h, 45h, 52h, 01h, 00h, 01h, 00h
     db 02h, 00h, 02h, 00h, 03h, 00h, 03h, 00h, 02h, 00h, 02h, 00h
     db 0F0h, 0FFh, 26h, 00h, 26h, 00h, 26h, 00h, 26h, 00h, 25h, 00h
@@ -7551,13 +7548,12 @@ word_A519 label word
     db '--1234567890----A-E-----------A-DF------------C-B-------------------------------------------------------------------------------'
 ; DATA: VGA DAC palette: 16 RGB triples (6-bit) for the map screen (INT 10h 1012h)
     db 0
-; UNKNOWN: not yet classified as code or data
+; DATA: VGA DAC palette continued from B0E8h: 16 RGB triples (6-bit) for the map screen
     db 00h, 00h, 38h, 28h, 20h, 28h, 18h, 10h, 20h, 10h, 08h, 10h
     db 28h, 38h, 28h, 00h, 08h, 00h, 00h, 00h, 38h, 30h, 08h, 00h
     db 14h, 00h, 00h, 20h, 00h, 08h, 30h, 08h, 34h, 20h, 14h, 14h
     db 18h, 1Ch, 1Ch, 20h, 24h, 28h, 28h, 2Ch, 38h, 38h, 38h
 ; DATA: VGA DAC palette: 16 RGB triples (6-bit) for RunCallbackMapScreen
-; UNKNOWN: not yet classified as code or data
     db 08h
     db 10h, 1Ch, 00h, 04h, 04h, 0Ch, 14h, 20h, 10h, 18h, 20h, 38h
     db 30h, 08h, 38h, 30h, 08h, 38h, 30h, 08h, 38h, 30h, 08h, 34h
@@ -7565,10 +7561,9 @@ word_A519 label word
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
 word_B148 label word
 ; DATA: map stage node table: 10 word pairs (x in pixels, y) for stages 0..9
-; UNKNOWN: not yet classified as code or data
     db 05h, 00h
 word_B14A label word
-; UNKNOWN: not yet classified as code or data
+; DATA: map stage node table continued from B148h: word pairs (x in pixels, y), stages 0..9
     db 55h, 00h, 51h, 00h, 5Fh, 00h, 78h, 00h, 7Fh, 00h, 98h, 00h
     db 93h, 00h, 0E9h, 00h, 8Ah, 00h, 49h, 01h, 71h, 00h, 0A9h, 01h
     db 6Ah, 00h, 14h, 02h, 0B2h, 00h, 5Eh, 02h, 6Ch, 00h, 5Eh, 02h
@@ -7584,67 +7579,68 @@ word_B14A label word
 ; DATA: text
     db ' EXPERT ', 0
 ExpertFlag label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: ExpertFlag: purpose unknown: read by RunFrontEnd; no direct writer found; zero initially
     db 00h
 byte_B198 label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: workspace: set by RunFrontEnd at run time; zero initially; read by BuildDecorList, ProgramEntry +1
     db 00h
 PrevMapScrollX label word
-; UNKNOWN: not yet classified as code or data
+; DATA: PrevMapScrollX: workspace: set by RunCallbackMapScreen, ShowWorldMapScrollIn at run time; zero initially
     db 00h, 00h
 PrevMapScrollY label word
-; UNKNOWN: not yet classified as code or data
+; DATA: PrevMapScrollY: workspace: set by RunCallbackMapScreen, ShowWorldMapScrollIn at run time; zero initially
     db 00h, 00h
 MapScrollX label word
-; UNKNOWN: not yet classified as code or data
+; DATA: MapScrollX: workspace: set by RunCallbackMapScreen, ShowWorldMapScrollIn at run time; zero initially
     db 00h, 00h
 MapScrollY label word
-; UNKNOWN: not yet classified as code or data
+; DATA: MapScrollY: workspace: set by RunCallbackMapScreen, ShowWorldMapScrollIn at run time; zero initially
     db 00h, 00h
 ScreenStartOffset label word
-; UNKNOWN: not yet classified as code or data
+; DATA: ScreenStartOffset: workspace: set by RunCallbackMapScreen, ShowWorldMapScrollIn at run time; zero initially
     db 00h, 00h
 PrevScreenStartOffset label word
-; UNKNOWN: not yet classified as code or data
+; DATA: PrevScreenStartOffset: workspace: set by RunCallbackMapScreen, ShowWorldMapScrollIn at run time; zero initially
     db 00h, 00h
 WavePhase label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: WavePhase: workspace: set by RunCallbackMapScreen at run time; zero initially
     db 00h
 TextCursorOffset label word
-; UNKNOWN: not yet classified as code or data
+; DATA: TextCursorOffset: padding/unused: no reference found (searched routine accessors)
     db 00h, 00h
 CodeInputCount label word
-; UNKNOWN: not yet classified as code or data
+; DATA: CodeInputCount: workspace: set by RunCallbackMapScreen at run time; zero initially
     db 00h, 00h
 CodeEntryState label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: CodeEntryState: workspace: set by RunCallbackMapScreen at run time; zero initially
     db 00h
 TextAdvance label byte
-; UNKNOWN: not yet classified as code or data
+; DATA: TextAdvance: workspace: set by RunCallbackMapScreen at run time; zero initially
     db 00h
 TextFontBank label word
-; UNKNOWN: not yet classified as code or data
+; DATA: TextFontBank: padding/unused: no reference found (searched routine accessors) (LEN also covers FrameCallback)
     db 2 dup(?)
 FrameCallback label word
     db 2 dup(?)
 CodeErrorTimer label word
-; UNKNOWN: not yet classified as code or data
+; DATA: CodeErrorTimer: padding/unused: no reference found (searched routine accessors) (LEN also covers ScreenExitRequested)
     db 2 dup(?)
 ScreenExitRequested label byte
     db 1 dup(?)
 CodeHistory0 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: CodeHistory0: padding/unused: no reference found (searched routine accessors)
     db 2 dup(?)
 CodeHistory1 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: CodeHistory1: padding/unused: no reference found (searched routine accessors)
     db 2 dup(?)
 CodeHistory2 label word
-; UNKNOWN: not yet classified as code or data
+; DATA: CodeHistory2: padding/unused: no reference found (searched routine accessors)
     db 2 dup(?)
 CodeValue label word
-; UNKNOWN: not yet classified as code or data
+; DATA: CodeValue: padding/unused: no reference found (searched routine accessors)
     db 2 dup(?)
 ScreenFirstFrame label byte
+; UNKNOWN: not yet classified as code or data
     db 1 dup(?)
 DATA ends
 end ProgramEntry

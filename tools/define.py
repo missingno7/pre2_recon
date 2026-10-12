@@ -94,12 +94,15 @@ def main():
         if '--len' in a:
             n = int(a[a.index('--len') + 1])
             path, j, lines = split_at(lin + n)
-            if not lines[j].startswith(';'):
+            # the bytes after the class stay unclassified; a marker may only head db rows
+            if re.match(r'^\s*db\s', lines[j]):
                 lines.insert(j, '; UNKNOWN: not yet classified as code or data')
             path.write_text('\n'.join(lines) + '\n', encoding='latin-1')
         path, i, lines = split_at(lin)
-        k = i - 1
-        if k >= 0 and lines[k].startswith('; UNKNOWN'): lines[k] = f'; DATA: {text}'
+        k = i
+        while k < len(lines) and lines[k].startswith(';') and not lines[k].startswith('; UNKNOWN'): k += 1
+        if k < len(lines) and lines[k].startswith('; UNKNOWN'): lines[k] = f'; DATA: {text}'
+        elif i > 0 and lines[i - 1].startswith('; UNKNOWN'): lines[i - 1] = f'; DATA: {text}'
         else: lines.insert(i, f'; DATA: {text}')
     else:
         name = a[1]; kind = a[2] if len(a) > 2 else 'byte'
