@@ -532,6 +532,8 @@ loc_0068:
     or word ptr cs:OptionBits, 40h
 loc_0072:
     cmp al, 56h
+; quirk: every switch letter falls through to this test, and the jne leaves the parser, so
+;   only the first switch on the command line takes effect; only /V continues the scan.
     jne loc_007E
     mov byte ptr cs:OptionVByte, 1
     loop loc_0016
