@@ -5961,6 +5961,7 @@ MapRows label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
 WarpLevelTable label byte
+; DATA: WarpLevelTable: level slot 0..9 -> level/map id (0Ah..0Eh); 0FFh = none
 ; UNKNOWN: not yet classified as code or data
     db 0FFh, 0Ch, 0Bh, 0Ah, 0FFh, 0FFh, 00h, 0FFh, 0FFh, 0Eh
 LevelPaletteTable label word
@@ -7079,12 +7080,14 @@ word_A343 label word
     db 78h, 00h, 64h, 00h, 0A6h, 0FFh, 6Eh, 00h, 88h, 0FFh, 28h, 00h
     db 50h, 00h, 3Ch, 00h
 BonusPointTable label word
+; DATA: BonusPointTable: word points per item class 0..10h (10 .. 10000)
 ; DATA: score table: word per debris code 4Ah..5Ah (10,20,..,10000); ScoreLow/High += it
 ; UNKNOWN: not yet classified as code or data
     db 0Ah, 00h, 14h, 00h, 1Eh, 00h, 32h, 00h, 3Ch, 00h, 46h, 00h
     db 4Bh, 00h, 50h, 00h, 64h, 00h, 0C8h, 00h, 0F4h, 01h, 20h, 03h
     db 0E8h, 03h, 0D0h, 07h, 0B8h, 0Bh, 70h, 17h, 10h, 27h
 BonusItemClass label byte
+; DATA: BonusItemClass: byte class per tally item index 0..6Fh (word_A3E5 follows)
 ; UNKNOWN: not yet classified as code or data
     db 10h, 0Fh, 0Dh, 0Eh, 0Ch, 0Ch, 0Dh, 0Eh, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 03h, 03h, 02h, 02h, 01h, 01h
