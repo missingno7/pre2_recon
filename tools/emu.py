@@ -37,11 +37,12 @@ def read_map(path):
     return {m[3]: (int(m[1], 16), int(m[2], 16)) for m in re.finditer(r'^\s*([0-9A-F]{4}):([0-9A-F]{4})\s+(\w+)', text, re.M)}
 
 class PortLog:
-    """Default device model: record every OUT, IN returns `value`."""
-    def __init__(self, value=0): self.log, self.value = [], value
+    """Default device model for non-VGA ports: record every OUT and IN; IN returns the
+    value preset for that port (0 by default), as c/ports.c does."""
+    def __init__(self, value=0): self.log, self.value, self.preset = [], value, {}
     def out(self, port, size, value): self.log.append(('out', port, size, value))
     def inp(self, port, size):
-        self.log.append(('in', port, size)); return self.value
+        self.log.append(('in', port, size)); return self.preset.get(port, self.value)
 
 class Stop(Exception): pass
 
@@ -122,14 +123,13 @@ class Machine:
     # -- hooks ----------------------------------------------------------------
     def _in(self, uc, port, size, user):
         if self.vga and 0x3C0 <= port <= 0x3DA:
-            v = self.vga.vga_in(port) | (self.vga.vga_in(port + 1) << 8 if size == 2 else 0)
-            self.ports.log.append(('in', port, size)) if hasattr(self.ports, 'log') else None
-            return v
+            return self.vga.vga_in(port) | (self.vga.vga_in(port + 1) << 8 if size == 2 else 0)
         return self.ports.inp(port, size) & ((1 << (8*size)) - 1)
     def _out(self, uc, port, size, value, user):
         if self.vga and 0x3C0 <= port <= 0x3DA:
             self.vga.vga_out(port, value & 0xFF)
             if size == 2: self.vga.vga_out(port + 1, value >> 8)
+            return
         self.ports.out(port, size, value)
     def _intr(self, uc, n, user):
         if n == 0x03 or n not in self.ints or self.ints[n](self) is False:

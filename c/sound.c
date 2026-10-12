@@ -37,6 +37,7 @@
  */
 #include "pre2.h"
 #include "sound.h"
+#include "ports.h"
 
 #define VOLUME_TABLE DS_VolumeTable   /* 65 rows of 64 bytes, filled at SB set-up (loc_1E90) */
 
@@ -286,10 +287,13 @@ EXPORT int c_MixChannel(Regs *r)
     return 0;
 }
 
+/* Test entry at loc_20CF: the block mix, then the handler's exit tail SbIrqExit
+ * (non-specific EOI to the master PIC; the register restore is the IRET frame). */
 EXPORT int c_loc_20CF(Regs *r)
 {
     (void)r;
     SbMixBlock(0x02FEu);
+    port_out8(0x20, 0x20);
     return 0;
 }
 

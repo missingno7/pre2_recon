@@ -28,10 +28,11 @@ class Case:
     regs: input registers; out_regs: registers compared after return ('CF', 'ZF' allowed).
     ranges: extra (segment, offset, length) memory ranges to compare. files: use DOS files."""
     def __init__(self, title, routine, cfunc, regs=None, setup=None, out_regs=(), ranges=(), files=False,
-                 budget=50_000_000):
+                 budget=50_000_000, port_inputs=None):
         self.title, self.routine, self.cfunc = title, routine, cfunc
         self.regs, self.setup, self.out_regs = dict(regs or {}), setup, tuple(out_regs)
         self.ranges, self.files, self.budget = tuple(ranges), files, budget
+        self.port_inputs = dict(port_inputs or {})     # {port: value IN returns}, both sides
 
 _dll = None
 def dll():
@@ -45,6 +46,7 @@ def dll():
         _dll.pre2_memory.restype = ctypes.POINTER(ctypes.c_uint8 * MEM_SIZE)
         _dll.pre2_files_reset.argtypes = [ctypes.c_char_p]
         _dll.pre2_files_log.restype = ctypes.c_char_p
+        _dll.pre2_ports_log.restype = ctypes.c_char_p
         _dll.pre2_vga_state_size.restype = ctypes.c_uint32
         _dll.pre2_vga_state.restype = ctypes.POINTER(ctypes.c_uint8 * _dll.pre2_vga_state_size())
         _dll.vga_read.restype = ctypes.c_uint8
@@ -60,6 +62,8 @@ def run(case, machine=None):
     m.reset_memory()
     dos = DosFiles() if case.files else None
     m.ints = {0x21: dos} if dos else {}
+    from emu import PortLog
+    m.ports = PortLog(); m.ports.preset = dict(case.port_inputs)
     if m.vga: m.vga.vga_reset()
     if case.setup: case.setup(m)
     init = m.snapshot()
@@ -74,6 +78,8 @@ def run(case, machine=None):
     ctypes.memmove(mem, init, MEM_SIZE)
     if vga_init is not None: ctypes.memmove(d.pre2_vga_state(), vga_init, len(vga_init))
     if case.files: d.pre2_files_reset(str(ROOT/'assets').encode())
+    d.pre2_ports_reset()
+    for port, value in case.port_inputs.items(): d.pre2_ports_preset(port, value)
     r = Regs(**{k.lower(): v for k, v in regs.items() if k in ('AX', 'BX', 'CX', 'DX', 'SI', 'DI', 'BP', 'DS', 'ES')})
     r.ds = regs.get('DS', DATA_SEG); r.es = regs.get('ES', DATA_SEG); r.flags = 0x0202
     status = getattr(d, case.cfunc)(ctypes.byref(r))
@@ -101,6 +107,9 @@ def run(case, machine=None):
             a, c = bool(out['FLAGS'] & bit), bool(r.flags & bit)
         else: a, c = out[k], getattr(r, k.lower())
         if a != c: problems.append(f'{k}: asm {a:#x} c {c:#x}' if not isinstance(a, bool) else f'{k}: asm {a} c {c}')
+    plog_a = ';'.join(','.join(str(x) for x in e) for e in m.ports.log)
+    plog_c = d.pre2_ports_log().decode()
+    if plog_a != plog_c: problems.append(f'port log differs:\n    asm {plog_a[:300]}\n    c   {plog_c[:300]}')
     if dos:
         alog = ';'.join(','.join(str(x) for x in e) for e in dos.log)
         clog = d.pre2_files_log().decode()
