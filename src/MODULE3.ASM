@@ -2953,17 +2953,18 @@ loc_5A8C:
 ; column of cells above the foot for side-wall handling.
 ; In: PlayerX, PlayerY, PlayerVelX (sign for the edge offset), PlayerVelY, FrameHeights.
 ; Out: PlayerY, PlayerVelY, PlayerX (via handlers), AirborneFlag, FallCounter, camera requests.
-; Notes: foot cell = ((PlayerX + edge) sar 4) + (((PlayerY sar 4) - 1) << 8). The edge is +9
-;   when PlayerVelX > 0, -9 when < 0, 0 otherwise. The tile probed for the ground is the cell
+; Notes: foot cell = (PlayerX sar 4) + (((PlayerY sar 4) - 1) << 8), given to
+;   UpdatePlayerTileContact with no edge term. The tile probed for the ground is the cell
 ;   one row lower (PlayerY sar 4). Rows >= MapRows read as tile 0.
 ;   Range check (absolute values, unsigned): |row - CameraRow| > 11 or |col - CameraCol| > 20.
 ;   With LevelFlags bit 2, PlayerY < CameraRow*16 is also out of range. PlayerY > (MapRows+1)*16
 ;   is out of range. Out of range in CurrentLevel 0Eh sets EndSignal = FFh; any other
 ;   level calls TriggerPlayerRespawn. PlayerY < 0 skips the range check (see the tile worker).
-;   Airborne tail (AirborneFlag == 1): when ScriptedHoldFlag (byte 6BFEh) is zero, it calls
+;   Airborne tail (AirborneFlag == 1): when PlayerOnPlatform is zero, it calls
 ;   ApplyAirMotionAnim and increments FallCounter while PlayerVelY > 0. Otherwise it calls
 ;   FinishPlayerLanding and clears FallCounter. Not airborne: FallCounter = 0.
-;   Column scan: the foot cell goes to DispatchSideTileHandler. Then one cell up per 16 px of
+;   Column scan: the foot cell shifted by the edge term goes to DispatchSideTileHandler. The
+;   edge is +9 when PlayerVelX > 0, -9 when < 0, 0 otherwise. Then one cell up per 16 px of
 ;   the frame height (FrameHeights) goes to DispatchSideTileClass24. The scan ends when the
 ;   row index underflows (row 0 is the last cell visited).
 UpdatePlayerCollision:
@@ -3264,7 +3265,9 @@ loc_5CCA:
     ret
 
 ; State 8 (hurt). Chosen by PlayerHurtTimer >= 16h (not by the input index).
-; In: AL = 8, BX = 10h (ground dispatch). Out: PlayerVelX (wind, friction), anim, PlayerAnimPtr.
+; In: BX = 10h (ground dispatch; SetPlayerAnim indexes AnimSeqPtrTable with it). AL is not an
+;   input: ApplyPlayerFriction leaves AX = new PlayerVelX, so SetPlayerAnim gets its low byte.
+; Out: PlayerVelX (wind, friction), anim, PlayerAnimPtr.
 ; Notes: applies ApplyWindDrift and ApplyPlayerFriction, then SetPlayerAnim and AdvancePlayerAnim.
 ;   Quirk: in alt mode AltStateHandlers[8] reads the text bytes 'LE' at ds:7D7Fh as a code
 ;   pointer (word 454Ch). Reached only with PlayerAltModeFlag set and PlayerHurtTimer >= 16h.
@@ -3466,7 +3469,9 @@ loc_5E5C:
     ret
 
 ; State 4 (crouch-creep and charge). Entered when Down is held with L or R.
-; In: AL = 4, BX = 8. Out: PlayerVelX, PlayerActionTicks = 0, LandingBlockTimer = 4, anim.
+; In: BX = 8 (2*anim; SetPlayerAnim indexes AnimSeqPtrTable with it). AL is not an input: it
+;   is the low byte of |PlayerVelX| when SetPlayerAnim runs (ApplyPlayerAcceleration keeps AX).
+; Out: PlayerVelX, PlayerActionTicks = 0, LandingBlockTimer = 4, anim.
 ; Notes: if |PlayerVelX| > 20h (unsigned, absolute value) it tail-jumps to UpdatePlayerStateIdle.
 ;   Otherwise it accelerates by 20h, sets the anim and charges (IncrementChargeLevel).
 UpdatePlayerStateCharge:
@@ -7981,8 +7986,9 @@ loc_8282:
 loc_8292:
     jmp near ptr loc_83CE
 
-; Per-frame player contact pass. Tests the 12 render slots at 4FD0h, then the 52-entry effect
-; pool at 50A8h, against the player record (PlayerX/PlayerY, slot 4F1Ch). Each contact starts
+; Per-frame player contact pass. Tests the 12 render slots at 4FD0h, then 52 records from
+; 50A8h (the 32-record effect pool, then 20 draw-list records at 52E8h), against the player
+; record (PlayerX/PlayerY, slot 4F1Ch). Each contact starts
 ; a stomp, hurt, pickup or hazard reaction, sometimes through SpawnEffectBurst and
 ; SpawnDebrisElement.
 ; While PlayerHurtTimer (byte_4F2D) is nonzero the slot loop is skipped and only the pool runs.
@@ -9272,7 +9278,7 @@ loc_8D17:
     mov word ptr [di+8], ax
     ret
 
-; Fills up to CX free records of the effect pool (50A8h..52E8h, 52 x 18 bytes) with particles
+; Fills up to CX free records of the effect pool (50A8h..52E7h, 32 x 18 bytes) with particles
 ; placed at EffectOriginX/EffectOriginY and frame EffectFrame.
 ; In: AX, DX = velocity seeds, CX = particle count, EffectOriginX/Y, EffectFrame.
 ; Out: pool records filled (free = +4 == FFFFh). Particles beyond the free records are dropped.
@@ -9692,8 +9698,8 @@ RestoreBackdropToDrawPage:
 ;   10300h..(+7440h) logo strip (320x93) copied to A000:0. NextFreeSegment and LevelSegment
 ;   are set to the asset segment. sub_919F fades in 255 entries first (FadeEntryCount = 0FFh).
 ;   The morph reads 768 bytes at ds:ACE7h as target and ramps each component by +/-2 toward it
-;   (snap when |diff| = 1). It repeats passes until a pass changes nothing. A retrace is waited
-;   after every 82 (52h) component writes, and that counter is continuous across passes.
+;   (snap when |diff| = 1). Passes repeat while a pass snapped a component by one step. A retrace
+;   is waited after every 82 (52h) component writes, and that counter is continuous across passes.
 ;   Not gated by OptionBits. Leaves the DAC showing the morphed palette.
 ShowPresentTitle:
     mov ax, seg DATA
@@ -9858,8 +9864,9 @@ loc_9177:
     jmp short loc_91CF
 
 ; Shows a mode 13h picture and fades its palette in. Used for the title pictures.
-; In: CL = entry count (stored as FadeEntryCount), DS = picture segment: 0..2FFh 6-bit palette,
-;   300h.. 320x200 pixels. Out: picture on screen; DS restored; BL = green of the last entry read.
+; In: CL = entry count (stored as FadeEntryCount). The picture comes from LevelSegment: 0..2FFh
+;   6-bit palette, 300h.. 320x200 pixels (SetPictureCopyPointers). DS is not an input.
+; Out: picture on screen; DS restored; BL = green of the last entry read.
 ; Notes: sets mode 13h (INT 10h), clears all 256 DAC entries, copies 64000 bytes, enables video.
 ;   Fade-in (OptionBits bit 0 set): entries 0..count-1 step each component +2 toward the target
 ;   while it is <= 3Dh (so the value stops below the target when it is 3Eh or 3Fh). A retrace

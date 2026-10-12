@@ -172,8 +172,8 @@ extrn WaitSoundTicks:near
 ; in ClockYear when it is below 2067. The BCD year is decoded digit by digit.
 ; In: nothing (the clock is read here).
 ; Out: ClockYear = year when the clock answered and the year is below 2067 (813h); otherwise
-;      ClockYear is unchanged (0 at startup). CF = 1 on a clock error; otherwise CF is the
-;      result of the final CMP (1 when the year was stored).
+;      ClockYear is unchanged (it starts at 1980, 07BCh). CF = 1 on a clock error; otherwise
+;      CF is the result of the final CMP (1 when the year was stored).
 ; Notes: MUL clobbers DX on every digit, so DH is 0 when the digit bits are shifted in.
 ;        The digit is added to AL with an 8-bit ADD, so a carry out of AL is lost: years 2048
 ;        and 2049 decode to 1792 and 1793 (quirk; their values are below every year gate).
@@ -3834,9 +3834,10 @@ loc_417C:
     loop loc_416F
     ret
 
-; Remaps the entity arena (variable-stride records from 8489h: byte 0 = stride, word +2 = X)
-; between the two sprite bank windows. A = SpriteBankA, B = SpriteBankB: X >= B becomes
-; X - B + 138h; A <= X < B becomes X - A + 35h; X < A is unchanged. X = FFFFh is skipped.
+; Remaps the sprite reference of each entity record (ENT_SPRITE, word +2: the child frame copied
+; to RS_FRAME; FFFFh = retired) in the entity arena (variable-stride records from 8489h, byte 0 =
+; stride) between the two sprite bank windows. A = SpriteBankA, B = SpriteBankB: ref >= B becomes
+; ref - B + 138h; A <= ref < B becomes ref - A + 35h; ref < A is unchanged. FFFFh is skipped.
 ; Out: SpriteBankA = 35h, SpriteBankB = 138h.
 ; Notes: the loop ends when the stride byte is above 32h (unsigned compare).
 RebaseEntitySpriteRefs:

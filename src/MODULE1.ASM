@@ -441,8 +441,9 @@ extrn UpdateWindAndFlakes:near
 cvar_0000 label byte
 ; DATA: command-line option and CPU state bytes/words (written by entry 0008..007C, CPU probe 1C0C, INT 12h at 00A9)
     db 03h
-; OptionVByte: FFh by default, 1 when /V is given (ProgramEntry). Read only by
-; SetDacBlock0To15IfFlag, which tests for 5 (never stored).
+; OptionVByte: FFh by default, 1 when /V is given (ProgramEntry), 5 after a good VGA probe
+; (CheckVgaAdapter, MODULE2). Read by CheckVgaAdapter (FFh), WaitVerticalRetrace (nonzero),
+; SetDacBlock0To15IfFlag and FadeOutPaletteToBlack (5).
 OptionVByte label byte
 ; UNKNOWN: not yet classified as code or data
     db 0FFh
@@ -452,7 +453,8 @@ SoundEnabledFlag label byte
 ; UNKNOWN: not yet classified as code or data
     db 0FFh
 ; OptionBits (word, default 001Fh). Command-line effects (cleared = bit off unless stated):
-;   01h /F: no reader in R1 (no effect observed).   02h /A: FRONT.SQZ not loaded at start-up.
+;   01h /F: palette fades off (ShowMode13PictureFadeIn at loc_91E4 and FadeOutPaletteToBlack).
+;   02h /A: FRONT.SQZ not loaded at start-up.
 ;   04h /E: EMS not used.   08h /X: XMS not used.   10h /L: no resource cache (see
 ;   InitResourceMemory).   20h /D: resources loaded into the heap; never set by any path, so /D
 ;   has no effect.   40h /B: low-memory mode, set by /B and also by a memory check near cs:1F23
@@ -1835,7 +1837,7 @@ loc_0B8F:
     ret
 
 ; Sets DS = ES = DATA and calls SetDacBlock0To15IfFlag with DX = 287Eh (16-entry DAC table).
-; Out: DS = ES = DATA. Effective result: no DAC change (see SetDacBlock0To15IfFlag).
+; Out: DS = ES = DATA. DAC 0..15 change only when OptionVByte is 5 (see SetDacBlock0To15IfFlag).
 SetStartupPalette:
     mov ax, seg DATA
     mov ds, ax
@@ -1879,9 +1881,8 @@ loc_0BCF:
     jne loc_0BCF
     ret
 
-; Sets DAC registers 0..15 (INT 10h AX=1012h) from ES:DX when OptionVByte equals 5. Only
-; SetStartupPalette calls this. OptionVByte is only ever 0FFh (default) or 1 (/V), so the palette
-; write never happens in the shipped code paths.
+; Sets DAC registers 0..15 (INT 10h AX=1012h) from ES:DX when OptionVByte equals 5, which a good
+; VGA probe stores (CheckVgaAdapter). Only SetStartupPalette calls this.
 SetDacBlock0To15IfFlag:
     mov al, byte ptr cs:OptionVByte
     cmp al, 5
@@ -6979,7 +6980,7 @@ word_8167 label word
     db 652 dup(0)
 ; DATA: proximity trigger records, 15 x 10 bytes (+0 map offset, +2 width, +3 rows)
     db 150 dup(0)
-; DATA: table: entity arena, variable-stride records (byte 0 = stride, word +2 = X; stride > 32h ends); filled by LoadLevel from the level file (step 5 copy 7E5Eh..9202h)
+; DATA: table: entity arena, variable-stride records (byte 0 = stride, word +2 = ENT_SPRITE; stride > 32h ends); filled by LoadLevel from the level file (step 5 copy 7E5Eh..9202h)
     db 2048 dup(0)
 SpriteBankA label word
 ; DATA: SpriteBankA: workspace: set by RebaseEntitySpriteRefs at run time; initial bytes 35 00; read by ScrollEffectSources

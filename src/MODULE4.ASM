@@ -639,7 +639,7 @@ loc_9984:
 ;   history shifts (CodeHistory0 <- CodeHistory1 <- CodeHistory2 <- CodeValue).
 ; Notes: sub_932F hashes machine ROM bytes (F000:FFF0.., C000 option ROMs) into word_A333, so the
 ;   table codes depend on the machine's ROM (translation-critical). Scan table quirks: keys 10h
-;   and 1Eh both give 'A'; 2Ch gives 'C'; 2Eh gives 'B'.
+;   and 1Eh both give 'A'; 2Ch gives '-' (ignored); 2Eh gives 'C'; 30h gives 'B'.
 UpdateCodeEntryFrame:
     call AdvanceMapFrame
     mov byte ptr ds:[0B1ABh], 3
@@ -811,8 +811,8 @@ loc_9B14:
 ; GAME OVER screen. The backdrop scrolls sideways while the letters of "GAMEOVER" fall in and
 ; three objects move on sine tables. Ends after 630 timer ticks (word_27F0) or on action
 ; (byte_27E8 nonzero, sampled by sub_0DC1). Returns at once if byte_2879 is nonzero (gameplay).
-; In: byte_2879 = 0. word_2875 = backdrop segment, 4 planes of 8000 bytes; each plane is copied
-;     to VRAM offset 3F40h (off-screen, beyond the 8K display ring).
+; In: byte_2879 = 0. word_2875 = backdrop segment, 4 planes of 8000 bytes. Each plane is copied
+;     to VRAM offset 5E80h (off-screen). The clear starts at 3F40h, but DI is not reset after it.
 ; Out: nothing. Fades via sub_9286. word_27F0 holds the timeout (incremented by the timer ISR).
 ; Notes: Entered from sub_4C69 (loc_5063 path, byte_6BE5 == 1), after sub_509D, sub_25C7 and
 ;   sub_02CC(AX = 11h); the picture load by sub_02CC is inferred. Afterwards the caller sets
