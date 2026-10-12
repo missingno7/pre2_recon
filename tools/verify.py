@@ -75,6 +75,10 @@ def verify():
     manifest = extract()
     if manifest != read_json(ROOT/'metadata'/'oracle.json'): raise ValueError('Fresh extraction differs from metadata/oracle.json')
     unknown, explicit = check_sources()
+    import symtab
+    stale = [q.name for q, ls in symtab.interface(main_sources()).items()
+             if q.read_text(encoding='latin-1').splitlines() != ls]
+    if stale: raise ValueError('stale module interface (run tools/symtab.py): ' + ', '.join(stale))
     exe = assemble()
     oh, oimg, orel, _ = mz(original)
     bh, bimg, brel, _ = mz(exe)

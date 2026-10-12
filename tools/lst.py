@@ -19,6 +19,7 @@ def parse(text, src_lines, name='?'):
     out, r = [], 0
     for n, want in enumerate(src_lines, 1):
         want = want.strip()
+        if not want: out.append(None); continue      # blank lines get no listing row
         if r >= len(rows): raise RuntimeError(f'{name}: listing ends before source line {n}')
         off, txt = rows[r]; r += 1
         txt = txt.strip()
