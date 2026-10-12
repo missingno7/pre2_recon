@@ -2,8 +2,354 @@
 STK segment para stack 'STACK'
     db 200h dup(0)
 STK ends
+public byte_0666
+public byte_083D
+public byte_083E
+public byte_27D6
+public byte_27D8
+public byte_27E8
+public byte_27E9
+public byte_27EA
+public byte_27EB
+public byte_27EC
+public byte_27ED
+public byte_27F4
+public byte_27F6
+public byte_27F7
+public byte_2805
+public byte_2806
+public byte_280D
+public byte_2810
+public byte_2811
+public byte_282C
+public byte_282D
+public byte_282F
+public byte_2830
+public byte_2874
+public byte_2879
+public byte_287C
+public byte_287D
+public byte_2CEC
+public byte_2CED
+public byte_2CEE
+public byte_2CF5
+public byte_2CF6
+public byte_2D30
+public byte_2D8A
+public byte_2D90
+public byte_2D96
+public byte_2DAA
+public byte_2DF2
+public byte_2DF3
+public byte_2DF4
+public byte_2DF5
+public byte_4DF8
+public byte_4F1B
+public byte_4F21
+public byte_4F23
+public byte_4F24
+public byte_4F27
+public byte_4F2B
+public byte_4F2C
+public byte_4F2D
+public byte_564D
+public byte_565F
+public byte_5671
+public byte_5683
+public byte_5695
+public byte_6688
+public byte_6689
+public byte_668A
+public byte_6788
+public byte_6789
+public byte_678A
+public byte_6888
+public byte_6889
+public byte_688A
+public byte_6988
+public byte_6BBD
+public byte_6BC0
+public byte_6BC1
+public byte_6BC4
+public byte_6BC5
+public byte_6BC6
+public byte_6BC7
+public byte_6BC8
+public byte_6BC9
+public byte_6BCC
+public byte_6BCD
+public byte_6BCE
+public byte_6BCF
+public byte_6BD0
+public byte_6BD1
+public byte_6BD2
+public byte_6BD3
+public byte_6BD4
+public byte_6BD5
+public byte_6BD9
+public byte_6BDB
+public byte_6BDC
+public byte_6BE0
+public byte_6BE1
+public byte_6BE4
+public byte_6BE5
+public byte_6BE6
+public byte_6BE7
+public byte_6BE8
+public byte_6BEA
+public byte_6BED
+public byte_6BEE
+public byte_6BF3
+public byte_6BFE
+public byte_6BFF
+public byte_6C00
+public byte_6C01
+public byte_6C02
+public byte_6C03
+public byte_6C04
+public byte_6C05
+public byte_6C12
+public byte_6CA4
+public byte_6CA5
+public byte_6CA6
+public byte_6CA7
+public byte_6CA8
+public byte_6F90
+public byte_7090
+public byte_7190
+public byte_7191
+public byte_752A
+public byte_752B
+public byte_78C6
+public byte_7B06
+public byte_7B07
+public byte_7B08
+public byte_7B18
+public byte_7B19
+public byte_7B1A
+public byte_7B7F
+public byte_7F5E
+public byte_8166
+public byte_91FB
+public byte_91FE
+public byte_A312
+public byte_A324
+public byte_A325
+public byte_A328
+public byte_A329
+public byte_A32A
+public byte_A32B
+public byte_A32C
+public byte_A330
+public byte_A335
+public byte_A340
+public byte_A3F9
+public byte_A3FA
+public byte_A515
+public byte_A516
+public byte_B197
+public byte_B198
+public byte_B1A5
+public byte_B1AA
+public byte_B1AB
+public byte_B1B2
+public byte_B1BB
+public dtbl_79EC
+public dtbl_7D2F
+public dtbl_7D95
+public word_0037
+public word_0039
+public word_003B
+public word_003D
+public word_0100
+public word_1F18
+public word_2383
+public word_2385
+public word_27F0
+public word_27F2
+public word_2875
+public word_287A
+public word_28AE
+public word_28C1
+public word_2A74
+public word_2A76
+public word_2A78
+public word_2A7A
+public word_2CEF
+public word_2CF1
+public word_2CF3
+public word_2D00
+public word_2D40
+public word_2DB0
+public word_2DB4
+public word_2DBA
+public word_2DBC
+public word_2DBE
+public word_2DC0
+public word_2DC2
+public word_2DC4
+public word_2DC6
+public word_2DC8
+public word_2DCA
+public word_2DCC
+public word_2DCE
+public word_2DD0
+public word_2DD2
+public word_2DD6
+public word_2DD8
+public word_2DDA
+public word_2DDC
+public word_2DE0
+public word_2DE2
+public word_2DE4
+public word_2DE6
+public word_2DE8
+public word_2DEA
+public word_2DEC
+public word_2DEE
+public word_2DF6
+public word_4F0A
+public word_4F0C
+public word_4F0E
+public word_4F1C
+public word_4F1E
+public word_4F20
+public word_4F22
+public word_4F25
+public word_4F28
+public word_4F2A
+public word_4F2E
+public word_4F30
+public word_4F32
+public word_4F34
+public word_4F37
+public word_4F3A
+public word_4F3C
+public word_4F40
+public word_4F42
+public word_4F44
+public word_4F52
+public word_4F54
+public word_4F56
+public word_5088
+public word_5648
+public word_564A
+public word_564C
+public word_565A
+public word_565C
+public word_565E
+public word_566C
+public word_566E
+public word_5670
+public word_567E
+public word_5680
+public word_5682
+public word_5690
+public word_5692
+public word_5694
+public word_5F48
+public word_62DA
+public word_62E8
+public word_667A
+public word_6989
+public word_6A88
+public word_6B14
+public word_6BAB
+public word_6BAD
+public word_6BAF
+public word_6BB1
+public word_6BBE
+public word_6BC2
+public word_6BCA
+public word_6BE2
+public word_6BEB
+public word_6BF1
+public word_6BF6
+public word_6BF8
+public word_6BFA
+public word_6BFC
+public word_6C06
+public word_6C08
+public word_6C0A
+public word_6C0C
+public word_6C0E
+public word_6C10
+public word_6C9E
+public word_6CA0
+public word_6CA2
+public word_6CA9
+public word_7522
+public word_78C4
+public word_79CE
+public word_7B04
+public word_7B1B
+public word_7CDF
+public word_7D9B
+public word_7DA9
+public word_815E
+public word_8160
+public word_8162
+public word_8164
+public word_8C89
+public word_8C8B
+public word_91F7
+public word_91F9
+public word_91FC
+public word_91FF
+public word_9201
+public word_A30E
+public word_A310
+public word_A326
+public word_A32E
+public word_A331
+public word_A333
+public word_A336
+public word_A338
+public word_A33A
+public word_A33C
+public word_A33E
+public word_A341
+public word_A3F7
+public word_A3FB
+public word_A3FD
+public word_A3FF
+public word_A401
+public word_A403
+public word_A405
+public word_A407
+public word_A408
+public word_A409
+public word_A40B
+public word_A40D
+public word_A40E
+public word_A40F
+public word_A411
+public word_A413
+public word_A414
+public word_A415
+public word_A417
+public word_A419
+public word_A41A
+public word_A41B
+public word_A41D
+public word_A41F
+public word_A420
+public word_A421
+public word_A423
+public word_A425
+public word_A4F7
+public word_A517
+public word_A519
+public word_B199
+public word_B19B
+public word_B19D
+public word_B19F
+public word_B1A1
+public word_B1A3
+public word_B1A8
+public word_B1AE
 CODE segment para public 'CODE'
-assume cs:CODE, ds:nothing, es:nothing, ss:nothing
+assume cs:CODE, ds:DATA, es:nothing, ss:nothing
 public loc_104F
 public sub_0282
 public sub_02CC
@@ -81,8 +427,24 @@ extrn sub_912B:near
 extrn sub_919F:near
 extrn sub_9286:near
 extrn sub_9520:near
+cvar_0000 label byte
+; DATA: command-line option and CPU state bytes/words (written by entry 0008..007C, CPU probe 1C0C, INT 12h at 00A9)
+    db 03h
+cvar_0001 label byte
 ; UNKNOWN: not yet classified as code or data
-    db 03h, 0FFh, 0FFh, 1Fh, 00h, 00h, 00h, 00h
+    db 0FFh
+cvar_0002 label byte
+; UNKNOWN: not yet classified as code or data
+    db 0FFh
+cvar_0003 label word
+; UNKNOWN: not yet classified as code or data
+    db 1Fh, 00h
+cvar_0005 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+cvar_0006 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
 sub_0008:
     cli
     cld
@@ -144,7 +506,7 @@ loc_007E:
     mov cl, 4
     shr ax, cl
     add ax, seg DATA+1
-    mov word ptr ds:[2875h], ax
+    mov word ptr word_2875, ax
     push ds
     xor ax, ax
     mov ds, ax
@@ -170,10 +532,10 @@ loc_007E:
     call sub_107B
     pop es
     pop ds
-    mov word ptr ds:[2875h], ax
-    mov word ptr ds:[3Dh], ax
+    mov word ptr word_2875, ax
+    mov word ptr word_003D, ax
     xor si, si
-    mov ds, word ptr ds:[3Dh]
+    mov ds, word ptr word_003D
     mov ax, seg DATA
     mov es, ax
     mov di, 3Fh
@@ -205,32 +567,32 @@ loc_007E:
     call sub_107B
     pop es
     pop ds
-    mov word ptr ds:[3Bh], ax
+    mov word ptr word_003B, ax
 loc_0126:
     call sub_2DFA
-    mov ax, word ptr ds:[2875h]
-    mov word ptr ds:[39h], ax
+    mov ax, word ptr word_2875
+    mov word ptr word_0039, ax
 loc_012F:
-    mov dx, word ptr ds:[39h]
-    mov word ptr ds:[2875h], dx
+    mov dx, word ptr word_0039
+    mov word ptr word_2875, dx
     or ax, ax
     je loc_0163
     call sub_9286
     call sub_447D
-    mov byte ptr ds:[27D8h], 2
-    mov byte ptr ds:[6CA7h], 0
-    mov byte ptr ds:[7B19h], 14h
-    mov byte ptr ds:[7B18h], 0
-    mov byte ptr ds:[6CA8h], 0
+    mov byte ptr byte_27D8, 2
+    mov byte ptr byte_6CA7, 0
+    mov byte ptr byte_7B19, 14h
+    mov byte ptr byte_7B18, 0
+    mov byte ptr byte_6CA8, 0
     mov ax, 3
     call sub_02CC
     call sub_8E45
 loc_0163:
-    cmp byte ptr ds:[2D8Ah], 8
+    cmp byte ptr ds:byte_2D8A, 8
     jb loc_019E
-    cmp byte ptr ds:[2D8Ah], 0Ah
+    cmp byte ptr ds:byte_2D8A, 0Ah
     jae loc_019E
-    cmp byte ptr ds:[0B198h], 0
+    cmp byte ptr ds:byte_B198, 0
     jne loc_019E
     mov dx, 2Ch
     push ds
@@ -238,8 +600,8 @@ loc_0163:
     call sub_107B
     pop es
     pop ds
-    mov word ptr ds:[2875h], ax
-    mov word ptr ds:[2DDAh], ax
+    mov word ptr word_2875, ax
+    mov word ptr word_2DDA, ax
     xor si, si
     mov ds, ax
     mov cl, 0FFh
@@ -250,17 +612,17 @@ loc_0163:
     mov ax, 1
     jmp short loc_012F
 loc_019E:
-    cmp byte ptr ds:[2D8Ah], 0Ah
+    cmp byte ptr ds:byte_2D8A, 0Ah
     jae loc_01AB
     call sub_447D
     call sub_9520
 loc_01AB:
-    mov bl, byte ptr ds:[2D8Ah]
+    mov bl, byte ptr byte_2D8A
     xor bh, bh
-    mov al, byte ptr [bx+2D20h]
+    mov al, byte ptr [bx+byte_2D20]
     xor ah, ah
     call sub_02CC
-    cmp byte ptr ds:[2D8Ah], 0Ah
+    cmp byte ptr ds:byte_2D8A, 0Ah
     jae loc_01C4
     call sub_447D
 loc_01C4:
@@ -268,7 +630,7 @@ loc_01C4:
     mov di, 4F0Ah
     mov cx, 40Bh
     rep stosw
-    mov al, byte ptr ds:[2D8Ah]
+    mov al, byte ptr byte_2D8A
     call sub_3ED6
     call sub_0BA0
     call sub_5237
@@ -279,13 +641,13 @@ loc_01C4:
     call sub_454E
     call sub_3A27
     call sub_44FB
-    mov word ptr ds:[0A341h], 0
-    mov byte ptr ds:[6BCCh], 0
-    mov byte ptr ds:[2CECh], 5
-    mov byte ptr ds:[2CEDh], 22h
-    mov byte ptr ds:[2CEEh], 86h
-    mov word ptr ds:[2CEFh], 0E58Dh
-    mov byte ptr ds:[2874h], 0
+    mov word ptr word_A341, 0
+    mov byte ptr byte_6BCC, 0
+    mov byte ptr byte_2CEC, 5
+    mov byte ptr byte_2CED, 22h
+    mov byte ptr byte_2CEE, 86h
+    mov word ptr word_2CEF, 0E58Dh
+    mov byte ptr byte_2874, 0
 loc_0214:
     mov ax, seg DATA
     mov ds, ax
@@ -321,14 +683,25 @@ loc_0261:
     call sub_67D7
     call sub_4C30
     jmp short loc_0214
+cvar_0272 label word
+; DATA: detected SB port words (written 1DA2..1DC1)
+    db 00h, 00h
+cvar_0274 label word
 ; UNKNOWN: not yet classified as code or data
-    db 00h, 00h, 0Ah, 00h, 0Ch, 00h, 0Eh, 00h
+    db 0Ah, 00h
+cvar_0276 label word
+; UNKNOWN: not yet classified as code or data
+    db 0Ch, 00h
+cvar_0278 label word
+; UNKNOWN: not yet classified as code or data
+    db 0Eh, 00h
+cvar_027A label dword
     dd sub_075C
     dd sub_1823
 sub_0282:
-    cmp byte ptr cs:[1D6Ch], 1
+    cmp byte ptr cs:cvar_1D6C, 1
     je loc_02A9
-    cmp byte ptr cs:[1D6Dh], 1
+    cmp byte ptr cs:cvar_1D6D, 1
     je loc_02A9
     push ax
     push bx
@@ -338,7 +711,7 @@ sub_0282:
     mov al, 0Ah
     mul dl
     add ax, 1037h
-    mov word ptr ds:[1035h], ax
+    mov word ptr word_1035, ax
     pop ds
     pop bx
     pop ax
@@ -352,10 +725,10 @@ loc_02A9:
     shl bx, 1
     mov ax, seg DATA
     mov ds, ax
-    mov ax, word ptr [bx+1009h]
-    mov word ptr ds:[1004h], ax
-    mov ax, word ptr [bx+100Bh]
-    mov word ptr ds:[1006h], ax
+    mov ax, word ptr [bx+word_1009]
+    mov word ptr word_1004, ax
+    mov ax, word ptr [bx+word_100B]
+    mov word ptr word_1006, ax
     pop ds
     pop bx
     pop ax
@@ -373,37 +746,37 @@ sub_02CC:
     push ds
     push es
     push bp
-    add word ptr ds:[2875h], 80h
-    cmp byte ptr cs:[1D6Dh], 0
+    add word ptr word_2875, 80h
+    cmp byte ptr cs:cvar_1D6D, 0
     je loc_02C9
     mov si, ax
-    mov al, byte ptr [si+0ABCh]
+    mov al, byte ptr [si+byte_0ABC]
     test al, 1
     jne loc_02C9
-    cmp byte ptr ds:[2879h], 1
+    cmp byte ptr ds:byte_2879, 1
     je loc_02C9
     test word ptr cs:[3], 40h
     je loc_0300
     jmp near ptr loc_046F
 loc_0300:
-    or byte ptr [si+0ABCh], 1
+    or byte ptr [si+byte_0ABC], 1
     xor di, di
     mov cx, 12h
 loc_030A:
     cmp di, si
     je loc_031A
-    test byte ptr [di+0ABCh], 8
+    test byte ptr [di+byte_0ABC], 8
     jne loc_031A
-    and byte ptr [di+0ABCh], 0FEh
+    and byte ptr [di+byte_0ABC], 0FEh
 loc_031A:
     inc di
     loop loc_030A
     mov cx, si
-    and byte ptr cs:[1D6Eh], 0FDh
+    and byte ptr cs:cvar_1D6E, 0FDh
     call sub_0492
     mov ax, seg DATA
     mov es, ax
-    mov ds, word ptr es:[0B5Eh]
+    mov ds, word ptr es:word_0B5E
     mov si, 14h
     xor di, di
     mov dx, 0Fh
@@ -413,41 +786,41 @@ loc_031A:
     jne loc_034C
     mov dl, 1Fh
 loc_034C:
-    mov byte ptr es:[0DC4h], dl
+    mov byte ptr es:byte_0DC4, dl
 loc_0351:
     add si, 16h
     lodsw
     xchg al, ah
     shl ax, 1
-    mov word ptr es:[di+0BD2h], ax
+    mov word ptr es:[di+word_0BD2], ax
     lodsw
     xchg al, ah
-    mov word ptr es:[di+0BD4h], ax
-    lodsw
-    xchg al, ah
-    shl ax, 1
-    mov word ptr es:[di+0BD6h], ax
+    mov word ptr es:[di+word_0BD4], ax
     lodsw
     xchg al, ah
     shl ax, 1
-    mov word ptr es:[di+0BD8h], ax
+    mov word ptr es:[di+word_0BD6], ax
+    lodsw
+    xchg al, ah
+    shl ax, 1
+    mov word ptr es:[di+word_0BD8], ax
     add di, 10h
     dec dx
     jne loc_0351
     lodsb
-    mov byte ptr es:[0DC2h], al
+    mov byte ptr es:byte_0DC2, al
     inc si
     mov di, 0DC7h
     mov cx, 40h
     rep movsw
     mov ax, seg DATA
     mov ds, ax
-    mov es, word ptr ds:[0B5Eh]
-    cmp byte ptr ds:[0DC4h], 0Fh
+    mov es, word ptr word_0B5E
+    cmp byte ptr ds:byte_0DC4, 0Fh
     je loc_03A1
     add si, 4
 loc_03A1:
-    mov cl, byte ptr ds:[0DC2h]
+    mov cl, byte ptr byte_0DC2
     xor ch, ch
     mov di, 0DC7h
     xor ah, ah
@@ -460,26 +833,26 @@ loc_03B4:
     inc di
     loop loc_03AC
     inc ah
-    mov byte ptr ds:[0DC3h], ah
-    mov word ptr ds:[0DC5h], si
+    mov byte ptr byte_0DC3, ah
+    mov word ptr word_0DC5, si
     xor al, al
     shr ax, 1
     shr ax, 1
-    add ax, word ptr ds:[0B5Eh]
+    add ax, word ptr word_0B5E
     xor bx, bx
-    mov cl, byte ptr ds:[0DC4h]
+    mov cl, byte ptr byte_0DC4
     xor ch, ch
 loc_03D3:
     mov dx, si
     and si, 0Fh
-    mov word ptr [bx+0BDAh], si
+    mov word ptr [bx+word_0BDA], si
     shr dx, 1
     shr dx, 1
     shr dx, 1
     shr dx, 1
     add ax, dx
-    mov word ptr [bx+0BDCh], ax
-    mov bp, word ptr [bx+0BD2h]
+    mov word ptr [bx+word_0BDC], ax
+    mov bp, word ptr [bx+word_0BD2]
     or bp, bp
     je loc_0407
     mov di, si
@@ -495,15 +868,15 @@ loc_03F8:
     jne loc_03F8
     mov ax, dx
 loc_0407:
-    add si, word ptr [bx+0BD2h]
+    add si, word ptr [bx+word_0BD2]
     add bx, 10h
     loop loc_03D3
     mov ax, seg DATA
     mov ds, ax
     mov es, ax
-    mov si, word ptr ds:[0DC5h]
-    mov dh, byte ptr ds:[0DC3h]
-    mov ds, word ptr ds:[0B5Eh]
+    mov si, word ptr word_0DC5
+    mov dh, byte ptr byte_0DC3
+    mov ds, word ptr word_0B5E
     xor dl, dl
 loc_0425:
     lodsw
@@ -524,10 +897,10 @@ loc_043F:
     jne loc_0425
     mov ax, es
     mov ds, ax
-    mov word ptr ds:[0B86h], 0
-    mov word ptr ds:[0B88h], 0
-    mov byte ptr ds:[0B85h], 1
-    mov byte ptr ds:[0B84h], 6
+    mov word ptr word_0B86, 0
+    mov word ptr word_0B88, 0
+    mov byte ptr byte_0B85, 1
+    mov byte ptr byte_0B84, 6
     mov di, 0B8Ah
     mov cx, 4
     mov ax, 0FFFFh
@@ -537,14 +910,14 @@ loc_043F:
     rep stosw
 loc_046F:
     cli
-    test byte ptr cs:[1D6Eh], 1
+    test byte ptr cs:cvar_1D6E, 1
     je loc_047B
     call sub_214E
 loc_047B:
-    or byte ptr cs:[1D6Eh], 2
+    or byte ptr cs:cvar_1D6E, 2
     sti
 loc_0482:
-    sub word ptr ds:[2875h], 80h
+    sub word ptr word_2875, 80h
     pop bp
     pop es
     pop ds
@@ -557,10 +930,10 @@ loc_0482:
     ret
 sub_0492:
     mov si, cx
-    mov al, byte ptr [si+0ABCh]
+    mov al, byte ptr [si+byte_0ABC]
     mov ah, al
     and ah, 8
-    mov byte ptr ds:[0B16h], ah
+    mov byte ptr byte_0B16, ah
     shr al, 1
     and al, 3
     jne loc_04AA
@@ -571,19 +944,19 @@ loc_04AA:
     mov bx, si
     shl bx, 1
     shl bx, 1
-    mov ax, word ptr ds:[2875h]
-    cmp byte ptr ds:[0B16h], 0
+    mov ax, word ptr word_2875
+    cmp byte ptr ds:byte_0B16, 0
     jne loc_04C1
-    mov ax, word ptr ds:[0B5Eh]
+    mov ax, word ptr word_0B5E
 loc_04C1:
     mov es, ax
-    mov ds, word ptr [bx+0ACEh]
+    mov ds, word ptr [bx+word_0ACE]
     mov si, 11h
     xor di, di
-    mov byte ptr cs:[140Fh], 1
+    mov byte ptr cs:cvar_140F, 1
     call sub_14D8
-    mov byte ptr cs:[140Fh], 0
-    mov ax, word ptr ds:[2875h]
+    mov byte ptr cs:cvar_140F, 0
+    mov ax, word ptr word_2875
     jmp near ptr loc_06D4
 loc_04E1:
     cmp al, 2
@@ -593,7 +966,7 @@ loc_04E1:
     mov bx, si
     shl bx, 1
     shl bx, 1
-    mov bx, word ptr [bx+0ACEh]
+    mov bx, word ptr [bx+word_0ACE]
     mov si, bx
     and si, 0Fh
     mov cl, 0Ah
@@ -603,31 +976,31 @@ loc_04E1:
     shr bx, 1
     shr bx, 1
     shr bx, 1
-    mov dx, word ptr ds:[0B55h]
+    mov dx, word ptr word_0B55
     int 67h
     inc bx
     mov ax, 4401h
     int 67h
-    mov word ptr cs:[140Dh], bx
-    mov ax, word ptr ds:[2875h]
-    cmp byte ptr ds:[0B16h], 0
+    mov word ptr cs:cvar_140D, bx
+    mov ax, word ptr word_2875
+    cmp byte ptr ds:byte_0B16, 0
     jne loc_0525
-    mov ax, word ptr ds:[0B5Eh]
+    mov ax, word ptr word_0B5E
 loc_0525:
     mov es, ax
     xor di, di
-    mov ds, word ptr ds:[0B51h]
-    mov byte ptr cs:[140Fh], 2
+    mov ds, word ptr word_0B51
+    mov byte ptr cs:cvar_140F, 2
     call sub_14D8
-    mov byte ptr cs:[140Fh], 0
-    mov ax, word ptr ds:[2875h]
+    mov byte ptr cs:cvar_140F, 0
+    mov ax, word ptr word_2875
     jmp near ptr loc_06D4
 loc_0542:
     cmp al, 3
     je loc_0549
     jmp near ptr loc_0699
 loc_0549:
-    mov al, byte ptr [si+0AAAh]
+    mov al, byte ptr [si+byte_0AAA]
     xor ah, ah
     xor bx, bx
     mov cx, 0Ah
@@ -635,38 +1008,38 @@ loc_0554:
     shl ax, 1
     rcl bx, 1
     loop loc_0554
-    mov word ptr cs:[1409h], ax
-    mov word ptr cs:[140Bh], bx
+    mov word ptr cs:cvar_1409, ax
+    mov word ptr cs:cvar_140B, bx
     mov bx, si
     shl bx, 1
     shl bx, 1
-    mov ax, word ptr [bx+0ACEh]
+    mov ax, word ptr [bx+word_0ACE]
     xor dx, dx
     mov cx, 0Ah
 loc_0572:
     shl ax, 1
     rcl dx, 1
     loop loc_0572
-    mov word ptr ds:[0B27h], ax
-    mov word ptr ds:[0B29h], dx
-    mov word ptr ds:[0B21h], 18h
-    mov word ptr ds:[0B23h], 0
-    mov word ptr ds:[0B2Dh], 0B31h
-    mov word ptr ds:[0B2Fh], ds
-    mov word ptr ds:[0B2Bh], 0
-    mov ax, word ptr ds:[0B1Fh]
-    mov word ptr ds:[0B25h], ax
+    mov word ptr word_0B27, ax
+    mov word ptr word_0B29, dx
+    mov word ptr word_0B21, 18h
+    mov word ptr word_0B23, 0
+    mov word ptr word_0B2D, 0B31h
+    mov word ptr word_0B2F, ds
+    mov word ptr word_0B2B, 0
+    mov ax, word ptr word_0B1F
+    mov word ptr word_0B25, ax
     mov si, 0B21h
     mov ah, 0Bh
-    inc byte ptr cs:[0C667h]
-    call dword ptr ds:[0B17h]
+    inc byte ptr cs:byte_2877
+    call dword ptr dword_0B17
     cmp ax, 1
     je loc_05B7
     jmp near ptr loc_0FEC
 loc_05B7:
-    dec byte ptr cs:[0C667h]
-    mov dl, byte ptr ds:[0B3Fh]
-    mov ax, word ptr ds:[0B40h]
+    dec byte ptr cs:byte_2877
+    mov dl, byte ptr byte_0B3F
+    mov ax, word ptr word_0B40
     mov cx, 4
     shr dl, 1
     shr dl, 1
@@ -675,12 +1048,12 @@ loc_05CA:
     rcr ax, 1
     loop loc_05CA
     inc ax
-    cmp byte ptr ds:[0B16h], 0
+    cmp byte ptr ds:byte_0B16, 0
     jne loc_05DA
     xor ax, ax
 loc_05DA:
     mov dx, ax
-    add dx, word ptr ds:[2875h]
+    add dx, word ptr word_2875
     cmp dx, word ptr cs:[6]
     jb loc_05EA
     jmp near ptr loc_06D5
@@ -696,41 +1069,41 @@ loc_05EA:
     shl ax, cl
     mov dx, ax
 loc_0603:
-    mov word ptr cs:[1410h], dx
+    mov word ptr cs:cvar_1410, dx
     sub dx, 80h
-    mov word ptr cs:[1412h], dx
-    mov word ptr ds:[0B2Dh], 0
-    mov word ptr ds:[0B2Fh], es
-    mov ax, word ptr cs:[1410h]
-    cmp word ptr cs:[140Bh], 0
+    mov word ptr cs:cvar_1412, dx
+    mov word ptr word_0B2D, 0
+    mov word ptr word_0B2F, es
+    mov ax, word ptr cs:cvar_1410
+    cmp word ptr cs:cvar_140B, 0
     jne loc_0632
-    cmp word ptr cs:[1409h], ax
+    cmp word ptr cs:cvar_1409, ax
     jae loc_0632
-    mov ax, word ptr cs:[1409h]
+    mov ax, word ptr cs:cvar_1409
 loc_0632:
-    sub word ptr cs:[1409h], ax
-    sbb word ptr cs:[140Bh], 0
-    mov word ptr ds:[0B21h], ax
-    mov word ptr ds:[0B23h], 0
+    sub word ptr cs:cvar_1409, ax
+    sbb word ptr cs:cvar_140B, 0
+    mov word ptr word_0B21, ax
+    mov word ptr word_0B23, 0
     mov ah, 0Bh
     mov si, 0B21h
-    inc byte ptr cs:[0C667h]
-    call dword ptr ds:[0B17h]
+    inc byte ptr cs:byte_2877
+    call dword ptr dword_0B17
     cmp ax, 1
     je loc_065C
     jmp near ptr loc_0FEC
 loc_065C:
-    dec byte ptr cs:[0C667h]
-    mov ax, word ptr ds:[0B21h]
-    add word ptr ds:[0B27h], ax
-    adc word ptr ds:[0B29h], 0
+    dec byte ptr cs:byte_2877
+    mov ax, word ptr word_0B21
+    add word ptr word_0B27, ax
+    adc word ptr word_0B29, 0
     xor di, di
     mov si, 11h
-    mov byte ptr cs:[140Fh], 3
-    mov ax, word ptr ds:[2875h]
-    cmp byte ptr ds:[0B16h], 0
+    mov byte ptr cs:cvar_140F, 3
+    mov ax, word ptr word_2875
+    cmp byte ptr ds:byte_0B16, 0
     jne loc_0685
-    mov ax, word ptr ds:[0B5Eh]
+    mov ax, word ptr word_0B5E
 loc_0685:
     mov ds, ax
     push ds
@@ -738,18 +1111,18 @@ loc_0685:
     pop ds
     pop es
     call sub_14D8
-    mov byte ptr cs:[140Fh], 0
-    mov ax, word ptr ds:[2875h]
+    mov byte ptr cs:cvar_140F, 0
+    mov ax, word ptr word_2875
     jmp short loc_06D4
 loc_0699:
     call sub_0B81
-    push word ptr ds:[2875h]
-    cmp byte ptr ds:[0B16h], 0
+    push word ptr word_2875
+    cmp byte ptr ds:byte_0B16, 0
     jne loc_06CD
     push ds
     push es
     call sub_107B
-    mov dx, word ptr ds:[0B5Eh]
+    mov dx, word ptr word_0B5E
     mov bx, 105Bh
 loc_06B3:
     xor si, si
@@ -764,11 +1137,11 @@ loc_06B3:
     jne loc_06B3
     pop es
     pop ds
-    pop word ptr ds:[2875h]
+    pop word ptr word_2875
     jmp short loc_06D4
 loc_06CD:
     call sub_107B
-    pop word ptr ds:[2875h]
+    pop word ptr word_2875
 loc_06D4:
     ret
 loc_06D5:
@@ -789,15 +1162,15 @@ loc_06E9:
     jmp near ptr loc_07AD
 sub_06F6:
     push ax
-    cmp byte ptr cs:[0C667h], 0
+    cmp byte ptr cs:byte_2877, 0
     jne loc_06E9
     mov al, 8Eh
     out 40h, al
     xor al, al
     out 40h, al
     pop ax
-    inc word ptr cs:[1D69h]
-    and word ptr cs:[1D69h], 7Fh
+    inc word ptr cs:cvar_1D69
+    and word ptr cs:cvar_1D69, 7Fh
     jne loc_0718
     jmp near ptr loc_07AD
 loc_0718:
@@ -806,17 +1179,17 @@ loc_0718:
     push dx
     push si
     push ds
-    test byte ptr cs:[1D6Eh], 1
+    test byte ptr cs:cvar_1D6E, 1
     je loc_0752
     mov ax, seg DATA
     mov ds, ax
-    cmp word ptr ds:[1006h], 0
+    cmp word ptr ds:word_1006, 0
     je loc_0752
-    dec word ptr ds:[1006h]
-    mov si, word ptr ds:[1004h]
-    inc word ptr ds:[1004h]
+    dec word ptr word_1006
+    mov si, word ptr word_1004
+    inc word ptr word_1004
     mov dx, ds
-    mov ds, word ptr ds:[0B59h]
+    mov ds, word ptr word_0B59
     lodsb
     xor al, 80h
     mov ds, dx
@@ -841,10 +1214,10 @@ sub_075C:
     push ds
     mov ax, seg DATA
     mov ds, ax
-    mov al, byte ptr cs:[1D6Dh]
-    or al, byte ptr cs:[1D6Ch]
+    mov al, byte ptr cs:cvar_1D6D
+    or al, byte ptr cs:cvar_1D6C
     jne loc_07A9
-    mov si, word ptr ds:[1035h]
+    mov si, word ptr word_1035
     cmp si, -1
     je loc_07A9
     mov bx, word ptr [si]
@@ -860,7 +1233,7 @@ sub_075C:
     mov word ptr [si+4], ax
     mov ax, word ptr [si+2]
     mov word ptr [si], ax
-    mov word ptr ds:[1035h], 0FFFFh
+    mov word ptr word_1035, 0FFFFh
     mov bx, 0Ah
     mov al, bl
     out 42h, al
@@ -872,9 +1245,9 @@ loc_07A9:
     pop bx
     pop ax
 loc_07AD:
-    inc word ptr cs:[1D67h]
-    inc byte ptr cs:[1D6Bh]
-    and byte ptr cs:[1D6Bh], 3
+    inc word ptr cs:cvar_1D67
+    inc byte ptr cs:cvar_1D6B
+    and byte ptr cs:cvar_1D6B, 3
     je loc_07C6
     push ax
     mov al, 20h
@@ -896,7 +1269,7 @@ sub_07C9:
     mov ax, seg DATA
     mov ds, ax
     in al, 21h
-    mov byte ptr ds:[0E6Fh], al
+    mov byte ptr byte_0E6F, al
     cmp byte ptr cs:[2], 0
     je loc_0849
     mov dx, 859h
@@ -905,10 +1278,10 @@ sub_07C9:
     call sub_107B
     pop es
     pop ds
-    mov word ptr ds:[0B59h], ax
-    sub ax, word ptr ds:[2875h]
+    mov word ptr word_0B59, ax
+    sub ax, word ptr word_2875
     neg ax
-    mov word ptr ds:[0B5Bh], ax
+    mov word ptr word_0B5B, ax
     mov si, 1009h
     mov cx, 0Bh
     xor dx, dx
@@ -920,7 +1293,7 @@ loc_0802:
     loop loc_0802
     call sub_1D6F
     jb loc_081B
-    mov byte ptr cs:[1D6Dh], 1
+    mov byte ptr cs:cvar_1D6D, 1
     jmp short loc_0849
 loc_081B:
     call sub_1D22
@@ -928,12 +1301,12 @@ loc_081B:
     cmp byte ptr cs:[5], 2
     jb loc_0839
     call sub_0853
-    mov byte ptr cs:[1D6Ch], 1
-    mov byte ptr cs:[1D6Eh], 1
+    mov byte ptr cs:cvar_1D6C, 1
+    mov byte ptr cs:cvar_1D6E, 1
     jmp short loc_0849
 loc_0839:
-    mov ax, word ptr ds:[0B59h]
-    mov word ptr ds:[2875h], ax
+    mov ax, word ptr word_0B59
+    mov word ptr word_2875, ax
     mov al, 0B6h
     out 43h, al
     in al, 61h
@@ -1032,7 +1405,7 @@ loc_08F7:
     int 67h
     or ah, ah
     jne loc_094F
-    mov word ptr ds:[0B51h], bx
+    mov word ptr word_0B51, bx
     mov ah, 42h
     int 67h
     or ah, ah
@@ -1042,14 +1415,14 @@ loc_08F7:
     shl ax, 1
     shl ax, 1
     shl ax, 1
-    mov word ptr ds:[0B53h], ax
+    mov word ptr word_0B53, ax
     or bx, bx
     je loc_094F
     mov ah, 43h
     int 67h
     or ah, ah
     jne loc_094F
-    mov word ptr ds:[0B55h], dx
+    mov word ptr word_0B55, dx
 loc_094F:
     test word ptr cs:[3], 8
     je loc_0991
@@ -1063,58 +1436,58 @@ loc_094F:
     jne loc_0991
     mov ax, 4310h
     int 2Fh
-    mov word ptr ds:[0B17h], bx
-    mov word ptr ds:[0B19h], es
+    mov word ptr dword_0B17, bx
+    mov word ptr word_0B19, es
     mov ah, 8
-    call dword ptr ds:[0B17h]
-    mov word ptr ds:[0B1Dh], ax
+    call dword ptr dword_0B17
+    mov word ptr word_0B1D, ax
     mov ah, 9
-    mov dx, word ptr ds:[0B1Dh]
-    call dword ptr ds:[0B17h]
+    mov dx, word ptr word_0B1D
+    call dword ptr dword_0B17
     or ax, ax
     je loc_0991
-    mov word ptr ds:[0B1Fh], dx
+    mov word ptr word_0B1F, dx
 loc_0991:
     xor si, si
     mov cx, 12h
 loc_0996:
     push si
-    mov al, byte ptr [si+0A98h]
+    mov al, byte ptr [si+byte_0A98]
     xor ah, ah
     mov si, ax
-    cmp byte ptr cs:[1D6Dh], 1
+    cmp byte ptr cs:cvar_1D6D, 1
     je loc_09B0
-    test byte ptr [si+0ABCh], 8
+    test byte ptr [si+byte_0ABC], 8
     je loc_0A23
     jmp short loc_09C0
 loc_09B0:
-    test byte ptr [si+0ABCh], 8
+    test byte ptr [si+byte_0ABC], 8
     jne loc_09C0
     test word ptr cs:[3], 40h
     jne loc_0A23
 loc_09C0:
-    mov al, byte ptr [si+0AAAh]
+    mov al, byte ptr [si+byte_0AAA]
     xor ah, ah
-    cmp word ptr ds:[0B53h], ax
+    cmp word ptr word_0B53, ax
     jb loc_09DD
-    cmp word ptr ds:[0B55h], 55AAh
+    cmp word ptr ds:word_0B55, 55AAh
     je loc_09DD
     call sub_0A2C
-    sub word ptr ds:[0B53h], ax
+    sub word ptr word_0B53, ax
     jmp short loc_0A23
 loc_09DD:
-    cmp word ptr ds:[0B1Dh], ax
+    cmp word ptr word_0B1D, ax
     jb loc_09FF
-    cmp word ptr ds:[0B1Fh], 55AAh
+    cmp word ptr ds:word_0B1F, 55AAh
     je loc_09FF
-    test byte ptr [si+0ABCh], 10h
+    test byte ptr [si+byte_0ABC], 10h
     jne loc_09FF
-    sub word ptr ds:[0B1Dh], ax
+    sub word ptr word_0B1D, ax
     call sub_0ADA
-    add word ptr ds:[0B1Bh], ax
+    add word ptr word_0B1B, ax
     jmp short loc_0A23
 loc_09FF:
-    test byte ptr [si+0ABCh], 2
+    test byte ptr [si+byte_0ABC], 2
     je loc_0A23
     test word ptr cs:[3], 20h
     je loc_0A1E
@@ -1122,10 +1495,10 @@ loc_09FF:
     mov bx, si
     shl bx, 1
     shl bx, 1
-    mov word ptr [bx+0ACEh], ax
+    mov word ptr [bx+word_0ACE], ax
     jmp short loc_0A23
 loc_0A1E:
-    and byte ptr [si+0ABCh], 0FDh
+    and byte ptr [si+byte_0ABC], 0FDh
 loc_0A23:
     pop si
     inc si
@@ -1147,26 +1520,26 @@ sub_0A2C:
     mov di, si
     mov cx, si
     call sub_0B81
-    push word ptr ds:[2875h]
+    push word ptr word_2875
     call sub_0F7F
-    mov word ptr ds:[2875h], ax
-    mov al, byte ptr [di+0ABCh]
+    mov word ptr word_2875, ax
+    mov al, byte ptr [di+byte_0ABC]
     and al, 0F9h
     or al, 4
-    mov byte ptr [di+0ABCh], al
-    mov cl, byte ptr [di+0AAAh]
+    mov byte ptr [di+byte_0ABC], al
+    mov cl, byte ptr [di+byte_0AAA]
     xor ch, ch
     shl di, 1
     shl di, 1
-    mov ax, word ptr ds:[0B57h]
-    mov word ptr [di+0ACEh], ax
-    mov es, word ptr ds:[0B51h]
-    mov dx, word ptr ds:[0B55h]
+    mov ax, word ptr word_0B57
+    mov word ptr [di+word_0ACE], ax
+    mov es, word ptr word_0B51
+    mov dx, word ptr word_0B55
 loc_0A6B:
     xor si, si
     mov al, 0
     mov ah, 44h
-    mov bx, word ptr ds:[0B57h]
+    mov bx, word ptr word_0B57
     mov di, bx
     shr bx, 1
     shr bx, 1
@@ -1185,29 +1558,29 @@ loc_0A91:
     xchg cl, ch
     shl cx, 1
     shl cx, 1
-    mov ax, word ptr ds:[0B57h]
+    mov ax, word ptr word_0B57
     and ax, 0Fh
     xchg al, ah
     shl ax, 1
     shl ax, 1
     mov di, ax
-    mov ds, word ptr ds:[2875h]
+    mov ds, word ptr word_2875
     mov bp, cx
     rep movsb
     mov ax, seg DATA
     mov ds, ax
     mov cl, 4
     shr bp, cl
-    add word ptr ds:[2875h], bp
+    add word ptr word_2875, bp
     mov cl, 6
     shr bp, cl
-    add word ptr ds:[0B57h], bp
+    add word ptr word_0B57, bp
     mov cx, bx
     sub cx, bp
     je loc_0ACC
     jmp short loc_0A6B
 loc_0ACC:
-    pop word ptr ds:[2875h]
+    pop word ptr word_2875
     pop bp
     pop es
     pop ds
@@ -1229,15 +1602,15 @@ sub_0ADA:
     push es
     push bp
     mov dx, ax
-    mov ax, word ptr ds:[0B1Bh]
+    mov ax, word ptr word_0B1B
     mov bx, si
     shl bx, 1
     shl bx, 1
-    mov word ptr [bx+0ACEh], ax
-    mov al, byte ptr [si+0ABCh]
+    mov word ptr [bx+word_0ACE], ax
+    mov al, byte ptr [si+byte_0ABC]
     and al, 0F9h
     or al, 6
-    mov byte ptr [si+0ABCh], al
+    mov byte ptr [si+byte_0ABC], al
     mov ax, dx
     xor dx, dx
     mov cx, 0Ah
@@ -1245,37 +1618,37 @@ loc_0B05:
     shl ax, 1
     rcl dx, 1
     loop loc_0B05
-    mov word ptr ds:[0B21h], ax
-    mov word ptr ds:[0B23h], dx
-    mov word ptr ds:[0B25h], 0
-    mov word ptr ds:[0B27h], 0
-    mov ax, word ptr ds:[2875h]
-    mov word ptr ds:[0B29h], ax
-    mov ax, word ptr ds:[0B1Fh]
-    mov word ptr ds:[0B2Bh], ax
-    mov ax, word ptr ds:[0B1Bh]
+    mov word ptr word_0B21, ax
+    mov word ptr word_0B23, dx
+    mov word ptr word_0B25, 0
+    mov word ptr word_0B27, 0
+    mov ax, word ptr word_2875
+    mov word ptr word_0B29, ax
+    mov ax, word ptr word_0B1F
+    mov word ptr word_0B2B, ax
+    mov ax, word ptr word_0B1B
     xor dx, dx
     mov cx, 0Ah
 loc_0B32:
     shl ax, 1
     rcl dx, 1
     loop loc_0B32
-    mov word ptr ds:[0B2Dh], ax
-    mov word ptr ds:[0B2Fh], dx
+    mov word ptr word_0B2D, ax
+    mov word ptr word_0B2F, dx
     mov cx, si
     call sub_0B81
-    push word ptr ds:[2875h]
+    push word ptr word_2875
     call sub_0F7F
-    pop word ptr ds:[2875h]
+    pop word ptr word_2875
     mov si, 0B21h
     mov ah, 0Bh
-    inc byte ptr cs:[0C667h]
-    call dword ptr ds:[0B17h]
+    inc byte ptr cs:byte_2877
+    call dword ptr dword_0B17
     cmp ax, 1
     je loc_0B65
     jmp near ptr loc_0FEC
 loc_0B65:
-    dec byte ptr cs:[0C667h]
+    dec byte ptr cs:byte_2877
     pop bp
     pop es
     pop ds
@@ -1319,10 +1692,10 @@ sub_0BA0:
     mov ds, ax
     mov es, ax
     mov ax, 1012h
-    mov bl, byte ptr ds:[2D8Ah]
+    mov bl, byte ptr byte_2D8A
     xor bh, bh
     shl bx, 1
-    mov dx, word ptr [bx+2D00h]
+    mov dx, word ptr [bx+word_2D00]
     xor bx, bx
     mov cx, 10h
     int 10h
@@ -1332,13 +1705,13 @@ sub_0BBE:
     mov ds, ax
 loc_0BC3:
     call sub_0DC1
-    mov al, byte ptr ds:[2832h]
-    or al, byte ptr ds:[27E8h]
+    mov al, byte ptr byte_2832
+    or al, byte ptr byte_27E8
     je loc_0BC3
 loc_0BCF:
     call sub_0DC1
-    mov al, byte ptr ds:[27E8h]
-    or al, byte ptr ds:[2832h]
+    mov al, byte ptr byte_27E8
+    or al, byte ptr byte_2832
     jne loc_0BCF
     ret
 sub_0BDC:
@@ -1352,7 +1725,7 @@ sub_0BDC:
 loc_0BEE:
     ret
 sub_0BEF:
-    mov byte ptr ds:[27D5h], 0
+    mov byte ptr byte_27D5, 0
     mov bx, 2710h
 loc_0BF7:
     mov al, 30h
@@ -1367,12 +1740,12 @@ loc_0C03:
     jne loc_0C17
     cmp bx, 1
     je loc_0C17
-    cmp byte ptr ds:[27D5h], 0
+    cmp byte ptr ds:byte_27D5, 0
     jne loc_0C17
     mov al, 20h
     jmp short loc_0C1C
 loc_0C17:
-    mov byte ptr ds:[27D5h], 1
+    mov byte ptr byte_27D5, 1
 loc_0C1C:
     call sub_0C3E
     mov ax, bx
@@ -1406,10 +1779,10 @@ sub_0C3E:
     push ds
     push es
     push bp
-    mov di, word ptr ds:[2385h]
-    add di, word ptr ds:[2383h]
-    add di, word ptr ds:[2DD6h]
-    inc word ptr ds:[2383h]
+    mov di, word ptr ds:word_2385
+    add di, word ptr ds:word_2383
+    add di, word ptr ds:word_2DD6
+    inc word ptr word_2383
     cmp al, 20h
     jne loc_0C7B
     mov ax, 0A000h
@@ -1432,7 +1805,7 @@ loc_0C7B:
     jbe loc_0C83
     sub al, 2
 loc_0C83:
-    mov ds, word ptr ds:[3Dh]
+    mov ds, word ptr word_003D
     mov ah, 30h
     mul ah
     mov si, ax
@@ -1469,10 +1842,10 @@ loc_0CB2:
 sub_0CBC:
     mov ax, seg DATA
     mov ds, ax
-    mov byte ptr ds:[27E5h], 3
+    mov byte ptr byte_27E5, 3
 loc_0CC6:
-    mov byte ptr ds:[27D9h], 0
-    mov word ptr ds:[27DAh], 320h
+    mov byte ptr byte_27D9, 0
+    mov word ptr word_27DA, 320h
     mov dx, 201h
     mov cx, 0C80h
     mov ah, 3
@@ -1491,13 +1864,13 @@ loc_0CE9:
     mov al, 0FFh
     test ah, 2
     je loc_0CF5
-    mov al, byte ptr ds:[27E7h]
+    mov al, byte ptr byte_27E7
 loc_0CF5:
     test ah, 1
     je loc_0CFD
-    mov al, byte ptr ds:[27E6h]
+    mov al, byte ptr byte_27E6
 loc_0CFD:
-    mov byte ptr ds:[27E4h], al
+    mov byte ptr byte_27E4, al
     call sub_0D6B
     jb loc_0D51
     cmp ax, 320h
@@ -1513,45 +1886,45 @@ loc_0CFD:
     shr ax, cl
     sub ax, bp
     neg ax
-    mov word ptr ds:[27DCh], ax
+    mov word ptr word_27DC, ax
     mov ax, bp
     shr ax, 1
     add ax, bp
-    mov word ptr ds:[27E2h], ax
+    mov word ptr word_27E2, ax
     mov bp, bx
     shr bx, cl
     sub bx, bp
     neg bx
-    mov word ptr ds:[27DEh], bx
+    mov word ptr word_27DE, bx
     mov bx, bp
     shr bx, cl
     add bx, bp
-    mov word ptr ds:[27E0h], bx
+    mov word ptr word_27E0, bx
     cmp ax, bx
     jae loc_0D4A
     mov ax, bx
 loc_0D4A:
     shl ax, 1
-    mov word ptr ds:[27DAh], ax
+    mov word ptr word_27DA, ax
     jmp short loc_0D69
 loc_0D51:
-    dec byte ptr ds:[27E5h]
+    dec byte ptr byte_27E5
     je loc_0D64
-    mov al, byte ptr ds:[27E6h]
-    xchg byte ptr ds:[27E7h], al
-    mov byte ptr ds:[27E6h], al
+    mov al, byte ptr byte_27E6
+    xchg byte ptr byte_27E7, al
+    mov byte ptr byte_27E6, al
     jmp near ptr loc_0CC6
 loc_0D64:
-    mov byte ptr ds:[27E4h], 0FFh
+    mov byte ptr byte_27E4, 0FFh
 loc_0D69:
     sti
     ret
 sub_0D6B:
     pushf
-    mov cl, byte ptr ds:[27E4h]
+    mov cl, byte ptr byte_27E4
     or cl, cl
     js loc_0DBE
-    cmp byte ptr ds:[27D9h], 0
+    cmp byte ptr ds:byte_27D9, 0
     jne loc_0DBE
     mov dx, 201h
     in al, dx
@@ -1567,10 +1940,10 @@ sub_0D6B:
     xor di, di
     xor bx, bx
     shr al, 1
-    sbb byte ptr ds:[27E8h], bh
+    sbb byte ptr ds:byte_27E8, bh
     shr al, 1
-    sbb byte ptr ds:[27E9h], bh
-    mov si, word ptr ds:[27DAh]
+    sbb byte ptr ds:byte_27E9, bh
+    mov si, word ptr word_27DA
     cli
     out dx, al
 loc_0DA7:
@@ -1605,154 +1978,154 @@ sub_0DC1:
     push bp
     mov ax, seg DATA
     mov ds, ax
-    cmp byte ptr ds:[2879h], 0
+    cmp byte ptr ds:byte_2879, 0
     je loc_0E51
-    cmp byte ptr ds:[2874h], 0
+    cmp byte ptr ds:byte_2874, 0
     je loc_0DE2
-    mov byte ptr ds:[6BE5h], 1
+    mov byte ptr byte_6BE5, 1
 loc_0DE2:
-    mov si, word ptr ds:[287Ah]
+    mov si, word ptr word_287A
     or si, si
     je loc_0DF1
-    cmp byte ptr ds:[287Dh], 0
+    cmp byte ptr ds:byte_287D, 0
     jne loc_0E0E
 loc_0DF1:
-    db 8Bh, 84h, 3Fh, 00h ; ENCODED: mov ax, word ptr [si+3Fh]
+    mov ax, word ptr [si+word_003F]
     inc si
     inc si
     cmp ax, 55AAh
     jne loc_0E01
-    mov byte ptr ds:[6BE5h], 1
+    mov byte ptr byte_6BE5, 1
 loc_0E01:
-    mov word ptr ds:[287Ah], si
-    mov byte ptr ds:[287Ch], al
-    mov byte ptr ds:[287Dh], ah
+    mov word ptr word_287A, si
+    mov byte ptr byte_287C, al
+    mov byte ptr byte_287D, ah
     jmp short loc_0E15
 loc_0E0E:
-    dec byte ptr ds:[287Dh]
-    mov al, byte ptr ds:[287Ch]
+    dec byte ptr byte_287D
+    mov al, byte ptr byte_287C
 loc_0E15:
     xor ah, ah
     shr al, 1
     rcl ah, 1
-    mov byte ptr ds:[27EDh], ah
+    mov byte ptr byte_27ED, ah
     xor ah, ah
     shr al, 1
     rcl ah, 1
-    mov byte ptr ds:[27ECh], ah
+    mov byte ptr byte_27EC, ah
     xor ah, ah
     shr al, 1
     rcl ah, 1
-    mov byte ptr ds:[27EAh], ah
+    mov byte ptr byte_27EA, ah
     xor ah, ah
     shr al, 1
     rcl ah, 1
-    mov byte ptr ds:[27EBh], ah
+    mov byte ptr byte_27EB, ah
     xor ah, ah
     shr al, 1
     rcl ah, 1
-    mov byte ptr ds:[27E8h], ah
+    mov byte ptr byte_27E8, ah
     xor ah, ah
     shr al, 1
     rcl ah, 1
-    mov byte ptr ds:[27E9h], ah
+    mov byte ptr byte_27E9, ah
 loc_0E51:
-    cmp byte ptr ds:[2879h], 1
+    cmp byte ptr ds:byte_2879, 1
     jne loc_0E5B
     jmp near ptr loc_0F75
 loc_0E5B:
     xor ax, ax
-    mov byte ptr ds:[27EAh], al
-    mov byte ptr ds:[27EBh], al
-    mov byte ptr ds:[27ECh], al
-    mov byte ptr ds:[27EDh], al
-    mov byte ptr ds:[27E8h], al
-    mov byte ptr ds:[27E9h], al
+    mov byte ptr byte_27EA, al
+    mov byte ptr byte_27EB, al
+    mov byte ptr byte_27EC, al
+    mov byte ptr byte_27ED, al
+    mov byte ptr byte_27E8, al
+    mov byte ptr byte_27E9, al
     call sub_0D6B
     jb loc_0EA4
-    cmp ax, word ptr ds:[27DCh]
+    cmp ax, word ptr word_27DC
     ja loc_0E81
-    mov byte ptr ds:[27EDh], 0FFh
+    mov byte ptr byte_27ED, 0FFh
     jmp short loc_0E8C
 loc_0E81:
-    cmp ax, word ptr ds:[27E2h]
+    cmp ax, word ptr word_27E2
     jb loc_0E8C
-    mov byte ptr ds:[27ECh], 0FFh
+    mov byte ptr byte_27EC, 0FFh
 loc_0E8C:
-    cmp bx, word ptr ds:[27DEh]
+    cmp bx, word ptr word_27DE
     ja loc_0E99
-    mov byte ptr ds:[27EAh], 0FFh
+    mov byte ptr byte_27EA, 0FFh
     jmp short loc_0EA4
 loc_0E99:
-    cmp bx, word ptr ds:[27E0h]
+    cmp bx, word ptr word_27E0
     jb loc_0EA4
-    mov byte ptr ds:[27EBh], 0FFh
+    mov byte ptr byte_27EB, 0FFh
 loc_0EA4:
-    mov al, byte ptr ds:[283Ch]
-    or al, byte ptr ds:[2870h]
-    or al, byte ptr ds:[281Dh]
-    or al, byte ptr ds:[2804h]
-    or byte ptr ds:[27EAh], al
-    mov al, byte ptr ds:[2844h]
-    or al, byte ptr ds:[286Fh]
-    or al, byte ptr ds:[283Eh]
-    or al, byte ptr ds:[2812h]
-    or byte ptr ds:[27EBh], al
-    mov al, byte ptr ds:[2841h]
-    or al, byte ptr ds:[286Dh]
-    or al, byte ptr ds:[2842h]
-    or al, byte ptr ds:[281Bh]
-    or byte ptr ds:[27ECh], al
-    mov al, byte ptr ds:[283Fh]
-    or al, byte ptr ds:[286Eh]
-    or al, byte ptr ds:[281Fh]
-    or al, byte ptr ds:[281Ah]
-    or byte ptr ds:[27EDh], al
-    mov al, byte ptr ds:[2810h]
-    or al, byte ptr ds:[282Dh]
-    or al, byte ptr ds:[2868h]
-    or al, byte ptr ds:[284Bh]
-    or byte ptr ds:[27E8h], al
-    mov al, byte ptr ds:[2840h]
-    or byte ptr ds:[27E9h], al
-    mov si, word ptr ds:[287Ah]
+    mov al, byte ptr byte_283C
+    or al, byte ptr byte_2870
+    or al, byte ptr byte_281D
+    or al, byte ptr byte_2804
+    or byte ptr byte_27EA, al
+    mov al, byte ptr byte_2844
+    or al, byte ptr byte_286F
+    or al, byte ptr ds:byte_283E
+    or al, byte ptr byte_2812
+    or byte ptr byte_27EB, al
+    mov al, byte ptr byte_2841
+    or al, byte ptr byte_286D
+    or al, byte ptr byte_2842
+    or al, byte ptr byte_281B
+    or byte ptr byte_27EC, al
+    mov al, byte ptr byte_283F
+    or al, byte ptr byte_286E
+    or al, byte ptr byte_281F
+    or al, byte ptr byte_281A
+    or byte ptr byte_27ED, al
+    mov al, byte ptr byte_2810
+    or al, byte ptr byte_282D
+    or al, byte ptr byte_2868
+    or al, byte ptr byte_284B
+    or byte ptr byte_27E8, al
+    mov al, byte ptr byte_2840
+    or byte ptr byte_27E9, al
+    mov si, word ptr word_287A
     cmp si, 7FCh
     jae loc_0F75
     xor al, al
-    mov ah, byte ptr ds:[27E9h]
+    mov ah, byte ptr byte_27E9
     shr ah, 1
     rcl al, 1
-    mov ah, byte ptr ds:[27E8h]
+    mov ah, byte ptr byte_27E8
     shr ah, 1
     rcl al, 1
-    mov ah, byte ptr ds:[27EBh]
+    mov ah, byte ptr byte_27EB
     shr ah, 1
     rcl al, 1
-    mov ah, byte ptr ds:[27EAh]
+    mov ah, byte ptr byte_27EA
     shr ah, 1
     rcl al, 1
-    mov ah, byte ptr ds:[27ECh]
+    mov ah, byte ptr byte_27EC
     shr ah, 1
     rcl al, 1
-    mov ah, byte ptr ds:[27EDh]
+    mov ah, byte ptr byte_27ED
     shr ah, 1
     rcl al, 1
     or si, si
     jne loc_0F54
-    mov ah, byte ptr ds:[2D8Ah]
-    mov byte ptr ds:[83Eh], ah
+    mov ah, byte ptr byte_2D8A
+    mov byte ptr ds:byte_083E, ah
     jmp short loc_0F67
 loc_0F54:
-    db 38h, 84h, 3Dh, 00h ; ENCODED: cmp byte ptr [si+3Dh], al
+    cmp byte ptr [si+word_003D], al
     jne loc_0F67
-    db 80h, 0BCh, 3Eh, 00h, 0FFh ; ENCODED: cmp byte ptr [si+3Eh], 0FFh
+    cmp byte ptr [si+byte_003E], 0FFh
     je loc_0F67
-    db 0FEh, 84h, 3Eh, 00h ; ENCODED: inc byte ptr [si+3Eh]
+    inc byte ptr [si+byte_003E]
     jmp short loc_0F75
 loc_0F67:
-    db 88h, 84h, 3Fh, 00h ; ENCODED: mov byte ptr [si+3Fh], al
-    db 0C6h, 84h, 40h, 00h, 00h ; ENCODED: mov byte ptr [si+40h], 0
-    add word ptr ds:[287Ah], 2
+    mov byte ptr [si+word_003F], al
+    mov byte ptr [si+byte_0040], 0
+    add word ptr word_287A, 2
 loc_0F75:
     pop bp
     pop es
@@ -1767,13 +2140,13 @@ loc_0F75:
 sub_0F7F:
     mov ax, seg DATA
     mov ds, ax
-    mov byte ptr ds:[2878h], 1
+    mov byte ptr byte_2878, 1
     mov ax, 3D00h
     int 21h
     jae loc_0F93
     jmp near ptr loc_1012
 loc_0F93:
-    mov dx, word ptr ds:[2875h]
+    mov dx, word ptr word_2875
     push dx
     push ds
     mov ds, dx
@@ -1787,19 +2160,19 @@ loc_0F93:
     shr ax, cl
     inc ax
     pop ds
-    add word ptr ds:[2875h], ax
+    add word ptr word_2875, ax
     mov bx, bx
     mov ah, 3Eh
     int 21h
     pop ax
-    mov byte ptr ds:[2878h], 0
+    mov byte ptr byte_2878, 0
     ret
 sub_0FC0:
     mov ax, 3
     int 10h
     mov ax, seg DATA
     mov ds, ax
-    mov byte ptr cs:[0C667h], 0
+    mov byte ptr cs:byte_2877, 0
     mov ah, 9
     mov dx, 864h
     int 21h
@@ -1861,7 +2234,7 @@ loc_1012:
     pop cx
     pop bx
     pop ax
-    cmp byte ptr ds:[2878h], 1
+    cmp byte ptr ds:byte_2878, 1
     jne loc_104D
     jmp near ptr sub_0F7F
 loc_104D:
@@ -1870,18 +2243,18 @@ loc_104F:
     mov ah, 9
     mov dx, 8FFh
     int 21h
-    mov byte ptr cs:[0C667h], 0
+    mov byte ptr cs:byte_2877, 0
     sti
 loc_105D:
     jmp short loc_105D
 sub_105F:
-    mov byte ptr cs:[0C667h], 0
+    mov byte ptr cs:byte_2877, 0
     mov ah, 9
     mov dx, 91Dh
     int 21h
-    mov byte ptr ds:[2874h], 0
+    mov byte ptr byte_2874, 0
 loc_1071:
-    mov al, byte ptr ds:[2874h]
+    mov al, byte ptr byte_2874
     cmp al, 1Ch
     jne loc_1071
     jmp near ptr sub_447D
@@ -1889,19 +2262,19 @@ sub_107B:
     mov ax, seg DATA
     mov ds, ax
     mov es, ax
-    mov byte ptr cs:[0C667h], 1
+    mov byte ptr cs:byte_2877, 1
     mov ax, 3D00h
     int 21h
-    mov byte ptr cs:[0C667h], 0
+    mov byte ptr cs:byte_2877, 0
     jae loc_1098
     jmp near ptr loc_1012
 loc_1098:
-    mov word ptr cs:[1204h], ax
-    mov ax, word ptr ds:[2875h]
-    mov word ptr cs:[1206h], ax
+    mov word ptr cs:cvar_1204, ax
+    mov ax, word ptr word_2875
+    mov word ptr cs:cvar_1206, ax
     mov ds, ax
-    mov byte ptr cs:[0C667h], 1
-    mov bx, word ptr cs:[1204h]
+    mov byte ptr cs:byte_2877, 1
+    mov bx, word ptr cs:cvar_1204
     mov cx, 6
     mov dx, 41Ah
     mov ah, 3Fh
@@ -1909,7 +2282,7 @@ loc_1098:
     jae loc_10BF
     jmp near ptr loc_0FFF
 loc_10BF:
-    dec byte ptr cs:[0C667h]
+    dec byte ptr cs:byte_2877
     mov si, dx
     lodsw
     cmp ax, 4CB4h
@@ -1936,10 +2309,10 @@ loc_10DD:
     jmp near ptr loc_06D5
 loc_10F9:
     mov ds, ax
-    mov ax, word ptr cs:[1206h]
+    mov ax, word ptr cs:cvar_1206
     mov es, ax
-    mov byte ptr cs:[0C667h], 1
-    mov bx, word ptr cs:[1204h]
+    mov byte ptr cs:byte_2877, 1
+    mov bx, word ptr cs:cvar_1204
     mov cx, cx
     mov dx, 6
     mov ah, 3Fh
@@ -1947,7 +2320,7 @@ loc_10F9:
     jae loc_111A
     jmp near ptr loc_0FFF
 loc_111A:
-    dec byte ptr cs:[0C667h]
+    dec byte ptr cs:byte_2877
     mov dl, 1
     mov word ptr ds:[0], 2
     xor di, di
@@ -2004,8 +2377,8 @@ loc_1190:
     jne loc_11CB
     push bx
     push di
-    mov byte ptr cs:[0C667h], 1
-    mov bx, word ptr cs:[1204h]
+    mov byte ptr cs:byte_2877, 1
+    mov bx, word ptr cs:cvar_1204
     mov cx, 2800h
     mov dx, 41Ah
     mov ah, 3Fh
@@ -2013,7 +2386,7 @@ loc_1190:
     jae loc_11B3
     jmp near ptr loc_0FFF
 loc_11B3:
-    dec byte ptr cs:[0C667h]
+    dec byte ptr cs:byte_2877
     mov word ptr ds:[0], ax
     or ax, ax
     pop di
@@ -2041,38 +2414,42 @@ loc_11DA:
     ret
 loc_11E5:
     pop ax
-    mov byte ptr cs:[0C667h], 1
-    mov bx, word ptr cs:[1204h]
+    mov byte ptr cs:byte_2877, 1
+    mov bx, word ptr cs:cvar_1204
     mov ah, 3Eh
     int 21h
-    dec byte ptr cs:[0C667h]
+    dec byte ptr cs:byte_2877
     mov ax, seg DATA
     mov ds, ax
-    mov ax, word ptr cs:[1206h]
+    mov ax, word ptr cs:cvar_1206
     ret
+cvar_1204 label word
+; DATA: SQZ loader: file handle (cs:1204) and output segment (cs:1206)
+    db 00h, 00h
+cvar_1206 label word
 ; UNKNOWN: not yet classified as code or data
-    db 00h, 00h, 00h, 00h
+    db 00h, 00h
 loc_1208:
     xor dx, dx
     xor cx, cx
     mov ax, 4200h
-    mov byte ptr cs:[0C667h], 1
+    mov byte ptr cs:byte_2877, 1
     int 21h
-    mov byte ptr cs:[0C667h], 0
+    mov byte ptr cs:byte_2877, 0
     mov ax, seg DATA
     mov es, ax
-    mov ax, word ptr cs:[1206h]
+    mov ax, word ptr cs:cvar_1206
     mov ds, ax
     mov cx, 4
     mov dx, 0Eh
-    mov bx, word ptr cs:[1204h]
+    mov bx, word ptr cs:cvar_1204
     mov ah, 3Fh
-    mov byte ptr cs:[0C667h], 1
+    mov byte ptr cs:byte_2877, 1
     int 21h
     jae loc_1242
     jmp near ptr loc_0FFF
 loc_1242:
-    mov byte ptr cs:[0C667h], 0
+    mov byte ptr cs:byte_2877, 0
     mov al, byte ptr ds:[0Fh]
     and al, 0F0h
     cmp al, 10h
@@ -2095,7 +2472,7 @@ loc_1260:
     jmp near ptr loc_06D5
 loc_127A:
     mov ds, ax
-    mov ax, word ptr cs:[1206h]
+    mov ax, word ptr cs:cvar_1206
     mov es, ax
     mov word ptr ds:[0], di
     mov word ptr ds:[2], di
@@ -2163,14 +2540,14 @@ loc_1315:
     mov word ptr ds:[5], ax
     jmp near ptr loc_129C
 loc_131E:
-    mov byte ptr cs:[0C667h], 1
-    mov bx, word ptr cs:[1204h]
+    mov byte ptr cs:byte_2877, 1
+    mov bx, word ptr cs:cvar_1204
     mov ah, 3Eh
     int 21h
-    dec byte ptr cs:[0C667h]
+    dec byte ptr cs:byte_2877
     mov ax, seg DATA
     mov ds, ax
-    mov ax, word ptr cs:[1206h]
+    mov ax, word ptr cs:cvar_1206
     ret
 sub_133C:
     mov word ptr ds:[0Ah], 200h
@@ -2201,14 +2578,14 @@ loc_1366:
     mov si, bx
     mov ax, word ptr ds:[1C0Eh]
     mov word ptr ds:[0Eh], ax
-    mov bx, word ptr cs:[1204h]
+    mov bx, word ptr cs:cvar_1204
     mov ah, 3Fh
-    mov byte ptr cs:[0C667h], 1
+    mov byte ptr cs:byte_2877, 1
     int 21h
     jae loc_13AA
     jmp near ptr loc_0FFF
 loc_13AA:
-    dec byte ptr cs:[0C667h]
+    dec byte ptr cs:byte_2877
     inc ax
     inc ax
     shl ax, 1
@@ -2253,29 +2630,45 @@ loc_13F6:
     shr ax, cl
     or al, dh
     ret
+cvar_1409 label word
+; DATA: EMS/XMS copy state: dword cs:1409, words 140D/1410/1412, mode byte 140F
+    db 00h, 00h
+cvar_140B label word
 ; UNKNOWN: not yet classified as code or data
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+    db 00h, 00h
+cvar_140D label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+cvar_140F label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+cvar_1410 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+cvar_1412 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
 loc_1414:
     xor dx, dx
     xor cx, cx
     mov ax, 4200h
-    mov byte ptr cs:[0C667h], 1
+    mov byte ptr cs:byte_2877, 1
     int 21h
     jae loc_1428
     jmp near ptr loc_0FD9
 loc_1428:
-    dec byte ptr cs:[0C667h]
+    dec byte ptr cs:byte_2877
     mov ax, seg DATA
     mov es, ax
-    mov ax, word ptr cs:[1206h]
+    mov ax, word ptr cs:cvar_1206
     mov ds, ax
     mov cx, 11h
     xor dx, dx
-    mov bx, word ptr cs:[1204h]
+    mov bx, word ptr cs:cvar_1204
     mov ah, 3Fh
-    inc byte ptr cs:[0C667h]
+    inc byte ptr cs:byte_2877
     int 21h
-    dec byte ptr cs:[0C667h]
+    dec byte ptr cs:byte_2877
     cmp word ptr ds:[4], 899Dh
     je loc_145B
 loc_1458:
@@ -2308,23 +2701,23 @@ loc_1490:
     shl ax, cl
     mov dx, ax
 loc_149D:
-    mov word ptr cs:[1410h], dx
+    mov word ptr cs:cvar_1410, dx
     add dx, 0
     sub dx, 80h
-    mov word ptr cs:[1412h], dx
-    mov es, word ptr cs:[1206h]
+    mov word ptr cs:cvar_1412, dx
+    mov es, word ptr cs:cvar_1206
     xor di, di
     mov si, 0
-    inc byte ptr cs:[0C667h]
-    mov bx, word ptr cs:[1204h]
-    mov cx, word ptr cs:[1410h]
+    inc byte ptr cs:byte_2877
+    mov bx, word ptr cs:cvar_1204
+    mov cx, word ptr cs:cvar_1410
     mov dx, 0
     mov ah, 3Fh
     int 21h
     jae loc_14D3
     jmp near ptr loc_0FD9
 loc_14D3:
-    dec byte ptr cs:[0C667h]
+    dec byte ptr cs:byte_2877
 sub_14D8:
     mov dl, 10h
     lodsw
@@ -2490,20 +2883,20 @@ loc_15D2:
     call sub_1700
     jmp short loc_15B1
 loc_15D7:
-    cmp byte ptr cs:[140Fh], 0
+    cmp byte ptr cs:cvar_140F, 0
     je loc_15E5
     mov ax, seg DATA
     mov ds, ax
     ret
 loc_15E5:
-    mov byte ptr cs:[0C667h], 1
-    mov bx, word ptr cs:[1204h]
+    mov byte ptr cs:byte_2877, 1
+    mov bx, word ptr cs:cvar_1204
     mov ah, 3Eh
     int 21h
-    dec byte ptr cs:[0C667h]
+    dec byte ptr cs:byte_2877
     mov ax, seg DATA
     mov ds, ax
-    mov ax, word ptr cs:[1206h]
+    mov ax, word ptr cs:cvar_1206
     ret
 loc_1603:
     cmp di, 0F000h
@@ -2513,7 +2906,7 @@ loc_1603:
     add ax, 800h
     mov es, ax
 loc_1614:
-    cmp si, word ptr cs:[1412h]
+    cmp si, word ptr cs:cvar_1412
     ja loc_1622
     lodsw
     xchg bp, ax
@@ -2530,36 +2923,36 @@ loc_1622:
     push ds
     push es
     push bp
-    mov ax, word ptr cs:[1410h]
+    mov ax, word ptr cs:cvar_1410
     sub si, ax
     neg si
     mov dx, seg DATA
     mov ds, dx
-    sub word ptr ds:[0B27h], si
-    sbb word ptr ds:[0B29h], 0
-    add word ptr cs:[1409h], si
-    adc word ptr cs:[140Bh], 0
-    cmp word ptr cs:[140Bh], 0
+    sub word ptr word_0B27, si
+    sbb word ptr word_0B29, 0
+    add word ptr cs:cvar_1409, si
+    adc word ptr cs:cvar_140B, 0
+    cmp word ptr cs:cvar_140B, 0
     jne loc_165F
-    cmp word ptr cs:[1409h], ax
+    cmp word ptr cs:cvar_1409, ax
     jae loc_165F
-    mov ax, word ptr cs:[1409h]
+    mov ax, word ptr cs:cvar_1409
 loc_165F:
-    sub word ptr cs:[1409h], ax
-    sbb word ptr cs:[140Bh], 0
-    mov word ptr ds:[0B21h], ax
+    sub word ptr cs:cvar_1409, ax
+    sbb word ptr cs:cvar_140B, 0
+    mov word ptr word_0B21, ax
     mov si, 0B21h
     mov ah, 0Bh
-    inc byte ptr cs:[0C667h]
-    call dword ptr ds:[0B17h]
+    inc byte ptr cs:byte_2877
+    call dword ptr dword_0B17
     cmp ax, 1
     je loc_1683
     jmp near ptr loc_0FEC
 loc_1683:
-    dec byte ptr cs:[0C667h]
-    mov ax, word ptr ds:[0B21h]
-    add word ptr ds:[0B27h], ax
-    adc word ptr ds:[0B29h], 0
+    dec byte ptr cs:byte_2877
+    mov ax, word ptr word_0B21
+    add word ptr word_0B27, ax
+    adc word ptr word_0B29, 0
     pop bp
     pop es
     pop ds
@@ -2597,9 +2990,9 @@ loc_16CB:
     push ds
     mov ax, seg DATA
     mov ds, ax
-    mov dx, word ptr ds:[0B55h]
-    mov bx, word ptr cs:[140Dh]
-    inc word ptr cs:[140Dh]
+    mov dx, word ptr word_0B55
+    mov bx, word ptr cs:cvar_140D
+    inc word ptr cs:cvar_140D
     mov ax, 4400h
     int 67h
     inc bx
@@ -2612,19 +3005,22 @@ loc_16CB:
     pop bx
     pop ax
     jmp short loc_1735
-; UNKNOWN: not yet classified as code or data
-    db 0D1h, 0EDh, 0FEh, 0CAh, 74h, 01h, 0C3h
+unused_16F9:
+    shr bp, 1
+    dec dl
+    je sub_1700
+    ret
 sub_1700:
     rcl dl, 1
-    cmp byte ptr cs:[140Fh], 1
+    cmp byte ptr cs:cvar_140F, 1
     je loc_1735
-    cmp byte ptr cs:[140Fh], 2
+    cmp byte ptr cs:cvar_140F, 2
     je loc_16A3
-    cmp byte ptr cs:[140Fh], 3
+    cmp byte ptr cs:cvar_140F, 3
     jne loc_171D
     jmp near ptr loc_1603
 loc_171D:
-    cmp si, word ptr cs:[1412h]
+    cmp si, word ptr cs:cvar_1412
     jae loc_173C
     cmp di, 0C000h
     jb loc_1735
@@ -2643,11 +3039,11 @@ loc_173C:
     push cx
     push dx
     push di
-    mov cx, word ptr cs:[1412h]
+    mov cx, word ptr cs:cvar_1412
     add cx, 80h
     sub cx, si
     mov di, 0
-    mov ax, word ptr cs:[1410h]
+    mov ax, word ptr cs:cvar_1410
     sub ax, cx
     push es
     push ds
@@ -2655,12 +3051,12 @@ loc_173C:
     rep movsb
     pop es
     mov dx, di
-    mov bx, word ptr cs:[1204h]
+    mov bx, word ptr cs:cvar_1204
     mov cx, ax
     mov ah, 3Fh
-    inc byte ptr cs:[0C667h]
+    inc byte ptr cs:byte_2877
     int 21h
-    dec byte ptr cs:[0C667h]
+    dec byte ptr cs:byte_2877
     jae loc_1776
     jmp near ptr loc_0FD9
 loc_1776:
@@ -2682,7 +3078,7 @@ sub_177F:
     xor ax, ax
     mov es, ax
     mov ax, word ptr es:[0Eh]
-    mov word ptr ds:[2381h], ax
+    mov word ptr word_2381, ax
     mov si, 27Ah
     mov di, 20h
     mov cx, 4
@@ -2717,9 +3113,9 @@ loc_17C0:
     push dx
     mov ax, seg DATA
     mov ds, ax
-    add word ptr ds:[27F0h], 1
-    adc word ptr ds:[27F2h], 0
-    cmp byte ptr ds:[2877h], 0
+    add word ptr word_27F0, 1
+    adc word ptr word_27F2, 0
+    cmp byte ptr ds:byte_2877, 0
     jne loc_181A
     mov ax, 40h
     mov ds, ax
@@ -2757,7 +3153,7 @@ loc_181A:
     pop di
     pop ds
     pop ax
-    jmp dword ptr cs:[27Ah]
+    jmp dword ptr cs:cvar_027A
 sub_1823:
     push ds
     push bx
@@ -2773,47 +3169,47 @@ sub_1823:
     out 61h, al
     mov al, ah
     out 61h, al
-    mov byte ptr ds:[2874h], bl
+    mov byte ptr byte_2874, bl
     cmp bl, 1
     jne loc_184B
-    cmp byte ptr cs:[0C667h], 0
+    cmp byte ptr cs:byte_2877, 0
 loc_184B:
     je loc_1850
     jmp near ptr loc_1976
 loc_1850:
-    inc byte ptr ds:[2877h]
-    cmp byte ptr cs:[1D6Dh], 0
+    inc byte ptr byte_2877
+    cmp byte ptr cs:cvar_1D6D, 0
     je loc_18B3
-    mov al, byte ptr cs:[1D6Eh]
+    mov al, byte ptr cs:cvar_1D6E
     and al, 3
     cmp al, 3
     jne loc_1885
-    mov byte ptr cs:[1D6Eh], 0
-    mov cl, byte ptr ds:[0E70h]
+    mov byte ptr cs:cvar_1D6E, 0
+    mov cl, byte ptr byte_0E70
     mov al, 0FEh
     rol al, cl
     out 21h, al
     mov al, 20h
     out 20h, al
-    mov al, byte ptr ds:[0B5Dh]
+    mov al, byte ptr byte_0B5D
     sti
 loc_187E:
-    cmp byte ptr ds:[0B5Dh], al
+    cmp byte ptr byte_0B5D, al
     je loc_187E
     cli
 loc_1885:
-    mov bl, byte ptr ds:[0E70h]
+    mov bl, byte ptr byte_0E70
     add bl, 8
     xor bh, bh
     shl bx, 1
     shl bx, 1
     xor ax, ax
     mov es, ax
-    mov ax, word ptr ds:[0E71h]
+    mov ax, word ptr word_0E71
     mov word ptr es:[bx], ax
-    mov ax, word ptr ds:[0E73h]
+    mov ax, word ptr word_0E73
     mov word ptr es:[bx+2], ax
-    mov dx, word ptr cs:[276h]
+    mov dx, word ptr cs:cvar_0276
     mov cx, 0FFFFh
 loc_18AB:
     in al, dx
@@ -2824,7 +3220,7 @@ loc_18AB:
 loc_18B3:
     mov ax, seg DATA
     mov ds, ax
-    mov dx, word ptr ds:[0B55h]
+    mov dx, word ptr word_0B55
     cmp dx, 55AAh
     je loc_18D0
     mov bp, 3
@@ -2836,13 +3232,13 @@ loc_18C5:
     dec bp
     jne loc_18C5
 loc_18D0:
-    mov dx, word ptr ds:[0B1Fh]
+    mov dx, word ptr word_0B1F
     cmp dx, 55AAh
     je loc_18EA
     mov ah, 0Ah
-    inc byte ptr cs:[0C667h]
-    call dword ptr ds:[0B17h]
-    dec byte ptr cs:[0C667h]
+    inc byte ptr cs:byte_2877
+    call dword ptr dword_0B17
+    dec byte ptr cs:byte_2877
 loc_18EA:
     mov ax, 3
     int 10h
@@ -2915,91 +3311,296 @@ loc_1949:
 loc_1976:
     cmp bl, 3Dh
     jne loc_19B0
-    xor byte ptr cs:[1D6Eh], 1
-    cmp byte ptr cs:[1D6Dh], 1
+    xor byte ptr cs:cvar_1D6E, 1
+    cmp byte ptr cs:cvar_1D6D, 1
     je loc_19A3
-    cmp byte ptr cs:[1D6Ch], 1
+    cmp byte ptr cs:cvar_1D6C, 1
     je loc_19B0
     in al, 61h
     and al, 0FCh
-    test byte ptr cs:[1D6Eh], 1
+    test byte ptr cs:cvar_1D6E, 1
     je loc_199F
     or al, 3
 loc_199F:
     out 61h, al
     jmp short loc_19B0
 loc_19A3:
-    test byte ptr cs:[1D6Eh], 1
+    test byte ptr cs:cvar_1D6E, 1
     je loc_19B0
     call sub_214E
     jmp short loc_19B0
 loc_19B0:
     and bl, 7Fh
     xor bh, bh
-    mov al, byte ptr ds:[2874h]
+    mov al, byte ptr byte_2874
     cbw
     not ah
-    mov byte ptr [bx+27F4h], ah
+    mov byte ptr [bx+byte_27F4], ah
     mov al, 20h
     out 20h, al
     pop ax
     pop bx
     pop ds
     iret
-; UNKNOWN: not yet classified as code or data
-    db 50h, 53h, 51h, 52h, 57h, 56h, 1Eh, 06h, 55h, 0FAh, 0E4h, 21h
-    db 50h, 0B0h, 03h, 0E6h, 21h, 33h, 0C0h, 8Eh, 0D8h, 0C4h, 3Eh, 0Ch
-    db 00h, 26h, 80h, 3Dh, 0CDh, 74h, 30h, 0C7h, 06h, 04h, 00h, 0F0h
-    db 0FFh, 0C7h, 06h, 06h, 00h, 00h, 0F0h, 0A1h, 0Ch, 00h, 8Bh, 16h
-    db 0Eh, 00h, 8Bh, 0D8h, 0D1h, 0EBh, 0D1h, 0EBh, 0D1h, 0EBh, 0D1h, 0EBh
-    db 03h, 0DAh, 81h, 0FBh, 00h, 0C0h, 72h, 0Bh, 2Eh, 0A3h, 0FBh, 1Ah
-    db 2Eh, 89h, 16h, 0FDh, 1Ah, 0EBh, 09h, 0B0h, 0FEh, 0E6h, 64h, 0EAh
-    db 0F0h, 0FFh, 00h, 0F0h, 0B8h
-    dw seg DATA
-; UNKNOWN: not yet classified as code or data
-    db 8Eh, 0D8h, 8Eh, 0C0h, 0C6h, 06h, 0CDh, 23h, 00h, 0E8h, 0D5h, 00h
-    db 73h, 65h, 0E8h, 0D0h, 00h, 73h, 60h, 80h, 36h, 0CDh, 23h, 01h
-    db 0E8h, 0C6h, 00h, 73h, 56h, 0E8h, 0C1h, 00h, 73h, 51h, 0B8h
-    dw seg DATA
-; UNKNOWN: not yet classified as code or data
-    db 8Eh, 0D8h, 0Eh, 07h, 0C7h, 06h, 75h, 28h, 00h, 00h, 0BFh, 0FAh
-    db 26h, 0B9h, 00h, 08h, 0F3h, 0AAh, 0E8h, 9Dh, 01h, 33h, 0C0h, 8Eh
-    db 0C0h, 26h, 0C7h, 06h, 0Ch, 00h, 0F0h, 0FFh, 26h, 0C7h, 06h, 0Eh
-    db 00h, 00h, 0F0h, 32h, 0C0h, 0E6h, 21h, 0B8h, 03h, 00h, 0CDh, 10h
-    db 0BAh, 87h, 23h, 0B4h, 09h, 0CDh, 21h, 0B4h, 0Eh, 0A0h, 0D1h, 27h
-    db 04h, 30h, 0CDh, 10h, 0B0h, 2Dh, 0CDh, 10h, 8Bh, 16h, 0D2h, 27h
-    db 0E8h, 43h, 01h, 0E9h, 0BAh, 0F5h, 0E8h, 61h, 01h, 80h, 3Eh, 0D4h
-    db 27h, 01h, 74h, 0Dh, 0B4h, 19h, 0CDh, 21h, 3Ch, 03h, 72h, 05h
-    db 0C6h, 06h, 0D4h, 27h, 01h, 58h, 24h, 0FCh, 0E6h, 21h, 5Dh, 07h
-    db 1Fh, 5Eh, 5Fh, 5Ah, 59h, 5Bh, 58h, 0C3h, 80h, 0FCh, 02h, 75h
-    db 39h, 50h, 8Ch, 0C0h, 0D1h, 0E0h, 0D1h, 0E0h, 0D1h, 0E0h, 0D1h, 0E0h
-    db 03h, 0C3h, 05h, 00h, 02h, 73h, 26h, 58h, 53h, 51h, 52h, 57h
-    db 56h, 1Eh, 53h, 0BBh, 0CEh, 25h, 9Ch, 2Eh, 0FFh, 1Eh, 0FBh, 1Ah
-    db 0A3h, 0CFh, 27h, 8Bh, 0F3h, 5Fh, 0FCh, 06h, 1Fh, 0B9h, 00h, 01h
-    db 0F3h, 0A4h, 1Fh, 5Eh, 5Fh, 5Ah, 59h, 5Bh, 0C3h, 58h, 9Ch, 9Ah
-    db 00h, 00h, 00h, 00h, 0A3h, 0CFh, 27h, 0C3h, 8Ah, 16h, 0CDh, 23h
-    db 32h, 0E4h, 0E8h, 0AFh, 0FFh, 0B8h, 01h, 02h, 0BBh, 0CEh, 23h, 0B9h
-    db 02h, 00h, 8Ah, 16h, 0CDh, 23h, 0B6h, 00h, 0C6h, 06h, 0CEh, 27h
-    db 01h, 0E8h, 98h, 0FFh, 72h, 5Dh, 0C6h, 06h, 0D4h, 27h, 00h, 0B8h
-    db 01h, 27h, 80h, 3Fh, 0F9h, 75h, 08h, 0C6h, 06h, 0D4h, 27h, 01h
-    db 0B8h, 00h, 4Fh, 88h, 26h, 0CCh, 23h, 0A2h, 0CBh, 23h, 0C6h, 06h
-    db 0CEh, 27h, 02h, 0B1h, 01h, 0B8h, 01h, 02h, 0BBh, 0CEh, 23h, 8Ah
-    db 2Eh, 0CCh, 23h, 8Ah, 36h, 0CBh, 23h, 0E8h, 62h, 0FFh, 72h, 27h
-    db 0FEh, 0C1h, 80h, 0F9h, 0Ah, 76h, 0E6h, 0B8h, 01h, 02h, 0B1h, 0F7h
-    db 8Ah, 16h, 0CDh, 23h, 0E8h, 4Dh, 0FFh, 0C6h, 06h, 0CEh, 27h, 03h
-    db 73h, 0Dh, 0C6h, 06h, 0CEh, 27h, 04h, 0A3h, 0CFh, 27h, 80h, 0FCh
-    db 10h, 74h, 14h, 0A0h, 0CEh, 27h, 38h, 06h, 0D1h, 27h, 73h, 09h
-    db 0A2h, 0D1h, 27h, 0A1h, 0CFh, 27h, 0A3h, 0D2h, 27h, 0F9h, 0C3h, 0C6h
-    db 06h, 0CEh, 27h, 05h, 0A1h, 0CEh, 23h, 0A3h, 0CFh, 27h, 3Dh, 42h
-    db 4Ch, 75h, 0DCh, 0C6h, 06h, 0CEh, 27h, 06h, 0A1h, 0D0h, 23h, 0A3h
-    db 0CFh, 27h, 3Dh, 55h, 32h, 75h, 0CCh, 0C6h, 06h, 0CEh, 27h, 09h
-    db 0BFh, 0CDh, 25h, 8Ah, 05h, 33h, 0DBh, 4Bh, 38h, 01h, 74h, 0FBh
-    db 0F7h, 0D3h, 89h, 1Eh, 0CFh, 27h, 81h, 0FBh, 0A8h, 00h, 72h, 0AFh
-    db 0F8h, 0C3h, 0B9h, 04h, 00h, 32h, 0C0h, 0D1h, 0E2h, 0D0h, 0D0h, 0D1h
-    db 0E2h, 0D0h, 0D0h, 0D1h, 0E2h, 0D0h, 0D0h, 0D1h, 0E2h, 0D0h, 0D0h, 3Ch
-    db 09h, 76h, 02h, 04h, 07h, 04h, 30h, 0B4h, 0Eh, 0CDh, 10h, 0E2h
-    db 0E0h, 0C3h, 8Bh, 0ECh, 8Bh, 46h, 00h, 0BDh, 0C7h, 19h, 2Eh, 0C6h
-    db 46h, 00h, 00h, 45h, 3Bh, 0E8h, 75h, 0F6h, 0C3h
+unused_19C7:
+    push ax
+    push bx
+    push cx
+    push dx
+    push di
+    push si
+    push ds
+    push es
+    push bp
+    cli
+    in al, 21h
+    push ax
+    mov al, 3
+    out 21h, al
+    xor ax, ax
+    mov ds, ax
+    les di, dword ptr ds:[0Ch]
+    cmp byte ptr es:[di], 0CDh
+    je loc_1A16
+    mov word ptr ds:[4], 0FFF0h
+    mov word ptr ds:[6], 0F000h
+    mov ax, word ptr ds:[0Ch]
+    mov dx, word ptr ds:[0Eh]
+    mov bx, ax
+    shr bx, 1
+    shr bx, 1
+    shr bx, 1
+    shr bx, 1
+    add bx, dx
+    cmp bx, 0C000h
+    jb loc_1A16
+    mov word ptr cs:[1AFBh], ax
+    mov word ptr cs:[1AFDh], dx
+    jmp short loc_1A1F
+loc_1A16:
+    mov al, 0FEh
+    out 64h, al
+    db 0EAh, 0F0h, 0FFh, 00h, 0F0h ; ENCODED: ljmp 0xf000:0xfff0
+loc_1A1F:
+    mov ax, seg DATA
+    mov ds, ax
+    mov es, ax
+    mov byte ptr byte_23CD, 0
+    call sub_1B03
+    jae loc_1A95
+    call sub_1B03
+    jae loc_1A95
+    xor byte ptr byte_23CD, 1
+    call sub_1B03
+    jae loc_1A95
+    call sub_1B03
+    jae loc_1A95
+    mov ax, seg DATA
+    mov ds, ax
+    push cs
+    pop es
+    mov word ptr word_2875, 0
+    mov di, 26FAh
+    mov cx, 800h
+    rep stosb
+    call sub_1BF9
+    xor ax, ax
+    mov es, ax
+    mov word ptr es:[0Ch], 0FFF0h
+    mov word ptr es:[0Eh], 0F000h
+    xor al, al
+    out 21h, al
+    mov ax, 3
+    int 10h
+    mov dx, 2387h
+    mov ah, 9
+    int 21h
+    mov ah, 0Eh
+    mov al, byte ptr byte_27D1
+    add al, 30h
+    int 10h
+    mov al, 2Dh
+    int 10h
+    mov dx, word ptr word_27D2
+    call sub_1BD5
+    jmp near ptr loc_104F
+loc_1A95:
+    call sub_1BF9
+    cmp byte ptr ds:byte_27D4, 1
+    je loc_1AAC
+    mov ah, 19h
+    int 21h
+    cmp al, 3
+    jb loc_1AAC
+    mov byte ptr byte_27D4, 1
+loc_1AAC:
+    pop ax
+    and al, 0FCh
+    out 21h, al
+    pop bp
+    pop es
+    pop ds
+    pop si
+    pop di
+    pop dx
+    pop cx
+    pop bx
+    pop ax
+    ret
+sub_1ABB:
+    cmp ah, 2
+    jne loc_1AF9
+    push ax
+    mov ax, es
+    shl ax, 1
+    shl ax, 1
+    shl ax, 1
+    shl ax, 1
+    add ax, bx
+    add ax, 200h
+    jae loc_1AF8
+    pop ax
+    push bx
+    push cx
+    push dx
+    push di
+    push si
+    push ds
+    push bx
+    mov bx, 25CEh
+    pushf
+    call dword ptr cs:[1AFBh]
+    mov word ptr ds:[27CFh], ax
+    mov si, bx
+    pop di
+    cld
+    push es
+    pop ds
+    mov cx, 100h
+    rep movsb
+    pop ds
+    pop si
+    pop di
+    pop dx
+    pop cx
+    pop bx
+    ret
+loc_1AF8:
+    pop ax
+loc_1AF9:
+    pushf
+    db 9Ah, 00h, 00h, 00h, 00h ; ENCODED: lcall 0, 0
+    mov word ptr ds:[27CFh], ax
+    ret
+sub_1B03:
+    mov dl, byte ptr byte_23CD
+    xor ah, ah
+    call sub_1ABB
+    mov ax, 201h
+    mov bx, 23CEh
+    mov cx, 2
+    mov dl, byte ptr byte_23CD
+    mov dh, 0
+    mov byte ptr byte_27CE, 1
+    call sub_1ABB
+    jb loc_1B82
+    mov byte ptr byte_27D4, 0
+    mov ax, 2701h
+    cmp byte ptr [bx], 0F9h
+    jne loc_1B3A
+    mov byte ptr byte_27D4, 1
+    mov ax, 4F00h
+loc_1B3A:
+    mov byte ptr byte_23CC, ah
+    mov byte ptr byte_23CB, al
+    mov byte ptr byte_27CE, 2
+    mov cl, 1
+loc_1B48:
+    mov ax, 201h
+    mov bx, 23CEh
+    mov ch, byte ptr byte_23CC
+    mov dh, byte ptr byte_23CB
+    call sub_1ABB
+    jb loc_1B82
+    inc cl
+    cmp cl, 0Ah
+    jbe loc_1B48
+    mov ax, 201h
+    mov cl, 0F7h
+    mov dl, byte ptr byte_23CD
+    call sub_1ABB
+    mov byte ptr byte_27CE, 3
+    jae loc_1B82
+    mov byte ptr byte_27CE, 4
+    mov word ptr word_27CF, ax
+    cmp ah, 10h
+    je loc_1B96
+loc_1B82:
+    mov al, byte ptr byte_27CE
+    cmp byte ptr byte_27D1, al
+    jae loc_1B94
+    mov byte ptr byte_27D1, al
+    mov ax, word ptr word_27CF
+    mov word ptr word_27D2, ax
+loc_1B94:
+    stc
+    ret
+loc_1B96:
+    mov byte ptr byte_27CE, 5
+    mov ax, word ptr word_23CE
+    mov word ptr word_27CF, ax
+    cmp ax, 4C42h
+    jne loc_1B82
+    mov byte ptr byte_27CE, 6
+    mov ax, word ptr word_23D0
+    mov word ptr word_27CF, ax
+    cmp ax, 3255h
+    jne loc_1B82
+    mov byte ptr byte_27CE, 9
+    mov di, 25CDh
+    mov al, byte ptr [di]
+    xor bx, bx
+loc_1BC2:
+    dec bx
+    cmp byte ptr [bx+di], al
+    je loc_1BC2
+    not bx
+    mov word ptr word_27CF, bx
+    cmp bx, 0A8h
+    jb loc_1B82
+    clc
+    ret
+sub_1BD5:
+    mov cx, 4
+loc_1BD8:
+    xor al, al
+    shl dx, 1
+    rcl al, 1
+    shl dx, 1
+    rcl al, 1
+    shl dx, 1
+    rcl al, 1
+    shl dx, 1
+    rcl al, 1
+    cmp al, 9
+    jbe loc_1BF0
+    add al, 7
+loc_1BF0:
+    add al, 30h
+    mov ah, 0Eh
+    int 10h
+    loop loc_1BD8
+    ret
+sub_1BF9:
+    mov bp, sp
+    mov ax, word ptr [bp]
+    mov bp, 19C7h
+loc_1C01:
+    mov byte ptr cs:[bp], 0
+    inc bp
+    cmp bp, ax
+    jne loc_1C01
+    ret
 sub_1C0C:
     cli
     push ds
@@ -3039,26 +3640,26 @@ loc_1C54:
 sub_1C65:
     mov ax, seg DATA
     mov ds, ax
-    mov byte ptr ds:[6BE7h], 0
+    mov byte ptr byte_6BE7, 0
 loc_1C6F:
-    mov ax, word ptr ds:[27EEh]
-    sub ax, word ptr cs:[1D67h]
+    mov ax, word ptr word_27EE
+    sub ax, word ptr cs:cvar_1D67
     jns loc_1C7B
     neg ax
 loc_1C7B:
     cmp ax, 3
     jb loc_1C6F
     ja loc_1C86
-    inc byte ptr ds:[6BE7h]
+    inc byte ptr byte_6BE7
 loc_1C86:
-    mov ax, word ptr cs:[1D67h]
-    mov word ptr ds:[27EEh], ax
+    mov ax, word ptr cs:cvar_1D67
+    mov word ptr word_27EE, ax
     ret
 sub_1C8E:
     push ax
     push dx
     mov ah, al
-    mov dx, word ptr cs:[276h]
+    mov dx, word ptr cs:cvar_0276
 loc_1C97:
     in al, dx
     test al, 80h
@@ -3074,7 +3675,7 @@ sub_1CA2:
     push cx
     push bx
     mov ah, al
-    mov dx, word ptr cs:[276h]
+    mov dx, word ptr cs:cvar_0276
     mov bx, 0Ah
 loc_1CB0:
     mov cx, 0FFFFh
@@ -3094,11 +3695,11 @@ loc_1CB3:
 loc_1CC3:
     dec bx
     jne loc_1CB0
-    cmp byte ptr cs:[1F90h], 0
+    cmp byte ptr cs:cvar_1F90, 0
     je loc_1CD1
     call sub_1F91
 loc_1CD1:
-    mov al, byte ptr ds:[0E6Fh]
+    mov al, byte ptr byte_0E6F
     out 21h, al
     mov ax, 3
     int 10h
@@ -3188,8 +3789,24 @@ loc_1D63:
 loc_1D65:
     stc
     ret
+cvar_1D67 label word
+; DATA: timer/sound counters and flags
+    db 00h, 00h
+cvar_1D69 label word
 ; UNKNOWN: not yet classified as code or data
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+    db 00h, 00h
+cvar_1D6B label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+cvar_1D6C label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+cvar_1D6D label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+cvar_1D6E label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
 sub_1D6F:
     mov ax, seg DATA
     mov ds, ax
@@ -3218,16 +3835,16 @@ loc_1D8D:
     cmp al, 0AAh
     jne loc_1DC7
     and dl, 0F0h
-    mov word ptr cs:[272h], dx
-    mov ax, word ptr cs:[272h]
+    mov word ptr cs:cvar_0272, dx
+    mov ax, word ptr cs:cvar_0272
     mov dx, ax
     or dl, 0Ah
-    mov word ptr cs:[274h], dx
+    mov word ptr cs:cvar_0274, dx
     mov dx, ax
     or dl, 0Ch
-    mov word ptr cs:[276h], dx
+    mov word ptr cs:cvar_0276, dx
     or al, 0Eh
-    mov word ptr cs:[278h], ax
+    mov word ptr cs:cvar_0278, ax
     jmp short loc_1DD9
 loc_1DC7:
     and dl, 0F0h
@@ -3235,7 +3852,7 @@ loc_1DC7:
     cmp dl, 6Fh
     jb loc_1D77
 loc_1DD2:
-    mov al, byte ptr ds:[0E6Fh]
+    mov al, byte ptr byte_0E6F
     out 21h, al
     stc
     ret
@@ -3312,12 +3929,12 @@ loc_1E6A:
     jns loc_1E74
     jmp near ptr loc_1DD2
 loc_1E74:
-    mov byte ptr ds:[0E70h], bl
+    mov byte ptr byte_0E70, bl
     mov cl, bl
     mov al, 1
     shl al, cl
     not al
-    and al, byte ptr ds:[0E6Fh]
+    and al, byte ptr byte_0E6F
     out 21h, al
     mov ax, seg DATA
     mov es, ax
@@ -3343,7 +3960,7 @@ loc_1E92:
     jne loc_1E90
     xor ax, ax
     mov es, ax
-    mov bl, byte ptr ds:[0E70h]
+    mov bl, byte ptr byte_0E70
     add bl, 8
     xor bh, bh
     shl bx, 1
@@ -3351,21 +3968,21 @@ loc_1E92:
     cli
     mov ax, 204Dh
     xchg word ptr es:[bx], ax
-    mov word ptr ds:[0E71h], ax
+    mov word ptr word_0E71, ax
     mov ax, cs
     xchg word ptr es:[bx+2], ax
-    mov word ptr ds:[0E73h], ax
+    mov word ptr word_0E73, ax
     sti
     mov dx, ds
     mov cx, 10C9h
     call sub_2026
-    mov byte ptr ds:[10BBh], cl
-    mov word ptr ds:[10BCh], dx
+    mov byte ptr byte_10BB, cl
+    mov word ptr word_10BC, dx
     mov dx, ds
     mov cx, 1171h
     call sub_2026
-    mov byte ptr ds:[10BEh], cl
-    mov word ptr ds:[10BFh], dx
+    mov byte ptr byte_10BE, cl
+    mov word ptr word_10BF, dx
     test word ptr cs:[3], 40h
     jne loc_1F2F
     mov ax, word ptr cs:[6]
@@ -3382,14 +3999,14 @@ loc_1E92:
     or byte ptr cs:[3], 40h
     jmp short loc_1F2F
 loc_1F23:
-    mov ax, word ptr ds:[2875h]
-    mov word ptr ds:[0B5Eh], ax
-    add word ptr ds:[2875h], 105Ch
+    mov ax, word ptr word_2875
+    mov word ptr word_0B5E, ax
+    add word ptr word_2875, 105Ch
 loc_1F2F:
-    mov ax, word ptr ds:[0B59h]
+    mov ax, word ptr word_0B59
     mov es, ax
     xor di, di
-    mov ax, word ptr ds:[0B5Bh]
+    mov ax, word ptr word_0B5B
     mov cl, 4
     shl ax, cl
     mov cx, ax
@@ -3400,7 +4017,7 @@ loc_1F3F:
     shr al, 1
     stosb
     loop loc_1F3F
-    or byte ptr cs:[1D6Eh], 1
+    or byte ptr cs:cvar_1D6E, 1
     mov al, 0D1h
     call sub_1CA2
     jae loc_1F5B
@@ -3437,10 +4054,11 @@ loc_1F88:
     pop dx
     pop ax
     ret
-; UNKNOWN: not yet classified as code or data
+cvar_1F90 label byte
+; DATA: toggle flag (not at 1F91)
     db 00h
 sub_1F91:
-    not byte ptr cs:[1F90h]
+    not byte ptr cs:cvar_1F90
     cli
     xor ax, ax
     mov es, ax
@@ -3470,7 +4088,7 @@ loc_1FC4:
 sub_1FCE:
     push ax
     push dx
-    mov dx, word ptr cs:[278h]
+    mov dx, word ptr cs:cvar_0278
     in al, dx
     inc byte ptr ds:[0E69h]
     mov al, 20h
@@ -3481,7 +4099,7 @@ sub_1FCE:
 sub_1FE4:
     push ax
     push dx
-    mov dx, word ptr cs:[278h]
+    mov dx, word ptr cs:cvar_0278
     in al, dx
     inc byte ptr ds:[0E6Ah]
     mov al, 20h
@@ -3492,7 +4110,7 @@ sub_1FE4:
 sub_1FFA:
     push ax
     push dx
-    mov dx, word ptr cs:[278h]
+    mov dx, word ptr cs:cvar_0278
     in al, dx
     inc byte ptr ds:[0E6Ch]
     mov al, 20h
@@ -3503,7 +4121,7 @@ sub_1FFA:
 sub_2010:
     push ax
     push dx
-    mov dx, word ptr cs:[278h]
+    mov dx, word ptr cs:cvar_0278
     in al, dx
     inc byte ptr ds:[0E6Eh]
     mov al, 20h
@@ -3545,22 +4163,22 @@ sub_204D:
     mov ax, seg DATA
     mov ds, ax
     mov es, ax
-    mov dx, word ptr cs:[278h]
+    mov dx, word ptr cs:cvar_0278
     in al, dx
-    inc byte ptr ds:[0B5Dh]
-    mov al, byte ptr cs:[1D6Eh]
+    inc byte ptr byte_0B5D
+    mov al, byte ptr cs:cvar_1D6E
     and al, 3
     cmp al, 3
     je loc_2075
     jmp near ptr loc_2140
 loc_2075:
-    mov ax, word ptr ds:[10C1h]
-    xchg word ptr ds:[10C5h], ax
-    mov word ptr ds:[10C1h], ax
-    mov ax, word ptr ds:[10C3h]
-    xchg word ptr ds:[10C7h], ax
-    mov word ptr ds:[10C3h], ax
-    mov bx, word ptr ds:[10C3h]
+    mov ax, word ptr word_10C1
+    xchg word ptr word_10C5, ax
+    mov word ptr word_10C1, ax
+    mov ax, word ptr word_10C3
+    xchg word ptr word_10C7, ax
+    mov word ptr word_10C3, ax
+    mov bx, word ptr word_10C3
     mov al, 5
     out 0Ah, al
     mov al, 0
@@ -3592,17 +4210,17 @@ loc_20CF:
     mov ax, seg DATA
     mov ds, ax
     mov es, ax
-    mov di, word ptr ds:[10C5h]
-    mov cx, word ptr ds:[1006h]
+    mov di, word ptr ds:word_10C5
+    mov cx, word ptr word_1006
     jcxz loc_2112
     cmp cx, 0A8h
     jb loc_20E9
     mov cx, 0A8h
 loc_20E9:
-    sub word ptr ds:[1006h], cx
+    sub word ptr word_1006, cx
     mov ax, cx
-    mov si, word ptr ds:[1004h]
-    mov ds, word ptr ds:[0B59h]
+    mov si, word ptr word_1004
+    mov ds, word ptr word_0B59
     shr cx, 1
     rep movsw
     sub ax, 0A8h
@@ -3613,7 +4231,7 @@ loc_20E9:
     rep stosw
     mov ax, es
     mov ds, ax
-    mov word ptr ds:[1004h], si
+    mov word ptr word_1004, si
     jmp short loc_2119
 loc_2112:
     xor ax, ax
@@ -3628,7 +4246,7 @@ loc_2119:
     call sub_218F
     mov bx, 4
     call sub_218F
-    cmp word ptr ds:[1006h], 0
+    cmp word ptr ds:word_1006, 0
     jne loc_2140
     mov bx, 6
     call sub_218F
@@ -3649,7 +4267,7 @@ sub_214E:
     push ax
     push bx
     push dx
-    mov bx, word ptr ds:[10C3h]
+    mov bx, word ptr word_10C3
     mov al, 5
     out 0Ah, al
     mov al, 0
@@ -3679,38 +4297,38 @@ sub_214E:
     pop ax
     ret
 sub_218F:
-    mov word ptr ds:[0B62h], bx
+    mov word ptr word_0B62, bx
     mov di, bx
-    mov dx, word ptr [bx+0BBAh]
+    mov dx, word ptr [bx+word_0BBA]
     shl dx, 1
     shl dx, 1
     shl dx, 1
     shl dx, 1
     shl dx, 1
     shl dx, 1
-    mov bp, word ptr [bx+0BAAh]
-    mov ax, word ptr [bx+0B8Ah]
+    mov bp, word ptr [bx+word_0BAA]
+    mov ax, word ptr [bx+word_0B8A]
     cmp ax, 0FFFFh
     jne loc_21B5
     jmp near ptr loc_227B
 loc_21B5:
-    mov cx, word ptr [bx+0B92h]
+    mov cx, word ptr [bx+word_0B92]
     sub cx, ax
-    mov bx, word ptr [bx+0B9Ah]
+    mov bx, word ptr [bx+word_0B9A]
     shl bx, 1
     shl bx, 1
     shl bx, 1
     shl bx, 1
-    les si, [bx+0BDAh]
+    les si, dword ptr [bx+word_0BDA]
     add si, ax
     mov bx, dx
     add bx, 12C1h
-    mov dx, word ptr [di+0BCAh]
-    mov word ptr ds:[0B60h], sp
+    mov dx, word ptr [di+word_0BCA]
+    mov word ptr word_0B60, sp
     mov sp, cx
     add sp, si
     mov cx, 0A8h
-    mov di, word ptr ds:[10C5h]
+    mov di, word ptr ds:word_10C5
 loc_21E6:
     lods byte ptr es:[si]
     xlat
@@ -3726,20 +4344,20 @@ loc_21E6:
     loop loc_21E6
     jmp short loc_2239
 loc_21FD:
-    mov word ptr ds:[10B9h], bx
-    mov bx, word ptr ds:[0B62h]
-    mov bx, word ptr [bx+0B9Ah]
+    mov word ptr word_10B9, bx
+    mov bx, word ptr word_0B62
+    mov bx, word ptr [bx+word_0B9A]
     shl bx, 1
     shl bx, 1
     shl bx, 1
     shl bx, 1
-    mov ax, word ptr [bx+0BD8h]
+    mov ax, word ptr [bx+word_0BD8]
     cmp ax, 2
     jbe loc_222A
-    mov si, word ptr [bx+0BD6h]
+    mov si, word ptr [bx+word_0BD6]
     add ax, si
-    mov word ptr [bx+0B92h], ax
-    mov bx, word ptr ds:[10B9h]
+    mov word ptr [bx+word_0B92], ax
+    mov bx, word ptr word_10B9
     jmp short loc_21E6
 loc_222A:
     mov al, byte ptr [di-1]
@@ -3752,38 +4370,38 @@ loc_2231:
     je loc_2239
     loop loc_2231
 loc_2239:
-    mov sp, word ptr ds:[0B60h]
+    mov sp, word ptr word_0B60
     mov ax, ds
     mov es, ax
-    mov bx, word ptr ds:[0B62h]
+    mov bx, word ptr word_0B62
     mov di, bx
-    mov word ptr [di+0BCAh], dx
-    mov bx, word ptr [bx+0B9Ah]
+    mov word ptr [di+word_0BCA], dx
+    mov bx, word ptr [bx+word_0B9A]
     shl bx, 1
     shl bx, 1
     shl bx, 1
     shl bx, 1
-    sub si, word ptr [bx+0BDAh]
-    cmp word ptr [di+0B92h], si
+    sub si, word ptr [bx+word_0BDA]
+    cmp word ptr [di+word_0B92], si
     ja loc_2277
     mov si, 0FFFFh
-    mov ax, word ptr [bx+0BD8h]
+    mov ax, word ptr [bx+word_0BD8]
     cmp ax, 2
     jbe loc_2277
-    mov si, word ptr [bx+0BD6h]
+    mov si, word ptr [bx+word_0BD6]
     add ax, si
-    mov word ptr [di+0B92h], ax
+    mov word ptr [di+word_0B92], ax
 loc_2277:
-    mov word ptr [di+0B8Ah], si
+    mov word ptr [di+word_0B8A], si
 loc_227B:
     ret
 sub_227C:
     xor di, di
 loc_227E:
-    mov ax, word ptr [di+0BC2h]
+    mov ax, word ptr [di+word_0BC2]
     or ax, ax
     je loc_229A
-    add ax, word ptr [di+0BBAh]
+    add ax, word ptr [di+word_0BBA]
     jns loc_228E
     xor ax, ax
 loc_228E:
@@ -3791,30 +4409,30 @@ loc_228E:
     jle loc_2296
     mov ax, 40h
 loc_2296:
-    mov word ptr [di+0BBAh], ax
+    mov word ptr [di+word_0BBA], ax
 loc_229A:
     inc di
     inc di
     cmp di, 8
     jb loc_227E
-    dec byte ptr ds:[0B85h]
+    dec byte ptr byte_0B85
     jne loc_230F
-    mov al, byte ptr ds:[0B84h]
-    mov byte ptr ds:[0B85h], al
-    mov bx, word ptr ds:[0B86h]
+    mov al, byte ptr byte_0B84
+    mov byte ptr byte_0B85, al
+    mov bx, word ptr word_0B86
     xor al, al
-    mov ah, byte ptr [bx+0DC7h]
+    mov ah, byte ptr [bx+byte_0DC7]
     inc bx
     shr ax, 1
     shr ax, 1
-    add ax, word ptr ds:[0B5Eh]
+    add ax, word ptr word_0B5E
     mov es, ax
-    mov si, word ptr ds:[0B88h]
+    mov si, word ptr word_0B88
     shl si, 1
     shl si, 1
     shl si, 1
     shl si, 1
-    add si, word ptr ds:[0DC5h]
+    add si, word ptr word_0DC5
     xor di, di
     call sub_2311
     add si, 4
@@ -3829,23 +4447,23 @@ loc_229A:
     inc di
     inc di
     call sub_2311
-    inc word ptr ds:[0B88h]
-    cmp word ptr ds:[0B88h], 40h
+    inc word ptr word_0B88
+    cmp word ptr ds:word_0B88, 40h
     jne loc_230F
-    mov ax, word ptr ds:[0B86h]
+    mov ax, word ptr word_0B86
     inc ax
-    cmp byte ptr ds:[0DC2h], al
+    cmp byte ptr byte_0DC2, al
     jae loc_2306
     xor ax, ax
 loc_2306:
-    mov word ptr ds:[0B86h], ax
-    mov word ptr ds:[0B88h], 0
+    mov word ptr word_0B86, ax
+    mov word ptr word_0B88, 0
 loc_230F:
     ret
 loc_2310:
     ret
 sub_2311:
-    mov word ptr [di+0BC2h], 0
+    mov word ptr [di+word_0BC2], 0
     mov ax, word ptr es:[si]
     mov dx, word ptr es:[si+2]
     mov bx, ax
@@ -3862,35 +4480,35 @@ sub_2311:
     or bl, bh
     xor bh, bh
     and dh, 0Fh
-    mov word ptr [di+0BA2h], dx
+    mov word ptr [di+word_0BA2], dx
     or bx, bx
     je loc_236D
     dec bx
-    mov word ptr [di+0B9Ah], bx
+    mov word ptr [di+word_0B9A], bx
     shl bx, 1
     shl bx, 1
     shl bx, 1
     shl bx, 1
-    mov word ptr [di+0B8Ah], 0
-    mov cx, word ptr [bx+0BD2h]
-    mov word ptr [di+0B92h], cx
-    mov cx, word ptr [bx+0BD4h]
-    mov word ptr [di+0BBAh], cx
-    mov word ptr [di+0BCAh], 0
+    mov word ptr [di+word_0B8A], 0
+    mov cx, word ptr [bx+word_0BD2]
+    mov word ptr [di+word_0B92], cx
+    mov cx, word ptr [bx+word_0BD4]
+    mov word ptr [di+word_0BBA], cx
+    mov word ptr [di+word_0BCA], 0
 loc_236D:
     and ax, 7FFFh
     je loc_2382
-    mov word ptr [di+0BB2h], ax
+    mov word ptr [di+word_0BB2], ax
     mov bx, ax
     shl bx, 1
-    mov ax, word ptr [bx+0EBBh]
-    mov word ptr [di+0BAAh], ax
+    mov ax, word ptr [bx+word_0EBB]
+    mov word ptr [di+word_0BAA], ax
 loc_2382:
-    mov ax, word ptr [di+0BA2h]
+    mov ax, word ptr [di+word_0BA2]
     mov bl, ah
     xor bh, bh
     shl bx, 1
-    jmp word ptr [bx+0B64h]
+    jmp word ptr [bx+dtbl_0B64]
 sub_2390:
     ret
 sub_2391:
@@ -3906,12 +4524,12 @@ sub_2391:
 loc_23A3:
     neg ax
 loc_23A5:
-    mov word ptr [di+0BC2h], ax
+    mov word ptr [di+word_0BC2], ax
     ret
 sub_23AA:
     xor ah, ah
-    mov word ptr ds:[0B86h], ax
-    mov word ptr ds:[0B88h], 0FFFFh
+    mov word ptr word_0B86, ax
+    mov word ptr word_0B88, 0FFFFh
     ret
 sub_23B6:
     cbw
@@ -3919,16 +4537,16 @@ sub_23B6:
     jbe loc_23BF
     mov ax, 40h
 loc_23BF:
-    mov word ptr [di+0BBAh], ax
+    mov word ptr [di+word_0BBA], ax
     ret
 sub_23C4:
     dec al
     cbw
-    mov word ptr ds:[0B88h], ax
-    inc word ptr ds:[0B86h]
+    mov word ptr word_0B88, ax
+    inc word ptr word_0B86
     ret
 sub_23CF:
-    mov byte ptr ds:[0B84h], al
+    mov byte ptr byte_0B84, al
     ret
 CODE ends
 DATA segment word public 'DATA'
@@ -3936,7 +4554,27 @@ DATA segment word public 'DATA'
     db 4Bh, 45h, 59h, 42h, 2Eh, 53h, 51h, 5Ah, 00h, 41h, 4Ch, 4Ch
     db 46h, 4Fh, 4Eh, 54h, 53h, 2Eh, 53h, 51h, 5Ah, 00h, 46h, 52h
     db 4Fh, 4Eh, 54h, 2Eh, 53h, 51h, 5Ah, 00h, 43h, 41h, 53h, 54h
-    db 4Ch, 45h, 2Eh, 53h, 51h, 5Ah, 00h, 0BCh, 07h, 00h, 00h, 00h
+    db 4Ch, 45h, 2Eh, 53h, 51h, 5Ah, 00h
+word_0037 label word
+; UNKNOWN: not yet classified as code or data
+    db 0BCh, 07h
+word_0039 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_003B label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_003D label word
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_003E label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+word_003F label word
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_0040 label byte
+; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
@@ -3953,6 +4591,8 @@ DATA segment word public 'DATA'
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+word_0100 label word
+; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
@@ -4068,6 +4708,9 @@ DATA segment word public 'DATA'
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+    db 00h, 00h
+byte_0666 label byte
+; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
@@ -4107,74 +4750,163 @@ DATA segment word public 'DATA'
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 46h, 41h, 54h, 41h, 4Ch, 3Ah, 20h, 4Eh, 6Fh, 74h, 20h, 65h
-    db 6Eh, 6Fh, 75h, 67h, 68h, 20h, 6Dh, 65h, 6Dh, 6Fh, 72h, 79h
-    db 24h, 53h, 41h, 4Dh, 50h, 4Ch, 45h, 2Eh, 53h, 51h, 5Ah, 00h
-    db 46h, 41h, 54h, 41h, 4Ch, 3Ah, 20h, 44h, 69h, 73h, 6Bh, 20h
-    db 6Dh, 69h, 73h, 73h, 69h, 6Eh, 67h, 20h, 21h, 24h, 46h, 41h
-    db 54h, 41h, 4Ch, 3Ah, 20h, 73h, 71h, 75h, 65h, 65h, 7Ah, 65h
-    db 64h, 20h, 66h, 69h, 6Ch, 65h, 20h, 65h, 72h, 72h, 6Fh, 72h
-    db 2Eh, 24h, 46h, 41h, 54h, 41h, 4Ch, 3Ah, 20h, 58h, 4Dh, 53h
-    db 20h, 65h, 72h, 72h, 6Fh, 72h, 2Ch, 20h, 75h, 73h, 65h, 20h
-    db 2Fh, 58h, 20h, 6Fh, 72h, 20h, 61h, 6Eh, 6Fh, 74h, 68h, 65h
-    db 72h, 20h, 58h, 4Dh, 53h, 20h, 64h, 72h, 69h, 76h, 65h, 72h
-    db 20h, 21h, 24h, 46h, 41h, 54h, 41h, 4Ch, 3Ah, 20h, 72h, 65h
-    db 61h, 64h, 20h, 65h, 72h, 72h, 6Fh, 72h, 20h, 21h, 24h, 53h
-    db 57h, 41h, 50h, 20h, 4Dh, 45h, 53h, 53h, 41h, 47h, 45h, 3Ah
-    db 20h, 49h, 6Eh, 73h, 65h, 72h, 74h, 20h, 74h, 68h, 65h, 20h
-    db 64h, 69h, 73h, 6Bh, 20h, 77h, 69h, 74h, 68h, 20h, 24h, 0Ah
-    db 0Dh, 50h, 52h, 45h, 53h, 53h, 20h, 45h, 53h, 43h, 20h, 54h
-    db 4Fh, 20h, 52h, 45h, 53h, 45h, 54h, 20h, 26h, 20h, 44h, 45h
-    db 42h, 55h, 47h, 2Eh, 24h, 0Ah, 0Dh, 50h, 72h, 65h, 73h, 73h
-    db 20h, 52h, 45h, 54h, 55h, 52h, 4Eh, 20h, 74h, 6Fh, 20h, 63h
-    db 6Fh, 6Eh, 74h, 69h, 6Eh, 75h, 65h, 20h, 6Fh, 72h, 20h, 45h
-    db 53h, 43h, 20h, 74h, 6Fh, 20h, 63h, 61h, 6Eh, 63h, 65h, 6Ch
-    db 2Eh, 24h, 31h, 30h, 30h, 25h, 20h, 4Dh, 41h, 43h, 48h, 49h
-    db 4Eh, 45h, 20h, 4Ch, 41h, 4Eh, 47h, 55h, 41h, 47h, 45h, 20h
-    db 62h, 79h, 20h, 45h, 52h, 49h, 43h, 20h, 5Ah, 4Dh, 49h, 52h
-    db 4Fh, 20h, 31h, 39h, 39h, 32h, 00h, 53h, 4Fh, 52h, 52h, 59h
-    db 3Ah, 20h, 59h, 6Fh, 75h, 72h, 20h, 53h, 6Fh, 75h, 6Eh, 64h
-    db 20h, 42h, 6Ch, 61h, 73h, 74h, 65h, 72h, 20h, 64h, 6Fh, 65h
-    db 73h, 20h, 6Eh, 6Fh, 74h, 20h, 77h, 6Fh, 72h, 6Bh, 20h, 63h
-    db 6Fh, 72h, 72h, 65h, 63h, 74h, 6Ch, 79h, 2Eh, 24h, 53h, 4Fh
-    db 52h, 52h, 59h, 3Ah, 20h, 54h, 68h, 65h, 72h, 65h, 20h, 69h
-    db 73h, 20h, 6Eh, 6Fh, 74h, 20h, 65h, 6Eh, 6Fh, 75h, 67h, 68h
-    db 20h, 6Dh, 65h, 6Dh, 6Fh, 72h, 79h, 20h, 66h, 6Fh, 72h, 20h
-    db 53h, 6Fh, 75h, 6Eh, 64h, 54h, 72h, 61h, 63h, 6Bh, 65h, 72h
-    db 20h, 4Dh, 75h, 73h, 69h, 63h, 2Eh, 24h, 50h, 52h, 45h, 53h
-    db 2Eh, 54h, 52h, 4Bh, 00h, 43h, 4Fh, 44h, 45h, 2Eh, 54h, 52h
-    db 4Bh, 00h, 43h, 41h, 52h, 54h, 45h, 2Eh, 54h, 52h, 4Bh, 00h
-    db 50h, 52h, 45h, 53h, 45h, 4Eh, 54h, 41h, 2Eh, 54h, 52h, 4Bh
-    db 00h, 47h, 4Ch, 41h, 43h, 45h, 2Eh, 54h, 52h, 4Bh, 00h, 4Dh
-    db 41h, 50h, 2Eh, 53h, 51h, 5Ah, 00h, 4Dh, 4Fh, 54h, 49h, 46h
-    db 2Eh, 53h, 51h, 5Ah, 00h, 55h, 4Eh, 49h, 4Fh, 4Eh, 2Eh, 53h
-    db 51h, 5Ah, 00h, 4Dh, 45h, 4Eh, 55h, 2Eh, 53h, 51h, 5Ah, 00h
-    db 4Dh, 49h, 4Eh, 45h, 53h, 2Eh, 54h, 52h, 4Bh, 00h, 4Dh, 59h
-    db 53h, 54h, 45h, 52h, 59h, 2Eh, 54h, 52h, 4Bh, 00h, 47h, 41h
-    db 4Dh, 45h, 4Fh, 56h, 45h, 52h, 2Eh, 53h, 51h, 5Ah, 00h, 4Dh
-    db 45h, 4Eh, 55h, 32h, 2Eh, 53h, 51h, 5Ah, 00h, 4Dh, 4Fh, 4Eh
-    db 53h, 54h, 45h, 52h, 2Eh, 54h, 52h, 4Bh, 00h, 46h, 49h, 4Eh
-    db 41h, 4Ch, 2Eh, 54h, 52h, 4Bh, 00h, 42h, 52h, 41h, 56h, 4Fh
-    db 2Eh, 54h, 52h, 4Bh, 00h, 4Bh, 4Fh, 4Fh, 4Ch, 2Eh, 54h, 52h
-    db 4Bh, 00h, 42h, 4Fh, 55h, 4Ch, 41h, 2Eh, 54h, 52h, 4Bh, 00h
+    db 00h, 00h, 00h
+byte_083D label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_083E label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h, 46h, 41h, 54h, 41h, 4Ch, 3Ah, 20h, 4Eh, 6Fh, 74h
+    db 20h, 65h, 6Eh, 6Fh, 75h, 67h, 68h, 20h, 6Dh, 65h, 6Dh, 6Fh
+    db 72h, 79h, 24h, 53h, 41h, 4Dh, 50h, 4Ch, 45h, 2Eh, 53h, 51h
+    db 5Ah, 00h, 46h, 41h, 54h, 41h, 4Ch, 3Ah, 20h, 44h, 69h, 73h
+    db 6Bh, 20h, 6Dh, 69h, 73h, 73h, 69h, 6Eh, 67h, 20h, 21h, 24h
+    db 46h, 41h, 54h, 41h, 4Ch, 3Ah, 20h, 73h, 71h, 75h, 65h, 65h
+    db 7Ah, 65h, 64h, 20h, 66h, 69h, 6Ch, 65h, 20h, 65h, 72h, 72h
+    db 6Fh, 72h, 2Eh, 24h, 46h, 41h, 54h, 41h, 4Ch, 3Ah, 20h, 58h
+    db 4Dh, 53h, 20h, 65h, 72h, 72h, 6Fh, 72h, 2Ch, 20h, 75h, 73h
+    db 65h, 20h, 2Fh, 58h, 20h, 6Fh, 72h, 20h, 61h, 6Eh, 6Fh, 74h
+    db 68h, 65h, 72h, 20h, 58h, 4Dh, 53h, 20h, 64h, 72h, 69h, 76h
+    db 65h, 72h, 20h, 21h, 24h, 46h, 41h, 54h, 41h, 4Ch, 3Ah, 20h
+    db 72h, 65h, 61h, 64h, 20h, 65h, 72h, 72h, 6Fh, 72h, 20h, 21h
+    db 24h, 53h, 57h, 41h, 50h, 20h, 4Dh, 45h, 53h, 53h, 41h, 47h
+    db 45h, 3Ah, 20h, 49h, 6Eh, 73h, 65h, 72h, 74h, 20h, 74h, 68h
+    db 65h, 20h, 64h, 69h, 73h, 6Bh, 20h, 77h, 69h, 74h, 68h, 20h
+    db 24h, 0Ah, 0Dh, 50h, 52h, 45h, 53h, 53h, 20h, 45h, 53h, 43h
+    db 20h, 54h, 4Fh, 20h, 52h, 45h, 53h, 45h, 54h, 20h, 26h, 20h
+    db 44h, 45h, 42h, 55h, 47h, 2Eh, 24h, 0Ah, 0Dh, 50h, 72h, 65h
+    db 73h, 73h, 20h, 52h, 45h, 54h, 55h, 52h, 4Eh, 20h, 74h, 6Fh
+    db 20h, 63h, 6Fh, 6Eh, 74h, 69h, 6Eh, 75h, 65h, 20h, 6Fh, 72h
+    db 20h, 45h, 53h, 43h, 20h, 74h, 6Fh, 20h, 63h, 61h, 6Eh, 63h
+    db 65h, 6Ch, 2Eh, 24h, 31h, 30h, 30h, 25h, 20h, 4Dh, 41h, 43h
+    db 48h, 49h, 4Eh, 45h, 20h, 4Ch, 41h, 4Eh, 47h, 55h, 41h, 47h
+    db 45h, 20h, 62h, 79h, 20h, 45h, 52h, 49h, 43h, 20h, 5Ah, 4Dh
+    db 49h, 52h, 4Fh, 20h, 31h, 39h, 39h, 32h, 00h, 53h, 4Fh, 52h
+    db 52h, 59h, 3Ah, 20h, 59h, 6Fh, 75h, 72h, 20h, 53h, 6Fh, 75h
+    db 6Eh, 64h, 20h, 42h, 6Ch, 61h, 73h, 74h, 65h, 72h, 20h, 64h
+    db 6Fh, 65h, 73h, 20h, 6Eh, 6Fh, 74h, 20h, 77h, 6Fh, 72h, 6Bh
+    db 20h, 63h, 6Fh, 72h, 72h, 65h, 63h, 74h, 6Ch, 79h, 2Eh, 24h
+    db 53h, 4Fh, 52h, 52h, 59h, 3Ah, 20h, 54h, 68h, 65h, 72h, 65h
+    db 20h, 69h, 73h, 20h, 6Eh, 6Fh, 74h, 20h, 65h, 6Eh, 6Fh, 75h
+    db 67h, 68h, 20h, 6Dh, 65h, 6Dh, 6Fh, 72h, 79h, 20h, 66h, 6Fh
+    db 72h, 20h, 53h, 6Fh, 75h, 6Eh, 64h, 54h, 72h, 61h, 63h, 6Bh
+    db 65h, 72h, 20h, 4Dh, 75h, 73h, 69h, 63h, 2Eh, 24h, 50h, 52h
+    db 45h, 53h, 2Eh, 54h, 52h, 4Bh, 00h, 43h, 4Fh, 44h, 45h, 2Eh
+    db 54h, 52h, 4Bh, 00h, 43h, 41h, 52h, 54h, 45h, 2Eh, 54h, 52h
+    db 4Bh, 00h, 50h, 52h, 45h, 53h, 45h, 4Eh, 54h, 41h, 2Eh, 54h
+    db 52h, 4Bh, 00h, 47h, 4Ch, 41h, 43h, 45h, 2Eh, 54h, 52h, 4Bh
+    db 00h, 4Dh, 41h, 50h, 2Eh, 53h, 51h, 5Ah, 00h, 4Dh, 4Fh, 54h
+    db 49h, 46h, 2Eh, 53h, 51h, 5Ah, 00h, 55h, 4Eh, 49h, 4Fh, 4Eh
+    db 2Eh, 53h, 51h, 5Ah, 00h, 4Dh, 45h, 4Eh, 55h, 2Eh, 53h, 51h
+    db 5Ah, 00h, 4Dh, 49h, 4Eh, 45h, 53h, 2Eh, 54h, 52h, 4Bh, 00h
+    db 4Dh, 59h, 53h, 54h, 45h, 52h, 59h, 2Eh, 54h, 52h, 4Bh, 00h
+    db 47h, 41h, 4Dh, 45h, 4Fh, 56h, 45h, 52h, 2Eh, 53h, 51h, 5Ah
+    db 00h, 4Dh, 45h, 4Eh, 55h, 32h, 2Eh, 53h, 51h, 5Ah, 00h, 4Dh
+    db 4Fh, 4Eh, 53h, 54h, 45h, 52h, 2Eh, 54h, 52h, 4Bh, 00h, 46h
+    db 49h, 4Eh, 41h, 4Ch, 2Eh, 54h, 52h, 4Bh, 00h, 42h, 52h, 41h
+    db 56h, 4Fh, 2Eh, 54h, 52h, 4Bh, 00h, 4Bh, 4Fh, 4Fh, 4Ch, 2Eh
+    db 54h, 52h, 4Bh, 00h, 42h, 4Fh, 55h, 4Ch, 41h, 2Eh, 54h, 52h
+    db 4Bh, 00h
+byte_0A98 label byte
+; UNKNOWN: not yet classified as code or data
     db 0Dh, 05h, 06h, 01h, 02h, 07h, 11h, 0Bh, 0Ch, 00h, 0Fh, 03h
-    db 08h, 09h, 0Ah, 04h, 10h, 0Eh, 1Eh, 04h, 05h, 2Dh, 1Ch, 24h
-    db 0Ah, 2Dh, 15h, 16h, 1Eh, 0Bh, 13h, 19h, 1Bh, 17h, 1Ah, 13h
+    db 08h, 09h, 0Ah, 04h, 10h, 0Eh
+byte_0AAA label byte
+; UNKNOWN: not yet classified as code or data
+    db 1Eh, 04h, 05h, 2Dh, 1Ch, 24h, 0Ah, 2Dh, 15h, 16h, 1Eh, 0Bh
+    db 13h, 19h, 1Bh, 17h, 1Ah, 13h
+byte_0ABC label byte
+; UNKNOWN: not yet classified as code or data
     db 00h, 02h, 02h, 00h, 00h, 08h, 0Ah, 08h, 08h, 00h, 00h, 08h
-    db 08h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+    db 08h, 00h, 00h, 00h, 00h, 00h
+word_0ACE label word
+; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 0AAh, 55h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+byte_0B16 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+dword_0B17 label dword
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_0B19 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_0B1B label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_0B1D label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_0B1F label word
+; UNKNOWN: not yet classified as code or data
+    db 0AAh, 55h
+word_0B21 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_0B23 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_0B25 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_0B27 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_0B29 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_0B2B label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_0B2D label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_0B2F label word
+; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+    db 00h, 00h, 00h, 00h
+byte_0B3F label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+word_0B40 label word
+; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 45h, 4Dh, 4Dh
-    db 58h, 58h, 58h, 58h, 30h, 00h, 00h, 00h, 00h, 0AAh, 55h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+    db 58h, 58h, 58h, 58h, 30h
+word_0B51 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_0B53 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_0B55 label word
+; UNKNOWN: not yet classified as code or data
+    db 0AAh, 55h
+word_0B57 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_0B59 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_0B5B label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+byte_0B5D label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+word_0B5E label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_0B60 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_0B62 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
 dtbl_0B64 label word
     dw offset sub_2390
     dw offset sub_2390
@@ -4192,8 +4924,62 @@ dtbl_0B64 label word
     dw offset sub_23C4
     dw offset sub_2390
     dw offset sub_23CF
+byte_0B84 label byte
 ; UNKNOWN: not yet classified as code or data
-    db 01h, 01h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+    db 01h
+byte_0B85 label byte
+; UNKNOWN: not yet classified as code or data
+    db 01h
+word_0B86 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_0B88 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_0B8A label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+word_0B92 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+word_0B9A label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+word_0BA2 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+word_0BAA label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+word_0BB2 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+word_0BBA label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+word_0BC2 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+word_0BCA label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+word_0BD2 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_0BD4 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_0BD6 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_0BD8 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_0BDA label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_0BDC label word
+; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
@@ -4234,6 +5020,21 @@ dtbl_0B64 label word
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+    db 00h, 00h, 00h, 00h, 00h, 00h
+byte_0DC2 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_0DC3 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_0DC4 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+word_0DC5 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+byte_0DC7 label byte
+; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
@@ -4244,15 +5045,8 @@ dtbl_0B64 label word
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 0FFh
-    db 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh
+    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 0FFh, 0FFh, 0FFh, 0FFh
+    db 0FFh, 0FFh, 0FFh, 0FFh
     dd sub_1FCE
     dd sub_1FE4
 ; UNKNOWN: not yet classified as code or data
@@ -4262,13 +5056,26 @@ dtbl_0B64 label word
     db 0FFh, 0FFh, 0FFh, 0FFh
     dd sub_2010
 ; UNKNOWN: not yet classified as code or data
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+byte_0E6F label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_0E70 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+word_0E71 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_0E73 label word
+; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 58h, 03h, 28h, 03h, 0FAh, 02h, 0D0h, 02h, 0A6h, 02h
     db 80h, 02h, 5Ch, 02h, 3Ah, 02h, 1Ah, 02h, 0FCh, 01h, 0E0h, 01h
     db 0C5h, 01h, 0ACh, 01h, 94h, 01h, 7Dh, 01h, 68h, 01h, 53h, 01h
     db 40h, 01h, 2Eh, 01h, 1Dh, 01h, 0Dh, 01h, 0FEh, 00h, 0F0h, 00h
     db 0E2h, 00h, 0D6h, 00h, 0CAh, 00h, 0BEh, 00h, 0B4h, 00h, 0AAh, 00h
     db 0A0h, 00h, 97h, 00h, 8Fh, 00h, 87h, 00h, 7Fh, 00h, 78h, 00h
+word_0EBB label word
+; UNKNOWN: not yet classified as code or data
     db 71h, 00h, 7Fh, 0FFh, 87h, 0FFh, 8Fh, 0FFh, 98h, 0FFh, 0A1h, 0FFh
     db 0ABh, 0FFh, 0B5h, 0FFh, 0C0h, 0FFh, 0CBh, 0FFh, 0D7h, 0FFh, 0E4h, 0FFh
     db 0F1h, 0FFh, 00h, 00h, 0Fh, 00h, 1Fh, 00h, 30h, 00h, 43h, 00h
@@ -4296,23 +5103,62 @@ dtbl_0B64 label word
     db 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h
     db 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 0FFh, 0FFh, 00h, 00h, 0FFh, 00h, 00h
+    db 00h, 00h, 00h, 00h, 00h
+word_1004 label word
+; UNKNOWN: not yet classified as code or data
+    db 0FFh, 0FFh
+word_1006 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h, 0FFh
+word_1009 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_100B label word
+; UNKNOWN: not yet classified as code or data
     db 8Eh, 18h, 00h, 00h, 80h, 1Ch, 00h, 00h, 5Eh, 23h, 00h, 00h
     db 0E6h, 19h, 00h, 00h, 0B2h, 0Ah, 00h, 00h, 12h, 09h, 00h, 00h
     db 00h, 00h, 00h, 00h, 0D2h, 35h, 00h, 00h, 0C4h, 06h, 00h, 00h
-    db 86h, 1Ch, 00h, 00h, 2Eh, 0Eh, 0FFh, 0FFh, 70h, 17h, 70h, 17h
-    db 08h, 00h, 9Ch, 0FFh, 08h, 00h, 40h, 1Fh, 40h, 1Fh, 0Ah, 00h
-    db 2Ch, 01h, 0Ah, 00h, 0E8h, 03h, 0E8h, 03h, 12h, 00h, 0D4h, 0FEh
-    db 12h, 00h, 40h, 1Fh, 40h, 1Fh, 08h, 00h, 64h, 00h, 08h, 00h
-    db 0E8h, 03h, 0E8h, 03h, 06h, 00h, 14h, 00h, 06h, 00h, 0Ah, 00h
-    db 0Ah, 00h, 03h, 00h, 08h, 00h, 03h, 00h, 0Ah, 00h, 0Ah, 00h
-    db 03h, 00h, 0F8h, 0FFh, 03h, 00h, 0E8h, 03h, 0E8h, 03h, 0Ah, 00h
-    db 28h, 00h, 0Ah, 00h, 0E8h, 03h, 0E8h, 03h, 0Ah, 00h, 28h, 00h
-    db 0Ah, 00h, 40h, 1Fh, 40h, 1Fh, 0Ah, 00h, 2Ch, 01h, 0Ah, 00h
+    db 86h, 1Ch, 00h, 00h, 2Eh, 0Eh
+word_1035 label word
+; UNKNOWN: not yet classified as code or data
+    db 0FFh, 0FFh, 70h, 17h, 70h, 17h, 08h, 00h, 9Ch, 0FFh, 08h, 00h
+    db 40h, 1Fh, 40h, 1Fh, 0Ah, 00h, 2Ch, 01h, 0Ah, 00h, 0E8h, 03h
+    db 0E8h, 03h, 12h, 00h, 0D4h, 0FEh, 12h, 00h, 40h, 1Fh, 40h, 1Fh
+    db 08h, 00h, 64h, 00h, 08h, 00h, 0E8h, 03h, 0E8h, 03h, 06h, 00h
+    db 14h, 00h, 06h, 00h, 0Ah, 00h, 0Ah, 00h, 03h, 00h, 08h, 00h
+    db 03h, 00h, 0Ah, 00h, 0Ah, 00h, 03h, 00h, 0F8h, 0FFh, 03h, 00h
     db 0E8h, 03h, 0E8h, 03h, 0Ah, 00h, 28h, 00h, 0Ah, 00h, 0E8h, 03h
-    db 0E8h, 03h, 0Ah, 00h, 14h, 00h, 0Ah, 00h, 0E8h, 03h, 0E8h, 03h
-    db 0Ah, 00h, 28h, 00h, 0Ah, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 0C9h, 10h, 0BBh, 10h, 71h, 11h, 0BEh, 10h, 00h, 00h
+    db 0E8h, 03h, 0Ah, 00h, 28h, 00h, 0Ah, 00h, 40h, 1Fh, 40h, 1Fh
+    db 0Ah, 00h, 2Ch, 01h, 0Ah, 00h, 0E8h, 03h, 0E8h, 03h, 0Ah, 00h
+    db 28h, 00h, 0Ah, 00h, 0E8h, 03h, 0E8h, 03h, 0Ah, 00h, 14h, 00h
+    db 0Ah, 00h, 0E8h, 03h, 0E8h, 03h, 0Ah, 00h, 28h, 00h, 0Ah, 00h
+word_10B9 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+byte_10BB label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+word_10BC label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+byte_10BE label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+word_10BF label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_10C1 label word
+; UNKNOWN: not yet classified as code or data
+    db 0C9h, 10h
+word_10C3 label word
+; UNKNOWN: not yet classified as code or data
+    db 0BBh, 10h
+word_10C5 label word
+; UNKNOWN: not yet classified as code or data
+    db 71h, 11h
+word_10C7 label word
+; UNKNOWN: not yet classified as code or data
+    db 0BEh, 10h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
@@ -4617,6 +5463,9 @@ dtbl_0B64 label word
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+    db 00h, 00h, 00h, 00h, 00h
+word_1F18 label word
+; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
@@ -4700,25 +5549,46 @@ dtbl_0B64 label word
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 2Dh, 2Dh, 31h, 32h, 33h, 34h
-    db 35h, 36h, 37h, 38h, 39h, 30h, 2Dh, 2Dh, 2Dh, 2Dh, 41h, 2Dh
-    db 45h, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh
-    db 41h, 2Dh, 44h, 46h, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh
-    db 2Dh, 2Dh, 2Dh, 2Dh, 43h, 2Dh, 42h, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh
+    db 00h, 00h, 00h, 00h, 00h, 2Dh, 2Dh, 31h, 32h, 33h, 34h, 35h
+    db 36h, 37h, 38h, 39h, 30h, 2Dh, 2Dh, 2Dh, 2Dh, 41h, 2Dh, 45h
+    db 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 41h
+    db 2Dh, 44h, 46h, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh
+    db 2Dh, 2Dh, 2Dh, 43h, 2Dh, 42h, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh
     db 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh
     db 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh
     db 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh
     db 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh
     db 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh
     db 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh
-    db 2Dh, 2Dh, 00h, 00h, 00h, 00h, 00h, 00h, 59h, 4Fh, 55h, 20h
-    db 4Dh, 55h, 53h, 54h, 20h, 52h, 55h, 4Eh, 20h, 54h, 48h, 45h
-    db 20h, 47h, 41h, 4Dh, 45h, 20h, 57h, 49h, 54h, 48h, 20h, 54h
-    db 48h, 45h, 20h, 4Fh, 52h, 49h, 47h, 49h, 4Eh, 41h, 4Ch, 20h
-    db 44h, 49h, 53h, 4Bh, 20h, 23h, 31h, 20h, 49h, 4Eh, 20h, 41h
-    db 4Eh, 59h, 20h, 44h, 52h, 49h, 56h, 45h, 21h, 20h, 65h, 72h
-    db 72h, 2Eh, 23h, 24h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+    db 2Dh
+word_2381 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_2383 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_2385 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h, 59h, 4Fh, 55h, 20h, 4Dh, 55h, 53h, 54h, 20h, 52h
+    db 55h, 4Eh, 20h, 54h, 48h, 45h, 20h, 47h, 41h, 4Dh, 45h, 20h
+    db 57h, 49h, 54h, 48h, 20h, 54h, 48h, 45h, 20h, 4Fh, 52h, 49h
+    db 47h, 49h, 4Eh, 41h, 4Ch, 20h, 44h, 49h, 53h, 4Bh, 20h, 23h
+    db 31h, 20h, 49h, 4Eh, 20h, 41h, 4Eh, 59h, 20h, 44h, 52h, 49h
+    db 56h, 45h, 21h, 20h, 65h, 72h, 72h, 2Eh, 23h, 24h
+byte_23CB label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_23CC label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_23CD label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+word_23CE label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_23D0 label word
+; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
@@ -4804,9 +5674,479 @@ dtbl_0B64 label word
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+    db 00h, 00h
+byte_27CE label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+word_27CF label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+byte_27D1 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+word_27D2 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+byte_27D4 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_27D5 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_27D6 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+byte_27D8 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_27D9 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+word_27DA label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_27DC label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_27DE label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_27E0 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_27E2 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+byte_27E4 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_27E5 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_27E6 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_27E7 label byte
+; UNKNOWN: not yet classified as code or data
+    db 02h
+byte_27E8 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_27E9 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_27EA label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_27EB label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_27EC label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_27ED label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+word_27EE label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_27F0 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_27F2 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+byte_27F4 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+byte_27F6 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_27F7 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+    db 00h
+byte_2804 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_2805 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_2806 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h, 00h, 00h, 00h, 00h, 00h
+byte_280D label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h, 00h
+byte_2810 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_2811 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_2812 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+byte_281A label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_281B label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+byte_281D label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+byte_281F label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+    db 00h
+byte_282C label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_282D label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+byte_282F label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_2830 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+byte_2832 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+byte_283C label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+byte_283E label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_283F label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_2840 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_2841 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_2842 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+byte_2844 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h, 00h, 00h, 00h, 00h, 00h
+byte_284B label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+    db 00h, 00h, 00h, 00h, 00h
+byte_2868 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h, 00h, 00h, 00h
+byte_286D label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_286E label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_286F label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_2870 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h, 00h, 00h
+byte_2874 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+word_2875 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+byte_2877 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_2878 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_2879 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+word_287A label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+byte_287C label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_287D label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 3Ch, 00h, 00h, 3Ch
+    db 00h, 00h, 3Ch, 00h, 3Ch, 3Ch, 1Ch, 3Ch, 3Ch, 0Ch, 3Ch, 38h
+    db 00h, 38h, 30h, 00h, 34h, 2Ch, 00h, 34h, 24h, 00h, 2Ch, 24h
+    db 00h, 24h, 1Ch, 00h, 20h, 18h, 00h, 18h, 14h, 00h, 14h, 10h
+    db 00h
+word_28AE label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h, 00h, 01h, 02h, 03h, 04h, 05h, 06h, 07h, 08h, 09h
+    db 0Ah, 0Bh, 0Ch, 0Dh, 0Eh, 0Fh, 00h
+word_28C1 label word
+; UNKNOWN: not yet classified as code or data
+    db 34h, 12h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 59h, 45h, 41h
+    db 41h, 41h, 20h, 3Eh, 20h, 3Eh, 20h, 3Eh, 00h, 4Dh, 59h, 20h
+    db 47h, 41h, 4Dh, 45h, 20h, 49h, 53h, 20h, 53h, 54h, 49h, 4Ch
+    db 4Ch, 20h, 57h, 4Fh, 52h, 4Bh, 49h, 4Eh, 47h, 20h, 49h, 4Eh
+    db 00h, 20h, 3Ch, 3Ch, 00h, 50h, 52h, 4Fh, 47h, 52h, 41h, 4Dh
+    db 4Dh, 45h, 44h, 20h, 49h, 4Eh, 20h, 31h, 39h, 39h, 32h, 20h
+    db 4Fh, 4Eh, 20h, 41h, 54h, 20h, 3Eh, 32h, 38h, 36h, 20h, 31h
+    db 32h, 4Dh, 48h, 5Ah, 3Eh, 00h, 3Eh, 20h, 3Eh, 20h, 3Eh, 20h
+    db 45h, 4Eh, 4Ah, 4Fh, 59h, 20h, 4Fh, 4Ch, 44h, 49h, 45h, 53h
+    db 3Ch, 3Ch, 00h, 43h, 4Fh, 44h, 45h, 52h, 3Eh, 20h, 44h, 45h
+    db 53h, 49h, 47h, 4Eh, 45h, 52h, 20h, 41h, 4Eh, 44h, 20h, 41h
+    db 52h, 54h, 49h, 53h, 54h, 20h, 44h, 49h, 52h, 45h, 43h, 54h
+    db 4Fh, 52h, 3Eh, 00h, 45h, 52h, 49h, 43h, 20h, 5Ah, 4Dh, 49h
+    db 52h, 4Fh, 00h, 3Eh, 4Dh, 41h, 49h, 4Eh, 20h, 47h, 52h, 41h
+    db 50h, 48h, 49h, 43h, 53h, 20h, 41h, 4Eh, 44h, 20h, 42h, 41h
+    db 43h, 4Bh, 47h, 52h, 4Fh, 55h, 4Eh, 44h, 3Eh, 00h, 46h, 52h
+    db 41h, 4Eh, 43h, 49h, 53h, 20h, 46h, 4Fh, 55h, 52h, 4Eh, 49h
+    db 45h, 52h, 00h, 3Eh, 4Dh, 4Fh, 4Eh, 53h, 54h, 45h, 52h, 53h
+    db 20h, 41h, 4Eh, 44h, 20h, 48h, 45h, 52h, 4Fh, 53h, 3Eh, 00h
+    db 4Ch, 59h, 45h, 53h, 20h, 20h, 42h, 45h, 4Ch, 41h, 49h, 44h
+    db 4Fh, 55h, 4Eh, 49h, 00h, 54h, 48h, 41h, 4Eh, 4Bh, 53h, 20h
+    db 54h, 4Fh, 00h, 43h, 52h, 49h, 53h, 54h, 45h, 4Ch, 4Ch, 45h
+    db 3Eh, 20h, 47h, 49h, 4Ch, 20h, 45h, 53h, 50h, 45h, 43h, 48h
+    db 45h, 20h, 41h, 4Eh, 44h, 20h, 43h, 4Fh, 52h, 49h, 4Eh, 4Eh
+    db 45h, 3Eh, 00h, 53h, 45h, 42h, 41h, 53h, 54h, 49h, 45h, 4Eh
+    db 20h, 42h, 45h, 43h, 48h, 45h, 54h, 20h, 41h, 4Eh, 44h, 20h
+    db 4Fh, 4Ch, 49h, 56h, 49h, 45h, 52h, 20h, 41h, 4Bh, 41h, 20h
+    db 44h, 45h, 4Ch, 54h, 41h, 3Eh, 00h, 4Ch, 45h, 56h, 45h, 4Ch
+    db 49h, 2Eh, 53h, 51h, 5Ah, 00h, 4Ch, 45h, 56h, 45h, 4Ch, 48h
+    db 2Eh, 53h, 51h, 5Ah, 00h, 4Ch, 45h, 56h, 45h, 4Ch, 49h, 2Eh
+    db 53h, 51h, 5Ah, 00h, 00h, 53h, 50h, 52h, 49h, 54h, 45h, 53h
+    db 2Eh, 53h, 51h, 5Ah, 00h, 46h, 41h, 54h, 41h, 4Ch, 21h, 20h
+    db 3Ah, 20h, 56h, 69h, 64h, 65h, 6Fh, 20h, 6Eh, 6Fh, 74h, 20h
+    db 31h, 30h, 30h, 25h, 20h, 63h, 6Fh, 6Dh, 70h, 61h, 74h, 69h
+    db 62h, 6Ch, 65h, 20h, 56h, 47h, 41h, 20h, 21h, 24h, 00h, 01h
+    db 02h, 03h, 04h, 05h, 06h, 07h, 08h, 09h, 0Ah, 0Bh, 0Ch, 0Dh
+    db 0Eh, 0Fh, 00h
+word_2A74 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_2A76 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_2A78 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_2A7A label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h, 00h, 00h, 00h, 38h, 28h, 20h, 28h, 18h, 10h, 20h
+    db 10h, 08h, 10h, 28h, 38h, 28h, 00h, 08h, 05h, 05h, 05h, 38h
+    db 30h, 08h, 00h, 18h, 10h, 08h, 20h, 0Ch, 08h, 30h, 18h, 10h
+    db 10h, 10h, 18h, 18h, 18h, 20h, 20h, 20h, 28h, 28h, 28h, 38h
+    db 38h, 38h, 00h, 00h, 00h, 38h, 28h, 20h, 28h, 18h, 10h, 20h
+    db 10h, 08h, 18h, 18h, 24h, 28h, 00h, 08h, 00h, 00h, 00h, 38h
+    db 30h, 08h, 18h, 1Ch, 2Ch, 18h, 24h, 2Ch, 28h, 30h, 38h, 34h
+    db 20h, 14h, 00h, 18h, 14h, 00h, 24h, 1Ch, 14h, 34h, 2Ch, 3Ch
+    db 3Ch, 38h, 00h, 00h, 00h, 38h, 28h, 20h, 28h, 18h, 10h, 20h
+    db 10h, 08h, 0Ch, 08h, 14h, 28h, 00h, 08h, 00h, 00h, 00h, 38h
+    db 30h, 08h, 00h, 0Eh, 00h, 00h, 14h, 00h, 00h, 1Ah, 00h, 0Ch
+    db 0Ah, 02h, 14h, 18h, 14h, 1Ch, 20h, 20h, 2Ch, 28h, 2Ch, 3Ch
+    db 3Ch, 38h, 00h, 00h, 00h, 38h, 28h, 20h, 28h, 18h, 10h, 20h
+    db 10h, 08h, 10h, 28h, 38h, 28h, 00h, 08h, 04h, 04h, 00h, 38h
+    db 30h, 08h, 18h, 00h, 00h, 28h, 04h, 00h, 3Ch, 14h, 00h, 34h
+    db 20h, 14h, 20h, 14h, 24h, 28h, 1Ch, 3Ch, 2Ch, 2Ch, 3Ch, 34h
+    db 38h, 3Ch, 00h, 00h, 00h, 38h, 28h, 20h, 28h, 18h, 10h, 20h
+    db 10h, 08h, 10h, 28h, 38h, 28h, 00h, 08h, 04h, 04h, 04h, 38h
+    db 30h, 08h, 00h, 10h, 10h, 00h, 20h, 10h, 08h, 30h, 08h, 14h
+    db 08h, 00h, 00h, 18h, 14h, 00h, 24h, 1Ch, 14h, 34h, 2Ch, 3Ch
+    db 3Ch, 3Ch, 00h, 00h, 00h, 3Ch, 24h, 14h, 2Ch, 0Ch, 00h, 1Ch
+    db 08h, 04h, 3Ch, 30h, 28h, 28h, 00h, 08h, 04h, 04h, 04h, 3Ch
+    db 2Ch, 08h, 08h, 18h, 00h, 18h, 20h, 0Ch, 28h, 2Ch, 10h, 34h
+    db 18h, 10h, 24h, 08h, 18h, 2Ch, 18h, 24h, 34h, 24h, 30h, 3Ch
+    db 34h, 38h, 00h, 00h, 00h, 38h, 28h, 20h, 28h, 18h, 10h, 20h
+    db 10h, 08h, 10h, 28h, 38h, 28h, 00h, 08h, 04h, 04h, 04h, 38h
+    db 30h, 08h, 00h, 14h, 14h, 00h, 20h, 14h, 08h, 30h, 1Ch, 34h
+    db 20h, 14h, 04h, 08h, 1Ch, 10h, 14h, 30h, 14h, 24h, 38h, 2Ch
+    db 34h, 3Ch, 00h, 00h, 00h, 38h, 28h, 20h, 28h, 18h, 10h, 20h
+    db 10h, 08h, 28h, 34h, 3Ch, 28h, 00h, 08h, 04h, 04h, 04h, 38h
+    db 30h, 08h, 00h, 14h, 18h, 00h, 20h, 1Ch, 00h, 30h, 28h, 08h
+    db 14h, 0Ch, 14h, 1Ch, 14h, 20h, 28h, 20h, 28h, 30h, 28h, 38h
+    db 3Ch, 38h, 00h, 00h, 00h, 38h, 28h, 20h, 28h, 18h, 10h, 20h
+    db 10h, 08h, 24h, 28h, 3Ch, 28h, 00h, 08h, 04h, 04h, 04h, 38h
+    db 30h, 08h, 00h, 18h, 10h, 08h, 20h, 0Ch, 08h, 30h, 18h, 14h
+    db 10h, 0Ch, 1Ch, 18h, 14h, 24h, 20h, 1Ch, 2Ch, 28h, 24h, 3Ch
+    db 38h, 34h, 00h, 00h, 00h, 38h, 28h, 20h, 28h, 18h, 10h, 20h
+    db 10h, 08h, 2Ch, 28h, 3Ch, 28h, 00h, 08h, 04h, 04h, 04h, 38h
+    db 30h, 08h, 1Ch, 00h, 14h, 2Ch, 14h, 1Ch, 3Ch, 1Ch, 1Ch, 0Ch
+    db 10h, 18h, 10h, 14h, 20h, 14h, 1Ch, 2Ch, 1Ch, 28h, 34h, 2Ch
+    db 38h, 3Ch, 00h, 00h, 00h, 38h, 28h, 20h, 28h, 18h, 10h, 20h
+    db 10h, 08h, 10h, 28h, 38h, 28h, 00h, 08h, 00h, 00h, 00h, 38h
+    db 30h, 08h, 00h, 18h, 10h, 08h, 20h, 0Ch, 08h, 30h, 18h, 10h
+    db 10h, 10h, 18h, 18h, 18h, 20h, 20h, 20h, 28h, 28h, 28h, 38h
+    db 38h, 38h, 00h, 00h, 00h, 38h, 28h, 20h, 28h, 18h, 10h, 20h
+    db 10h, 08h, 10h, 28h, 38h, 28h, 00h, 08h, 00h, 00h, 00h, 38h
+    db 30h, 08h, 00h, 14h, 00h, 00h, 20h, 00h, 08h, 30h, 08h, 34h
+    db 20h, 14h, 1Ch, 08h, 08h, 28h, 14h, 14h, 3Ch, 28h, 28h, 38h
+    db 38h, 38h, 00h, 00h, 00h, 38h, 28h, 20h, 28h, 18h, 10h, 20h
+    db 10h, 08h, 10h, 28h, 38h, 28h, 00h, 08h, 00h, 00h, 00h, 38h
+    db 30h, 08h, 00h, 14h, 00h, 00h, 20h, 00h, 08h, 30h, 08h, 34h
+    db 20h, 14h, 14h, 18h, 1Ch, 1Ch, 20h, 24h, 28h, 28h, 2Ch, 38h
+    db 38h, 38h
+byte_2CEC label byte
+; UNKNOWN: not yet classified as code or data
+    db 05h
+byte_2CED label byte
+; UNKNOWN: not yet classified as code or data
+    db 22h
+byte_2CEE label byte
+; UNKNOWN: not yet classified as code or data
+    db 86h
+word_2CEF label word
+; UNKNOWN: not yet classified as code or data
+    db 8Dh, 0E5h
+word_2CF1 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_2CF3 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+byte_2CF5 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_2CF6 label byte
+; UNKNOWN: not yet classified as code or data
+    db 0FFh, 0Ch, 0Bh, 0Ah, 0FFh, 0FFh, 00h, 0FFh, 0FFh, 0Eh
+word_2D00 label word
+; UNKNOWN: not yet classified as code or data
+    db 0FCh, 2Bh, 5Ch, 2Ch, 0CCh, 2Bh, 9Ch, 2Bh, 0Ch, 2Bh, 6Ch, 2Bh
+    db 0ACh, 2Ah, 3Ch, 2Bh, 0DCh, 2Ah, 0DCh, 2Ah, 8Ch, 2Ch, 8Ch, 2Ch
+    db 8Ch, 2Ch, 0BCh, 2Ch, 0DCh, 2Ah, 0ACh, 2Ah
+byte_2D20 label byte
+; UNKNOWN: not yet classified as code or data
+    db 09h, 09h, 00h, 00h, 00h, 0Dh, 04h, 04h, 0Ah, 0Dh, 10h, 10h
+    db 10h, 09h, 0Eh, 04h
+byte_2D30 label byte
+; UNKNOWN: not yet classified as code or data
+    db 31h, 68h, 31h, 2Dh, 80h, 80h, 80h, 56h, 6Eh, 0Ch, 18h, 33h
+    db 33h, 26h, 0ADh, 54h
+word_2D40 label word
+; UNKNOWN: not yet classified as code or data
+    db 60h, 2Dh, 60h, 2Dh, 60h, 2Dh, 60h, 2Dh, 60h, 2Dh, 60h, 2Dh
+    db 60h, 2Dh, 60h, 2Dh, 60h, 2Dh, 60h, 2Dh, 60h, 2Dh, 60h, 2Dh
+    db 60h, 2Dh, 60h, 2Dh, 60h, 2Dh, 76h, 2Dh, 0FFh, 0FFh, 0B8h, 01h
+    db 01h, 00h, 28h, 00h, 70h, 03h, 06h, 00h, 64h, 00h, 28h, 05h
+    db 01h, 00h, 0FFh, 00h, 0FFh, 0FFh, 0B8h, 01h, 01h, 00h, 28h, 00h
+    db 70h, 03h, 06h, 00h, 64h, 00h, 28h, 05h, 01h, 00h, 0FFh, 00h
+    db 0FFh, 0FFh
+byte_2D8A label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h, 4Ch, 45h, 56h, 45h, 4Ch
+byte_2D90 label byte
+; UNKNOWN: not yet classified as code or data
+    db 30h, 2Eh, 53h, 51h, 5Ah, 00h
+byte_2D96 label byte
+; UNKNOWN: not yet classified as code or data
+    db 30h, 30h, 30h, 31h, 31h, 31h, 32h, 33h, 33h, 30h, 34h, 34h
+    db 34h, 35h, 30h, 32h, 42h, 41h, 43h, 4Bh
+byte_2DAA label byte
+; UNKNOWN: not yet classified as code or data
+    db 30h, 2Eh, 53h, 51h, 5Ah, 00h
+word_2DB0 label word
+; UNKNOWN: not yet classified as code or data
+    db 28h, 00h, 00h, 00h
+word_2DB4 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h, 00h, 00h, 00h, 00h
+word_2DBA label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_2DBC label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_2DBE label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_2DC0 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_2DC2 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_2DC4 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_2DC6 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_2DC8 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_2DCA label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_2DCC label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_2DCE label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_2DD0 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_2DD2 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h, 00h, 00h
+word_2DD6 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_2DD8 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_2DDA label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_2DDC label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h, 00h, 00h
+word_2DE0 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_2DE2 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_2DE4 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_2DE6 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_2DE8 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_2DEA label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_2DEC label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_2DEE label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h, 00h, 00h
+byte_2DF2 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_2DF3 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_2DF4 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_2DF5 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+word_2DF6 label word
+; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 02h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
@@ -4819,117 +6159,6 @@ dtbl_0B64 label word
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 3Ch, 00h, 00h, 3Ch, 00h, 00h, 3Ch, 00h, 3Ch, 3Ch
-    db 1Ch, 3Ch, 3Ch, 0Ch, 3Ch, 38h, 00h, 38h, 30h, 00h, 34h, 2Ch
-    db 00h, 34h, 24h, 00h, 2Ch, 24h, 00h, 24h, 1Ch, 00h, 20h, 18h
-    db 00h, 18h, 14h, 00h, 14h, 10h, 00h, 00h, 00h, 00h, 01h, 02h
-    db 03h, 04h, 05h, 06h, 07h, 08h, 09h, 0Ah, 0Bh, 0Ch, 0Dh, 0Eh
-    db 0Fh, 00h, 34h, 12h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 59h
-    db 45h, 41h, 41h, 41h, 20h, 3Eh, 20h, 3Eh, 20h, 3Eh, 00h, 4Dh
-    db 59h, 20h, 47h, 41h, 4Dh, 45h, 20h, 49h, 53h, 20h, 53h, 54h
-    db 49h, 4Ch, 4Ch, 20h, 57h, 4Fh, 52h, 4Bh, 49h, 4Eh, 47h, 20h
-    db 49h, 4Eh, 00h, 20h, 3Ch, 3Ch, 00h, 50h, 52h, 4Fh, 47h, 52h
-    db 41h, 4Dh, 4Dh, 45h, 44h, 20h, 49h, 4Eh, 20h, 31h, 39h, 39h
-    db 32h, 20h, 4Fh, 4Eh, 20h, 41h, 54h, 20h, 3Eh, 32h, 38h, 36h
-    db 20h, 31h, 32h, 4Dh, 48h, 5Ah, 3Eh, 00h, 3Eh, 20h, 3Eh, 20h
-    db 3Eh, 20h, 45h, 4Eh, 4Ah, 4Fh, 59h, 20h, 4Fh, 4Ch, 44h, 49h
-    db 45h, 53h, 3Ch, 3Ch, 00h, 43h, 4Fh, 44h, 45h, 52h, 3Eh, 20h
-    db 44h, 45h, 53h, 49h, 47h, 4Eh, 45h, 52h, 20h, 41h, 4Eh, 44h
-    db 20h, 41h, 52h, 54h, 49h, 53h, 54h, 20h, 44h, 49h, 52h, 45h
-    db 43h, 54h, 4Fh, 52h, 3Eh, 00h, 45h, 52h, 49h, 43h, 20h, 5Ah
-    db 4Dh, 49h, 52h, 4Fh, 00h, 3Eh, 4Dh, 41h, 49h, 4Eh, 20h, 47h
-    db 52h, 41h, 50h, 48h, 49h, 43h, 53h, 20h, 41h, 4Eh, 44h, 20h
-    db 42h, 41h, 43h, 4Bh, 47h, 52h, 4Fh, 55h, 4Eh, 44h, 3Eh, 00h
-    db 46h, 52h, 41h, 4Eh, 43h, 49h, 53h, 20h, 46h, 4Fh, 55h, 52h
-    db 4Eh, 49h, 45h, 52h, 00h, 3Eh, 4Dh, 4Fh, 4Eh, 53h, 54h, 45h
-    db 52h, 53h, 20h, 41h, 4Eh, 44h, 20h, 48h, 45h, 52h, 4Fh, 53h
-    db 3Eh, 00h, 4Ch, 59h, 45h, 53h, 20h, 20h, 42h, 45h, 4Ch, 41h
-    db 49h, 44h, 4Fh, 55h, 4Eh, 49h, 00h, 54h, 48h, 41h, 4Eh, 4Bh
-    db 53h, 20h, 54h, 4Fh, 00h, 43h, 52h, 49h, 53h, 54h, 45h, 4Ch
-    db 4Ch, 45h, 3Eh, 20h, 47h, 49h, 4Ch, 20h, 45h, 53h, 50h, 45h
-    db 43h, 48h, 45h, 20h, 41h, 4Eh, 44h, 20h, 43h, 4Fh, 52h, 49h
-    db 4Eh, 4Eh, 45h, 3Eh, 00h, 53h, 45h, 42h, 41h, 53h, 54h, 49h
-    db 45h, 4Eh, 20h, 42h, 45h, 43h, 48h, 45h, 54h, 20h, 41h, 4Eh
-    db 44h, 20h, 4Fh, 4Ch, 49h, 56h, 49h, 45h, 52h, 20h, 41h, 4Bh
-    db 41h, 20h, 44h, 45h, 4Ch, 54h, 41h, 3Eh, 00h, 4Ch, 45h, 56h
-    db 45h, 4Ch, 49h, 2Eh, 53h, 51h, 5Ah, 00h, 4Ch, 45h, 56h, 45h
-    db 4Ch, 48h, 2Eh, 53h, 51h, 5Ah, 00h, 4Ch, 45h, 56h, 45h, 4Ch
-    db 49h, 2Eh, 53h, 51h, 5Ah, 00h, 00h, 53h, 50h, 52h, 49h, 54h
-    db 45h, 53h, 2Eh, 53h, 51h, 5Ah, 00h, 46h, 41h, 54h, 41h, 4Ch
-    db 21h, 20h, 3Ah, 20h, 56h, 69h, 64h, 65h, 6Fh, 20h, 6Eh, 6Fh
-    db 74h, 20h, 31h, 30h, 30h, 25h, 20h, 63h, 6Fh, 6Dh, 70h, 61h
-    db 74h, 69h, 62h, 6Ch, 65h, 20h, 56h, 47h, 41h, 20h, 21h, 24h
-    db 00h, 01h, 02h, 03h, 04h, 05h, 06h, 07h, 08h, 09h, 0Ah, 0Bh
-    db 0Ch, 0Dh, 0Eh, 0Fh, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 38h, 28h, 20h, 28h, 18h, 10h, 20h, 10h
-    db 08h, 10h, 28h, 38h, 28h, 00h, 08h, 05h, 05h, 05h, 38h, 30h
-    db 08h, 00h, 18h, 10h, 08h, 20h, 0Ch, 08h, 30h, 18h, 10h, 10h
-    db 10h, 18h, 18h, 18h, 20h, 20h, 20h, 28h, 28h, 28h, 38h, 38h
-    db 38h, 00h, 00h, 00h, 38h, 28h, 20h, 28h, 18h, 10h, 20h, 10h
-    db 08h, 18h, 18h, 24h, 28h, 00h, 08h, 00h, 00h, 00h, 38h, 30h
-    db 08h, 18h, 1Ch, 2Ch, 18h, 24h, 2Ch, 28h, 30h, 38h, 34h, 20h
-    db 14h, 00h, 18h, 14h, 00h, 24h, 1Ch, 14h, 34h, 2Ch, 3Ch, 3Ch
-    db 38h, 00h, 00h, 00h, 38h, 28h, 20h, 28h, 18h, 10h, 20h, 10h
-    db 08h, 0Ch, 08h, 14h, 28h, 00h, 08h, 00h, 00h, 00h, 38h, 30h
-    db 08h, 00h, 0Eh, 00h, 00h, 14h, 00h, 00h, 1Ah, 00h, 0Ch, 0Ah
-    db 02h, 14h, 18h, 14h, 1Ch, 20h, 20h, 2Ch, 28h, 2Ch, 3Ch, 3Ch
-    db 38h, 00h, 00h, 00h, 38h, 28h, 20h, 28h, 18h, 10h, 20h, 10h
-    db 08h, 10h, 28h, 38h, 28h, 00h, 08h, 04h, 04h, 00h, 38h, 30h
-    db 08h, 18h, 00h, 00h, 28h, 04h, 00h, 3Ch, 14h, 00h, 34h, 20h
-    db 14h, 20h, 14h, 24h, 28h, 1Ch, 3Ch, 2Ch, 2Ch, 3Ch, 34h, 38h
-    db 3Ch, 00h, 00h, 00h, 38h, 28h, 20h, 28h, 18h, 10h, 20h, 10h
-    db 08h, 10h, 28h, 38h, 28h, 00h, 08h, 04h, 04h, 04h, 38h, 30h
-    db 08h, 00h, 10h, 10h, 00h, 20h, 10h, 08h, 30h, 08h, 14h, 08h
-    db 00h, 00h, 18h, 14h, 00h, 24h, 1Ch, 14h, 34h, 2Ch, 3Ch, 3Ch
-    db 3Ch, 00h, 00h, 00h, 3Ch, 24h, 14h, 2Ch, 0Ch, 00h, 1Ch, 08h
-    db 04h, 3Ch, 30h, 28h, 28h, 00h, 08h, 04h, 04h, 04h, 3Ch, 2Ch
-    db 08h, 08h, 18h, 00h, 18h, 20h, 0Ch, 28h, 2Ch, 10h, 34h, 18h
-    db 10h, 24h, 08h, 18h, 2Ch, 18h, 24h, 34h, 24h, 30h, 3Ch, 34h
-    db 38h, 00h, 00h, 00h, 38h, 28h, 20h, 28h, 18h, 10h, 20h, 10h
-    db 08h, 10h, 28h, 38h, 28h, 00h, 08h, 04h, 04h, 04h, 38h, 30h
-    db 08h, 00h, 14h, 14h, 00h, 20h, 14h, 08h, 30h, 1Ch, 34h, 20h
-    db 14h, 04h, 08h, 1Ch, 10h, 14h, 30h, 14h, 24h, 38h, 2Ch, 34h
-    db 3Ch, 00h, 00h, 00h, 38h, 28h, 20h, 28h, 18h, 10h, 20h, 10h
-    db 08h, 28h, 34h, 3Ch, 28h, 00h, 08h, 04h, 04h, 04h, 38h, 30h
-    db 08h, 00h, 14h, 18h, 00h, 20h, 1Ch, 00h, 30h, 28h, 08h, 14h
-    db 0Ch, 14h, 1Ch, 14h, 20h, 28h, 20h, 28h, 30h, 28h, 38h, 3Ch
-    db 38h, 00h, 00h, 00h, 38h, 28h, 20h, 28h, 18h, 10h, 20h, 10h
-    db 08h, 24h, 28h, 3Ch, 28h, 00h, 08h, 04h, 04h, 04h, 38h, 30h
-    db 08h, 00h, 18h, 10h, 08h, 20h, 0Ch, 08h, 30h, 18h, 14h, 10h
-    db 0Ch, 1Ch, 18h, 14h, 24h, 20h, 1Ch, 2Ch, 28h, 24h, 3Ch, 38h
-    db 34h, 00h, 00h, 00h, 38h, 28h, 20h, 28h, 18h, 10h, 20h, 10h
-    db 08h, 2Ch, 28h, 3Ch, 28h, 00h, 08h, 04h, 04h, 04h, 38h, 30h
-    db 08h, 1Ch, 00h, 14h, 2Ch, 14h, 1Ch, 3Ch, 1Ch, 1Ch, 0Ch, 10h
-    db 18h, 10h, 14h, 20h, 14h, 1Ch, 2Ch, 1Ch, 28h, 34h, 2Ch, 38h
-    db 3Ch, 00h, 00h, 00h, 38h, 28h, 20h, 28h, 18h, 10h, 20h, 10h
-    db 08h, 10h, 28h, 38h, 28h, 00h, 08h, 00h, 00h, 00h, 38h, 30h
-    db 08h, 00h, 18h, 10h, 08h, 20h, 0Ch, 08h, 30h, 18h, 10h, 10h
-    db 10h, 18h, 18h, 18h, 20h, 20h, 20h, 28h, 28h, 28h, 38h, 38h
-    db 38h, 00h, 00h, 00h, 38h, 28h, 20h, 28h, 18h, 10h, 20h, 10h
-    db 08h, 10h, 28h, 38h, 28h, 00h, 08h, 00h, 00h, 00h, 38h, 30h
-    db 08h, 00h, 14h, 00h, 00h, 20h, 00h, 08h, 30h, 08h, 34h, 20h
-    db 14h, 1Ch, 08h, 08h, 28h, 14h, 14h, 3Ch, 28h, 28h, 38h, 38h
-    db 38h, 00h, 00h, 00h, 38h, 28h, 20h, 28h, 18h, 10h, 20h, 10h
-    db 08h, 10h, 28h, 38h, 28h, 00h, 08h, 00h, 00h, 00h, 38h, 30h
-    db 08h, 00h, 14h, 00h, 00h, 20h, 00h, 08h, 30h, 08h, 34h, 20h
-    db 14h, 14h, 18h, 1Ch, 1Ch, 20h, 24h, 28h, 28h, 2Ch, 38h, 38h
-    db 38h, 05h, 22h, 86h, 8Dh, 0E5h, 00h, 00h, 00h, 00h, 00h, 0FFh
-    db 0Ch, 0Bh, 0Ah, 0FFh, 0FFh, 00h, 0FFh, 0FFh, 0Eh, 0FCh, 2Bh, 5Ch
-    db 2Ch, 0CCh, 2Bh, 9Ch, 2Bh, 0Ch, 2Bh, 6Ch, 2Bh, 0ACh, 2Ah, 3Ch
-    db 2Bh, 0DCh, 2Ah, 0DCh, 2Ah, 8Ch, 2Ch, 8Ch, 2Ch, 8Ch, 2Ch, 0BCh
-    db 2Ch, 0DCh, 2Ah, 0ACh, 2Ah, 09h, 09h, 00h, 00h, 00h, 0Dh, 04h
-    db 04h, 0Ah, 0Dh, 10h, 10h, 10h, 09h, 0Eh, 04h, 31h, 68h, 31h
-    db 2Dh, 80h, 80h, 80h, 56h, 6Eh, 0Ch, 18h, 33h, 33h, 26h, 0ADh
-    db 54h, 60h, 2Dh, 60h, 2Dh, 60h, 2Dh, 60h, 2Dh, 60h, 2Dh, 60h
-    db 2Dh, 60h, 2Dh, 60h, 2Dh, 60h, 2Dh, 60h, 2Dh, 60h, 2Dh, 60h
-    db 2Dh, 60h, 2Dh, 60h, 2Dh, 60h, 2Dh, 76h, 2Dh, 0FFh, 0FFh, 0B8h
-    db 01h, 01h, 00h, 28h, 00h, 70h, 03h, 06h, 00h, 64h, 00h, 28h
-    db 05h, 01h, 00h, 0FFh, 00h, 0FFh, 0FFh, 0B8h, 01h, 01h, 00h, 28h
-    db 00h, 70h, 03h, 06h, 00h, 64h, 00h, 28h, 05h, 01h, 00h, 0FFh
-    db 00h, 0FFh, 0FFh, 00h, 4Ch, 45h, 56h, 45h, 4Ch, 30h, 2Eh, 53h
-    db 51h, 5Ah, 00h, 30h, 30h, 30h, 31h, 31h, 31h, 32h, 33h, 33h
-    db 30h, 34h, 34h, 34h, 35h, 30h, 32h, 42h, 41h, 43h, 4Bh, 30h
-    db 2Eh, 53h, 51h, 5Ah, 00h, 28h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
@@ -5598,6 +6827,9 @@ dtbl_0B64 label word
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+byte_4DF8 label byte
+; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
@@ -5620,8 +6852,101 @@ dtbl_0B64 label word
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+word_4F0A label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_4F0C label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_4F0E label word
+; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+    db 00h
+byte_4F1B label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+word_4F1C label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_4F1E label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_4F20 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_4F21 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+word_4F22 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_4F23 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_4F24 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+word_4F25 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+byte_4F27 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+word_4F28 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_4F2A label word
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_4F2B label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_4F2C label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_4F2D label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+word_4F2E label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_4F30 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_4F32 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_4F34 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h, 00h
+word_4F37 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h, 00h
+word_4F3A label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_4F3C label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h, 00h, 00h
+word_4F40 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_4F42 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_4F44 label word
+; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+    db 00h, 00h
+word_4F52 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_4F54 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_4F56 label word
+; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
@@ -5647,6 +6972,9 @@ dtbl_0B64 label word
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+    db 00h, 00h, 00h, 00h, 00h, 00h
+word_5088 label word
+; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
@@ -5769,10 +7097,70 @@ dtbl_0B64 label word
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+word_5648 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_564A label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_564C label word
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_564D label byte
+; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+    db 00h
+word_565A label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_565C label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_565E label word
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_565F label byte
+; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+    db 00h
+word_566C label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_566E label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_5670 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_5671 label byte
+; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+    db 00h
+word_567E label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_5680 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_5682 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_5683 label byte
+; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+    db 00h
+word_5690 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_5692 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_5694 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_5695 label byte
+; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
@@ -5958,6 +7346,9 @@ dtbl_0B64 label word
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+    db 00h, 00h, 00h, 00h, 00h, 00h, 00h
+word_5F48 label word
+; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
@@ -6034,7 +7425,13 @@ dtbl_0B64 label word
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+    db 00h, 00h
+word_62DA label word
+; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+    db 00h, 00h
+word_62E8 label word
+; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
@@ -6111,7 +7508,19 @@ dtbl_0B64 label word
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+    db 00h, 00h
+word_667A label word
+; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+    db 00h, 00h
+byte_6688 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_6689 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_668A label byte
+; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
@@ -6133,6 +7542,15 @@ dtbl_0B64 label word
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+    db 00h, 00h
+byte_6788 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_6789 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_678A label byte
+; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
@@ -6154,6 +7572,15 @@ dtbl_0B64 label word
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+    db 00h, 00h
+byte_6888 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_6889 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_688A label byte
+; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
@@ -6175,6 +7602,12 @@ dtbl_0B64 label word
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+    db 00h, 00h
+byte_6988 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+word_6989 label word
+; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
@@ -6196,6 +7629,9 @@ dtbl_0B64 label word
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+    db 00h, 00h, 00h
+word_6A88 label word
+; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
@@ -6207,6 +7643,9 @@ dtbl_0B64 label word
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+word_6B14 label word
+; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
@@ -6218,7 +7657,193 @@ dtbl_0B64 label word
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 54h, 48h, 45h, 45h
+    db 4Eh, 44h, 2Eh, 53h, 51h, 5Ah, 00h
+word_6BAB label word
+; UNKNOWN: not yet classified as code or data
+    db 0AAh, 55h
+word_6BAD label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_6BAF label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_6BB1 label word
+; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+byte_6BBD label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+word_6BBE label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+byte_6BC0 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_6BC1 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+word_6BC2 label word
+; UNKNOWN: not yet classified as code or data
+    db 88h, 66h
+byte_6BC4 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_6BC5 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_6BC6 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_6BC7 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_6BC8 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_6BC9 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+word_6BCA label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+byte_6BCC label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_6BCD label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_6BCE label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_6BCF label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_6BD0 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_6BD1 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_6BD2 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_6BD3 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_6BD4 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_6BD5 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h, 00h, 00h
+byte_6BD9 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+byte_6BDB label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_6BDC label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h, 00h, 00h
+byte_6BE0 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_6BE1 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+word_6BE2 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+byte_6BE4 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_6BE5 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_6BE6 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_6BE7 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_6BE8 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+byte_6BEA label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+word_6BEB label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+byte_6BED label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_6BEE label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h, 00h
+word_6BF1 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+byte_6BF3 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h, 00h
+word_6BF6 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_6BF8 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_6BFA label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_6BFC label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+byte_6BFE label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_6BFF label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_6C00 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_6C01 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_6C02 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_6C03 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_6C04 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_6C05 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+word_6C06 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_6C08 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_6C0A label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_6C0C label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_6C0E label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_6C10 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+byte_6C12 label byte
+; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
@@ -6230,6 +7855,33 @@ dtbl_0B64 label word
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+word_6C9E label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_6CA0 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_6CA2 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+byte_6CA4 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_6CA5 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_6CA6 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_6CA7 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_6CA8 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+word_6CA9 label word
+; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
@@ -6250,10 +7902,7 @@ dtbl_0B64 label word
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 54h, 48h, 45h
-    db 45h, 4Eh, 44h, 2Eh, 53h, 51h, 5Ah, 00h, 0AAh, 55h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 88h, 66h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
@@ -6289,273 +7938,259 @@ dtbl_0B64 label word
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 24h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 01h, 00h, 00h
-    db 00h, 0Ah, 00h, 00h, 00h, 64h, 00h, 00h, 00h, 0E8h, 03h, 00h
-    db 00h, 10h, 27h, 01h, 00h, 0A0h, 86h, 0Fh, 00h, 40h, 42h, 98h
-    db 00h, 80h, 96h, 0F5h, 05h, 00h, 0E1h, 9Ah, 3Bh, 00h, 0CAh, 91h
-    db 1Ch, 0F2h, 1Bh, 0E3h, 1Ch, 6Ch, 1Ch, 1Dh, 1Ch, 00h, 01h, 03h
-    db 04h, 06h, 07h, 09h, 0Ah, 0Ch, 0Eh, 0Fh, 11h, 12h, 14h, 15h
-    db 17h, 18h, 19h, 1Bh, 1Ch, 1Eh, 1Fh, 20h, 22h, 23h, 24h, 26h
-    db 27h, 28h, 29h, 2Ah, 2Ch, 2Dh, 2Eh, 2Fh, 30h, 31h, 32h, 33h
-    db 34h, 35h, 36h, 36h, 37h, 38h, 39h, 39h, 3Ah, 3Bh, 3Bh, 3Ch
-    db 3Ch, 3Dh, 3Dh, 3Eh, 3Eh, 3Eh, 3Fh, 3Fh, 3Fh, 3Fh, 3Fh, 3Fh
-    db 3Fh, 40h, 3Fh, 3Fh, 3Fh, 3Fh, 3Fh, 3Fh, 3Fh, 3Eh, 3Eh, 3Eh
-    db 3Dh, 3Dh, 3Ch, 3Ch, 3Bh, 3Bh, 3Ah, 39h, 39h, 38h, 37h, 36h
-    db 36h, 35h, 34h, 33h, 32h, 31h, 30h, 2Fh, 2Eh, 2Dh, 2Ch, 2Ah
-    db 29h, 28h, 27h, 26h, 24h, 23h, 22h, 20h, 1Fh, 1Eh, 1Ch, 1Bh
-    db 19h, 18h, 17h, 15h, 14h, 12h, 11h, 0Fh, 0Eh, 0Ch, 0Ah, 09h
-    db 07h, 06h, 04h, 03h, 01h, 0FFh, 0FEh, 0FCh, 0FBh, 0F9h, 0F8h, 0F6h
-    db 0F5h, 0F3h, 0F1h, 0F0h, 0EEh, 0EDh, 0EBh, 0EAh, 0E8h, 0E7h, 0E6h, 0E4h
-    db 0E3h, 0E1h, 0E0h, 0DFh, 0DDh, 0DCh, 0DBh, 0D9h, 0D8h, 0D7h, 0D6h, 0D5h
-    db 0D3h, 0D2h, 0D1h, 0D0h, 0CFh, 0CEh, 0CDh, 0CCh, 0CBh, 0CAh, 0C9h, 0C9h
-    db 0C8h, 0C7h, 0C6h, 0C6h, 0C5h, 0C4h, 0C4h, 0C3h, 0C3h, 0C2h, 0C2h, 0C1h
-    db 0C1h, 0C1h, 0C0h, 0C0h, 0C0h, 0C0h, 0C0h, 0C0h, 0C0h, 0C0h, 0C0h, 0C0h
-    db 0C0h, 0C0h, 0C0h, 0C0h, 0C0h, 0C1h, 0C1h, 0C1h, 0C2h, 0C2h, 0C3h, 0C3h
-    db 0C4h, 0C4h, 0C5h, 0C6h, 0C6h, 0C7h, 0C8h, 0C9h, 0C9h, 0CAh, 0CBh, 0CCh
-    db 0CDh, 0CEh, 0CFh, 0D0h, 0D1h, 0D2h, 0D3h, 0D5h, 0D6h, 0D7h, 0D8h, 0D9h
-    db 0DBh, 0DCh, 0DDh, 0DFh, 0E0h, 0E1h, 0E3h, 0E4h, 0E6h, 0E7h, 0E8h, 0EAh
-    db 0EBh, 0EDh, 0EEh, 0F0h, 0F1h, 0F3h, 0F5h, 0F6h, 0F8h, 0F9h, 0FBh, 0FCh
-    db 0FEh, 40h, 3Fh, 3Fh, 3Fh, 3Fh, 3Fh, 3Fh, 3Fh, 3Eh, 3Eh, 3Eh
-    db 3Dh, 3Dh, 3Ch, 3Ch, 3Bh, 3Bh, 3Ah, 39h, 39h, 38h, 37h, 36h
-    db 36h, 35h, 34h, 33h, 32h, 31h, 30h, 2Fh, 2Eh, 2Dh, 2Ch, 2Ah
-    db 29h, 28h, 27h, 26h, 24h, 23h, 22h, 20h, 1Fh, 1Eh, 1Ch, 1Bh
-    db 19h, 18h, 17h, 15h, 14h, 12h, 11h, 0Fh, 0Eh, 0Ch, 0Ah, 09h
-    db 07h, 06h, 04h, 03h, 01h, 00h, 0FEh, 0FCh, 0FBh, 0F9h, 0F8h, 0F6h
-    db 0F5h, 0F3h, 0F1h, 0F0h, 0EEh, 0EDh, 0EBh, 0EAh, 0E8h, 0E7h, 0E6h, 0E4h
-    db 0E3h, 0E1h, 0E0h, 0DFh, 0DDh, 0DCh, 0DBh, 0D9h, 0D8h, 0D7h, 0D6h, 0D5h
-    db 0D3h, 0D2h, 0D1h, 0D0h, 0CFh, 0CEh, 0CDh, 0CCh, 0CBh, 0CAh, 0C9h, 0C9h
-    db 0C8h, 0C7h, 0C6h, 0C6h, 0C5h, 0C4h, 0C4h, 0C3h, 0C3h, 0C2h, 0C2h, 0C1h
-    db 0C1h, 0C1h, 0C0h, 0C0h, 0C0h, 0C0h, 0C0h, 0C0h, 0C0h, 0C0h, 0C0h, 0C0h
-    db 0C0h, 0C0h, 0C0h, 0C0h, 0C0h, 0C1h, 0C1h, 0C1h, 0C2h, 0C2h, 0C3h, 0C3h
-    db 0C4h, 0C4h, 0C5h, 0C6h, 0C6h, 0C7h, 0C8h, 0C9h, 0C9h, 0CAh, 0CBh, 0CCh
-    db 0CDh, 0CEh, 0CFh, 0D0h, 0D1h, 0D2h, 0D3h, 0D5h, 0D6h, 0D7h, 0D8h, 0D9h
-    db 0DBh, 0DCh, 0DDh, 0DFh, 0E0h, 0E1h, 0E3h, 0E4h, 0E6h, 0E7h, 0E8h, 0EAh
-    db 0EBh, 0EDh, 0EEh, 0F0h, 0F1h, 0F3h, 0F5h, 0F6h, 0F8h, 0F9h, 0FBh, 0FCh
-    db 0FEh, 00h, 01h, 03h, 04h, 06h, 07h, 09h, 0Ah, 0Ch, 0Eh, 0Fh
-    db 11h, 12h, 14h, 15h, 17h, 18h, 19h, 1Bh, 1Ch, 1Eh, 1Fh, 20h
-    db 22h, 23h, 24h, 26h, 27h, 28h, 29h, 2Ah, 2Ch, 2Dh, 2Eh, 2Fh
-    db 30h, 31h, 32h, 33h, 34h, 35h, 36h, 36h, 37h, 38h, 39h, 39h
-    db 3Ah, 3Bh, 3Bh, 3Ch, 3Ch, 3Dh, 3Dh, 3Eh, 3Eh, 3Eh, 3Fh, 3Fh
-    db 3Fh, 3Fh, 3Fh, 3Fh, 3Fh, 28h, 24h, 20h, 23h, 18h, 24h, 20h
-    db 22h, 20h, 25h, 20h, 25h, 20h, 24h, 20h, 23h, 20h, 23h, 20h
-    db 23h, 18h, 23h, 20h, 26h, 28h, 1Fh, 30h, 1Fh, 20h, 1Fh, 20h
-    db 24h, 18h, 20h, 28h, 1Eh, 28h, 1Fh, 28h, 1Fh, 20h, 1Eh, 18h
-    db 1Eh, 20h, 1Fh, 18h, 1Eh, 18h, 20h, 28h, 22h, 20h, 21h, 20h
-    db 23h, 20h, 22h, 28h, 1Fh, 28h, 20h, 28h, 1Eh, 28h, 1Fh, 30h
-    db 20h, 20h, 24h, 18h, 20h, 20h, 20h, 20h, 21h, 18h, 1Dh, 18h
-    db 11h, 10h, 10h, 18h, 11h, 20h, 0Eh, 18h, 0Fh, 10h, 0Fh, 18h
-    db 0Eh, 20h, 0Bh, 18h, 10h, 20h, 19h, 20h, 1Fh, 18h, 21h, 20h
-    db 1Fh, 20h, 1Fh, 08h, 06h, 08h, 08h, 10h, 09h, 10h, 0Bh, 10h
-    db 0Bh, 10h, 13h, 18h, 12h, 18h, 0Dh, 10h, 10h, 10h, 10h, 10h
-    db 10h, 10h, 0Fh, 18h, 0Fh, 18h, 13h, 18h, 18h, 20h, 13h, 18h
-    db 19h, 10h, 0Fh, 10h, 0Fh, 10h, 09h, 10h, 0Fh, 18h, 09h, 18h
+    db 00h, 00h, 00h, 00h, 24h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 01h
+    db 00h, 00h, 00h, 0Ah, 00h, 00h, 00h, 64h, 00h, 00h, 00h, 0E8h
+    db 03h, 00h, 00h, 10h, 27h, 01h, 00h, 0A0h, 86h, 0Fh, 00h, 40h
+    db 42h, 98h, 00h, 80h, 96h, 0F5h, 05h, 00h, 0E1h, 9Ah, 3Bh, 00h
+    db 0CAh, 91h, 1Ch, 0F2h, 1Bh, 0E3h, 1Ch, 6Ch, 1Ch, 1Dh, 1Ch
+byte_6F90 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h, 01h, 03h, 04h, 06h, 07h, 09h, 0Ah, 0Ch, 0Eh, 0Fh, 11h
+    db 12h, 14h, 15h, 17h, 18h, 19h, 1Bh, 1Ch, 1Eh, 1Fh, 20h, 22h
+    db 23h, 24h, 26h, 27h, 28h, 29h, 2Ah, 2Ch, 2Dh, 2Eh, 2Fh, 30h
+    db 31h, 32h, 33h, 34h, 35h, 36h, 36h, 37h, 38h, 39h, 39h, 3Ah
+    db 3Bh, 3Bh, 3Ch, 3Ch, 3Dh, 3Dh, 3Eh, 3Eh, 3Eh, 3Fh, 3Fh, 3Fh
+    db 3Fh, 3Fh, 3Fh, 3Fh, 40h, 3Fh, 3Fh, 3Fh, 3Fh, 3Fh, 3Fh, 3Fh
+    db 3Eh, 3Eh, 3Eh, 3Dh, 3Dh, 3Ch, 3Ch, 3Bh, 3Bh, 3Ah, 39h, 39h
+    db 38h, 37h, 36h, 36h, 35h, 34h, 33h, 32h, 31h, 30h, 2Fh, 2Eh
+    db 2Dh, 2Ch, 2Ah, 29h, 28h, 27h, 26h, 24h, 23h, 22h, 20h, 1Fh
+    db 1Eh, 1Ch, 1Bh, 19h, 18h, 17h, 15h, 14h, 12h, 11h, 0Fh, 0Eh
+    db 0Ch, 0Ah, 09h, 07h, 06h, 04h, 03h, 01h, 0FFh, 0FEh, 0FCh, 0FBh
+    db 0F9h, 0F8h, 0F6h, 0F5h, 0F3h, 0F1h, 0F0h, 0EEh, 0EDh, 0EBh, 0EAh, 0E8h
+    db 0E7h, 0E6h, 0E4h, 0E3h, 0E1h, 0E0h, 0DFh, 0DDh, 0DCh, 0DBh, 0D9h, 0D8h
+    db 0D7h, 0D6h, 0D5h, 0D3h, 0D2h, 0D1h, 0D0h, 0CFh, 0CEh, 0CDh, 0CCh, 0CBh
+    db 0CAh, 0C9h, 0C9h, 0C8h, 0C7h, 0C6h, 0C6h, 0C5h, 0C4h, 0C4h, 0C3h, 0C3h
+    db 0C2h, 0C2h, 0C1h, 0C1h, 0C1h, 0C0h, 0C0h, 0C0h, 0C0h, 0C0h, 0C0h, 0C0h
+    db 0C0h, 0C0h, 0C0h, 0C0h, 0C0h, 0C0h, 0C0h, 0C0h, 0C1h, 0C1h, 0C1h, 0C2h
+    db 0C2h, 0C3h, 0C3h, 0C4h, 0C4h, 0C5h, 0C6h, 0C6h, 0C7h, 0C8h, 0C9h, 0C9h
+    db 0CAh, 0CBh, 0CCh, 0CDh, 0CEh, 0CFh, 0D0h, 0D1h, 0D2h, 0D3h, 0D5h, 0D6h
+    db 0D7h, 0D8h, 0D9h, 0DBh, 0DCh, 0DDh, 0DFh, 0E0h, 0E1h, 0E3h, 0E4h, 0E6h
+    db 0E7h, 0E8h, 0EAh, 0EBh, 0EDh, 0EEh, 0F0h, 0F1h, 0F3h, 0F5h, 0F6h, 0F8h
+    db 0F9h, 0FBh, 0FCh, 0FEh
+byte_7090 label byte
+; UNKNOWN: not yet classified as code or data
+    db 40h, 3Fh, 3Fh, 3Fh, 3Fh, 3Fh, 3Fh, 3Fh, 3Eh, 3Eh, 3Eh, 3Dh
+    db 3Dh, 3Ch, 3Ch, 3Bh, 3Bh, 3Ah, 39h, 39h, 38h, 37h, 36h, 36h
+    db 35h, 34h, 33h, 32h, 31h, 30h, 2Fh, 2Eh, 2Dh, 2Ch, 2Ah, 29h
+    db 28h, 27h, 26h, 24h, 23h, 22h, 20h, 1Fh, 1Eh, 1Ch, 1Bh, 19h
+    db 18h, 17h, 15h, 14h, 12h, 11h, 0Fh, 0Eh, 0Ch, 0Ah, 09h, 07h
+    db 06h, 04h, 03h, 01h, 00h, 0FEh, 0FCh, 0FBh, 0F9h, 0F8h, 0F6h, 0F5h
+    db 0F3h, 0F1h, 0F0h, 0EEh, 0EDh, 0EBh, 0EAh, 0E8h, 0E7h, 0E6h, 0E4h, 0E3h
+    db 0E1h, 0E0h, 0DFh, 0DDh, 0DCh, 0DBh, 0D9h, 0D8h, 0D7h, 0D6h, 0D5h, 0D3h
+    db 0D2h, 0D1h, 0D0h, 0CFh, 0CEh, 0CDh, 0CCh, 0CBh, 0CAh, 0C9h, 0C9h, 0C8h
+    db 0C7h, 0C6h, 0C6h, 0C5h, 0C4h, 0C4h, 0C3h, 0C3h, 0C2h, 0C2h, 0C1h, 0C1h
+    db 0C1h, 0C0h, 0C0h, 0C0h, 0C0h, 0C0h, 0C0h, 0C0h, 0C0h, 0C0h, 0C0h, 0C0h
+    db 0C0h, 0C0h, 0C0h, 0C0h, 0C1h, 0C1h, 0C1h, 0C2h, 0C2h, 0C3h, 0C3h, 0C4h
+    db 0C4h, 0C5h, 0C6h, 0C6h, 0C7h, 0C8h, 0C9h, 0C9h, 0CAh, 0CBh, 0CCh, 0CDh
+    db 0CEh, 0CFh, 0D0h, 0D1h, 0D2h, 0D3h, 0D5h, 0D6h, 0D7h, 0D8h, 0D9h, 0DBh
+    db 0DCh, 0DDh, 0DFh, 0E0h, 0E1h, 0E3h, 0E4h, 0E6h, 0E7h, 0E8h, 0EAh, 0EBh
+    db 0EDh, 0EEh, 0F0h, 0F1h, 0F3h, 0F5h, 0F6h, 0F8h, 0F9h, 0FBh, 0FCh, 0FEh
+    db 00h, 01h, 03h, 04h, 06h, 07h, 09h, 0Ah, 0Ch, 0Eh, 0Fh, 11h
+    db 12h, 14h, 15h, 17h, 18h, 19h, 1Bh, 1Ch, 1Eh, 1Fh, 20h, 22h
+    db 23h, 24h, 26h, 27h, 28h, 29h, 2Ah, 2Ch, 2Dh, 2Eh, 2Fh, 30h
+    db 31h, 32h, 33h, 34h, 35h, 36h, 36h, 37h, 38h, 39h, 39h, 3Ah
+    db 3Bh, 3Bh, 3Ch, 3Ch, 3Dh, 3Dh, 3Eh, 3Eh, 3Eh, 3Fh, 3Fh, 3Fh
+    db 3Fh, 3Fh, 3Fh, 3Fh
+byte_7190 label byte
+; UNKNOWN: not yet classified as code or data
+    db 28h
+byte_7191 label byte
+; UNKNOWN: not yet classified as code or data
+    db 24h, 20h, 23h, 18h, 24h, 20h, 22h, 20h, 25h, 20h, 25h, 20h
+    db 24h, 20h, 23h, 20h, 23h, 20h, 23h, 18h, 23h, 20h, 26h, 28h
+    db 1Fh, 30h, 1Fh, 20h, 1Fh, 20h, 24h, 18h, 20h, 28h, 1Eh, 28h
+    db 1Fh, 28h, 1Fh, 20h, 1Eh, 18h, 1Eh, 20h, 1Fh, 18h, 1Eh, 18h
+    db 20h, 28h, 22h, 20h, 21h, 20h, 23h, 20h, 22h, 28h, 1Fh, 28h
+    db 20h, 28h, 1Eh, 28h, 1Fh, 30h, 20h, 20h, 24h, 18h, 20h, 20h
+    db 20h, 20h, 21h, 18h, 1Dh, 18h, 11h, 10h, 10h, 18h, 11h, 20h
+    db 0Eh, 18h, 0Fh, 10h, 0Fh, 18h, 0Eh, 20h, 0Bh, 18h, 10h, 20h
+    db 19h, 20h, 1Fh, 18h, 21h, 20h, 1Fh, 20h, 1Fh, 08h, 06h, 08h
+    db 08h, 10h, 09h, 10h, 0Bh, 10h, 0Bh, 10h, 13h, 18h, 12h, 18h
+    db 0Dh, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 0Fh, 18h, 0Fh, 18h
+    db 13h, 18h, 18h, 20h, 13h, 18h, 19h, 10h, 0Fh, 10h, 0Fh, 10h
+    db 09h, 10h, 0Fh, 18h, 09h, 18h, 09h, 18h, 09h, 18h, 09h, 18h
     db 09h, 18h, 09h, 18h, 09h, 18h, 09h, 18h, 09h, 18h, 09h, 18h
-    db 09h, 18h, 09h, 18h, 09h, 18h, 09h, 18h, 09h, 28h, 0Dh, 30h
-    db 0Dh, 30h, 0Dh, 30h, 0Dh, 38h, 11h, 18h, 13h, 10h, 0Dh, 10h
-    db 0Dh, 10h, 0Dh, 10h, 0Dh, 10h, 0Dh, 18h, 13h, 20h, 16h, 18h
-    db 1Eh, 18h, 1Dh, 18h, 21h, 10h, 21h, 18h, 21h, 18h, 07h, 18h
-    db 07h, 18h, 07h, 18h, 07h, 18h, 07h, 18h, 07h, 30h, 41h, 28h
-    db 2Ch, 30h, 20h, 28h, 2Eh, 20h, 26h, 28h, 23h, 30h, 21h, 28h
-    db 21h, 30h, 0Eh, 30h, 1Dh, 30h, 1Fh, 30h, 13h, 30h, 14h, 30h
-    db 17h, 30h, 1Bh, 30h, 17h, 28h, 1Bh, 28h, 22h, 18h, 0Eh, 10h
-    db 0Fh, 18h, 13h, 10h, 12h, 10h, 12h, 18h, 0Ch, 18h, 13h, 10h
-    db 19h, 18h, 15h, 18h, 17h, 10h, 1Bh, 10h, 14h, 10h, 17h, 10h
-    db 15h, 18h, 0Bh, 18h, 0Bh, 10h, 16h, 10h, 16h, 10h, 13h, 10h
-    db 12h, 10h, 12h, 10h, 13h, 10h, 1Dh, 10h, 15h, 10h, 1Ch, 18h
-    db 14h, 18h, 0Fh, 10h, 0Fh, 10h, 13h, 10h, 15h, 10h, 15h, 18h
-    db 11h, 18h, 0Ch, 18h, 0Dh, 18h, 0Dh, 18h, 11h, 18h, 16h, 10h
-    db 0Dh, 10h, 10h, 10h, 18h, 10h, 11h, 18h, 0Bh, 10h, 17h, 18h
-    db 12h, 18h, 0Fh, 18h, 0Fh, 18h, 0Fh, 10h, 13h, 18h, 14h, 10h
-    db 12h, 08h, 17h, 10h, 15h, 10h, 12h, 10h, 0Ch, 10h, 0Ch, 10h
-    db 0Ch, 18h, 17h, 10h, 12h, 10h, 10h, 10h, 0Eh, 10h, 16h, 20h
-    db 0Dh, 18h, 10h, 18h, 12h, 10h, 0Dh, 18h, 0Eh, 10h, 13h, 10h
-    db 19h, 08h, 16h, 10h, 0Dh, 10h, 13h, 18h, 10h, 18h, 12h, 18h
-    db 0Dh, 10h, 0Fh, 10h, 1Ch, 10h, 0Eh, 10h, 18h, 18h, 12h, 20h
-    db 14h, 20h, 11h, 10h, 0Bh, 10h, 1Ah, 18h, 12h, 18h, 0Dh, 18h
-    db 0Ch, 10h, 0Fh, 10h, 13h, 10h, 13h, 10h, 13h, 10h, 13h, 10h
-    db 13h, 18h, 10h, 18h, 16h, 10h, 12h, 18h, 10h, 10h, 0Ch, 10h
-    db 0Ch, 10h, 0Bh, 20h, 10h, 28h, 0Eh, 28h, 0Eh, 28h, 0Eh, 20h
-    db 0Eh, 20h, 0Dh, 10h, 12h, 10h, 12h, 18h, 12h, 20h, 29h, 20h
-    db 1Dh, 18h, 14h, 28h, 21h, 30h, 1Ah, 10h, 0Bh, 10h, 0Bh, 10h
+    db 09h, 18h, 09h, 28h, 0Dh, 30h, 0Dh, 30h, 0Dh, 30h, 0Dh, 38h
+    db 11h, 18h, 13h, 10h, 0Dh, 10h, 0Dh, 10h, 0Dh, 10h, 0Dh, 10h
+    db 0Dh, 18h, 13h, 20h, 16h, 18h, 1Eh, 18h, 1Dh, 18h, 21h, 10h
+    db 21h, 18h, 21h, 18h, 07h, 18h, 07h, 18h, 07h, 18h, 07h, 18h
+    db 07h, 18h, 07h, 30h, 41h, 28h, 2Ch, 30h, 20h, 28h, 2Eh, 20h
+    db 26h, 28h, 23h, 30h, 21h, 28h, 21h, 30h, 0Eh, 30h, 1Dh, 30h
+    db 1Fh, 30h, 13h, 30h, 14h, 30h, 17h, 30h, 1Bh, 30h, 17h, 28h
+    db 1Bh, 28h, 22h, 18h, 0Eh, 10h, 0Fh, 18h, 13h, 10h, 12h, 10h
+    db 12h, 18h, 0Ch, 18h, 13h, 10h, 19h, 18h, 15h, 18h, 17h, 10h
+    db 1Bh, 10h, 14h, 10h, 17h, 10h, 15h, 18h, 0Bh, 18h, 0Bh, 10h
+    db 16h, 10h, 16h, 10h, 13h, 10h, 12h, 10h, 12h, 10h, 13h, 10h
+    db 1Dh, 10h, 15h, 10h, 1Ch, 18h, 14h, 18h, 0Fh, 10h, 0Fh, 10h
+    db 13h, 10h, 15h, 10h, 15h, 18h, 11h, 18h, 0Ch, 18h, 0Dh, 18h
+    db 0Dh, 18h, 11h, 18h, 16h, 10h, 0Dh, 10h, 10h, 10h, 18h, 10h
+    db 11h, 18h, 0Bh, 10h, 17h, 18h, 12h, 18h, 0Fh, 18h, 0Fh, 18h
+    db 0Fh, 10h, 13h, 18h, 14h, 10h, 12h, 08h, 17h, 10h, 15h, 10h
+    db 12h, 10h, 0Ch, 10h, 0Ch, 10h, 0Ch, 18h, 17h, 10h, 12h, 10h
+    db 10h, 10h, 0Eh, 10h, 16h, 20h, 0Dh, 18h, 10h, 18h, 12h, 10h
+    db 0Dh, 18h, 0Eh, 10h, 13h, 10h, 19h, 08h, 16h, 10h, 0Dh, 10h
+    db 13h, 18h, 10h, 18h, 12h, 18h, 0Dh, 10h, 0Fh, 10h, 1Ch, 10h
+    db 0Eh, 10h, 18h, 18h, 12h, 20h, 14h, 20h, 11h, 10h, 0Bh, 10h
+    db 1Ah, 18h, 12h, 18h, 0Dh, 18h, 0Ch, 10h, 0Fh, 10h, 13h, 10h
+    db 13h, 10h, 13h, 10h, 13h, 10h, 13h, 18h, 10h, 18h, 16h, 10h
+    db 12h, 18h, 10h, 10h, 0Ch, 10h, 0Ch, 10h, 0Bh, 20h, 10h, 28h
+    db 0Eh, 28h, 0Eh, 28h, 0Eh, 20h, 0Eh, 20h, 0Dh, 10h, 12h, 10h
+    db 12h, 18h, 12h, 20h, 29h, 20h, 1Dh, 18h, 14h, 28h, 21h, 30h
+    db 1Ah, 10h, 0Bh, 10h, 0Bh, 10h, 0Bh, 10h, 0Bh, 10h, 0Bh, 10h
     db 0Bh, 10h, 0Bh, 10h, 0Bh, 10h, 0Bh, 10h, 0Bh, 10h, 0Bh, 10h
     db 0Bh, 10h, 0Bh, 10h, 0Bh, 10h, 0Bh, 10h, 0Bh, 10h, 0Bh, 10h
     db 0Bh, 10h, 0Bh, 10h, 0Bh, 10h, 0Bh, 10h, 0Bh, 10h, 0Bh, 10h
-    db 0Bh, 10h, 0Bh, 10h, 0Bh, 10h, 0Bh, 10h, 0Bh, 10h, 0Bh, 10h
-    db 0Bh, 08h, 08h, 10h, 0Bh, 08h, 0Bh, 08h, 05h, 08h, 05h, 10h
-    db 0Ch, 30h, 28h, 38h, 1Eh, 30h, 30h, 20h, 33h, 30h, 46h, 30h
-    db 46h, 28h, 1Bh, 30h, 1Dh, 38h, 0Eh, 10h, 0Ch, 10h, 0Ch, 10h
+    db 0Bh, 10h, 0Bh, 10h, 0Bh, 10h, 0Bh, 08h, 08h, 10h, 0Bh, 08h
+    db 0Bh, 08h, 05h, 08h, 05h, 10h, 0Ch, 30h, 28h, 38h, 1Eh, 30h
+    db 30h, 20h, 33h, 30h, 46h, 30h, 46h, 28h, 1Bh, 30h, 1Dh, 38h
+    db 0Eh, 10h, 0Ch, 10h, 0Ch, 10h, 0Ch, 10h, 0Ch, 10h, 0Ch, 10h
     db 0Ch, 10h, 0Ch, 10h, 0Ch, 10h, 0Ch, 10h, 0Ch, 10h, 0Ch, 10h
-    db 0Ch, 10h, 0Ch, 10h, 0Ch, 10h, 0Ch, 10h, 0Ch, 10h, 0Ch, 10h
-    db 0Ch, 10h, 0Ch, 20h, 15h, 08h, 0Ah, 10h, 0Ch, 10h, 0Ch, 10h
-    db 0Ch, 40h, 1Fh, 20h, 10h, 08h, 0Ah, 30h, 15h, 10h, 0Ch, 08h
-    db 0Ch, 10h, 0Ch, 10h, 1Ah, 18h, 18h, 20h, 1Dh, 18h, 1Eh, 20h
-    db 1Dh, 30h, 28h, 20h, 13h, 20h, 19h, 18h, 1Ch, 20h, 0Eh, 20h
-    db 0Fh, 20h, 0Eh, 20h, 0Fh, 10h, 1Ch, 10h, 1Ch, 10h, 1Ch, 10h
-    db 1Ch, 18h, 15h, 18h, 19h, 20h, 17h, 20h, 17h, 18h, 20h, 18h
-    db 1Eh, 20h, 16h, 28h, 0Eh, 28h, 0Ch, 18h, 0Fh, 20h, 0Bh, 18h
-    db 15h, 10h, 0Ah, 10h, 09h, 08h, 0Ah, 10h, 0Ah, 10h, 0Ah, 18h
-    db 07h, 10h, 0Eh, 18h, 0Ch, 18h, 0Bh, 28h, 1Dh, 20h, 1Ch, 20h
-    db 1Ch, 28h, 18h, 28h, 24h, 28h, 1Fh, 18h, 20h, 20h, 1Fh, 20h
-    db 1Fh, 20h, 1Fh, 10h, 15h, 10h, 15h, 10h, 18h, 18h, 18h, 28h
-    db 14h, 28h, 12h, 20h, 1Ch, 08h, 05h, 18h, 07h, 20h, 0Ch, 20h
-    db 15h, 18h, 06h, 18h, 08h, 18h, 16h, 20h, 1Ch, 18h, 1Fh, 28h
-    db 1Eh, 20h, 1Ah, 20h, 13h, 10h, 13h, 18h, 12h, 18h, 0Bh, 18h
-    db 05h, 30h, 1Bh, 30h, 1Dh, 30h, 29h, 30h, 20h, 20h, 03h, 20h
-    db 05h, 28h, 0Bh, 30h, 13h, 38h, 1Bh, 40h, 20h, 40h, 1Fh, 40h
-    db 1Fh, 40h, 20h, 30h, 27h, 30h, 1Dh, 30h, 1Eh, 30h, 1Bh, 40h
-    db 22h, 38h, 24h, 28h, 20h, 40h, 23h, 40h, 2Bh, 38h, 2Dh, 20h
-    db 25h, 20h, 25h, 20h, 22h, 20h, 25h, 30h, 2Eh, 30h, 2Bh, 38h
-    db 1Eh, 28h, 1Ch, 28h, 18h, 38h, 10h, 20h, 31h, 20h, 3Bh, 20h
-    db 30h, 38h, 22h, 40h, 1Bh, 20h, 1Eh, 20h, 1Ch, 20h, 20h, 28h
-    db 15h, 20h, 20h, 20h, 1Fh, 20h, 1Eh, 30h, 1Ch, 50h, 20h, 28h
-    db 1Eh, 28h, 23h, 28h, 3Eh, 38h, 16h, 38h, 18h, 38h, 17h, 28h
-    db 10h, 28h, 12h, 20h, 0Eh, 68h, 29h, 10h, 16h, 18h, 17h, 18h
-    db 17h, 18h, 17h, 20h, 17h, 18h, 18h, 20h, 18h, 20h, 18h, 20h
-    db 17h, 20h, 1Bh, 20h, 1Bh, 20h, 18h, 18h, 18h, 20h, 14h, 30h
-    db 1Ch, 40h, 1Ch, 30h, 1Fh, 30h, 26h, 28h, 22h, 20h, 1Ah, 30h
-    db 17h, 00h, 00h, 14h, 24h, 10h, 23h, 0Ch, 24h, 10h, 24h, 10h
-    db 25h, 10h, 25h, 0Fh, 24h, 10h, 23h, 0Fh, 23h, 0Fh, 23h, 0Ch
-    db 23h, 10h, 26h, 14h, 1Fh, 18h, 1Fh, 10h, 1Fh, 10h, 24h, 0Ch
-    db 20h, 14h, 1Eh, 14h, 1Fh, 14h, 1Fh, 10h, 1Eh, 0Ch, 1Eh, 10h
-    db 1Fh, 0Ch, 1Eh, 0Ch, 20h, 14h, 22h, 10h, 21h, 10h, 23h, 10h
-    db 22h, 14h, 1Fh, 14h, 20h, 14h, 1Eh, 14h, 1Fh, 18h, 20h, 10h
-    db 24h, 0Ch, 20h, 10h, 20h, 10h, 21h, 0Ch, 1Dh, 0Eh, 11h, 09h
-    db 10h, 0Eh, 11h, 0Fh, 10h, 09h, 0Fh, 0Ah, 0Fh, 0Ch, 0Eh, 10h
-    db 0Bh, 0Ch, 10h, 10h, 19h, 10h, 1Fh, 0Ch, 21h, 10h, 1Fh, 10h
-    db 1Fh, 04h, 06h, 04h, 08h, 08h, 09h, 08h, 0Bh, 08h, 0Bh, 08h
-    db 13h, 0Ch, 12h, 0Ch, 0Dh, 08h, 10h, 08h, 10h, 08h, 10h, 08h
-    db 0Fh, 0Ch, 0Fh, 0Ch, 13h, 11h, 0Fh, 0Eh, 0Dh, 07h, 0Ah, 08h
-    db 0Fh, 08h, 0Fh, 08h, 0Ch, 08h, 0Fh, 0Bh, 09h, 0Ch, 09h, 0Ch
-    db 09h, 0Ch, 09h, 0Ch, 09h, 0Ch, 09h, 0Bh, 09h, 0Ch, 09h, 0Ch
-    db 09h, 0Ch, 09h, 0Ch, 09h, 0Ch, 09h, 14h, 0Dh, 17h, 0Dh, 16h
-    db 0Dh, 17h, 0Dh, 1Bh, 11h, 0Eh, 05h, 07h, 0Dh, 07h, 0Dh, 07h
-    db 0Dh, 07h, 0Dh, 07h, 0Dh, 06h, 13h, 0Fh, 16h, 0Bh, 1Eh, 0Bh
-    db 1Dh, 0Bh, 21h, 06h, 21h, 0Bh, 21h, 0Bh, 07h, 0Bh, 07h, 0Bh
-    db 07h, 0Bh, 07h, 0Bh, 07h, 0Bh, 07h, 19h, 41h, 16h, 2Ch, 16h
-    db 20h, 13h, 2Eh, 10h, 26h, 13h, 23h, 11h, 21h, 14h, 21h, 18h
-    db 0Eh, 18h, 1Dh, 18h, 1Fh, 0Ch, 13h, 0Ch, 14h, 09h, 17h, 09h
-    db 1Bh, 0Fh, 17h, 0Ch, 1Bh, 0Ch, 1Fh, 0Ch, 0Eh, 08h, 0Fh, 0Ch
-    db 13h, 08h, 12h, 08h, 12h, 0Ch, 0Ch, 0Ch, 13h, 08h, 19h, 0Ch
-    db 15h, 0Ch, 17h, 08h, 1Bh, 08h, 14h, 08h, 17h, 08h, 15h, 0Ch
-    db 0Bh, 0Ch, 0Bh, 08h, 16h, 08h, 16h, 08h, 13h, 08h, 12h, 08h
-    db 12h, 08h, 13h, 08h, 1Dh, 08h, 15h, 08h, 1Ch, 0Ch, 14h, 0Ch
-    db 0Fh, 08h, 0Fh, 08h, 13h, 08h, 15h, 08h, 15h, 0Ch, 11h, 0Ch
-    db 0Ch, 0Ch, 0Dh, 0Ch, 0Dh, 0Ch, 11h, 0Ch, 16h, 08h, 0Dh, 08h
-    db 10h, 08h, 18h, 08h, 11h, 0Ch, 0Bh, 08h, 17h, 0Ch, 12h, 0Ch
-    db 0Fh, 0Ch, 0Fh, 0Ch, 0Fh, 08h, 13h, 0Ch, 14h, 08h, 12h, 04h
-    db 17h, 08h, 15h, 08h, 12h, 08h, 0Ch, 08h, 0Ch, 08h, 0Ch, 0Ch
-    db 17h, 08h, 12h, 08h, 10h, 08h, 0Eh, 08h, 16h, 10h, 0Dh, 0Ch
-    db 10h, 0Ch, 12h, 08h, 0Dh, 0Ch, 0Eh, 08h, 13h, 08h, 19h, 04h
-    db 16h, 08h, 0Dh, 08h, 13h, 0Ch, 10h, 0Ch, 12h, 0Ch, 0Dh, 08h
-    db 0Fh, 08h, 1Ch, 08h, 0Eh, 08h, 18h, 0Ch, 12h, 10h, 14h, 10h
-    db 11h, 08h, 0Bh, 08h, 1Ah, 0Ch, 12h, 0Ch, 0Dh, 0Ch, 0Ch, 08h
-    db 0Fh, 08h, 13h, 08h, 13h, 08h, 13h, 08h, 13h, 08h, 13h, 0Ch
-    db 10h, 0Ch, 16h, 08h, 12h, 0Ch, 10h, 08h, 0Ch, 08h, 0Ch, 08h
-    db 0Bh, 10h, 10h, 14h, 0Eh, 14h, 0Eh, 14h, 0Eh, 10h, 0Eh, 10h
-    db 0Dh, 08h, 12h, 08h, 12h, 0Ch, 12h, 10h, 29h, 10h, 1Dh, 0Ch
-    db 14h, 14h, 21h, 18h, 1Ah, 08h, 0Bh, 08h, 0Bh, 08h, 0Bh, 08h
+    db 0Ch, 10h, 0Ch, 10h, 0Ch, 10h, 0Ch, 10h, 0Ch, 20h, 15h, 08h
+    db 0Ah, 10h, 0Ch, 10h, 0Ch, 10h, 0Ch, 40h, 1Fh, 20h, 10h, 08h
+    db 0Ah, 30h, 15h, 10h, 0Ch, 08h, 0Ch, 10h, 0Ch, 10h, 1Ah, 18h
+    db 18h, 20h, 1Dh, 18h, 1Eh, 20h, 1Dh, 30h, 28h, 20h, 13h, 20h
+    db 19h, 18h, 1Ch, 20h, 0Eh, 20h, 0Fh, 20h, 0Eh, 20h, 0Fh, 10h
+    db 1Ch, 10h, 1Ch, 10h, 1Ch, 10h, 1Ch, 18h, 15h, 18h, 19h, 20h
+    db 17h, 20h, 17h, 18h, 20h, 18h, 1Eh, 20h, 16h, 28h, 0Eh, 28h
+    db 0Ch, 18h, 0Fh, 20h, 0Bh, 18h, 15h, 10h, 0Ah, 10h, 09h, 08h
+    db 0Ah, 10h, 0Ah, 10h, 0Ah, 18h, 07h, 10h, 0Eh, 18h, 0Ch, 18h
+    db 0Bh, 28h, 1Dh, 20h, 1Ch, 20h, 1Ch, 28h, 18h, 28h, 24h, 28h
+    db 1Fh, 18h, 20h, 20h, 1Fh, 20h, 1Fh, 20h, 1Fh, 10h, 15h, 10h
+    db 15h, 10h, 18h, 18h, 18h, 28h, 14h, 28h, 12h, 20h, 1Ch, 08h
+    db 05h, 18h, 07h, 20h, 0Ch, 20h, 15h, 18h, 06h, 18h, 08h, 18h
+    db 16h, 20h, 1Ch, 18h, 1Fh, 28h, 1Eh, 20h, 1Ah, 20h, 13h, 10h
+    db 13h, 18h, 12h, 18h, 0Bh, 18h, 05h, 30h, 1Bh, 30h, 1Dh, 30h
+    db 29h, 30h, 20h, 20h, 03h, 20h, 05h, 28h, 0Bh, 30h, 13h, 38h
+    db 1Bh, 40h, 20h, 40h, 1Fh, 40h, 1Fh, 40h, 20h, 30h, 27h, 30h
+    db 1Dh, 30h, 1Eh, 30h, 1Bh, 40h, 22h, 38h, 24h, 28h, 20h, 40h
+    db 23h, 40h, 2Bh, 38h, 2Dh, 20h, 25h, 20h, 25h, 20h, 22h, 20h
+    db 25h, 30h, 2Eh, 30h, 2Bh, 38h, 1Eh, 28h, 1Ch, 28h, 18h, 38h
+    db 10h, 20h, 31h, 20h, 3Bh, 20h, 30h, 38h, 22h, 40h, 1Bh, 20h
+    db 1Eh, 20h, 1Ch, 20h, 20h, 28h, 15h, 20h, 20h, 20h, 1Fh, 20h
+    db 1Eh, 30h, 1Ch, 50h, 20h, 28h, 1Eh, 28h, 23h, 28h, 3Eh, 38h
+    db 16h, 38h, 18h, 38h, 17h, 28h, 10h, 28h, 12h, 20h, 0Eh, 68h
+    db 29h, 10h, 16h, 18h, 17h, 18h, 17h, 18h, 17h, 20h, 17h, 18h
+    db 18h, 20h, 18h, 20h, 18h, 20h, 17h, 20h, 1Bh, 20h, 1Bh, 20h
+    db 18h, 18h, 18h, 20h, 14h, 30h, 1Ch, 40h, 1Ch, 30h, 1Fh, 30h
+    db 26h
+word_7522 label word
+; UNKNOWN: not yet classified as code or data
+    db 28h, 22h, 20h, 1Ah, 30h, 17h, 00h, 00h
+byte_752A label byte
+; UNKNOWN: not yet classified as code or data
+    db 14h
+byte_752B label byte
+; UNKNOWN: not yet classified as code or data
+    db 24h, 10h, 23h, 0Ch, 24h, 10h, 24h, 10h, 25h, 10h, 25h, 0Fh
+    db 24h, 10h, 23h, 0Fh, 23h, 0Fh, 23h, 0Ch, 23h, 10h, 26h, 14h
+    db 1Fh, 18h, 1Fh, 10h, 1Fh, 10h, 24h, 0Ch, 20h, 14h, 1Eh, 14h
+    db 1Fh, 14h, 1Fh, 10h, 1Eh, 0Ch, 1Eh, 10h, 1Fh, 0Ch, 1Eh, 0Ch
+    db 20h, 14h, 22h, 10h, 21h, 10h, 23h, 10h, 22h, 14h, 1Fh, 14h
+    db 20h, 14h, 1Eh, 14h, 1Fh, 18h, 20h, 10h, 24h, 0Ch, 20h, 10h
+    db 20h, 10h, 21h, 0Ch, 1Dh, 0Eh, 11h, 09h, 10h, 0Eh, 11h, 0Fh
+    db 10h, 09h, 0Fh, 0Ah, 0Fh, 0Ch, 0Eh, 10h, 0Bh, 0Ch, 10h, 10h
+    db 19h, 10h, 1Fh, 0Ch, 21h, 10h, 1Fh, 10h, 1Fh, 04h, 06h, 04h
+    db 08h, 08h, 09h, 08h, 0Bh, 08h, 0Bh, 08h, 13h, 0Ch, 12h, 0Ch
+    db 0Dh, 08h, 10h, 08h, 10h, 08h, 10h, 08h, 0Fh, 0Ch, 0Fh, 0Ch
+    db 13h, 11h, 0Fh, 0Eh, 0Dh, 07h, 0Ah, 08h, 0Fh, 08h, 0Fh, 08h
+    db 0Ch, 08h, 0Fh, 0Bh, 09h, 0Ch, 09h, 0Ch, 09h, 0Ch, 09h, 0Ch
+    db 09h, 0Ch, 09h, 0Bh, 09h, 0Ch, 09h, 0Ch, 09h, 0Ch, 09h, 0Ch
+    db 09h, 0Ch, 09h, 14h, 0Dh, 17h, 0Dh, 16h, 0Dh, 17h, 0Dh, 1Bh
+    db 11h, 0Eh, 05h, 07h, 0Dh, 07h, 0Dh, 07h, 0Dh, 07h, 0Dh, 07h
+    db 0Dh, 06h, 13h, 0Fh, 16h, 0Bh, 1Eh, 0Bh, 1Dh, 0Bh, 21h, 06h
+    db 21h, 0Bh, 21h, 0Bh, 07h, 0Bh, 07h, 0Bh, 07h, 0Bh, 07h, 0Bh
+    db 07h, 0Bh, 07h, 19h, 41h, 16h, 2Ch, 16h, 20h, 13h, 2Eh, 10h
+    db 26h, 13h, 23h, 11h, 21h, 14h, 21h, 18h, 0Eh, 18h, 1Dh, 18h
+    db 1Fh, 0Ch, 13h, 0Ch, 14h, 09h, 17h, 09h, 1Bh, 0Fh, 17h, 0Ch
+    db 1Bh, 0Ch, 1Fh, 0Ch, 0Eh, 08h, 0Fh, 0Ch, 13h, 08h, 12h, 08h
+    db 12h, 0Ch, 0Ch, 0Ch, 13h, 08h, 19h, 0Ch, 15h, 0Ch, 17h, 08h
+    db 1Bh, 08h, 14h, 08h, 17h, 08h, 15h, 0Ch, 0Bh, 0Ch, 0Bh, 08h
+    db 16h, 08h, 16h, 08h, 13h, 08h, 12h, 08h, 12h, 08h, 13h, 08h
+    db 1Dh, 08h, 15h, 08h, 1Ch, 0Ch, 14h, 0Ch, 0Fh, 08h, 0Fh, 08h
+    db 13h, 08h, 15h, 08h, 15h, 0Ch, 11h, 0Ch, 0Ch, 0Ch, 0Dh, 0Ch
+    db 0Dh, 0Ch, 11h, 0Ch, 16h, 08h, 0Dh, 08h, 10h, 08h, 18h, 08h
+    db 11h, 0Ch, 0Bh, 08h, 17h, 0Ch, 12h, 0Ch, 0Fh, 0Ch, 0Fh, 0Ch
+    db 0Fh, 08h, 13h, 0Ch, 14h, 08h, 12h, 04h, 17h, 08h, 15h, 08h
+    db 12h, 08h, 0Ch, 08h, 0Ch, 08h, 0Ch, 0Ch, 17h, 08h, 12h, 08h
+    db 10h, 08h, 0Eh, 08h, 16h, 10h, 0Dh, 0Ch, 10h, 0Ch, 12h, 08h
+    db 0Dh, 0Ch, 0Eh, 08h, 13h, 08h, 19h, 04h, 16h, 08h, 0Dh, 08h
+    db 13h, 0Ch, 10h, 0Ch, 12h, 0Ch, 0Dh, 08h, 0Fh, 08h, 1Ch, 08h
+    db 0Eh, 08h, 18h, 0Ch, 12h, 10h, 14h, 10h, 11h, 08h, 0Bh, 08h
+    db 1Ah, 0Ch, 12h, 0Ch, 0Dh, 0Ch, 0Ch, 08h, 0Fh, 08h, 13h, 08h
+    db 13h, 08h, 13h, 08h, 13h, 08h, 13h, 0Ch, 10h, 0Ch, 16h, 08h
+    db 12h, 0Ch, 10h, 08h, 0Ch, 08h, 0Ch, 08h, 0Bh, 10h, 10h, 14h
+    db 0Eh, 14h, 0Eh, 14h, 0Eh, 10h, 0Eh, 10h, 0Dh, 08h, 12h, 08h
+    db 12h, 0Ch, 12h, 10h, 29h, 10h, 1Dh, 0Ch, 14h, 14h, 21h, 18h
+    db 1Ah, 08h, 0Bh, 08h, 0Bh, 08h, 0Bh, 08h, 0Bh, 08h, 0Bh, 08h
     db 0Bh, 08h, 0Bh, 08h, 0Bh, 08h, 0Bh, 08h, 0Bh, 08h, 0Bh, 08h
     db 0Bh, 08h, 0Bh, 08h, 0Bh, 08h, 0Bh, 08h, 0Bh, 08h, 0Bh, 08h
     db 0Bh, 08h, 0Bh, 08h, 0Bh, 08h, 0Bh, 08h, 0Bh, 08h, 0Bh, 08h
-    db 0Bh, 08h, 0Bh, 08h, 0Bh, 08h, 0Bh, 08h, 0Bh, 08h, 0Bh, 04h
-    db 08h, 08h, 0Bh, 04h, 0Bh, 04h, 05h, 04h, 05h, 08h, 0Ch, 18h
-    db 28h, 1Ch, 1Eh, 18h, 30h, 10h, 33h, 22h, 46h, 13h, 46h, 0Dh
-    db 1Ah, 19h, 1Dh, 1Ch, 0Eh, 08h, 0Ch, 08h, 0Ch, 08h, 0Ch, 08h
+    db 0Bh, 08h, 0Bh, 08h, 0Bh, 08h, 0Bh, 04h, 08h, 08h, 0Bh, 04h
+    db 0Bh, 04h, 05h, 04h, 05h, 08h, 0Ch, 18h, 28h, 1Ch, 1Eh, 18h
+    db 30h, 10h, 33h, 22h, 46h, 13h, 46h, 0Dh, 1Ah, 19h, 1Dh, 1Ch
+    db 0Eh, 08h, 0Ch, 08h, 0Ch, 08h, 0Ch, 08h, 0Ch, 08h, 0Ch, 08h
     db 0Ch, 08h, 0Ch, 08h, 0Ch, 08h, 0Ch, 08h, 0Ch, 08h, 0Ch, 08h
-    db 0Ch, 08h, 0Ch, 08h, 0Ch, 08h, 0Ch, 08h, 0Ch, 08h, 0Ch, 08h
-    db 0Ch, 10h, 15h, 04h, 0Ah, 08h, 0Ch, 08h, 0Ch, 08h, 0Ch, 20h
-    db 1Fh, 10h, 10h, 04h, 0Ah, 18h, 15h, 07h, 0Bh, 04h, 0Ch, 08h
-    db 0Ch, 08h, 1Ah, 0Ch, 18h, 10h, 1Dh, 0Ch, 1Eh, 10h, 1Dh, 18h
-    db 28h, 10h, 13h, 10h, 19h, 0Ch, 1Ch, 10h, 0Eh, 10h, 0Fh, 10h
-    db 0Eh, 10h, 0Fh, 08h, 1Ch, 08h, 1Ch, 08h, 1Ch, 08h, 1Ch, 0Ch
-    db 15h, 0Ch, 19h, 10h, 17h, 11h, 17h, 0Ch, 20h, 0Ch, 1Fh, 10h
-    db 16h, 14h, 0Eh, 14h, 09h, 0Ch, 0Fh, 0Fh, 0Bh, 0Ch, 15h, 08h
-    db 0Ah, 08h, 09h, 04h, 0Ah, 08h, 0Ah, 08h, 0Ah, 0Ch, 07h, 08h
-    db 0Eh, 0Ch, 0Ch, 0Ch, 0Bh, 14h, 1Dh, 10h, 1Ch, 10h, 1Ch, 14h
-    db 18h, 14h, 24h, 14h, 1Fh, 0Ch, 20h, 0Fh, 1Fh, 0Dh, 1Fh, 10h
-    db 1Fh, 02h, 15h, 01h, 15h, 0FFh, 18h, 0FFh, 18h, 10h, 14h, 10h
-    db 14h, 0Ch, 1Ch, 04h, 05h, 0Ch, 07h, 10h, 0Ch, 10h, 15h, 0Ch
-    db 06h, 0Ch, 08h, 0Ch, 16h, 10h, 1Ch, 0Ch, 1Fh, 14h, 1Eh, 10h
-    db 1Ah, 10h, 13h, 08h, 13h, 0Ch, 12h, 0Ch, 0Bh, 0Ch, 05h, 18h
-    db 1Bh, 18h, 1Dh, 18h, 29h, 18h, 20h, 10h, 03h, 10h, 05h, 14h
-    db 0Bh, 18h, 13h, 1Bh, 1Ah, 20h, 20h, 1Eh, 1Fh, 20h, 1Fh, 21h
-    db 20h, 18h, 27h, 18h, 1Dh, 15h, 1Eh, 18h, 1Bh, 20h, 22h, 1Ch
-    db 24h, 14h, 20h, 20h, 23h, 20h, 2Bh, 1Ch, 2Dh, 10h, 25h, 10h
-    db 25h, 10h, 22h, 10h, 25h, 18h, 2Eh, 18h, 2Bh, 1Ch, 1Eh, 14h
-    db 1Ch, 14h, 18h, 1Ch, 10h, 10h, 31h, 10h, 3Bh, 10h, 30h, 1Ch
-    db 22h, 20h, 1Bh, 20h, 32h, 28h, 21h, 20h, 28h, 14h, 15h, 10h
-    db 20h, 10h, 1Fh, 10h, 1Eh, 18h, 1Ch, 28h, 20h, 14h, 1Eh, 14h
-    db 23h, 14h, 3Eh, 1Ch, 19h, 1Ch, 19h, 1Ch, 19h, 14h, 10h, 14h
-    db 12h, 10h, 0Eh, 34h, 29h, 08h, 16h, 0Ch, 17h, 0Ch, 17h, 0Ch
-    db 17h, 10h, 17h, 0Ch, 18h, 10h, 18h, 10h, 18h, 10h, 17h, 10h
-    db 1Bh, 10h, 1Bh, 10h, 18h, 0Ch, 18h, 10h, 14h, 19h, 1Ch, 20h
-    db 1Bh, 18h, 1Dh, 18h, 26h, 14h, 22h, 10h, 1Ah, 17h, 17h, 00h
-    db 00h, 4Ah, 79h, 01h, 01h, 01h, 01h, 01h, 01h, 02h, 02h, 02h
+    db 0Ch, 08h, 0Ch, 08h, 0Ch, 08h, 0Ch, 08h, 0Ch, 10h, 15h, 04h
+    db 0Ah, 08h, 0Ch, 08h, 0Ch, 08h, 0Ch, 20h, 1Fh, 10h, 10h, 04h
+    db 0Ah, 18h, 15h, 07h, 0Bh, 04h, 0Ch, 08h, 0Ch, 08h, 1Ah, 0Ch
+    db 18h, 10h, 1Dh, 0Ch, 1Eh, 10h, 1Dh, 18h, 28h, 10h, 13h, 10h
+    db 19h, 0Ch, 1Ch, 10h, 0Eh, 10h, 0Fh, 10h, 0Eh, 10h, 0Fh, 08h
+    db 1Ch, 08h, 1Ch, 08h, 1Ch, 08h, 1Ch, 0Ch, 15h, 0Ch, 19h, 10h
+    db 17h, 11h, 17h, 0Ch, 20h, 0Ch, 1Fh, 10h, 16h, 14h, 0Eh, 14h
+    db 09h, 0Ch, 0Fh, 0Fh, 0Bh, 0Ch, 15h, 08h, 0Ah, 08h, 09h, 04h
+    db 0Ah, 08h, 0Ah, 08h, 0Ah, 0Ch, 07h, 08h, 0Eh, 0Ch, 0Ch, 0Ch
+    db 0Bh, 14h, 1Dh, 10h, 1Ch, 10h, 1Ch, 14h, 18h, 14h, 24h, 14h
+    db 1Fh, 0Ch, 20h, 0Fh, 1Fh, 0Dh, 1Fh, 10h, 1Fh, 02h, 15h, 01h
+    db 15h, 0FFh, 18h, 0FFh, 18h, 10h, 14h, 10h, 14h, 0Ch, 1Ch, 04h
+    db 05h, 0Ch, 07h, 10h, 0Ch, 10h, 15h, 0Ch, 06h, 0Ch, 08h, 0Ch
+    db 16h, 10h, 1Ch, 0Ch, 1Fh, 14h, 1Eh, 10h, 1Ah, 10h, 13h, 08h
+    db 13h, 0Ch, 12h, 0Ch, 0Bh, 0Ch, 05h, 18h, 1Bh, 18h, 1Dh, 18h
+    db 29h, 18h, 20h, 10h, 03h, 10h, 05h, 14h, 0Bh, 18h, 13h, 1Bh
+    db 1Ah, 20h, 20h, 1Eh, 1Fh, 20h, 1Fh, 21h, 20h, 18h, 27h, 18h
+    db 1Dh, 15h, 1Eh, 18h, 1Bh, 20h, 22h, 1Ch, 24h, 14h, 20h, 20h
+    db 23h, 20h, 2Bh, 1Ch, 2Dh, 10h, 25h, 10h, 25h, 10h, 22h, 10h
+    db 25h, 18h, 2Eh, 18h, 2Bh, 1Ch, 1Eh, 14h, 1Ch, 14h, 18h, 1Ch
+    db 10h, 10h, 31h, 10h, 3Bh, 10h, 30h, 1Ch, 22h, 20h, 1Bh, 20h
+    db 32h, 28h, 21h, 20h, 28h, 14h, 15h, 10h, 20h, 10h, 1Fh, 10h
+    db 1Eh, 18h, 1Ch, 28h, 20h, 14h, 1Eh, 14h, 23h, 14h, 3Eh, 1Ch
+    db 19h, 1Ch, 19h, 1Ch, 19h, 14h, 10h, 14h, 12h, 10h, 0Eh, 34h
+    db 29h, 08h, 16h, 0Ch, 17h, 0Ch, 17h, 0Ch, 17h, 10h, 17h, 0Ch
+    db 18h, 10h, 18h, 10h, 18h, 10h, 17h, 10h, 1Bh, 10h, 1Bh, 10h
+    db 18h, 0Ch, 18h, 10h, 14h, 19h, 1Ch, 20h, 1Bh, 18h, 1Dh, 18h
+    db 26h, 14h, 22h, 10h, 1Ah, 17h, 17h, 00h, 00h
+word_78C4 label word
+; UNKNOWN: not yet classified as code or data
+    db 4Ah, 79h
+byte_78C6 label byte
+; UNKNOWN: not yet classified as code or data
+    db 01h, 01h, 01h, 01h, 01h, 01h, 02h, 02h, 02h, 02h, 02h, 02h
     db 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h
-    db 02h, 02h, 02h, 03h, 03h, 03h, 03h, 03h, 03h, 03h, 03h, 03h
     db 03h, 03h, 03h, 03h, 03h, 03h, 03h, 03h, 03h, 03h, 03h, 03h
-    db 03h, 03h, 03h, 03h, 03h, 03h, 04h, 04h, 04h, 04h, 04h, 04h
-    db 04h, 04h, 04h, 04h, 04h, 04h, 04h, 05h, 05h, 05h, 05h, 05h
-    db 05h, 05h, 05h, 05h, 06h, 06h, 06h, 06h, 06h, 06h, 06h, 07h
-    db 07h, 07h, 07h, 07h, 07h, 08h, 08h, 08h, 09h, 09h, 09h, 0Ah
-    db 0Ah, 0Bh, 0Bh, 0Ch, 0Dh, 0Eh, 10h, 10h, 10h, 10h, 10h, 10h
+    db 03h, 03h, 03h, 03h, 03h, 03h, 03h, 03h, 03h, 03h, 03h, 03h
+    db 03h, 03h, 03h, 04h, 04h, 04h, 04h, 04h, 04h, 04h, 04h, 04h
+    db 04h, 04h, 04h, 04h, 05h, 05h, 05h, 05h, 05h, 05h, 05h, 05h
+    db 05h, 06h, 06h, 06h, 06h, 06h, 06h, 06h, 07h, 07h, 07h, 07h
+    db 07h, 07h, 08h, 08h, 08h, 09h, 09h, 09h, 0Ah, 0Ah, 0Bh, 0Bh
+    db 0Ch, 0Dh, 0Eh, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h
     db 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h
     db 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h
-    db 10h, 10h, 10h, 01h, 01h, 01h, 01h, 02h, 02h, 02h, 02h, 03h
-    db 03h, 04h, 04h, 05h, 06h, 07h, 08h, 09h, 09h, 09h, 09h, 0Ah
-    db 0Ah, 0Ah, 0Ah, 0Ah, 0Ah, 0Ah, 0Bh, 0Bh, 0Bh, 0Bh, 0Bh, 0Bh
-    db 0Bh, 0Bh, 0Bh, 0Ch, 0Ch, 0Ch, 0Ch, 0Ch, 0Ch, 0Ch, 0Ch, 0Ch
-    db 0Ch, 0Ch, 0Ch, 0Ch, 0Dh, 0Dh, 0Dh, 0Dh, 0Dh, 0Dh, 0Dh, 0Dh
-    db 0Dh, 0Dh, 0Dh, 0Dh, 0Dh, 0Dh, 0Dh, 0Dh, 0Dh, 0Eh, 0Eh, 0Eh
+    db 01h, 01h, 01h, 01h, 02h, 02h, 02h, 02h, 03h, 03h, 04h, 04h
+    db 05h, 06h, 07h, 08h, 09h, 09h, 09h, 09h, 0Ah, 0Ah, 0Ah, 0Ah
+    db 0Ah, 0Ah, 0Ah, 0Bh, 0Bh, 0Bh, 0Bh, 0Bh, 0Bh, 0Bh, 0Bh, 0Bh
+    db 0Ch, 0Ch, 0Ch, 0Ch, 0Ch, 0Ch, 0Ch, 0Ch, 0Ch, 0Ch, 0Ch, 0Ch
+    db 0Ch, 0Dh, 0Dh, 0Dh, 0Dh, 0Dh, 0Dh, 0Dh, 0Dh, 0Dh, 0Dh, 0Dh
+    db 0Dh, 0Dh, 0Dh, 0Dh, 0Dh, 0Dh, 0Eh, 0Eh, 0Eh, 0Eh, 0Eh, 0Eh
     db 0Eh, 0Eh, 0Eh, 0Eh, 0Eh, 0Eh, 0Eh, 0Eh, 0Eh, 0Eh, 0Eh, 0Eh
-    db 0Eh, 0Eh, 0Eh, 0Eh, 0Eh, 0Eh, 0Eh, 0Eh, 0Eh, 0Fh, 0Fh, 0Fh
-    db 0Fh, 0Fh, 0Fh, 0Fh, 0Fh, 0Fh, 0Fh, 10h, 10h, 10h, 10h, 10h
+    db 0Eh, 0Eh, 0Eh, 0Eh, 0Eh, 0Eh, 0Fh, 0Fh, 0Fh, 0Fh, 0Fh, 0Fh
+    db 0Fh, 0Fh, 0Fh, 0Fh, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h
     db 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h
     db 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h
-    db 10h, 10h, 10h, 0BFh, 0FFh, 0CDh, 0FFh, 0DDh, 0FFh, 0ECh, 0FFh, 0F6h
-    db 0FFh, 0FBh, 0FFh, 0FEh, 0FFh, 0FFh, 0FFh, 00h, 00h, 10h, 00h, 60h
-    db 00h, 80h, 00h, 0B0h, 00h, 00h, 01h, 00h, 02h
+word_79CE label word
+; UNKNOWN: not yet classified as code or data
+    db 0BFh, 0FFh, 0CDh, 0FFh, 0DDh, 0FFh, 0ECh, 0FFh, 0F6h, 0FFh, 0FBh, 0FFh
+    db 0FEh, 0FFh, 0FFh, 0FFh, 00h, 00h, 10h, 00h, 60h, 00h, 80h, 00h
+    db 0B0h, 00h, 00h, 01h, 00h, 02h
 dtbl_79EC label word
     dw offset sub_6272
     dw offset sub_6277
@@ -6583,53 +8218,80 @@ dtbl_79EC label word
     db 00h, 00h, 0Ch, 00h, 0Fh, 00h, 12h, 01h, 08h, 00h, 11h, 00h
     db 10h, 00h, 12h, 01h, 0FAh, 0FFh, 0EFh, 0FFh, 0AAh, 55h, 0D0h, 00h
     db 0E0h, 0FFh, 12h, 01h, 13h, 01h, 14h, 01h, 15h, 01h, 0F8h, 0FFh
-    db 0F0h, 79h, 02h, 19h, 00h, 32h, 7Ah, 06h, 1Eh, 00h, 74h, 7Ah
-    db 06h, 14h, 01h, 0BCh, 7Ah, 0Ch, 1Eh, 03h, 03h, 00h, 03h, 7Ch
-    db 00h, 7Bh, 00h, 7Ah, 00h, 79h, 00h, 7Dh, 00h, 7Eh, 00h, 7Fh
-    db 00h, 27h, 00h, 77h, 00h, 0FEh, 0EFh, 28h, 00h, 77h, 00h, 00h
-    db 0F0h, 29h, 00h, 77h, 00h, 00h, 0EFh, 2Ah, 00h, 77h, 00h, 01h
-    db 0F0h, 2Bh, 00h, 77h, 00h, 00h, 0F1h, 2Ch, 00h, 77h, 00h, 0FEh
-    db 0F1h, 2Dh, 00h, 77h, 00h, 01h, 0F2h, 2Eh, 00h, 77h, 00h, 0FFh
-    db 0F5h, 2Fh, 00h, 77h, 00h, 02h, 0F0h, 30h, 00h, 79h, 00h, 0FAh
-    db 0E7h, 31h, 00h, 79h, 00h, 0F7h, 0E1h, 32h, 00h, 79h, 00h, 0F5h
-    db 0DFh, 33h, 00h, 79h, 00h, 0F3h, 0E1h, 34h, 00h, 79h, 00h, 0F3h
-    db 0E1h, 00h, 00h, 00h, 03h, 05h, 07h, 02h, 06h, 00h, 00h, 01h
-    db 03h, 04h, 07h, 02h, 06h, 01h, 00h, 01h, 03h, 04h, 07h, 02h
-    db 06h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 09h
-    db 00h, 0FEh, 0FFh, 2Fh, 00h, 0FEh, 0FFh, 00h, 00h, 00h, 00h, 01h
-    db 00h, 01h, 00h, 02h, 00h, 02h, 00h, 03h, 00h, 03h, 00h, 04h
-    db 00h, 04h, 00h, 05h, 00h, 05h, 00h, 0E8h, 0FFh, 27h, 00h, 27h
-    db 00h, 28h, 00h, 28h, 00h, 29h, 00h, 29h, 00h, 2Ah, 00h, 2Ah
-    db 00h, 2Bh, 00h, 2Bh, 00h, 2Ch, 00h, 2Ch, 00h, 0E8h, 0FFh, 0Bh
-    db 00h, 0Bh, 00h, 0Bh, 00h, 0Bh, 00h, 0Ch, 00h, 0FEh, 0FFh, 22h
-    db 00h, 22h, 00h, 23h, 00h, 23h, 00h, 24h, 00h, 24h, 00h, 24h
-    db 40h, 0F2h, 0FFh, 15h, 00h, 15h, 00h, 15h, 00h, 15h, 00h, 16h
-    db 00h, 16h, 00h, 16h, 00h, 16h, 00h, 17h, 00h, 17h, 00h, 17h
-    db 00h, 17h, 00h, 18h, 00h, 18h, 00h, 18h, 00h, 18h, 00h, 13h
-    db 00h, 13h, 00h, 13h, 00h, 13h, 00h, 14h, 00h, 14h, 00h, 14h
-    db 00h, 14h, 00h, 0D0h, 0FFh, 12h, 00h, 12h, 00h, 12h, 00h, 12h
-    db 00h, 12h, 00h, 11h, 00h, 11h, 00h, 11h, 00h, 11h, 00h, 11h
-    db 00h, 0ECh, 0FFh, 25h, 00h, 25h, 00h, 25h, 00h, 26h, 00h, 26h
-    db 00h, 26h, 00h, 0Eh, 00h, 0Eh, 00h, 0Eh, 40h, 0EEh, 0FFh, 0Fh
-    db 00h, 0Fh, 00h, 0Fh, 00h, 23h, 00h, 23h, 00h, 23h, 00h, 10h
-    db 00h, 10h, 00h, 10h, 40h, 0EEh, 0FFh, 21h, 00h, 0FEh, 0FFh, 19h
-    db 00h, 19h, 00h, 1Ah, 00h, 1Ah, 00h, 1Bh, 00h, 1Bh, 00h, 1Ch
-    db 00h, 1Ch, 00h, 0F8h, 0FFh, 06h, 00h, 06h, 00h, 06h, 00h, 07h
-    db 00h, 07h, 00h, 07h, 00h, 06h, 00h, 06h, 00h, 06h, 00h, 06h
-    db 00h, 07h, 00h, 07h, 00h, 07h, 00h, 07h, 00h, 06h, 00h, 06h
-    db 00h, 06h, 00h, 06h, 00h, 06h, 00h, 07h, 00h, 07h, 00h, 07h
-    db 00h, 07h, 00h, 07h, 00h, 0ECh, 0FFh, 09h, 00h, 09h, 00h, 09h
-    db 00h, 09h, 00h, 0Ah, 00h, 0Ah, 00h, 0Ah, 00h, 0Ah, 00h, 09h
-    db 00h, 09h, 00h, 09h, 00h, 09h, 00h, 08h, 00h, 08h, 00h, 08h
-    db 00h, 08h, 00h, 0E0h, 0FFh, 1Dh, 00h, 1Dh, 00h, 1Dh, 00h, 1Fh
-    db 00h, 1Fh, 00h, 1Fh, 00h, 0F4h, 0FFh, 9Fh, 7Bh, 0A7h, 7Bh, 0DBh
-    db 7Bh, 0E7h, 7Bh, 0F7h, 7Bh, 29h, 7Ch, 3Fh, 7Ch, 53h, 7Ch, 67h
-    db 7Ch, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 7Dh, 7Ch, 0AFh, 7Ch, 6Bh, 7Ch, 0D1h, 7Ch, 00h
+word_7B04 label word
+; UNKNOWN: not yet classified as code or data
+    db 0F0h, 79h
+byte_7B06 label byte
+; UNKNOWN: not yet classified as code or data
+    db 02h
+byte_7B07 label byte
+; UNKNOWN: not yet classified as code or data
+    db 19h
+byte_7B08 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h, 32h, 7Ah, 06h, 1Eh, 00h, 74h, 7Ah, 06h, 14h, 01h, 0BCh
+    db 7Ah, 0Ch, 1Eh, 03h
+byte_7B18 label byte
+; UNKNOWN: not yet classified as code or data
+    db 03h
+byte_7B19 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_7B1A label byte
+; UNKNOWN: not yet classified as code or data
+    db 03h
+word_7B1B label word
+; UNKNOWN: not yet classified as code or data
+    db 7Ch, 00h, 7Bh, 00h, 7Ah, 00h, 79h, 00h, 7Dh, 00h, 7Eh, 00h
+    db 7Fh, 00h, 27h, 00h, 77h, 00h, 0FEh, 0EFh, 28h, 00h, 77h, 00h
+    db 00h, 0F0h, 29h, 00h, 77h, 00h, 00h, 0EFh, 2Ah, 00h, 77h, 00h
+    db 01h, 0F0h, 2Bh, 00h, 77h, 00h, 00h, 0F1h, 2Ch, 00h, 77h, 00h
+    db 0FEh, 0F1h, 2Dh, 00h, 77h, 00h, 01h, 0F2h, 2Eh, 00h, 77h, 00h
+    db 0FFh, 0F5h, 2Fh, 00h, 77h, 00h, 02h, 0F0h, 30h, 00h, 79h, 00h
+    db 0FAh, 0E7h, 31h, 00h, 79h, 00h, 0F7h, 0E1h, 32h, 00h, 79h, 00h
+    db 0F5h, 0DFh, 33h, 00h, 79h, 00h, 0F3h, 0E1h, 34h, 00h, 79h, 00h
+    db 0F3h, 0E1h, 00h, 00h
+byte_7B7F label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h, 03h, 05h, 07h, 02h, 06h, 00h, 00h, 01h, 03h, 04h, 07h
+    db 02h, 06h, 01h, 00h, 01h, 03h, 04h, 07h, 02h, 06h, 00h, 00h
+    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 09h, 00h, 0FEh, 0FFh
+    db 2Fh, 00h, 0FEh, 0FFh, 00h, 00h, 00h, 00h, 01h, 00h, 01h, 00h
+    db 02h, 00h, 02h, 00h, 03h, 00h, 03h, 00h, 04h, 00h, 04h, 00h
+    db 05h, 00h, 05h, 00h, 0E8h, 0FFh, 27h, 00h, 27h, 00h, 28h, 00h
+    db 28h, 00h, 29h, 00h, 29h, 00h, 2Ah, 00h, 2Ah, 00h, 2Bh, 00h
+    db 2Bh, 00h, 2Ch, 00h, 2Ch, 00h, 0E8h, 0FFh, 0Bh, 00h, 0Bh, 00h
+    db 0Bh, 00h, 0Bh, 00h, 0Ch, 00h, 0FEh, 0FFh, 22h, 00h, 22h, 00h
+    db 23h, 00h, 23h, 00h, 24h, 00h, 24h, 00h, 24h, 40h, 0F2h, 0FFh
+    db 15h, 00h, 15h, 00h, 15h, 00h, 15h, 00h, 16h, 00h, 16h, 00h
+    db 16h, 00h, 16h, 00h, 17h, 00h, 17h, 00h, 17h, 00h, 17h, 00h
+    db 18h, 00h, 18h, 00h, 18h, 00h, 18h, 00h, 13h, 00h, 13h, 00h
+    db 13h, 00h, 13h, 00h, 14h, 00h, 14h, 00h, 14h, 00h, 14h, 00h
+    db 0D0h, 0FFh, 12h, 00h, 12h, 00h, 12h, 00h, 12h, 00h, 12h, 00h
+    db 11h, 00h, 11h, 00h, 11h, 00h, 11h, 00h, 11h, 00h, 0ECh, 0FFh
+    db 25h, 00h, 25h, 00h, 25h, 00h, 26h, 00h, 26h, 00h, 26h, 00h
+    db 0Eh, 00h, 0Eh, 00h, 0Eh, 40h, 0EEh, 0FFh, 0Fh, 00h, 0Fh, 00h
+    db 0Fh, 00h, 23h, 00h, 23h, 00h, 23h, 00h, 10h, 00h, 10h, 00h
+    db 10h, 40h, 0EEh, 0FFh, 21h, 00h, 0FEh, 0FFh, 19h, 00h, 19h, 00h
+    db 1Ah, 00h, 1Ah, 00h, 1Bh, 00h, 1Bh, 00h, 1Ch, 00h, 1Ch, 00h
+    db 0F8h, 0FFh, 06h, 00h, 06h, 00h, 06h, 00h, 07h, 00h, 07h, 00h
+    db 07h, 00h, 06h, 00h, 06h, 00h, 06h, 00h, 06h, 00h, 07h, 00h
+    db 07h, 00h, 07h, 00h, 07h, 00h, 06h, 00h, 06h, 00h, 06h, 00h
+    db 06h, 00h, 06h, 00h, 07h, 00h, 07h, 00h, 07h, 00h, 07h, 00h
+    db 07h, 00h, 0ECh, 0FFh, 09h, 00h, 09h, 00h, 09h, 00h, 09h, 00h
+    db 0Ah, 00h, 0Ah, 00h, 0Ah, 00h, 0Ah, 00h, 09h, 00h, 09h, 00h
+    db 09h, 00h, 09h, 00h, 08h, 00h, 08h, 00h, 08h, 00h, 08h, 00h
+    db 0E0h, 0FFh, 1Dh, 00h, 1Dh, 00h, 1Dh, 00h, 1Fh, 00h, 1Fh, 00h
+    db 1Fh, 00h, 0F4h, 0FFh
+word_7CDF label word
+; UNKNOWN: not yet classified as code or data
+    db 9Fh, 7Bh, 0A7h, 7Bh, 0DBh, 7Bh, 0E7h, 7Bh, 0F7h, 7Bh, 29h, 7Ch
+    db 3Fh, 7Ch, 53h, 7Ch, 67h, 7Ch, 00h, 00h, 00h, 00h, 00h, 00h
+    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 7Dh, 7Ch, 0AFh, 7Ch
+    db 6Bh, 7Ch, 0D1h, 7Ch, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 0A3h
-    db 7Bh, 0C1h, 7Bh, 00h, 00h, 0A3h, 7Bh, 0A3h, 7Bh, 0A3h, 7Bh, 0A3h
-    db 7Bh, 0A3h, 7Bh
+    db 00h, 00h, 00h, 00h, 0A3h, 7Bh, 0C1h, 7Bh, 00h, 00h, 0A3h, 7Bh
+    db 0A3h, 7Bh, 0A3h, 7Bh, 0A3h, 7Bh, 0A3h, 7Bh
 dtbl_7D2F label word
     dw offset sub_5CDB
     dw offset sub_5EC4
@@ -6661,6 +8323,7 @@ dtbl_7D95 label word
     dw offset sub_652C
     dw offset sub_6539
     dw offset sub_65AF
+word_7D9B label word
     dw offset sub_65EF
     dw offset sub_6641
     dw offset sub_6657
@@ -6668,6 +8331,7 @@ dtbl_7D95 label word
     dw offset sub_6669
     dw offset sub_6645
     dw offset sub_65AF
+word_7DA9 label word
     dw offset sub_6672
     dw offset sub_6673
     dw offset sub_65AF
@@ -6707,6 +8371,9 @@ dtbl_7D95 label word
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+byte_7F5E label byte
+; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
@@ -6728,6 +8395,9 @@ dtbl_7D95 label word
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+    db 00h, 00h, 00h, 00h
+byte_805E label byte
+; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
@@ -6749,6 +8419,24 @@ dtbl_7D95 label word
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+    db 00h, 00h, 00h, 00h
+word_815E label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_8160 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_8162 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_8164 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+byte_8166 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+word_8167 label word
+; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
@@ -6986,9 +8674,12 @@ dtbl_7D95 label word
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 35h, 00h
+    db 00h, 00h, 00h, 00h, 00h, 00h
+word_8C89 label word
+; UNKNOWN: not yet classified as code or data
+    db 35h, 00h
+word_8C8B label word
+; UNKNOWN: not yet classified as code or data
     db 38h, 01h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
@@ -7022,6 +8713,9 @@ dtbl_7D95 label word
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+    db 00h, 00h, 00h, 00h, 00h, 00h
+byte_8E1D label byte
+; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
@@ -7104,6 +8798,27 @@ dtbl_7D95 label word
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+    db 00h, 00h
+word_91F7 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_91F9 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+byte_91FB label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+word_91FC label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+byte_91FE label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+word_91FF label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_9201 label word
+; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
@@ -7459,329 +9174,552 @@ dtbl_7D95 label word
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+    db 00h, 00h, 00h
+byte_A2A8 label byte
+; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 50h, 52h, 45h, 53h, 45h, 4Eh, 54h
-    db 2Eh, 53h, 51h, 5Ah, 00h, 54h, 49h, 54h, 55h, 53h, 2Eh, 53h
-    db 51h, 5Ah, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 17h, 10h, 10h
-    db 07h, 14h, 04h, 04h, 04h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 78h, 00h, 64h, 00h
-    db 0A6h, 0FFh, 6Eh, 00h, 88h, 0FFh, 28h, 00h, 50h, 00h, 3Ch, 00h
+    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 50h, 52h, 45h, 53h
+    db 45h, 4Eh, 54h, 2Eh, 53h, 51h, 5Ah, 00h, 54h, 49h, 54h, 55h
+    db 53h, 2Eh, 53h, 51h, 5Ah, 00h
+word_A30E label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_A310 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+byte_A312 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h, 17h, 10h, 10h, 07h, 14h, 04h, 04h, 04h, 00h, 00h
+    db 00h, 00h, 00h, 00h, 00h, 00h
+byte_A324 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_A325 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+word_A326 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+byte_A328 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_A329 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_A32A label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_A32B label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_A32C label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_A32E label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+byte_A330 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+word_A331 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_A333 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+byte_A335 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+word_A336 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_A338 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_A33A label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_A33C label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_A33E label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+byte_A340 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+word_A341 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_A343 label word
+; UNKNOWN: not yet classified as code or data
+    db 78h, 00h, 64h, 00h, 0A6h, 0FFh, 6Eh, 00h, 88h, 0FFh, 28h, 00h
+    db 50h, 00h, 3Ch, 00h
+word_A353 label word
+; UNKNOWN: not yet classified as code or data
     db 0Ah, 00h, 14h, 00h, 1Eh, 00h, 32h, 00h, 3Ch, 00h, 46h, 00h
     db 4Bh, 00h, 50h, 00h, 64h, 00h, 0C8h, 00h, 0F4h, 01h, 20h, 03h
-    db 0E8h, 03h, 0D0h, 07h, 0B8h, 0Bh, 70h, 17h, 10h, 27h, 10h, 0Fh
-    db 0Dh, 0Eh, 0Ch, 0Ch, 0Dh, 0Eh, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 03h, 03h, 02h, 02h, 01h, 01h, 03h, 02h
-    db 03h, 03h, 03h, 02h, 03h, 00h, 00h, 00h, 00h, 00h, 01h, 02h
-    db 02h, 03h, 03h, 01h, 03h, 03h, 01h, 03h, 0Bh, 01h, 00h, 03h
-    db 01h, 03h, 02h, 02h, 02h, 00h, 03h, 02h, 01h, 00h, 02h, 03h
-    db 01h, 01h, 01h, 02h, 03h, 01h, 03h, 03h, 00h, 09h, 0Ah, 08h
-    db 08h, 09h, 0Ah, 08h, 07h, 08h, 0Bh, 0Ah, 04h, 06h, 04h, 07h
-    db 05h, 04h, 04h, 05h, 07h, 04h, 0Bh, 07h, 03h, 06h, 06h, 06h
-    db 06h, 03h, 06h, 0Ah, 07h, 05h, 05h, 0Bh, 0Ah, 08h, 09h, 00h
-    db 9Ah, 9Ah, 9Bh, 00h, 0E0h, 00h, 0E1h, 00h, 2Dh, 01h, 2Eh, 01h
-    db 2Fh, 01h, 01h, 02h, 03h, 04h, 06h, 08h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 27h, 0A4h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 40h, 40h, 40h, 40h, 40h, 40h, 0F4h, 00h, 00h, 00h
-    db 40h, 40h, 40h, 0FAh, 10h, 50h, 10h, 11h, 51h, 11h, 10h, 50h
-    db 10h, 11h, 51h, 11h, 10h, 50h, 10h, 11h, 51h, 11h, 00h, 00h
-    db 40h, 40h, 00h, 00h, 40h, 40h, 00h, 00h, 40h, 40h, 00h, 00h
-    db 40h, 40h, 0DEh, 03h, 0FFh, 04h, 0FFh, 07h, 0FFh, 0Dh, 0Dh, 0Dh
-    db 0Eh, 0Eh, 0Eh, 0FAh, 0Dh, 0Dh, 0Ch, 0Ch, 0FCh, 0Dh, 0Dh, 0Eh
-    db 0Eh, 0FCh, 12h, 12h, 52h, 12h, 0Eh, 0Eh, 4Eh, 0Eh, 0F8h, 05h
-    db 0FFh, 05h, 05h, 0Fh, 0Fh, 0FCh, 0A9h, 03h, 0D4h, 07h, 0A4h, 01h
-    db 0D1h, 03h, 0B9h, 07h, 0A5h, 01h, 0A2h, 03h, 0A6h, 07h, 0A6h, 01h
-    db 0B4h, 03h, 9Fh, 07h, 0A7h, 01h, 96h, 03h, 8Ah, 07h, 0A8h, 01h
-    db 0B6h, 03h, 9Ch, 07h, 0A9h, 01h, 0E0h, 03h, 95h, 07h, 0B6h, 01h
-    db 00h, 00h, 00h, 00h, 0FFh, 0FFh, 0D5h, 03h, 0C1h, 07h, 0AAh, 01h
-    db 0FAh, 03h, 0B6h, 07h, 0ABh, 01h, 0E8h, 03h, 0A8h, 07h, 0ACh, 01h
-    db 0FFh, 03h, 88h, 07h, 0ADh, 01h, 0D9h, 03h, 9Bh, 07h, 0AEh, 01h
-    db 0FFh, 03h, 0A8h, 07h, 0AFh, 01h, 05h, 04h, 0A9h, 07h, 0B7h, 01h
-    db 00h, 00h, 00h, 00h, 0FFh, 0FFh, 0E3h, 03h, 73h, 07h, 0B0h, 01h
-    db 0E4h, 03h, 71h, 07h, 0B1h, 01h, 0E4h, 03h, 73h, 07h, 0B2h, 01h
+    db 0E8h, 03h, 0D0h, 07h, 0B8h, 0Bh, 70h, 17h, 10h, 27h
+byte_A375 label byte
+; UNKNOWN: not yet classified as code or data
+    db 10h, 0Fh, 0Dh, 0Eh, 0Ch, 0Ch, 0Dh, 0Eh, 00h, 00h, 00h, 00h
+    db 00h, 00h, 00h, 00h, 00h, 00h, 03h, 03h, 02h, 02h, 01h, 01h
+    db 03h, 02h, 03h, 03h, 03h, 02h, 03h, 00h, 00h, 00h, 00h, 00h
+    db 01h, 02h, 02h, 03h, 03h, 01h, 03h, 03h, 01h, 03h, 0Bh, 01h
+    db 00h, 03h, 01h, 03h, 02h, 02h, 02h, 00h, 03h, 02h, 01h, 00h
+    db 02h, 03h, 01h, 01h, 01h, 02h, 03h, 01h, 03h, 03h, 00h, 09h
+    db 0Ah, 08h, 08h, 09h, 0Ah, 08h, 07h, 08h, 0Bh, 0Ah, 04h, 06h
+    db 04h, 07h, 05h, 04h, 04h, 05h, 07h, 04h, 0Bh, 07h, 03h, 06h
+    db 06h, 06h, 06h, 03h, 06h, 0Ah, 07h, 05h, 05h, 0Bh, 0Ah, 08h
+    db 09h, 00h, 9Ah, 9Ah
+word_A3E5 label word
+; UNKNOWN: not yet classified as code or data
+    db 9Bh, 00h, 0E0h, 00h, 0E1h, 00h, 2Dh, 01h, 2Eh, 01h, 2Fh, 01h
+byte_A3F1 label byte
+; UNKNOWN: not yet classified as code or data
+    db 01h, 02h, 03h, 04h, 06h, 08h
+word_A3F7 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+byte_A3F9 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_A3FA label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+word_A3FB label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_A3FD label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_A3FF label word
+; UNKNOWN: not yet classified as code or data
+    db 27h, 0A4h
+word_A401 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_A403 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_A405 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_A407 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h
+word_A408 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h
+word_A409 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_A40B label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_A40D label word
+; UNKNOWN: not yet classified as code or data
+    db 00h
+word_A40E label word
+; UNKNOWN: not yet classified as code or data
+    db 00h
+word_A40F label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_A411 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_A413 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h
+word_A414 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h
+word_A415 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_A417 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_A419 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h
+word_A41A label word
+; UNKNOWN: not yet classified as code or data
+    db 00h
+word_A41B label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_A41D label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_A41F label word
+; UNKNOWN: not yet classified as code or data
+    db 00h
+word_A420 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h
+word_A421 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_A423 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_A425 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 40h, 40h, 40h, 40h
+    db 40h, 40h, 0F4h, 00h, 00h, 00h, 40h, 40h, 40h, 0FAh, 10h, 50h
+    db 10h, 11h, 51h, 11h, 10h, 50h, 10h, 11h, 51h, 11h, 10h, 50h
+    db 10h, 11h, 51h, 11h, 00h, 00h, 40h, 40h, 00h, 00h, 40h, 40h
+    db 00h, 00h, 40h, 40h, 00h, 00h, 40h, 40h, 0DEh, 03h, 0FFh, 04h
+    db 0FFh, 07h, 0FFh, 0Dh, 0Dh, 0Dh, 0Eh, 0Eh, 0Eh, 0FAh, 0Dh, 0Dh
+    db 0Ch, 0Ch, 0FCh, 0Dh, 0Dh, 0Eh, 0Eh, 0FCh, 12h, 12h, 52h, 12h
+    db 0Eh, 0Eh, 4Eh, 0Eh, 0F8h, 05h, 0FFh, 05h, 05h, 0Fh, 0Fh, 0FCh
+    db 0A9h, 03h, 0D4h, 07h, 0A4h, 01h, 0D1h, 03h, 0B9h, 07h, 0A5h, 01h
+    db 0A2h, 03h, 0A6h, 07h, 0A6h, 01h, 0B4h, 03h, 9Fh, 07h, 0A7h, 01h
+    db 96h, 03h, 8Ah, 07h, 0A8h, 01h, 0B6h, 03h, 9Ch, 07h, 0A9h, 01h
+    db 0E0h, 03h, 95h, 07h, 0B6h, 01h, 00h, 00h, 00h, 00h, 0FFh, 0FFh
+    db 0D5h, 03h, 0C1h, 07h, 0AAh, 01h, 0FAh, 03h, 0B6h, 07h, 0ABh, 01h
+    db 0E8h, 03h, 0A8h, 07h, 0ACh, 01h, 0FFh, 03h, 88h, 07h, 0ADh, 01h
+    db 0D9h, 03h, 9Bh, 07h, 0AEh, 01h, 0FFh, 03h, 0A8h, 07h, 0AFh, 01h
+    db 05h, 04h, 0A9h, 07h, 0B7h, 01h, 00h, 00h, 00h, 00h, 0FFh, 0FFh
+    db 0E3h, 03h, 73h, 07h, 0B0h, 01h, 0E4h, 03h, 71h, 07h, 0B1h, 01h
+    db 0E4h, 03h, 73h, 07h, 0B2h, 01h
+word_A4F7 label word
+; UNKNOWN: not yet classified as code or data
     db 0F9h, 0A4h, 1Bh, 0A5h, 05h, 00h, 5Ah, 0A5h, 01h, 00h, 1Bh, 0A5h
     db 03h, 00h, 5Ah, 0A5h, 02h, 00h, 1Bh, 0A5h, 02h, 00h, 40h, 0A5h
-    db 01h, 00h, 0FFh, 0FFh, 0E8h, 0FFh, 00h, 00h, 1Bh, 0A5h, 00h, 00h
-    db 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h
-    db 04h, 04h, 04h, 04h, 04h, 04h, 04h, 04h, 04h, 04h, 04h, 04h
-    db 0E8h, 03h, 03h, 03h, 0FDh, 03h, 03h, 03h, 03h, 03h, 03h, 03h
-    db 0F1h, 00h, 00h, 0FFh, 03h, 03h, 0FEh, 03h, 00h, 00h, 00h, 03h
-    db 03h, 03h, 03h, 00h, 0FEh, 00h, 03h, 03h, 03h, 00h, 00h, 03h
-    db 03h, 03h, 0E7h, 04h, 04h, 04h, 04h, 04h, 04h, 04h, 01h, 01h
-    db 01h, 01h, 01h, 01h, 01h, 00h, 00h, 00h, 0FFh, 00h, 00h, 00h
-    db 00h, 0EAh, 0A2h, 01h, 9Ah, 01h, 95h, 01h, 9Fh, 01h, 0A0h, 01h
-    db 1Bh, 0A4h, 0Fh, 0A4h, 09h, 0A4h, 03h, 0A4h, 15h, 0A4h, 0A2h, 01h
-    db 9Ah, 01h, 96h, 01h, 9Dh, 01h, 0A0h, 01h, 1Bh, 0A4h, 0Fh, 0A4h
-    db 09h, 0A4h, 03h, 0A4h, 15h, 0A4h, 0A2h, 01h, 9Ah, 01h, 96h, 01h
-    db 9Ch, 01h, 0A0h, 01h, 1Bh, 0A4h, 0Fh, 0A4h, 09h, 0A4h, 03h, 0A4h
-    db 15h, 0A4h, 0A1h, 01h, 99h, 01h, 96h, 01h, 9Dh, 01h, 9Dh, 81h
-    db 1Bh, 0A4h, 0Fh, 0A4h, 09h, 0A4h, 03h, 0A4h, 15h, 0A4h, 0A2h, 01h
-    db 9Bh, 01h, 96h, 01h, 9Dh, 01h, 9Dh, 81h, 1Bh, 0A4h, 0Fh, 0A4h
-    db 09h, 0A4h, 03h, 0A4h, 15h, 0A4h, 0A2h, 01h, 99h, 01h, 98h, 81h
-    db 9Eh, 01h, 9Eh, 81h, 1Bh, 0A4h, 0Fh, 0A4h, 09h, 0A4h, 03h, 0A4h
-    db 15h, 0A4h, 0A2h, 01h, 9Ah, 01h, 98h, 01h, 9Ch, 01h, 9Dh, 81h
-    db 1Bh, 0A4h, 0Fh, 0A4h, 09h, 0A4h, 03h, 0A4h, 15h, 0A4h, 0A2h, 01h
-    db 9Ah, 01h, 95h, 01h, 9Eh, 01h, 9Eh, 81h, 1Bh, 0A4h, 0Fh, 0A4h
-    db 09h, 0A4h, 03h, 0A4h, 15h, 0A4h, 0A2h, 01h, 99h, 01h, 95h, 01h
-    db 9Eh, 01h, 9Dh, 81h, 1Bh, 0A4h, 0Fh, 0A4h, 09h, 0A4h, 03h, 0A4h
-    db 15h, 0A4h, 0A3h, 01h, 99h, 01h, 95h, 01h, 9Eh, 01h, 9Dh, 81h
-    db 1Bh, 0A4h, 0Fh, 0A4h, 09h, 0A4h, 03h, 0A4h, 15h, 0A4h, 0A2h, 01h
-    db 99h, 01h, 95h, 01h, 9Eh, 01h, 0A0h, 01h, 1Bh, 0A4h, 0Fh, 0A4h
-    db 09h, 0A4h, 03h, 0A4h, 15h, 0A4h, 0A3h, 01h, 99h, 01h, 95h, 01h
-    db 9Dh, 01h, 0A0h, 01h, 1Bh, 0A4h, 0Fh, 0A4h, 09h, 0A4h, 03h, 0A4h
-    db 15h, 0A4h, 0A3h, 01h, 9Bh, 01h, 95h, 01h, 9Eh, 01h, 9Dh, 81h
-    db 1Bh, 0A4h, 0Fh, 0A4h, 09h, 0A4h, 03h, 0A4h, 15h, 0A4h, 0A3h, 01h
-    db 9Bh, 01h, 95h, 01h, 9Dh, 01h, 9Dh, 81h, 1Bh, 0A4h, 0Fh, 0A4h
-    db 09h, 0A4h, 03h, 0A4h, 15h, 0A4h, 0A3h, 01h, 9Bh, 01h, 95h, 01h
-    db 9Dh, 01h, 0A0h, 01h, 1Bh, 0A4h, 0Fh, 0A4h, 09h, 0A4h, 03h, 0A4h
-    db 15h, 0A4h, 0A2h, 01h, 9Ah, 01h, 98h, 01h, 9Ch, 01h, 9Dh, 81h
-    db 1Bh, 0A4h, 0Fh, 0A4h, 09h, 0A4h, 03h, 0A4h, 15h, 0A4h, 0A2h, 01h
-    db 9Ah, 01h, 97h, 01h, 9Eh, 01h, 9Dh, 81h, 1Bh, 0A4h, 0Fh, 0A4h
-    db 09h, 0A4h, 03h, 0A4h, 15h, 0A4h, 0A2h, 01h, 9Ah, 01h, 97h, 01h
-    db 9Dh, 01h, 9Eh, 81h, 1Bh, 0A4h, 0Fh, 0A4h, 09h, 0A4h, 03h, 0A4h
-    db 15h, 0A4h, 0A3h, 01h, 9Ah, 01h, 95h, 01h, 0A0h, 81h, 9Dh, 81h
-    db 1Bh, 0A4h, 0Fh, 0A4h, 09h, 0A4h, 15h, 0A4h, 03h, 0A4h, 0A2h, 01h
-    db 99h, 01h, 0F8h, 0E9h, 0A2h, 01h, 9Ah, 01h, 0FBh, 0EBh, 0A2h, 01h
-    db 9Bh, 01h, 0F6h, 0E8h, 0A1h, 01h, 99h, 01h, 0F6h, 0DBh, 0A1h, 01h
-    db 9Ah, 01h, 01h, 0DDh, 0A1h, 01h, 9Bh, 01h, 0F3h, 0DAh, 0A3h, 01h
-    db 99h, 01h, 0EDh, 0F0h, 0A3h, 01h, 9Ah, 01h, 0F0h, 0F2h, 0A3h, 01h
-    db 9Bh, 01h, 0EBh, 0F0h, 99h, 01h, 95h, 01h, 0FFh, 0E8h, 9Ah, 01h
-    db 95h, 01h, 0FBh, 0EAh, 9Bh, 01h, 95h, 01h, 0F8h, 0F7h, 99h, 01h
-    db 96h, 01h, 0FFh, 0E8h, 9Ah, 01h, 96h, 01h, 0FBh, 0EAh, 9Bh, 01h
-    db 96h, 01h, 0F8h, 0F7h, 99h, 01h, 97h, 01h, 0FFh, 0E8h, 9Ah, 01h
-    db 97h, 01h, 0FBh, 0EAh, 9Bh, 01h, 97h, 01h, 0F8h, 0F7h, 99h, 01h
-    db 98h, 01h, 0FFh, 0E8h, 9Ah, 01h, 98h, 01h, 0FBh, 0EAh, 9Bh, 01h
-    db 98h, 01h, 0F8h, 0F7h, 99h, 01h, 98h, 81h, 0FFh, 0E8h, 9Ah, 01h
-    db 98h, 81h, 0FBh, 0EAh, 9Bh, 01h, 98h, 81h, 0F8h, 0F7h, 99h, 01h
-    db 9Ch, 01h, 0E2h, 0ECh, 99h, 01h, 9Dh, 01h, 0DDh, 0F1h, 99h, 01h
-    db 9Eh, 01h, 0D6h, 0E9h, 99h, 01h, 9Fh, 01h, 0E8h, 0Ch, 9Ah, 01h
-    db 9Ch, 01h, 0E2h, 0ECh, 9Ah, 01h, 9Dh, 01h, 0E0h, 0F1h, 9Ah, 01h
-    db 9Eh, 01h, 0D4h, 0EAh, 9Ah, 01h, 9Fh, 01h, 0EAh, 0Fh, 9Bh, 01h
-    db 9Ch, 01h, 0DEh, 0F8h, 9Bh, 01h, 9Dh, 01h, 0DCh, 02h, 9Bh, 01h
-    db 9Eh, 01h, 0CEh, 0FBh, 9Bh, 01h, 9Fh, 01h, 0E6h, 1Dh, 99h, 01h
-    db 9Dh, 81h, 21h, 0EBh, 99h, 01h, 9Eh, 81h, 2Ch, 0E4h, 99h, 01h
-    db 0A0h, 01h, 12h, 10h, 9Ah, 01h, 9Dh, 81h, 18h, 0EEh, 9Ah, 01h
-    db 9Eh, 81h, 29h, 0EAh, 9Ah, 01h, 0A0h, 01h, 09h, 13h, 9Bh, 01h
-    db 9Dh, 81h, 1Ah, 0F9h, 9Bh, 01h, 9Eh, 81h, 29h, 0F3h, 9Bh, 01h
-    db 0A0h, 01h, 0Ch, 1Eh, 9Ah, 01h, 0A0h, 81h, 0ECh, 16h, 38h, 01h
-    db 3Ch, 01h, 56h, 00h, 3Eh, 01h, 49h, 01h, 6Fh, 00h, 4Ah, 01h
-    db 53h, 01h, 6Dh, 00h, 54h, 01h, 55h, 01h, 5Dh, 00h, 56h, 01h
-    db 58h, 01h, 5Ch, 00h, 59h, 01h, 5Ch, 01h, 68h, 00h, 5Dh, 01h
-    db 62h, 01h, 64h, 00h, 63h, 01h, 66h, 01h, 7Dh, 00h, 67h, 01h
-    db 6Dh, 01h, 6Ch, 00h, 6Eh, 01h, 71h, 01h, 6Fh, 00h, 72h, 01h
-    db 7Ah, 01h, 6Bh, 00h, 7Bh, 01h, 7Dh, 01h, 56h, 00h, 7Eh, 01h
-    db 81h, 01h, 5Ah, 00h, 82h, 01h, 8Bh, 01h, 51h, 00h, 8Ch, 01h
-    db 91h, 01h, 5Eh, 00h, 92h, 01h, 94h, 01h, 0A1h, 00h, 0FFh, 0FFh
-    db 91h, 00h, 91h, 00h, 92h, 00h, 92h, 00h, 93h, 00h, 93h, 00h
-    db 0F4h, 0FFh, 01h, 7Dh, 00h, 00h, 28h, 00h, 0FEh, 0FFh, 26h, 00h
-    db 26h, 00h, 26h, 00h, 26h, 00h, 25h, 00h, 25h, 00h, 25h, 00h
-    db 25h, 00h, 27h, 00h, 27h, 00h, 27h, 00h, 27h, 00h, 25h, 00h
-    db 25h, 00h, 25h, 00h, 25h, 00h, 0E0h, 0FFh, 00h, 7Dh, 2Ah, 00h
-    db 0FEh, 0FFh, 96h, 00h, 0FEh, 0FFh, 94h, 00h, 94h, 00h, 94h, 00h
-    db 95h, 00h, 95h, 00h, 95h, 00h, 96h, 00h, 96h, 00h, 96h, 00h
-    db 97h, 00h, 97h, 00h, 97h, 00h, 0E8h, 0FFh, 00h, 7Dh, 94h, 00h
-    db 0FEh, 0FFh, 01h, 7Dh, 01h, 00h, 05h, 00h, 0FEh, 0FFh, 01h, 7Dh
-    db 02h, 00h, 06h, 00h, 07h, 00h, 0FEh, 0FFh, 06h, 00h, 0FEh, 0FFh
-    db 00h, 7Dh, 11h, 00h, 0FEh, 0FFh, 01h, 7Dh, 03h, 00h, 36h, 00h
-    db 36h, 00h, 37h, 00h, 37h, 00h, 38h, 00h, 38h, 00h, 39h, 00h
-    db 39h, 00h, 06h, 00h, 0FEh, 0FFh, 07h, 00h, 0FEh, 0FFh, 08h, 00h
-    db 08h, 00h, 09h, 00h, 09h, 00h, 0Ah, 00h, 0Ah, 00h, 0Bh, 00h
-    db 0Bh, 00h, 0F0h, 0FFh, 10h, 00h, 10h, 00h, 0Ch, 00h, 0Ch, 00h
-    db 0Dh, 00h, 0Dh, 00h, 0Eh, 00h, 0Eh, 00h, 0Fh, 00h, 0Fh, 00h
-    db 0F0h, 0FFh, 00h, 7Dh, 11h, 00h, 0FEh, 0FFh, 01h, 7Dh, 04h, 00h
-    db 06h, 00h, 07h, 00h, 0FEh, 0FFh, 00h, 7Dh, 11h, 00h, 0FEh, 0FFh
-    db 01h, 7Dh, 05h, 00h, 12h, 00h, 13h, 00h, 0FCh, 0FFh, 14h, 00h
-    db 15h, 00h, 0FCh, 0FFh, 00h, 7Dh, 16h, 00h, 0FEh, 0FFh, 5Ch, 00h
-    db 5Ch, 00h, 5Ch, 00h, 5Ch, 00h, 5Ah, 00h, 5Ah, 00h, 5Ah, 00h
-    db 5Ah, 00h, 5Bh, 00h, 5Bh, 00h, 5Bh, 00h, 5Bh, 00h, 0E8h, 0FFh
-    db 5Ch, 00h, 5Ch, 00h, 5Ch, 00h, 5Ah, 00h, 5Ah, 00h, 5Ah, 00h
-    db 5Bh, 00h, 5Bh, 00h, 5Bh, 00h, 0EEh, 0FFh, 00h, 7Dh, 5Bh, 00h
-    db 0FEh, 0FFh, 01h, 7Dh, 06h, 00h, 12h, 00h, 13h, 00h, 0FCh, 0FFh
-    db 00h, 7Dh, 16h, 00h, 0FEh, 0FFh, 8Dh, 00h, 8Dh, 00h, 8Dh, 00h
-    db 8Eh, 00h, 8Eh, 00h, 8Eh, 00h, 8Fh, 00h, 8Fh, 00h, 8Fh, 00h
-    db 8Eh, 00h, 8Eh, 00h, 8Eh, 00h, 0E8h, 0FFh, 00h, 7Dh, 90h, 00h
-    db 0FEh, 0FFh, 01h, 7Dh, 07h, 00h, 12h, 00h, 13h, 00h, 0FCh, 0FFh
-    db 12h, 00h, 13h, 00h, 0FCh, 0FFh, 00h, 7Dh, 16h, 00h, 0FEh, 0FFh
+    db 01h, 00h, 0FFh, 0FFh, 0E8h, 0FFh
+byte_A515 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_A516 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+word_A517 label word
+; UNKNOWN: not yet classified as code or data
+    db 1Bh, 0A5h
+word_A519 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h
+    db 01h, 01h, 04h, 04h, 04h, 04h, 04h, 04h, 04h, 04h, 04h, 04h
+    db 04h, 04h, 0E8h, 03h, 03h, 03h, 0FDh, 03h, 03h, 03h, 03h, 03h
+    db 03h, 03h, 0F1h, 00h, 00h, 0FFh, 03h, 03h, 0FEh, 03h, 00h, 00h
+    db 00h, 03h, 03h, 03h, 03h, 00h, 0FEh, 00h, 03h, 03h, 03h, 00h
+    db 00h, 03h, 03h, 03h, 0E7h, 04h, 04h, 04h, 04h, 04h, 04h, 04h
+    db 01h, 01h, 01h, 01h, 01h, 01h, 01h, 00h, 00h, 00h, 0FFh, 00h
+    db 00h, 00h, 00h, 0EAh, 0A2h, 01h, 9Ah, 01h, 95h, 01h, 9Fh, 01h
+    db 0A0h, 01h, 1Bh, 0A4h, 0Fh, 0A4h, 09h, 0A4h, 03h, 0A4h, 15h, 0A4h
+    db 0A2h, 01h, 9Ah, 01h, 96h, 01h, 9Dh, 01h, 0A0h, 01h, 1Bh, 0A4h
+    db 0Fh, 0A4h, 09h, 0A4h, 03h, 0A4h, 15h, 0A4h, 0A2h, 01h, 9Ah, 01h
+    db 96h, 01h, 9Ch, 01h, 0A0h, 01h, 1Bh, 0A4h, 0Fh, 0A4h, 09h, 0A4h
+    db 03h, 0A4h, 15h, 0A4h, 0A1h, 01h, 99h, 01h, 96h, 01h, 9Dh, 01h
+    db 9Dh, 81h, 1Bh, 0A4h, 0Fh, 0A4h, 09h, 0A4h, 03h, 0A4h, 15h, 0A4h
+    db 0A2h, 01h, 9Bh, 01h, 96h, 01h, 9Dh, 01h, 9Dh, 81h, 1Bh, 0A4h
+    db 0Fh, 0A4h, 09h, 0A4h, 03h, 0A4h, 15h, 0A4h, 0A2h, 01h, 99h, 01h
+    db 98h, 81h, 9Eh, 01h, 9Eh, 81h, 1Bh, 0A4h, 0Fh, 0A4h, 09h, 0A4h
+    db 03h, 0A4h, 15h, 0A4h, 0A2h, 01h, 9Ah, 01h, 98h, 01h, 9Ch, 01h
+    db 9Dh, 81h, 1Bh, 0A4h, 0Fh, 0A4h, 09h, 0A4h, 03h, 0A4h, 15h, 0A4h
+    db 0A2h, 01h, 9Ah, 01h, 95h, 01h, 9Eh, 01h, 9Eh, 81h, 1Bh, 0A4h
+    db 0Fh, 0A4h, 09h, 0A4h, 03h, 0A4h, 15h, 0A4h, 0A2h, 01h, 99h, 01h
+    db 95h, 01h, 9Eh, 01h, 9Dh, 81h, 1Bh, 0A4h, 0Fh, 0A4h, 09h, 0A4h
+    db 03h, 0A4h, 15h, 0A4h, 0A3h, 01h, 99h, 01h, 95h, 01h, 9Eh, 01h
+    db 9Dh, 81h, 1Bh, 0A4h, 0Fh, 0A4h, 09h, 0A4h, 03h, 0A4h, 15h, 0A4h
+    db 0A2h, 01h, 99h, 01h, 95h, 01h, 9Eh, 01h, 0A0h, 01h, 1Bh, 0A4h
+    db 0Fh, 0A4h, 09h, 0A4h, 03h, 0A4h, 15h, 0A4h, 0A3h, 01h, 99h, 01h
+    db 95h, 01h, 9Dh, 01h, 0A0h, 01h, 1Bh, 0A4h, 0Fh, 0A4h, 09h, 0A4h
+    db 03h, 0A4h, 15h, 0A4h, 0A3h, 01h, 9Bh, 01h, 95h, 01h, 9Eh, 01h
+    db 9Dh, 81h, 1Bh, 0A4h, 0Fh, 0A4h, 09h, 0A4h, 03h, 0A4h, 15h, 0A4h
+    db 0A3h, 01h, 9Bh, 01h, 95h, 01h, 9Dh, 01h, 9Dh, 81h, 1Bh, 0A4h
+    db 0Fh, 0A4h, 09h, 0A4h, 03h, 0A4h, 15h, 0A4h, 0A3h, 01h, 9Bh, 01h
+    db 95h, 01h, 9Dh, 01h, 0A0h, 01h, 1Bh, 0A4h, 0Fh, 0A4h, 09h, 0A4h
+    db 03h, 0A4h, 15h, 0A4h, 0A2h, 01h, 9Ah, 01h, 98h, 01h, 9Ch, 01h
+    db 9Dh, 81h, 1Bh, 0A4h, 0Fh, 0A4h, 09h, 0A4h, 03h, 0A4h, 15h, 0A4h
+    db 0A2h, 01h, 9Ah, 01h, 97h, 01h, 9Eh, 01h, 9Dh, 81h, 1Bh, 0A4h
+    db 0Fh, 0A4h, 09h, 0A4h, 03h, 0A4h, 15h, 0A4h, 0A2h, 01h, 9Ah, 01h
+    db 97h, 01h, 9Dh, 01h, 9Eh, 81h, 1Bh, 0A4h, 0Fh, 0A4h, 09h, 0A4h
+    db 03h, 0A4h, 15h, 0A4h, 0A3h, 01h, 9Ah, 01h, 95h, 01h, 0A0h, 81h
+    db 9Dh, 81h, 1Bh, 0A4h, 0Fh, 0A4h, 09h, 0A4h, 15h, 0A4h, 03h, 0A4h
+    db 0A2h, 01h, 99h, 01h, 0F8h, 0E9h, 0A2h, 01h, 9Ah, 01h, 0FBh, 0EBh
+    db 0A2h, 01h, 9Bh, 01h, 0F6h, 0E8h, 0A1h, 01h, 99h, 01h, 0F6h, 0DBh
+    db 0A1h, 01h, 9Ah, 01h, 01h, 0DDh, 0A1h, 01h, 9Bh, 01h, 0F3h, 0DAh
+    db 0A3h, 01h, 99h, 01h, 0EDh, 0F0h, 0A3h, 01h, 9Ah, 01h, 0F0h, 0F2h
+    db 0A3h, 01h, 9Bh, 01h, 0EBh, 0F0h, 99h, 01h, 95h, 01h, 0FFh, 0E8h
+    db 9Ah, 01h, 95h, 01h, 0FBh, 0EAh, 9Bh, 01h, 95h, 01h, 0F8h, 0F7h
+    db 99h, 01h, 96h, 01h, 0FFh, 0E8h, 9Ah, 01h, 96h, 01h, 0FBh, 0EAh
+    db 9Bh, 01h, 96h, 01h, 0F8h, 0F7h, 99h, 01h, 97h, 01h, 0FFh, 0E8h
+    db 9Ah, 01h, 97h, 01h, 0FBh, 0EAh, 9Bh, 01h, 97h, 01h, 0F8h, 0F7h
+    db 99h, 01h, 98h, 01h, 0FFh, 0E8h, 9Ah, 01h, 98h, 01h, 0FBh, 0EAh
+    db 9Bh, 01h, 98h, 01h, 0F8h, 0F7h, 99h, 01h, 98h, 81h, 0FFh, 0E8h
+    db 9Ah, 01h, 98h, 81h, 0FBh, 0EAh, 9Bh, 01h, 98h, 81h, 0F8h, 0F7h
+    db 99h, 01h, 9Ch, 01h, 0E2h, 0ECh, 99h, 01h, 9Dh, 01h, 0DDh, 0F1h
+    db 99h, 01h, 9Eh, 01h, 0D6h, 0E9h, 99h, 01h, 9Fh, 01h, 0E8h, 0Ch
+    db 9Ah, 01h, 9Ch, 01h, 0E2h, 0ECh, 9Ah, 01h, 9Dh, 01h, 0E0h, 0F1h
+    db 9Ah, 01h, 9Eh, 01h, 0D4h, 0EAh, 9Ah, 01h, 9Fh, 01h, 0EAh, 0Fh
+    db 9Bh, 01h, 9Ch, 01h, 0DEh, 0F8h, 9Bh, 01h, 9Dh, 01h, 0DCh, 02h
+    db 9Bh, 01h, 9Eh, 01h, 0CEh, 0FBh, 9Bh, 01h, 9Fh, 01h, 0E6h, 1Dh
+    db 99h, 01h, 9Dh, 81h, 21h, 0EBh, 99h, 01h, 9Eh, 81h, 2Ch, 0E4h
+    db 99h, 01h, 0A0h, 01h, 12h, 10h, 9Ah, 01h, 9Dh, 81h, 18h, 0EEh
+    db 9Ah, 01h, 9Eh, 81h, 29h, 0EAh, 9Ah, 01h, 0A0h, 01h, 09h, 13h
+    db 9Bh, 01h, 9Dh, 81h, 1Ah, 0F9h, 9Bh, 01h, 9Eh, 81h, 29h, 0F3h
+    db 9Bh, 01h, 0A0h, 01h, 0Ch, 1Eh, 9Ah, 01h, 0A0h, 81h, 0ECh, 16h
+    db 38h, 01h, 3Ch, 01h, 56h, 00h, 3Eh, 01h, 49h, 01h, 6Fh, 00h
+    db 4Ah, 01h, 53h, 01h, 6Dh, 00h, 54h, 01h, 55h, 01h, 5Dh, 00h
+    db 56h, 01h, 58h, 01h, 5Ch, 00h, 59h, 01h, 5Ch, 01h, 68h, 00h
+    db 5Dh, 01h, 62h, 01h, 64h, 00h, 63h, 01h, 66h, 01h, 7Dh, 00h
+    db 67h, 01h, 6Dh, 01h, 6Ch, 00h, 6Eh, 01h, 71h, 01h, 6Fh, 00h
+    db 72h, 01h, 7Ah, 01h, 6Bh, 00h, 7Bh, 01h, 7Dh, 01h, 56h, 00h
+    db 7Eh, 01h, 81h, 01h, 5Ah, 00h, 82h, 01h, 8Bh, 01h, 51h, 00h
+    db 8Ch, 01h, 91h, 01h, 5Eh, 00h, 92h, 01h, 94h, 01h, 0A1h, 00h
+    db 0FFh, 0FFh, 91h, 00h, 91h, 00h, 92h, 00h, 92h, 00h, 93h, 00h
+    db 93h, 00h, 0F4h, 0FFh, 01h, 7Dh, 00h, 00h, 28h, 00h, 0FEh, 0FFh
+    db 26h, 00h, 26h, 00h, 26h, 00h, 26h, 00h, 25h, 00h, 25h, 00h
+    db 25h, 00h, 25h, 00h, 27h, 00h, 27h, 00h, 27h, 00h, 27h, 00h
+    db 25h, 00h, 25h, 00h, 25h, 00h, 25h, 00h, 0E0h, 0FFh, 00h, 7Dh
+    db 2Ah, 00h, 0FEh, 0FFh, 96h, 00h, 0FEh, 0FFh, 94h, 00h, 94h, 00h
+    db 94h, 00h, 95h, 00h, 95h, 00h, 95h, 00h, 96h, 00h, 96h, 00h
+    db 96h, 00h, 97h, 00h, 97h, 00h, 97h, 00h, 0E8h, 0FFh, 00h, 7Dh
+    db 94h, 00h, 0FEh, 0FFh, 01h, 7Dh, 01h, 00h, 05h, 00h, 0FEh, 0FFh
+    db 01h, 7Dh, 02h, 00h, 06h, 00h, 07h, 00h, 0FEh, 0FFh, 06h, 00h
+    db 0FEh, 0FFh, 00h, 7Dh, 11h, 00h, 0FEh, 0FFh, 01h, 7Dh, 03h, 00h
+    db 36h, 00h, 36h, 00h, 37h, 00h, 37h, 00h, 38h, 00h, 38h, 00h
+    db 39h, 00h, 39h, 00h, 06h, 00h, 0FEh, 0FFh, 07h, 00h, 0FEh, 0FFh
+    db 08h, 00h, 08h, 00h, 09h, 00h, 09h, 00h, 0Ah, 00h, 0Ah, 00h
+    db 0Bh, 00h, 0Bh, 00h, 0F0h, 0FFh, 10h, 00h, 10h, 00h, 0Ch, 00h
+    db 0Ch, 00h, 0Dh, 00h, 0Dh, 00h, 0Eh, 00h, 0Eh, 00h, 0Fh, 00h
+    db 0Fh, 00h, 0F0h, 0FFh, 00h, 7Dh, 11h, 00h, 0FEh, 0FFh, 01h, 7Dh
+    db 04h, 00h, 06h, 00h, 07h, 00h, 0FEh, 0FFh, 00h, 7Dh, 11h, 00h
+    db 0FEh, 0FFh, 01h, 7Dh, 05h, 00h, 12h, 00h, 13h, 00h, 0FCh, 0FFh
+    db 14h, 00h, 15h, 00h, 0FCh, 0FFh, 00h, 7Dh, 16h, 00h, 0FEh, 0FFh
     db 5Ch, 00h, 5Ch, 00h, 5Ch, 00h, 5Ch, 00h, 5Ah, 00h, 5Ah, 00h
     db 5Ah, 00h, 5Ah, 00h, 5Bh, 00h, 5Bh, 00h, 5Bh, 00h, 5Bh, 00h
-    db 0E8h, 0FFh, 5Ch, 00h, 0FEh, 0FFh, 00h, 7Dh, 5Ah, 00h, 0FEh, 0FFh
-    db 01h, 7Dh, 08h, 00h, 21h, 00h, 0FEh, 0FFh, 22h, 00h, 22h, 00h
-    db 22h, 00h, 22h, 00h, 24h, 00h, 0FEh, 0FFh, 24h, 00h, 24h, 00h
-    db 24h, 00h, 24h, 00h, 23h, 00h, 0FEh, 0FFh, 00h, 7Dh, 22h, 00h
-    db 0FEh, 0FFh, 1Dh, 00h, 0FEh, 0FFh, 1Ch, 00h, 0FEh, 0FFh, 1Dh, 00h
-    db 0FEh, 0FFh, 00h, 7Dh, 1Ch, 00h, 0FEh, 0FFh, 1Eh, 00h, 0FEh, 0FFh
-    db 1Fh, 00h, 1Fh, 00h, 20h, 00h, 20h, 00h, 1Eh, 00h, 1Eh, 00h
-    db 0F4h, 0FFh, 1Fh, 00h, 1Fh, 00h, 20h, 00h, 20h, 00h, 1Eh, 00h
-    db 1Eh, 00h, 0F4h, 0FFh, 00h, 7Dh, 1Eh, 00h, 0FEh, 0FFh, 25h, 00h
-    db 0FEh, 0FFh, 28h, 00h, 28h, 00h, 29h, 00h, 0FEh, 0FFh, 28h, 00h
-    db 0FEh, 0FFh, 00h, 7Dh, 2Ah, 00h, 0FEh, 0FFh, 54h, 00h, 54h, 00h
-    db 54h, 00h, 54h, 00h, 54h, 00h, 54h, 00h, 55h, 00h, 55h, 00h
-    db 55h, 00h, 55h, 00h, 55h, 00h, 55h, 00h, 0E8h, 0FFh, 57h, 00h
-    db 0FEh, 0FFh, 58h, 00h, 0FEh, 0FFh, 00h, 7Dh, 59h, 00h, 0FEh, 0FFh
-    db 01h, 7Dh, 09h, 00h, 17h, 00h, 17h, 00h, 18h, 00h, 18h, 00h
-    db 0F8h, 0FFh, 00h, 7Dh, 1Bh, 00h, 0FEh, 0FFh, 46h, 00h, 46h, 00h
-    db 47h, 00h, 47h, 00h, 48h, 00h, 48h, 00h, 0F4h, 0FFh, 00h, 7Dh
-    db 49h, 00h, 0FEh, 0FFh, 2Bh, 00h, 2Bh, 00h, 2Ch, 00h, 2Ch, 00h
-    db 2Dh, 00h, 2Dh, 00h, 0F4h, 0FFh, 00h, 7Dh, 2Eh, 00h, 0FEh, 0FFh
-    db 01h, 00h, 01h, 00h, 02h, 00h, 02h, 00h, 03h, 00h, 03h, 00h
-    db 02h, 00h, 02h, 00h, 0F0h, 0FFh, 00h, 7Dh, 04h, 00h, 0FEh, 0FFh
-    db 5Ah, 00h, 5Ah, 00h, 5Bh, 00h, 5Bh, 00h, 5Ch, 00h, 5Ch, 00h
-    db 0F4h, 0FFh, 00h, 7Dh, 5Ah, 00h, 0FEh, 0FFh, 81h, 00h, 81h, 00h
-    db 81h, 00h, 82h, 00h, 82h, 00h, 82h, 00h, 83h, 00h, 83h, 00h
-    db 83h, 00h, 0EEh, 0FFh, 00h, 7Dh, 84h, 00h, 84h, 00h, 85h, 00h
-    db 85h, 00h, 86h, 00h, 86h, 00h, 8Ah, 00h, 8Ah, 00h, 8Bh, 00h
-    db 8Bh, 00h, 87h, 00h, 87h, 00h, 0ECh, 0FFh, 01h, 7Dh, 0Ah, 00h
-    db 45h, 00h, 0FEh, 0FFh, 44h, 00h, 44h, 00h, 44h, 00h, 44h, 00h
-    db 43h, 00h, 43h, 00h, 43h, 00h, 43h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 03h, 00h, 03h, 00h, 03h, 00h, 03h, 40h
-    db 01h, 00h, 01h, 00h, 01h, 00h, 02h, 00h, 02h, 00h, 02h, 00h
-    db 03h, 00h, 03h, 00h, 03h, 00h, 02h, 00h, 02h, 00h, 02h, 00h
-    db 0E8h, 0FFh, 00h, 00h, 00h, 00h, 43h, 00h, 43h, 00h, 44h, 00h
-    db 44h, 00h, 45h, 40h, 45h, 00h, 0FEh, 0FFh, 00h, 7Dh, 04h, 00h
-    db 0FEh, 0FFh, 4Ah, 00h, 0FEh, 0FFh, 4Bh, 00h, 4Bh, 00h, 4Bh, 00h
-    db 4Ch, 00h, 4Ch, 00h, 4Ch, 00h, 4Dh, 00h, 4Dh, 00h, 4Dh, 00h
-    db 4Eh, 00h, 4Eh, 00h, 4Eh, 40h, 4Fh, 00h, 4Fh, 00h, 4Fh, 00h
-    db 50h, 00h, 50h, 00h, 50h, 00h, 51h, 00h, 51h, 00h, 51h, 00h
-    db 52h, 00h, 52h, 00h, 52h, 00h, 0E8h, 0FFh, 4Eh, 00h, 4Eh, 00h
-    db 4Dh, 00h, 4Dh, 00h, 4Ch, 00h, 4Ch, 00h, 4Bh, 00h, 4Bh, 00h
-    db 4Ah, 40h, 4Ah, 00h, 0FEh, 0FFh, 00h, 7Dh, 53h, 00h, 0FEh, 0FFh
-    db 3Ah, 00h, 0FEh, 0FFh, 3Ah, 00h, 3Ah, 00h, 3Ah, 00h, 3Bh, 00h
-    db 3Bh, 00h, 3Bh, 00h, 3Ch, 00h, 3Ch, 00h, 3Ch, 00h, 3Dh, 00h
-    db 3Dh, 00h, 3Dh, 40h, 3Eh, 00h, 3Eh, 00h, 3Eh, 00h, 3Fh, 00h
-    db 3Fh, 00h, 3Fh, 00h, 0F4h, 0FFh, 3Fh, 00h, 3Fh, 00h, 3Fh, 00h
-    db 40h, 00h, 40h, 00h, 40h, 00h, 41h, 00h, 41h, 00h, 41h, 00h
-    db 42h, 00h, 42h, 00h, 42h, 40h, 42h, 00h, 0FEh, 0FFh, 00h, 7Dh
-    db 3Fh, 00h, 0FEh, 0FFh, 01h, 7Dh, 0Bh, 00h, 2Fh, 00h, 2Fh, 00h
-    db 2Fh, 00h, 30h, 00h, 30h, 00h, 30h, 00h, 2Fh, 00h, 2Fh, 00h
-    db 2Fh, 00h, 30h, 00h, 30h, 00h, 30h, 00h, 2Fh, 00h, 2Fh, 00h
-    db 2Fh, 00h, 30h, 00h, 30h, 00h, 30h, 00h, 31h, 00h, 31h, 00h
-    db 32h, 00h, 32h, 40h, 33h, 00h, 33h, 00h, 34h, 00h, 34h, 00h
-    db 0F8h, 0FFh, 00h, 7Dh, 35h, 00h, 0FEh, 0FFh, 01h, 7Dh, 0Ch, 00h
-    db 80h, 00h, 88h, 00h, 89h, 00h, 0FCh, 0FFh, 00h, 7Dh, 84h, 00h
-    db 84h, 00h, 85h, 00h, 85h, 00h, 86h, 00h, 86h, 00h, 8Ah, 00h
-    db 8Ah, 00h, 8Bh, 00h, 8Bh, 00h, 87h, 00h, 87h, 00h, 0ECh, 0FFh
-    db 2Bh, 00h, 2Bh, 00h, 2Ch, 00h, 2Ch, 00h, 2Dh, 00h, 2Dh, 00h
-    db 0F4h, 0FFh, 00h, 7Dh, 2Eh, 00h, 0FEh, 0FFh, 3Eh, 00h, 3Eh, 00h
-    db 3Fh, 00h, 3Fh, 00h, 0F8h, 0FFh, 00h, 7Dh, 3Eh, 00h, 0FEh, 0FFh
-    db 57h, 00h, 57h, 00h, 58h, 00h, 58h, 00h, 0F8h, 0FFh, 00h, 7Dh
-    db 59h, 00h, 0FEh, 0FFh, 00h, 00h, 00h, 0Fh, 12h, 18h, 0Ch, 0Fh
-    db 15h, 09h, 0Ch, 12h, 00h, 0Fh, 12h, 0Ch, 0Ch, 12h, 00h, 00h
-    db 00h, 00h, 15h, 18h, 00h, 0Ch, 0Ch, 00h, 0Fh, 0Fh, 06h, 12h
-    db 12h, 00h, 09h, 0Ch, 00h, 0Ch, 12h, 00h, 0Fh, 18h, 00h, 12h
-    db 1Bh, 0Fh, 15h, 1Bh, 00h, 00h, 00h, 38h, 3Fh, 2Eh, 36h, 3Ah
-    db 24h, 35h, 35h, 1Bh, 30h, 2Ah, 14h, 2Bh, 1Fh, 0Dh, 26h, 14h
-    db 08h, 21h, 0Ah, 03h, 1Ch, 00h, 00h, 06h, 00h, 00h, 28h, 1Ch
-    db 14h, 0Eh, 0Ch, 0Eh, 06h, 0Ah, 0Ah, 3Ah, 12h, 20h, 3Ah, 12h
-    db 20h, 3Ah, 12h, 20h, 28h, 00h, 08h, 3Ch, 2Ch, 10h, 34h, 20h
-    db 00h, 38h, 30h, 28h, 3Ch, 34h, 20h, 3Ch, 38h, 28h, 3Ch, 3Ch
-    db 30h, 2Ch, 24h, 24h, 0Ch, 10h, 04h, 10h, 18h, 08h, 14h, 20h
-    db 0Ch, 1Ch, 28h, 1Ch, 20h, 2Ch, 20h, 24h, 34h, 24h, 2Ch, 3Ch
-    db 2Ch, 30h, 2Ch, 28h, 00h, 00h, 00h, 3Ch, 3Ch, 3Ch, 38h, 28h
-    db 20h, 28h, 18h, 10h, 20h, 10h, 08h, 14h, 10h, 14h, 18h, 00h
-    db 00h, 18h, 14h, 18h, 18h, 18h, 1Ch, 20h, 20h, 1Ch, 24h, 1Ch
-    db 1Ch, 28h, 20h, 18h, 18h, 24h, 18h, 14h, 0Ch, 14h, 38h, 38h
-    db 38h, 28h, 28h, 28h, 14h, 0Ch, 14h, 1Ch, 0Ch, 14h, 2Eh, 24h
-    db 1Eh, 32h, 28h, 20h, 35h, 2Eh, 25h, 35h, 2Eh, 25h, 38h, 34h
-    db 2Ch, 14h, 0Ch, 14h, 14h, 12h, 08h, 10h, 12h, 0Ah, 00h, 00h
-    db 00h, 38h, 34h, 2Ch, 18h, 0Ch, 10h, 14h, 10h, 14h, 14h, 10h
-    db 14h, 14h, 0Ch, 14h, 14h, 0Ch, 14h, 14h, 10h, 14h, 00h, 0Ah
-    db 14h, 0Eh, 06h, 10h, 06h, 00h, 00h, 06h, 00h, 00h, 06h, 00h
-    db 00h, 06h, 00h, 00h, 06h, 00h, 00h, 06h, 00h, 00h, 06h, 00h
-    db 00h, 06h, 00h, 00h, 06h, 00h, 00h, 06h, 00h, 00h, 06h, 00h
-    db 00h, 06h, 00h, 00h, 06h, 00h, 00h, 06h, 00h, 00h, 06h, 00h
-    db 00h, 06h, 00h, 00h, 06h, 00h, 00h, 06h, 00h, 00h, 06h, 00h
-    db 00h, 06h, 00h, 00h, 1Ch, 00h, 00h, 1Ch, 00h, 00h, 1Ch, 00h
-    db 00h, 1Ch, 00h, 00h, 1Ch, 00h, 00h, 1Ch, 00h, 00h, 1Ch, 00h
-    db 00h, 1Ch, 00h, 00h, 1Ch, 00h, 00h, 1Ch, 00h, 00h, 1Ch, 00h
-    db 00h, 1Ch, 00h, 00h, 1Ch, 00h, 00h, 1Ch, 00h, 00h, 1Ch, 00h
-    db 00h, 1Ch, 00h, 00h, 1Ch, 00h, 00h, 1Ch, 00h, 00h, 1Ch, 00h
-    db 00h, 1Ch, 00h, 00h, 1Ch, 00h, 00h, 21h, 0Ah, 03h, 21h, 09h
-    db 03h, 21h, 09h, 03h, 21h, 09h, 03h, 21h, 09h, 03h, 21h, 09h
-    db 03h, 21h, 09h, 03h, 21h, 09h, 03h, 21h, 09h, 03h, 21h, 09h
-    db 03h, 21h, 09h, 03h, 21h, 09h, 03h, 21h, 09h, 03h, 21h, 09h
-    db 03h, 21h, 09h, 03h, 21h, 09h, 03h, 21h, 09h, 03h, 21h, 09h
-    db 03h, 21h, 09h, 03h, 26h, 14h, 08h, 26h, 14h, 08h, 26h, 14h
-    db 08h, 26h, 14h, 08h, 26h, 14h, 08h, 26h, 14h, 08h, 26h, 14h
-    db 08h, 26h, 14h, 08h, 26h, 14h, 08h, 26h, 14h, 08h, 26h, 14h
-    db 08h, 26h, 14h, 08h, 26h, 14h, 08h, 26h, 14h, 08h, 26h, 14h
-    db 08h, 26h, 14h, 08h, 26h, 14h, 08h, 26h, 14h, 08h, 26h, 14h
-    db 08h, 26h, 14h, 08h, 2Bh, 1Fh, 0Dh, 2Bh, 1Eh, 0Dh, 2Bh, 1Eh
-    db 0Dh, 2Bh, 1Eh, 0Dh, 2Bh, 1Eh, 0Dh, 2Bh, 1Eh, 0Dh, 2Bh, 1Eh
-    db 0Dh, 2Bh, 1Eh, 0Dh, 2Bh, 1Eh, 0Dh, 2Bh, 1Eh, 0Dh, 2Bh, 1Eh
-    db 0Dh, 2Bh, 1Eh, 0Dh, 2Bh, 1Eh, 0Dh, 2Bh, 1Eh, 0Dh, 2Bh, 1Eh
-    db 0Dh, 2Bh, 1Eh, 0Dh, 2Bh, 1Eh, 0Dh, 2Bh, 1Eh, 0Dh, 2Bh, 1Eh
-    db 0Dh, 2Bh, 1Eh, 0Dh, 30h, 2Ah, 14h, 30h, 29h, 14h, 30h, 29h
-    db 14h, 30h, 29h, 14h, 30h, 29h, 14h, 30h, 29h, 14h, 30h, 29h
-    db 14h, 30h, 29h, 14h, 30h, 29h, 14h, 30h, 29h, 14h, 30h, 29h
-    db 14h, 30h, 29h, 14h, 30h, 29h, 14h, 30h, 29h, 14h, 30h, 29h
-    db 14h, 30h, 29h, 14h, 30h, 29h, 14h, 30h, 29h, 14h, 30h, 29h
-    db 14h, 30h, 29h, 14h, 35h, 35h, 1Bh, 35h, 34h, 1Bh, 35h, 34h
-    db 1Bh, 35h, 34h, 1Bh, 35h, 34h, 1Bh, 35h, 34h, 1Bh, 35h, 34h
-    db 1Bh, 35h, 34h, 1Bh, 35h, 34h, 1Bh, 35h, 34h, 1Bh, 35h, 34h
-    db 1Bh, 35h, 34h, 1Bh, 35h, 34h, 1Bh, 35h, 34h, 1Bh, 35h, 34h
-    db 1Bh, 35h, 34h, 1Bh, 35h, 34h, 1Bh, 35h, 34h, 1Bh, 35h, 34h
-    db 1Bh, 35h, 34h, 1Bh, 36h, 3Ah, 24h, 36h, 3Ah, 24h, 36h, 3Ah
-    db 24h, 36h, 3Ah, 24h, 36h, 3Ah, 24h, 36h, 3Ah, 24h, 36h, 3Ah
-    db 24h, 36h, 3Ah, 24h, 36h, 3Ah, 24h, 36h, 3Ah, 24h, 36h, 3Ah
-    db 24h, 36h, 3Ah, 24h, 36h, 3Ah, 24h, 36h, 3Ah, 24h, 36h, 3Ah
-    db 24h, 36h, 3Ah, 24h, 36h, 3Ah, 24h, 36h, 3Ah, 24h, 36h, 3Ah
-    db 24h, 36h, 3Ah, 24h, 38h, 3Fh, 2Eh, 38h, 3Fh, 2Eh, 38h, 3Fh
-    db 2Eh, 38h, 3Fh, 2Eh, 38h, 3Fh, 2Eh, 38h, 3Fh, 2Eh, 38h, 3Fh
-    db 2Eh, 38h, 3Fh, 2Eh, 38h, 3Fh, 2Eh, 38h, 3Fh, 2Eh, 38h, 3Fh
-    db 2Eh, 38h, 3Fh, 2Eh, 38h, 3Fh, 2Eh, 38h, 3Fh, 2Eh, 38h, 3Fh
-    db 2Eh, 38h, 3Fh, 2Eh, 38h, 3Fh, 2Eh, 38h, 3Fh, 2Eh, 38h, 3Fh
-    db 2Eh, 38h, 3Fh, 2Eh, 3Ah, 12h, 22h, 3Ah, 12h, 22h, 3Ah, 12h
-    db 22h, 3Ah, 12h, 22h, 3Ah, 12h, 22h, 3Ah, 12h, 22h, 3Ah, 12h
-    db 22h, 3Fh, 3Fh, 3Fh, 00h, 00h, 00h, 00h, 38h, 28h, 20h, 28h
-    db 18h, 10h, 20h, 10h, 08h, 04h, 00h, 1Ch, 28h, 00h, 08h, 00h
-    db 04h, 10h, 38h, 30h, 08h, 00h, 14h, 00h, 00h, 20h, 00h, 08h
-    db 30h, 08h, 34h, 20h, 14h, 00h, 10h, 24h, 14h, 20h, 24h, 20h
-    db 28h, 2Ch, 38h, 38h, 38h, 47h, 41h, 4Dh, 45h, 4Fh, 56h, 45h
-    db 52h, 01h, 00h, 01h, 00h, 02h, 00h, 02h, 00h, 03h, 00h, 03h
-    db 00h, 02h, 00h, 02h, 00h, 0F0h, 0FFh, 26h, 00h, 26h, 00h, 26h
-    db 00h, 26h, 00h, 25h, 00h, 25h, 00h, 25h, 00h, 25h, 00h, 27h
-    db 00h, 27h, 00h, 27h, 00h, 27h, 00h, 25h, 00h, 25h, 00h, 25h
-    db 00h, 25h, 00h, 0E0h, 0FFh, 81h, 00h, 81h, 00h, 81h, 00h, 82h
-    db 00h, 82h, 00h, 82h, 00h, 83h, 00h, 83h, 00h, 83h, 00h, 0EEh
-    db 0FFh, 2Dh, 2Dh, 31h, 32h, 33h, 34h, 35h, 36h, 37h, 38h, 39h
-    db 30h, 2Dh, 2Dh, 2Dh, 2Dh, 41h, 2Dh, 45h, 2Dh, 2Dh, 2Dh, 2Dh
-    db 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 41h, 2Dh, 44h, 46h, 2Dh
-    db 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 43h
-    db 2Dh, 42h, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh
+    db 0E8h, 0FFh, 5Ch, 00h, 5Ch, 00h, 5Ch, 00h, 5Ah, 00h, 5Ah, 00h
+    db 5Ah, 00h, 5Bh, 00h, 5Bh, 00h, 5Bh, 00h, 0EEh, 0FFh, 00h, 7Dh
+    db 5Bh, 00h, 0FEh, 0FFh, 01h, 7Dh, 06h, 00h, 12h, 00h, 13h, 00h
+    db 0FCh, 0FFh, 00h, 7Dh, 16h, 00h, 0FEh, 0FFh, 8Dh, 00h, 8Dh, 00h
+    db 8Dh, 00h, 8Eh, 00h, 8Eh, 00h, 8Eh, 00h, 8Fh, 00h, 8Fh, 00h
+    db 8Fh, 00h, 8Eh, 00h, 8Eh, 00h, 8Eh, 00h, 0E8h, 0FFh, 00h, 7Dh
+    db 90h, 00h, 0FEh, 0FFh, 01h, 7Dh, 07h, 00h, 12h, 00h, 13h, 00h
+    db 0FCh, 0FFh, 12h, 00h, 13h, 00h, 0FCh, 0FFh, 00h, 7Dh, 16h, 00h
+    db 0FEh, 0FFh, 5Ch, 00h, 5Ch, 00h, 5Ch, 00h, 5Ch, 00h, 5Ah, 00h
+    db 5Ah, 00h, 5Ah, 00h, 5Ah, 00h, 5Bh, 00h, 5Bh, 00h, 5Bh, 00h
+    db 5Bh, 00h, 0E8h, 0FFh, 5Ch, 00h, 0FEh, 0FFh, 00h, 7Dh, 5Ah, 00h
+    db 0FEh, 0FFh, 01h, 7Dh, 08h, 00h, 21h, 00h, 0FEh, 0FFh, 22h, 00h
+    db 22h, 00h, 22h, 00h, 22h, 00h, 24h, 00h, 0FEh, 0FFh, 24h, 00h
+    db 24h, 00h, 24h, 00h, 24h, 00h, 23h, 00h, 0FEh, 0FFh, 00h, 7Dh
+    db 22h, 00h, 0FEh, 0FFh, 1Dh, 00h, 0FEh, 0FFh, 1Ch, 00h, 0FEh, 0FFh
+    db 1Dh, 00h, 0FEh, 0FFh, 00h, 7Dh, 1Ch, 00h, 0FEh, 0FFh, 1Eh, 00h
+    db 0FEh, 0FFh, 1Fh, 00h, 1Fh, 00h, 20h, 00h, 20h, 00h, 1Eh, 00h
+    db 1Eh, 00h, 0F4h, 0FFh, 1Fh, 00h, 1Fh, 00h, 20h, 00h, 20h, 00h
+    db 1Eh, 00h, 1Eh, 00h, 0F4h, 0FFh, 00h, 7Dh, 1Eh, 00h, 0FEh, 0FFh
+    db 25h, 00h, 0FEh, 0FFh, 28h, 00h, 28h, 00h, 29h, 00h, 0FEh, 0FFh
+    db 28h, 00h, 0FEh, 0FFh, 00h, 7Dh, 2Ah, 00h, 0FEh, 0FFh, 54h, 00h
+    db 54h, 00h, 54h, 00h, 54h, 00h, 54h, 00h, 54h, 00h, 55h, 00h
+    db 55h, 00h, 55h, 00h, 55h, 00h, 55h, 00h, 55h, 00h, 0E8h, 0FFh
+    db 57h, 00h, 0FEh, 0FFh, 58h, 00h, 0FEh, 0FFh, 00h, 7Dh, 59h, 00h
+    db 0FEh, 0FFh, 01h, 7Dh, 09h, 00h, 17h, 00h, 17h, 00h, 18h, 00h
+    db 18h, 00h, 0F8h, 0FFh, 00h, 7Dh, 1Bh, 00h, 0FEh, 0FFh, 46h, 00h
+    db 46h, 00h, 47h, 00h, 47h, 00h, 48h, 00h, 48h, 00h, 0F4h, 0FFh
+    db 00h, 7Dh, 49h, 00h, 0FEh, 0FFh, 2Bh, 00h, 2Bh, 00h, 2Ch, 00h
+    db 2Ch, 00h, 2Dh, 00h, 2Dh, 00h, 0F4h, 0FFh, 00h, 7Dh, 2Eh, 00h
+    db 0FEh, 0FFh, 01h, 00h, 01h, 00h, 02h, 00h, 02h, 00h, 03h, 00h
+    db 03h, 00h, 02h, 00h, 02h, 00h, 0F0h, 0FFh, 00h, 7Dh, 04h, 00h
+    db 0FEh, 0FFh, 5Ah, 00h, 5Ah, 00h, 5Bh, 00h, 5Bh, 00h, 5Ch, 00h
+    db 5Ch, 00h, 0F4h, 0FFh, 00h, 7Dh, 5Ah, 00h, 0FEh, 0FFh, 81h, 00h
+    db 81h, 00h, 81h, 00h, 82h, 00h, 82h, 00h, 82h, 00h, 83h, 00h
+    db 83h, 00h, 83h, 00h, 0EEh, 0FFh, 00h, 7Dh, 84h, 00h, 84h, 00h
+    db 85h, 00h, 85h, 00h, 86h, 00h, 86h, 00h, 8Ah, 00h, 8Ah, 00h
+    db 8Bh, 00h, 8Bh, 00h, 87h, 00h, 87h, 00h, 0ECh, 0FFh, 01h, 7Dh
+    db 0Ah, 00h, 45h, 00h, 0FEh, 0FFh, 44h, 00h, 44h, 00h, 44h, 00h
+    db 44h, 00h, 43h, 00h, 43h, 00h, 43h, 00h, 43h, 00h, 00h, 00h
+    db 00h, 00h, 00h, 00h, 00h, 00h, 03h, 00h, 03h, 00h, 03h, 00h
+    db 03h, 40h, 01h, 00h, 01h, 00h, 01h, 00h, 02h, 00h, 02h, 00h
+    db 02h, 00h, 03h, 00h, 03h, 00h, 03h, 00h, 02h, 00h, 02h, 00h
+    db 02h, 00h, 0E8h, 0FFh, 00h, 00h, 00h, 00h, 43h, 00h, 43h, 00h
+    db 44h, 00h, 44h, 00h, 45h, 40h, 45h, 00h, 0FEh, 0FFh, 00h, 7Dh
+    db 04h, 00h, 0FEh, 0FFh, 4Ah, 00h, 0FEh, 0FFh, 4Bh, 00h, 4Bh, 00h
+    db 4Bh, 00h, 4Ch, 00h, 4Ch, 00h, 4Ch, 00h, 4Dh, 00h, 4Dh, 00h
+    db 4Dh, 00h, 4Eh, 00h, 4Eh, 00h, 4Eh, 40h, 4Fh, 00h, 4Fh, 00h
+    db 4Fh, 00h, 50h, 00h, 50h, 00h, 50h, 00h, 51h, 00h, 51h, 00h
+    db 51h, 00h, 52h, 00h, 52h, 00h, 52h, 00h, 0E8h, 0FFh, 4Eh, 00h
+    db 4Eh, 00h, 4Dh, 00h, 4Dh, 00h, 4Ch, 00h, 4Ch, 00h, 4Bh, 00h
+    db 4Bh, 00h, 4Ah, 40h, 4Ah, 00h, 0FEh, 0FFh, 00h, 7Dh, 53h, 00h
+    db 0FEh, 0FFh, 3Ah, 00h, 0FEh, 0FFh, 3Ah, 00h, 3Ah, 00h, 3Ah, 00h
+    db 3Bh, 00h, 3Bh, 00h, 3Bh, 00h, 3Ch, 00h, 3Ch, 00h, 3Ch, 00h
+    db 3Dh, 00h, 3Dh, 00h, 3Dh, 40h, 3Eh, 00h, 3Eh, 00h, 3Eh, 00h
+    db 3Fh, 00h, 3Fh, 00h, 3Fh, 00h, 0F4h, 0FFh, 3Fh, 00h, 3Fh, 00h
+    db 3Fh, 00h, 40h, 00h, 40h, 00h, 40h, 00h, 41h, 00h, 41h, 00h
+    db 41h, 00h, 42h, 00h, 42h, 00h, 42h, 40h, 42h, 00h, 0FEh, 0FFh
+    db 00h, 7Dh, 3Fh, 00h, 0FEh, 0FFh, 01h, 7Dh, 0Bh, 00h, 2Fh, 00h
+    db 2Fh, 00h, 2Fh, 00h, 30h, 00h, 30h, 00h, 30h, 00h, 2Fh, 00h
+    db 2Fh, 00h, 2Fh, 00h, 30h, 00h, 30h, 00h, 30h, 00h, 2Fh, 00h
+    db 2Fh, 00h, 2Fh, 00h, 30h, 00h, 30h, 00h, 30h, 00h, 31h, 00h
+    db 31h, 00h, 32h, 00h, 32h, 40h, 33h, 00h, 33h, 00h, 34h, 00h
+    db 34h, 00h, 0F8h, 0FFh, 00h, 7Dh, 35h, 00h, 0FEh, 0FFh, 01h, 7Dh
+    db 0Ch, 00h, 80h, 00h, 88h, 00h, 89h, 00h, 0FCh, 0FFh, 00h, 7Dh
+    db 84h, 00h, 84h, 00h, 85h, 00h, 85h, 00h, 86h, 00h, 86h, 00h
+    db 8Ah, 00h, 8Ah, 00h, 8Bh, 00h, 8Bh, 00h, 87h, 00h, 87h, 00h
+    db 0ECh, 0FFh, 2Bh, 00h, 2Bh, 00h, 2Ch, 00h, 2Ch, 00h, 2Dh, 00h
+    db 2Dh, 00h, 0F4h, 0FFh, 00h, 7Dh, 2Eh, 00h, 0FEh, 0FFh, 3Eh, 00h
+    db 3Eh, 00h, 3Fh, 00h, 3Fh, 00h, 0F8h, 0FFh, 00h, 7Dh, 3Eh, 00h
+    db 0FEh, 0FFh, 57h, 00h, 57h, 00h, 58h, 00h, 58h, 00h, 0F8h, 0FFh
+    db 00h, 7Dh, 59h, 00h, 0FEh, 0FFh, 00h, 00h, 00h, 0Fh, 12h, 18h
+    db 0Ch, 0Fh, 15h, 09h, 0Ch, 12h, 00h, 0Fh, 12h, 0Ch, 0Ch, 12h
+    db 00h, 00h, 00h, 00h, 15h, 18h, 00h, 0Ch, 0Ch, 00h, 0Fh, 0Fh
+    db 06h, 12h, 12h, 00h, 09h, 0Ch, 00h, 0Ch, 12h, 00h, 0Fh, 18h
+    db 00h, 12h, 1Bh, 0Fh, 15h, 1Bh, 00h, 00h, 00h, 38h, 3Fh, 2Eh
+    db 36h, 3Ah, 24h, 35h, 35h, 1Bh, 30h, 2Ah, 14h, 2Bh, 1Fh, 0Dh
+    db 26h, 14h, 08h, 21h, 0Ah, 03h, 1Ch, 00h, 00h, 06h, 00h, 00h
+    db 28h, 1Ch, 14h, 0Eh, 0Ch, 0Eh, 06h, 0Ah, 0Ah, 3Ah, 12h, 20h
+    db 3Ah, 12h, 20h, 3Ah, 12h, 20h, 28h, 00h, 08h, 3Ch, 2Ch, 10h
+    db 34h, 20h, 00h, 38h, 30h, 28h, 3Ch, 34h, 20h, 3Ch, 38h, 28h
+    db 3Ch, 3Ch, 30h, 2Ch, 24h, 24h, 0Ch, 10h, 04h, 10h, 18h, 08h
+    db 14h, 20h, 0Ch, 1Ch, 28h, 1Ch, 20h, 2Ch, 20h, 24h, 34h, 24h
+    db 2Ch, 3Ch, 2Ch, 30h, 2Ch, 28h, 00h, 00h, 00h, 3Ch, 3Ch, 3Ch
+    db 38h, 28h, 20h, 28h, 18h, 10h, 20h, 10h, 08h, 14h, 10h, 14h
+    db 18h, 00h, 00h, 18h, 14h, 18h, 18h, 18h, 1Ch, 20h, 20h, 1Ch
+    db 24h, 1Ch, 1Ch, 28h, 20h, 18h, 18h, 24h, 18h, 14h, 0Ch, 14h
+    db 38h, 38h, 38h, 28h, 28h, 28h, 14h, 0Ch, 14h, 1Ch, 0Ch, 14h
+    db 2Eh, 24h, 1Eh, 32h, 28h, 20h, 35h, 2Eh, 25h, 35h, 2Eh, 25h
+    db 38h, 34h, 2Ch, 14h, 0Ch, 14h, 14h, 12h, 08h, 10h, 12h, 0Ah
+    db 00h, 00h, 00h, 38h, 34h, 2Ch, 18h, 0Ch, 10h, 14h, 10h, 14h
+    db 14h, 10h, 14h, 14h, 0Ch, 14h, 14h, 0Ch, 14h, 14h, 10h, 14h
+    db 00h, 0Ah, 14h, 0Eh, 06h, 10h, 06h, 00h, 00h, 06h, 00h, 00h
+    db 06h, 00h, 00h, 06h, 00h, 00h, 06h, 00h, 00h, 06h, 00h, 00h
+    db 06h, 00h, 00h, 06h, 00h, 00h, 06h, 00h, 00h, 06h, 00h, 00h
+    db 06h, 00h, 00h, 06h, 00h, 00h, 06h, 00h, 00h, 06h, 00h, 00h
+    db 06h, 00h, 00h, 06h, 00h, 00h, 06h, 00h, 00h, 06h, 00h, 00h
+    db 06h, 00h, 00h, 06h, 00h, 00h, 1Ch, 00h, 00h, 1Ch, 00h, 00h
+    db 1Ch, 00h, 00h, 1Ch, 00h, 00h, 1Ch, 00h, 00h, 1Ch, 00h, 00h
+    db 1Ch, 00h, 00h, 1Ch, 00h, 00h, 1Ch, 00h, 00h, 1Ch, 00h, 00h
+    db 1Ch, 00h, 00h, 1Ch, 00h, 00h, 1Ch, 00h, 00h, 1Ch, 00h, 00h
+    db 1Ch, 00h, 00h, 1Ch, 00h, 00h, 1Ch, 00h, 00h, 1Ch, 00h, 00h
+    db 1Ch, 00h, 00h, 1Ch, 00h, 00h, 1Ch, 00h, 00h, 21h, 0Ah, 03h
+    db 21h, 09h, 03h, 21h, 09h, 03h, 21h, 09h, 03h, 21h, 09h, 03h
+    db 21h, 09h, 03h, 21h, 09h, 03h, 21h, 09h, 03h, 21h, 09h, 03h
+    db 21h, 09h, 03h, 21h, 09h, 03h, 21h, 09h, 03h, 21h, 09h, 03h
+    db 21h, 09h, 03h, 21h, 09h, 03h, 21h, 09h, 03h, 21h, 09h, 03h
+    db 21h, 09h, 03h, 21h, 09h, 03h, 26h, 14h, 08h, 26h, 14h, 08h
+    db 26h, 14h, 08h, 26h, 14h, 08h, 26h, 14h, 08h, 26h, 14h, 08h
+    db 26h, 14h, 08h, 26h, 14h, 08h, 26h, 14h, 08h, 26h, 14h, 08h
+    db 26h, 14h, 08h, 26h, 14h, 08h, 26h, 14h, 08h, 26h, 14h, 08h
+    db 26h, 14h, 08h, 26h, 14h, 08h, 26h, 14h, 08h, 26h, 14h, 08h
+    db 26h, 14h, 08h, 26h, 14h, 08h, 2Bh, 1Fh, 0Dh, 2Bh, 1Eh, 0Dh
+    db 2Bh, 1Eh, 0Dh, 2Bh, 1Eh, 0Dh, 2Bh, 1Eh, 0Dh, 2Bh, 1Eh, 0Dh
+    db 2Bh, 1Eh, 0Dh, 2Bh, 1Eh, 0Dh, 2Bh, 1Eh, 0Dh, 2Bh, 1Eh, 0Dh
+    db 2Bh, 1Eh, 0Dh, 2Bh, 1Eh, 0Dh, 2Bh, 1Eh, 0Dh, 2Bh, 1Eh, 0Dh
+    db 2Bh, 1Eh, 0Dh, 2Bh, 1Eh, 0Dh, 2Bh, 1Eh, 0Dh, 2Bh, 1Eh, 0Dh
+    db 2Bh, 1Eh, 0Dh, 2Bh, 1Eh, 0Dh, 30h, 2Ah, 14h, 30h, 29h, 14h
+    db 30h, 29h, 14h, 30h, 29h, 14h, 30h, 29h, 14h, 30h, 29h, 14h
+    db 30h, 29h, 14h, 30h, 29h, 14h, 30h, 29h, 14h, 30h, 29h, 14h
+    db 30h, 29h, 14h, 30h, 29h, 14h, 30h, 29h, 14h, 30h, 29h, 14h
+    db 30h, 29h, 14h, 30h, 29h, 14h, 30h, 29h, 14h, 30h, 29h, 14h
+    db 30h, 29h, 14h, 30h, 29h, 14h, 35h, 35h, 1Bh, 35h, 34h, 1Bh
+    db 35h, 34h, 1Bh, 35h, 34h, 1Bh, 35h, 34h, 1Bh, 35h, 34h, 1Bh
+    db 35h, 34h, 1Bh, 35h, 34h, 1Bh, 35h, 34h, 1Bh, 35h, 34h, 1Bh
+    db 35h, 34h, 1Bh, 35h, 34h, 1Bh, 35h, 34h, 1Bh, 35h, 34h, 1Bh
+    db 35h, 34h, 1Bh, 35h, 34h, 1Bh, 35h, 34h, 1Bh, 35h, 34h, 1Bh
+    db 35h, 34h, 1Bh, 35h, 34h, 1Bh, 36h, 3Ah, 24h, 36h, 3Ah, 24h
+    db 36h, 3Ah, 24h, 36h, 3Ah, 24h, 36h, 3Ah, 24h, 36h, 3Ah, 24h
+    db 36h, 3Ah, 24h, 36h, 3Ah, 24h, 36h, 3Ah, 24h, 36h, 3Ah, 24h
+    db 36h, 3Ah, 24h, 36h, 3Ah, 24h, 36h, 3Ah, 24h, 36h, 3Ah, 24h
+    db 36h, 3Ah, 24h, 36h, 3Ah, 24h, 36h, 3Ah, 24h, 36h, 3Ah, 24h
+    db 36h, 3Ah, 24h, 36h, 3Ah, 24h, 38h, 3Fh, 2Eh, 38h, 3Fh, 2Eh
+    db 38h, 3Fh, 2Eh, 38h, 3Fh, 2Eh, 38h, 3Fh, 2Eh, 38h, 3Fh, 2Eh
+    db 38h, 3Fh, 2Eh, 38h, 3Fh, 2Eh, 38h, 3Fh, 2Eh, 38h, 3Fh, 2Eh
+    db 38h, 3Fh, 2Eh, 38h, 3Fh, 2Eh, 38h, 3Fh, 2Eh, 38h, 3Fh, 2Eh
+    db 38h, 3Fh, 2Eh, 38h, 3Fh, 2Eh, 38h, 3Fh, 2Eh, 38h, 3Fh, 2Eh
+    db 38h, 3Fh, 2Eh, 38h, 3Fh, 2Eh, 3Ah, 12h, 22h, 3Ah, 12h, 22h
+    db 3Ah, 12h, 22h, 3Ah, 12h, 22h, 3Ah, 12h, 22h, 3Ah, 12h, 22h
+    db 3Ah, 12h, 22h, 3Fh, 3Fh, 3Fh, 00h, 00h, 00h, 00h, 38h, 28h
+    db 20h, 28h, 18h, 10h, 20h, 10h, 08h, 04h, 00h, 1Ch, 28h, 00h
+    db 08h, 00h, 04h, 10h, 38h, 30h, 08h, 00h, 14h, 00h, 00h, 20h
+    db 00h, 08h, 30h, 08h, 34h, 20h, 14h, 00h, 10h, 24h, 14h, 20h
+    db 24h, 20h, 28h, 2Ch, 38h, 38h, 38h, 47h, 41h, 4Dh, 45h, 4Fh
+    db 56h, 45h, 52h, 01h, 00h, 01h, 00h, 02h, 00h, 02h, 00h, 03h
+    db 00h, 03h, 00h, 02h, 00h, 02h, 00h, 0F0h, 0FFh, 26h, 00h, 26h
+    db 00h, 26h, 00h, 26h, 00h, 25h, 00h, 25h, 00h, 25h, 00h, 25h
+    db 00h, 27h, 00h, 27h, 00h, 27h, 00h, 27h, 00h, 25h, 00h, 25h
+    db 00h, 25h, 00h, 25h, 00h, 0E0h, 0FFh, 81h, 00h, 81h, 00h, 81h
+    db 00h, 82h, 00h, 82h, 00h, 82h, 00h, 83h, 00h, 83h, 00h, 83h
+    db 00h, 0EEh, 0FFh, 2Dh, 2Dh, 31h, 32h, 33h, 34h, 35h, 36h, 37h
+    db 38h, 39h, 30h, 2Dh, 2Dh, 2Dh, 2Dh, 41h, 2Dh, 45h, 2Dh, 2Dh
+    db 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 41h, 2Dh, 44h
+    db 46h, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh
+    db 2Dh, 43h, 2Dh, 42h, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh
     db 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh
     db 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh
     db 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh
     db 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh
     db 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh
-    db 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 00h, 00h, 00h
-    db 38h, 28h, 20h, 28h, 18h, 10h, 20h, 10h, 08h, 10h, 28h, 38h
-    db 28h, 00h, 08h, 00h, 00h, 00h, 38h, 30h, 08h, 00h, 14h, 00h
-    db 00h, 20h, 00h, 08h, 30h, 08h, 34h, 20h, 14h, 14h, 18h, 1Ch
-    db 1Ch, 20h, 24h, 28h, 28h, 2Ch, 38h, 38h, 38h, 08h, 10h, 1Ch
-    db 00h, 04h, 04h, 0Ch, 14h, 20h, 10h, 18h, 20h, 38h, 30h, 08h
-    db 38h, 30h, 08h, 38h, 30h, 08h, 38h, 30h, 08h, 34h, 20h, 14h
-    db 34h, 20h, 14h, 34h, 20h, 14h, 34h, 20h, 14h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 05h, 00h, 55h
-    db 00h, 51h, 00h, 5Fh, 00h, 78h, 00h, 7Fh, 00h, 98h, 00h, 93h
-    db 00h, 0E9h, 00h, 8Ah, 00h, 49h, 01h, 71h, 00h, 0A9h, 01h, 6Ah
-    db 00h, 14h, 02h, 0B2h, 00h, 5Eh, 02h, 6Ch, 00h, 5Eh, 02h, 50h
-    db 00h, 5Bh, 5Bh, 5Bh, 5Bh, 00h, 45h, 4Eh, 54h, 45h, 52h, 20h
-    db 43h, 4Fh, 44h, 45h, 00h, 4Dh, 4Fh, 44h, 45h, 00h, 42h, 45h
-    db 47h, 49h, 4Eh, 4Eh, 45h, 52h, 00h, 20h, 45h, 58h, 50h, 45h
-    db 52h, 54h, 20h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+    db 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 2Dh, 00h
+    db 00h, 00h, 38h, 28h, 20h, 28h, 18h, 10h, 20h, 10h, 08h, 10h
+    db 28h, 38h, 28h, 00h, 08h, 00h, 00h, 00h, 38h, 30h, 08h, 00h
+    db 14h, 00h, 00h, 20h, 00h, 08h, 30h, 08h, 34h, 20h, 14h, 14h
+    db 18h, 1Ch, 1Ch, 20h, 24h, 28h, 28h, 2Ch, 38h, 38h, 38h, 08h
+    db 10h, 1Ch, 00h, 04h, 04h, 0Ch, 14h, 20h, 10h, 18h, 20h, 38h
+    db 30h, 08h, 38h, 30h, 08h, 38h, 30h, 08h, 38h, 30h, 08h, 34h
+    db 20h, 14h, 34h, 20h, 14h, 34h, 20h, 14h, 34h, 20h, 14h, 00h
+    db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
+word_B148 label word
+; UNKNOWN: not yet classified as code or data
+    db 05h, 00h
+word_B14A label word
+; UNKNOWN: not yet classified as code or data
+    db 55h, 00h, 51h, 00h, 5Fh, 00h, 78h, 00h, 7Fh, 00h, 98h, 00h
+    db 93h, 00h, 0E9h, 00h, 8Ah, 00h, 49h, 01h, 71h, 00h, 0A9h, 01h
+    db 6Ah, 00h, 14h, 02h, 0B2h, 00h, 5Eh, 02h, 6Ch, 00h, 5Eh, 02h
+    db 50h, 00h, 5Bh, 5Bh, 5Bh, 5Bh, 00h, 45h, 4Eh, 54h, 45h, 52h
+    db 20h, 43h, 4Fh, 44h, 45h, 00h, 4Dh, 4Fh, 44h, 45h, 00h, 42h
+    db 45h, 47h, 49h, 4Eh, 4Eh, 45h, 52h, 00h, 20h, 45h, 58h, 50h
+    db 45h, 52h, 54h, 20h, 00h
+byte_B197 label byte
+; UNKNOWN: not yet classified as code or data
     db 00h
-    db 16 dup(?)
+byte_B198 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+word_B199 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_B19B label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_B19D label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_B19F label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_B1A1 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+word_B1A3 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+byte_B1A5 label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h, 00h
+word_B1A8 label word
+; UNKNOWN: not yet classified as code or data
+    db 00h, 00h
+byte_B1AA label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+byte_B1AB label byte
+; UNKNOWN: not yet classified as code or data
+    db 00h
+    db 2 dup(?)
+word_B1AE label word
+    db 4 dup(?)
+byte_B1B2 label byte
+    db 9 dup(?)
+byte_B1BB label byte
+    db 1 dup(?)
 DATA ends
 end sub_0008

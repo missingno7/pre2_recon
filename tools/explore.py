@@ -73,8 +73,8 @@ def table_entries(img, seg, off, n):
     return [word(img, base + off + 2*i) for i in range(n)]
 
 def all_seeds(img):
-    from hints import CODE_SEEDS, CODE_TABLES
-    seeds = list(CODE_SEEDS)
+    from hints import CODE_SEEDS, CODE_TABLES, DEAD_CODE
+    seeds = list(CODE_SEEDS) + list(DEAD_CODE)
     for seg, off, n, _ in CODE_TABLES: seeds += table_entries(img, seg, off, n)
     return seeds
 

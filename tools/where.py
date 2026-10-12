@@ -23,22 +23,18 @@ def rows():
     """Every listing row with an offset: (linear, file, source line number, text)."""
     starts = {(seg, mod): lin for lin, seg, mod in parts()}
     out = []
+    import lst
     for path in sorted(BUILD.glob('*.LST')):
         mod = path.stem + '.ASM'
         src = (ROOT/'src'/mod).read_text(encoding='latin-1').splitlines()
-        col, n, seg = None, 0, None
-        for line in path.read_text(encoding='latin-1').splitlines():
-            if not re.match(r'^\s*\d+ ', line): continue
-            if col is None: col = line.index(src[0].strip())
-            if len(line) <= col: continue
-            n += 1
-            text = line[col:]
+        offs = lst.parse(path.read_text(encoding='latin-1'), src, mod)
+        seg = None
+        for n, (text, off) in enumerate(zip(src, offs), 1):
             m = re.match(r'^(\w+) segment\b', text.strip(), re.I)
             if m: seg = m.group(1).upper(); continue
             if re.match(r'^\w+ ends\b', text.strip(), re.I): seg = None; continue
-            off = re.match(r'^\s*\d+\s+([0-9A-F]{4})\s', line)
-            if off and seg and (seg, mod) in starts:
-                out.append((starts[(seg, mod)] + int(off.group(1), 16), mod, n, text.rstrip()))
+            if off is not None and seg and (seg, mod) in starts:
+                out.append((starts[(seg, mod)] + off, mod, n, text.rstrip()))
     return sorted(out)
 
 def parse(arg):
