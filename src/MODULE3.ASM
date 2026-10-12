@@ -1,5 +1,14 @@
 ; Prehistorik 2 (PRE2.EXE), link module 3 of 4
 ; module interface (tools/symtab.py)
+public BuildEffectDrawList
+public ComputePasswordCode
+public FadeOutPaletteToBlack
+public ProcessPlayerContacts
+public RunFrontEnd
+public ShowMode13PictureFadeIn
+public ShowPresentTitle
+public ShowTitusScreen
+public UpdateFollowerSlots
 public sub_454E
 public sub_45AF
 public sub_4907
@@ -42,17 +51,10 @@ public sub_6673
 public sub_6772
 public sub_67D7
 public sub_6822
-public sub_8295
-public sub_88D7
-public sub_8922
-public sub_8E45
-public sub_9090
-public sub_912B
-public sub_919F
-public sub_9286
-public sub_932F
 DATA segment word public 'DATA'
 extrn AnimVisibleFlag:byte
+extrn BiosSeed:word
+extrn BiosSeedReady:byte
 extrn byte_0666:byte
 extrn byte_083D:byte
 extrn byte_083E:byte
@@ -81,7 +83,6 @@ extrn byte_4F24:byte
 extrn byte_4F27:byte
 extrn byte_4F2B:byte
 extrn byte_4F2C:byte
-extrn byte_4F2D:byte
 extrn byte_564D:byte
 extrn byte_565F:byte
 extrn byte_5671:byte
@@ -139,7 +140,6 @@ extrn byte_7B7F:byte
 extrn byte_7F5E:byte
 extrn byte_91FB:byte
 extrn byte_91FE:byte
-extrn byte_A312:byte
 extrn byte_A324:byte
 extrn byte_A325:byte
 extrn byte_A328:byte
@@ -147,8 +147,6 @@ extrn byte_A329:byte
 extrn byte_A32A:byte
 extrn byte_A32B:byte
 extrn byte_A32C:byte
-extrn byte_A330:byte
-extrn byte_A335:byte
 extrn byte_A340:byte
 extrn byte_A3F9:byte
 extrn byte_A3FA:byte
@@ -168,8 +166,12 @@ extrn DrawPage:word
 extrn dtbl_79EC:word
 extrn dtbl_7D2F:word
 extrn dtbl_7D95:word
+extrn EffectFrame:word
+extrn EffectOriginX:word
+extrn EffectOriginY:word
 extrn ExpertFlag:byte
 extrn FineScroll:byte
+extrn FollowerOverlapMode:byte
 extrn FrameDataOffsets:word
 extrn FrameDataSegments:word
 extrn FrameHeights:byte
@@ -177,6 +179,10 @@ extrn FrameHotX:byte
 extrn FrameWidths:byte
 extrn GridDirtyFlag:byte
 extrn HScrollDir:byte
+extrn LandingDepth:word
+extrn LandingFlag:byte
+extrn LastDebrisSlot:word
+extrn LastEffectTick:word
 extrn LevelFlags:byte
 extrn LevelPaletteTable:word
 extrn LevelPropHeader:word
@@ -186,10 +192,15 @@ extrn LevelStartX:word
 extrn LevelStartY:word
 extrn MapRows:byte
 extrn NextFreeSegment:word
+extrn PlayerHurtTimer:byte
+extrn PlayerVelX:word
+extrn PlayerVelY:word
 extrn PlayerX:word
 extrn PlayerY:word
 extrn PrevCameraCol:word
 extrn RenderSlots:word
+extrn ScoreHigh:word
+extrn ScoreLow:word
 extrn ScriptFrameCounter:word
 extrn ScriptPointer:word
 extrn ShakeRows:word
@@ -209,10 +220,8 @@ extrn word_2A7A:word
 extrn word_4F0C:word
 extrn word_4F0E:word
 extrn word_4F20:word
-extrn word_4F22:word
 extrn word_4F25:word
 extrn word_4F28:word
-extrn word_4F2A:word
 extrn word_4F2E:word
 extrn word_4F30:word
 extrn word_4F32:word
@@ -254,8 +263,6 @@ extrn word_6C06:word
 extrn word_6C08:word
 extrn word_6C0A:word
 extrn word_6C0C:word
-extrn word_6C0E:word
-extrn word_6C10:word
 extrn word_6C9E:word
 extrn word_6CA0:word
 extrn word_6CA2:word
@@ -275,13 +282,6 @@ extrn word_A30E:word
 extrn word_A310:word
 extrn word_A326:word
 extrn word_A32E:word
-extrn word_A331:word
-extrn word_A333:word
-extrn word_A336:word
-extrn word_A338:word
-extrn word_A33A:word
-extrn word_A33C:word
-extrn word_A33E:word
 extrn word_A341:word
 extrn word_A3F7:word
 extrn word_A3FB:word
@@ -409,8 +409,8 @@ sub_45AF:
     push es
     cmp byte ptr ds:byte_6BE4, 0
     jne loc_45AB
-    mov ax, word ptr word_6C0E
-    mov dx, word ptr word_6C10
+    mov ax, word ptr ScoreLow
+    mov dx, word ptr ScoreHigh
     mov bx, 61A8h
     div bx
     sub ax, word ptr word_6C0C
@@ -424,7 +424,7 @@ loc_45D3:
     jns loc_45D0
     mov si, 4F1Ch
     mov ax, 0E3h
-    call sub_8875
+    call SpawnDebrisElement
 loc_45E0:
     call SetCpuWriteMode
     mov byte ptr cs:cvar_45AE, 0
@@ -441,12 +441,12 @@ loc_45FB:
     call sub_473D
 loc_4606:
     xor al, al
-    mov dx, word ptr word_6C0E
+    mov dx, word ptr ScoreLow
     cmp word ptr word_6CA0, dx
     je loc_4614
     or al, 1
 loc_4614:
-    mov cx, word ptr word_6C10
+    mov cx, word ptr ScoreHigh
     cmp word ptr word_6CA2, cx
     je loc_4620
     or al, 1
@@ -760,7 +760,7 @@ loc_4858:
     je loc_488C
     and word ptr word_4F20, 8000h
     mov dx, 30h
-    mov ax, word ptr word_4F22
+    mov ax, word ptr PlayerVelX
     or ax, ax
     jns loc_4871
     neg ax
@@ -1040,7 +1040,7 @@ loc_4A8B:
     mov ax, word ptr [si+4]
     mov word ptr [di+4], ax
     mov word ptr [di+9], si
-    cmp word ptr ds:word_4F2A, -10h
+    cmp word ptr ds:PlayerVelY, -10h
     jle loc_4AE4
     or byte ptr [si+6], 40h
     call sub_4B05
@@ -1081,7 +1081,7 @@ sub_4B05:
 loc_4B29:
     push word ptr [si+4]
     mov word ptr [si+4], 7
-    call sub_8D7B
+    call TestHitboxOverlap
     pop word ptr [si+4]
     pop word ptr PlayerY
     jae loc_4B89
@@ -1101,7 +1101,7 @@ loc_4B29:
     jle loc_4B76
     inc ax
     mov word ptr PlayerY, ax
-    mov word ptr word_4F2A, 1
+    mov word ptr PlayerVelY, 1
     jmp short loc_4B84
 loc_4B76:
     mov ax, word ptr word_6BFC
@@ -1109,7 +1109,7 @@ loc_4B76:
     shl ax, 1
     shl ax, 1
     shl ax, 1
-    mov word ptr word_4F2A, ax
+    mov word ptr PlayerVelY, ax
 loc_4B84:
     stc
     pop si
@@ -1293,7 +1293,7 @@ loc_4CE1:
     mov word ptr CameraCol, 0
     mov word ptr CameraRow, 0
     mov word ptr word_4F25, 0
-    mov word ptr word_4F22, 0
+    mov word ptr PlayerVelX, 0
     call SetCpuWriteMode
     call sub_51A3
     mov byte ptr byte_6BC5, 0
@@ -1365,7 +1365,7 @@ loc_4DBE:
     jmp near ptr loc_4F0E
 loc_4DF5:
     mov word ptr word_4F28, 7C6Bh
-    mov word ptr word_4F22, 40h
+    mov word ptr PlayerVelX, 40h
     mov byte ptr byte_4F24, 2
 loc_4E06:
     mov bx, word ptr word_4F28
@@ -1376,7 +1376,7 @@ loc_4E06:
     call DrawSpriteObjects
     call PresentFrame
     call sub_6333
-    mov ax, word ptr word_4F22
+    mov ax, word ptr PlayerVelX
     sar ax, 1
     sar ax, 1
     sar ax, 1
@@ -1422,8 +1422,8 @@ loc_4E6F:
     xor bh, bh
     shl bx, 1
     mov ax, word ptr [bx-5CADh]
-    add word ptr word_6C0E, ax
-    adc word ptr word_6C10, 0
+    add word ptr ScoreLow, ax
+    adc word ptr ScoreHigh, 0
     mov word ptr [si+4], 0FFFFh
     mov dx, 8
     call StartSoundEffect
@@ -1618,9 +1618,9 @@ loc_5034:
     mov ds, word ptr LevelSegment
     xor si, si
     mov cl, 10h
-    call sub_919F
+    call ShowMode13PictureFadeIn
     call WaitForButtonPressRelease
-    call sub_9286
+    call FadeOutPaletteToBlack
     call ShowIntroPicture
     mov ax, 1
     stc
@@ -1636,8 +1636,8 @@ loc_506C:
     call RunGameOverScreen
     mov word ptr word_4F20, 0Dh
     mov byte ptr CurrentLevel, 0
-    mov word ptr word_6C0E, 0
-    mov word ptr word_6C10, 0
+    mov word ptr ScoreLow, 0
+    mov word ptr ScoreHigh, 0
     mov word ptr word_6C0C, 0
     call sub_51DF
     mov ax, 1
@@ -1656,9 +1656,9 @@ sub_509D:
     push bp
     mov dx, 7
     call StartSoundEffect
-    mov byte ptr byte_4F2D, 0
+    mov byte ptr PlayerHurtTimer, 0
     mov word ptr word_4F20, 21h
-    mov word ptr word_4F2A, 0Fh
+    mov word ptr PlayerVelY, 0Fh
     mov ax, word ptr PlayerX
     mov dx, word ptr CameraCol
     add dx, 0Ah
@@ -1671,7 +1671,7 @@ sub_509D:
     jb loc_50D8
     neg ax
 loc_50D8:
-    mov word ptr word_4F22, ax
+    mov word ptr PlayerVelX, ax
     mov cx, 3Ch
 loc_50DE:
     push cx
@@ -1690,15 +1690,15 @@ loc_50DE:
     call sub_54AB
     call UpdateWindAndFlakes
     call PresentFrame
-    mov ax, word ptr word_4F22
+    mov ax, word ptr PlayerVelX
     add word ptr PlayerX, ax
-    mov ax, word ptr word_4F2A
+    mov ax, word ptr PlayerVelY
     dec ax
     cmp ax, 0FFF0h
     jge loc_5122
     mov ax, 0FFF0h
 loc_5122:
-    mov word ptr word_4F2A, ax
+    mov word ptr PlayerVelY, ax
     sub word ptr PlayerY, ax
     pop cx
     loop loc_50DE
@@ -1775,8 +1775,8 @@ sub_51A3:
     add di, word ptr ds:DrawPage
     mov si, 7D8Fh
     call sub_5190
-    mov dx, word ptr word_6C0E
-    mov cx, word ptr word_6C10
+    mov dx, word ptr ScoreLow
+    mov cx, word ptr ScoreHigh
     call sub_4803
     mov di, 23Ch
     add di, word ptr ds:DrawPage
@@ -1959,8 +1959,8 @@ loc_531C:
 loc_5325:
     ret
 loc_5326:
-    mov word ptr word_4F22, 0
-    mov word ptr word_4F2A, 0
+    mov word ptr PlayerVelX, 0
+    mov word ptr PlayerVelY, 0
     call ClearStaggeredBlocks
     mov byte ptr FineScroll, 0
     push word ptr CameraLeftLimit
@@ -2022,7 +2022,7 @@ loc_53D7:
     call RedrawOverlayTiles
     call CopyRingWindowToPage
     call sub_4907
-    call sub_8922
+    call BuildEffectDrawList
     call sub_6822
     call DrawSpriteObjects
     call DrawForegroundOverSprites
@@ -2333,7 +2333,7 @@ sub_5663:
     call ScrollViewDown
     ret
 loc_567D:
-    cmp word ptr ds:word_4F2A, 0
+    cmp word ptr ds:PlayerVelY, 0
     jne loc_5689
     mov byte ptr VScrollActive, 0
 loc_5689:
@@ -2341,7 +2341,7 @@ loc_5689:
     mov cl, 4
     sar dx, cl
     sub dx, word ptr CameraRow
-    cmp word ptr ds:word_4F2A, 0
+    cmp word ptr ds:PlayerVelY, 0
     je loc_56AE
     mov ax, 3
     cmp dx, 9
@@ -2464,7 +2464,7 @@ sub_57A8:
     jae loc_57CC
     cmp byte ptr ds:byte_6BFE, 0
     jne loc_57CC
-    cmp word ptr ds:word_4F22, 0
+    cmp word ptr ds:PlayerVelX, 0
     je loc_57F0
 loc_57CC:
     cmp byte ptr ds:HScrollDir, 0
@@ -2485,7 +2485,7 @@ loc_57F0:
     mov byte ptr HScrollDir, 0
     ret
 loc_57F6:
-    cmp word ptr ds:word_4F22, 0
+    cmp word ptr ds:PlayerVelX, 0
     je loc_5806
     test byte ptr byte_4F23, 80h
     je loc_5813
@@ -2615,7 +2615,7 @@ loc_592A:
     mov bl, ah
     xor bh, bh
     mov al, byte ptr [bx+byte_7B7F]
-    mov dl, byte ptr byte_4F2D
+    mov dl, byte ptr PlayerHurtTimer
     mov byte ptr byte_4F1B, dl
     cmp dl, 16h
     jb loc_5941
@@ -2643,7 +2643,7 @@ loc_5977:
     je loc_59B1
     cmp byte ptr ds:byte_7B1A, 6
     jne loc_5993
-    cmp word ptr ds:word_4F2A, 10h
+    cmp word ptr ds:PlayerVelY, 10h
     jle loc_5997
     or byte ptr byte_6BC7, 2
     jmp short loc_5997
@@ -2655,7 +2655,7 @@ loc_5997:
     dec byte ptr byte_6BC6
     cmp byte ptr ds:byte_7B1A, 4
     jb loc_5A0F
-    mov word ptr word_4F2A, 0FFC0h
+    mov word ptr PlayerVelY, 0FFC0h
     jmp short loc_5A0F
 loc_59B1:
     cmp byte ptr ds:byte_27EB, 0
@@ -2672,7 +2672,7 @@ loc_59CF:
     cmp byte ptr ds:byte_7B1A, 1
     ja loc_5A0F
     push ax
-    mov ax, word ptr word_4F22
+    mov ax, word ptr PlayerVelX
     sar ax, 1
     sar ax, 1
     sar ax, 1
@@ -2690,13 +2690,13 @@ loc_59FB:
     pop ax
     jmp short loc_5A0F
 loc_59FE:
-    cmp word ptr ds:word_4F2A, 0A0h
+    cmp word ptr ds:PlayerVelY, 0A0h
     jle loc_5A0B
     mov byte ptr byte_6BC7, 1
 loc_5A0B:
     call word ptr [bx+dtbl_7D2F]
 loc_5A0F:
-    mov ax, word ptr word_4F22
+    mov ax, word ptr PlayerVelX
     mov cl, 4
     sar ax, cl
     mov dx, word ptr PlayerX
@@ -2712,7 +2712,7 @@ loc_5A0F:
     jge loc_5A36
     mov word ptr PlayerX, ax
 loc_5A36:
-    mov ax, word ptr word_4F2A
+    mov ax, word ptr PlayerVelY
     mov cl, 4
     sar ax, cl
     add word ptr PlayerY, ax
@@ -2762,7 +2762,7 @@ sub_5A96:
     shl bx, 1
     mov dh, byte ptr [bx+FrameHeights]
     mov bx, 9
-    cmp word ptr ds:word_4F22, 0
+    cmp word ptr ds:PlayerVelX, 0
     jg loc_5AC3
     jl loc_5AC1
     xor bx, bx
@@ -2823,7 +2823,7 @@ loc_5B29:
     jmp short loc_5B54
 loc_5B44:
     call sub_63B5
-    cmp word ptr ds:word_4F2A, 0
+    cmp word ptr ds:PlayerVelY, 0
     jle loc_5B59
     inc byte ptr byte_6BD2
     jmp short loc_5B59
@@ -2917,7 +2917,7 @@ loc_5C04:
     pop bx
     sub bx, 100h
     jb loc_5C77
-    cmp word ptr ds:word_4F2A, 0
+    cmp word ptr ds:PlayerVelY, 0
     jg loc_5C77
     mov di, bx
     mov ah, byte ptr es:[bx]
@@ -2940,7 +2940,7 @@ loc_5C04:
     jle loc_5C77
     mov dx, 0FFFFh
     mov bx, 7E5Eh
-    cmp word ptr ds:word_4F22, 0
+    cmp word ptr ds:PlayerVelX, 0
     jg loc_5C53
     neg dx
 loc_5C53:
@@ -3038,7 +3038,7 @@ loc_5CE5:
     call sub_6333
     cmp byte ptr ds:byte_6BFE, 0
     jne loc_5D0E
-    cmp word ptr ds:word_4F2A, 0
+    cmp word ptr ds:PlayerVelY, 0
     je loc_5D0E
     cmp byte ptr ds:byte_6BD1, 4
     jbe loc_5D0B
@@ -3046,7 +3046,7 @@ loc_5CE5:
 loc_5D0B:
     jmp near ptr loc_5E0D
 loc_5D0E:
-    mov ax, word ptr word_4F22
+    mov ax, word ptr PlayerVelX
     or ax, ax
     jns loc_5D17
     neg ax
@@ -3199,7 +3199,7 @@ loc_5E6C:
     mov byte ptr byte_6BD3, 0
     mov byte ptr byte_6BE1, 4
     call sub_5EB7
-    mov ax, word ptr word_4F22
+    mov ax, word ptr PlayerVelX
     or ax, ax
     jns loc_5E82
     neg ax
@@ -3240,7 +3240,7 @@ sub_5EC4:
     jmp near ptr loc_5F93
 loc_5ECE:
     push ax
-    mov ax, word ptr word_4F22
+    mov ax, word ptr PlayerVelX
     or ax, ax
     jns loc_5ED8
     neg ax
@@ -3293,14 +3293,14 @@ loc_5F41:
     je loc_5F64
     sar ax, 1
 loc_5F64:
-    add word ptr word_4F2A, ax
+    add word ptr PlayerVelY, ax
     jmp short loc_5F70
 loc_5F6A:
     mov bp, 0C0h
     call sub_6309
 loc_5F70:
     mov bp, 30h
-    cmp word ptr word_4F22, bp
+    cmp word ptr PlayerVelX, bp
     jb loc_5F7E
     call sub_6333
     jmp short loc_5F81
@@ -3365,7 +3365,7 @@ loc_5FEB:
 loc_6004:
     cmp byte ptr ds:byte_6BFE, 0
     jne loc_600F
-    add word ptr word_4F2A, dx
+    add word ptr PlayerVelY, dx
 loc_600F:
     mov al, byte ptr [bx+byte_7B08]
     shr al, 1
@@ -3437,7 +3437,7 @@ loc_6090:
 loc_60AE:
     mov word ptr word_4F0E, ax
     mov ax, word ptr PlayerX
-    mov dx, word ptr word_4F22
+    mov dx, word ptr PlayerVelX
     sar dx, 1
     sar dx, 1
     sar dx, 1
@@ -3446,7 +3446,7 @@ loc_60AE:
     sub ax, cx
     mov word ptr RenderSlots, ax
     mov ax, word ptr PlayerY
-    mov dx, word ptr word_4F2A
+    mov dx, word ptr PlayerVelY
     sar dx, 1
     sar dx, 1
     sar dx, 1
@@ -3695,7 +3695,7 @@ sub_62B1:
 loc_62CB:
     mov cl, byte ptr byte_4F24
     sar ax, cl
-    mov dx, word ptr word_4F22
+    mov dx, word ptr PlayerVelX
     add dx, ax
     cmp dx, bp
     jge loc_62E3
@@ -3704,7 +3704,7 @@ loc_62CB:
     jle loc_62E3
     mov bp, dx
 loc_62E3:
-    mov word ptr word_4F22, bp
+    mov word ptr PlayerVelX, bp
     pop bp
     pop dx
     pop cx
@@ -3717,10 +3717,10 @@ sub_62EC:
     shr ax, 1
     shr ax, 1
     shr ax, 1
-    sub word ptr word_4F22, ax
-    cmp word ptr ds:word_4F22, -60h
+    sub word ptr PlayerVelX, ax
+    cmp word ptr ds:PlayerVelX, -60h
     jge loc_6307
-    mov word ptr word_4F22, 0FFA0h
+    mov word ptr PlayerVelX, 0FFA0h
 loc_6307:
     pop ax
     ret
@@ -3729,7 +3729,7 @@ sub_6309:
     push ax
     push cx
     push dx
-    mov dx, word ptr word_4F2A
+    mov dx, word ptr PlayerVelY
     mov ax, 10h
     cmp byte ptr ds:byte_6BC7, 1
     jne loc_6323
@@ -3743,7 +3743,7 @@ loc_6323:
     jge loc_632B
     mov bp, dx
 loc_632B:
-    mov word ptr word_4F2A, bp
+    mov word ptr PlayerVelY, bp
     pop dx
     pop cx
     pop ax
@@ -3753,7 +3753,7 @@ sub_6333:
     push cx
     push dx
     xor ch, ch
-    mov ax, word ptr word_4F22
+    mov ax, word ptr PlayerVelX
     or ax, ax
     jns loc_6342
     neg ax
@@ -3770,7 +3770,7 @@ loc_6351:
     je loc_6357
     neg ax
 loc_6357:
-    mov word ptr word_4F22, ax
+    mov word ptr PlayerVelX, ax
     pop dx
     pop cx
     ret
@@ -3831,12 +3831,12 @@ sub_63B5:
     cmp byte ptr ds:byte_6BC5, 0
     je loc_63D6
     mov al, 2Dh
-    cmp word ptr ds:word_4F2A, 0
+    cmp word ptr ds:PlayerVelY, 0
     jl loc_63F4
     inc ax
     jmp short loc_63F4
 loc_63D6:
-    cmp word ptr ds:word_4F2A, 0
+    cmp word ptr ds:PlayerVelY, 0
     jle loc_63FE
     mov byte ptr byte_6BE0, 6
     cmp byte ptr ds:byte_6BD0, 0
@@ -3860,19 +3860,19 @@ sub_6401:
 
 sub_6407:
     push ax
-    mov ax, word ptr word_4F22
+    mov ax, word ptr PlayerVelX
     sar ax, 1
     sar ax, 1
     sar ax, 1
     sar ax, 1
     sub word ptr PlayerX, ax
-    mov word ptr word_4F22, 0
+    mov word ptr PlayerVelX, 0
     pop ax
     ret
 
 sub_641F:
     mov byte ptr byte_4F24, 0
-    cmp word ptr ds:word_4F2A, 0
+    cmp word ptr ds:PlayerVelY, 0
     jge loc_642D
     jmp short sub_6401
 loc_642D:
@@ -3885,7 +3885,7 @@ loc_642D:
     or ax, ax
     je loc_645E
     call sub_661A
-    mov bx, word ptr word_4F2A
+    mov bx, word ptr PlayerVelY
     sar bx, 1
     sar bx, 1
     sar bx, 1
@@ -3915,13 +3915,13 @@ loc_647C:
     sub ax, word ptr word_6BCA
     cmp ax, 20h
     jl loc_64D9
-    cmp word ptr ds:word_4F2A, 50h
+    cmp word ptr ds:PlayerVelY, 50h
     jl loc_64D9
     mov ax, word ptr PlayerY
     mov word ptr word_6BCA, ax
     cmp byte ptr ds:byte_6BD2, 14h
     jb loc_64B3
-    cmp word ptr ds:word_4F2A, 0A0h
+    cmp word ptr ds:PlayerVelY, 0A0h
     jle loc_64B3
     mov byte ptr byte_6BEA, 8
 loc_64B3:
@@ -3929,7 +3929,7 @@ loc_64B3:
     jbe loc_64D9
     test byte ptr LevelFlags, 1
     jne loc_64C7
-    mov word ptr word_4F2A, 0FFE0h
+    mov word ptr PlayerVelY, 0FFE0h
 loc_64C7:
     mov ax, word ptr word_4F20
     and ax, 0E000h
@@ -3938,7 +3938,7 @@ loc_64C7:
     mov byte ptr byte_6BD2, 0
     ret
 loc_64D9:
-    mov word ptr word_4F2A, 0
+    mov word ptr PlayerVelY, 0
 
 sub_64DF:
     sub byte ptr byte_6BE0, 1
@@ -4081,7 +4081,7 @@ loc_65ED:
     ret
 
 sub_65EF:
-    cmp word ptr ds:word_4F2A, 0
+    cmp word ptr ds:PlayerVelY, 0
     jne loc_6616
     mov al, byte ptr es:[di+100h]
     mov bx, 8E1Dh
@@ -4154,9 +4154,9 @@ sub_6672:
     ret
 
 sub_6673:
-    cmp word ptr ds:word_4F2A, 0
+    cmp word ptr ds:PlayerVelY, 0
     je loc_668B
-    mov word ptr word_4F2A, 0
+    mov word ptr PlayerVelY, 0
     and word ptr PlayerY, 0FFF0h
     add word ptr PlayerY, 10h
     ret
@@ -4335,16 +4335,16 @@ sub_67D7:
     cmp byte ptr ds:byte_6CA7, 1Fh
     jne loc_680D
     mov ax, word ptr PlayerX
-    mov word ptr word_A336, ax
+    mov word ptr EffectOriginX, ax
     mov ax, word ptr PlayerY
     sub ax, 70h
-    mov word ptr word_A338, ax
+    mov word ptr EffectOriginY, ax
     mov ax, 6Eh
-    mov word ptr word_A33A, ax
+    mov word ptr EffectFrame, ax
     xor ax, ax
     xor dx, dx
     mov cx, 1
-    call sub_8D1B
+    call SpawnEffectBurst
     mov byte ptr byte_6CA7, 0
     mov byte ptr byte_6BFF, 1
     mov byte ptr byte_6C00, 2Ch
@@ -4809,9 +4809,9 @@ loc_6BD3:
 
 sub_6BDB:
     mov ax, 0B9h
-    mov word ptr word_A336, ax
+    mov word ptr EffectOriginX, ax
     mov ax, 1Eh
-    mov word ptr word_A338, ax
+    mov word ptr EffectOriginY, ax
     mov cx, 4
     mov ax, 20h
     mov dx, 0FF60h
@@ -4819,9 +4819,9 @@ loc_6BF0:
     push cx
     mov cx, 1
     push ax
-    mov word ptr word_A33A, 2137h
+    mov word ptr EffectFrame, 2137h
     pop ax
-    call sub_8D1B
+    call SpawnEffectBurst
     neg ax
     js loc_6C09
     sub ax, 10h
@@ -4992,13 +4992,13 @@ loc_6D4C:
     je loc_6DD2
     cmp byte ptr ds:byte_6BE4, 0
     jne loc_6D80
-    call sub_8D7B
+    call TestHitboxOverlap
     jae loc_6D80
-    mov byte ptr byte_4F2D, 2Ch
+    mov byte ptr PlayerHurtTimer, 2Ch
     mov byte ptr byte_6BD0, 0
-    mov word ptr word_4F2A, 0FF80h
+    mov word ptr PlayerVelY, 0FF80h
     mov byte ptr byte_4F24, 3
-    mov word ptr word_4F22, 0FF80h
+    mov word ptr PlayerVelX, 0FF80h
     call sub_824D
     jmp short loc_6DC9
 loc_6D80:
@@ -5204,22 +5204,22 @@ loc_6F3C:
 loc_6F46:
     mov si, 4F1Ch
     mov di, 5690h
-    call sub_8D7B
+    call TestHitboxOverlap
     jb loc_6F59
     mov di, 567Eh
-    call sub_8D7B
+    call TestHitboxOverlap
     jae loc_6F8F
 loc_6F59:
     cmp word ptr ds:PlayerY, 7BBh
     jg loc_6F69
-    mov word ptr word_4F2A, 0FF60h
+    mov word ptr PlayerVelY, 0FF60h
     jmp short loc_6FBB
 loc_6F69:
-    mov word ptr word_4F2A, 0FF60h
-    mov byte ptr byte_4F2D, 2Ch
+    mov word ptr PlayerVelY, 0FF60h
+    mov byte ptr PlayerHurtTimer, 2Ch
     mov byte ptr byte_6BD0, 0
     mov byte ptr byte_4F24, 3
-    mov word ptr word_4F22, 0FF80h
+    mov word ptr PlayerVelX, 0FF80h
     call sub_824D
     call sub_824D
     call sub_824D
@@ -5231,16 +5231,16 @@ loc_6F8F:
 loc_6F99:
     mov si, 4F1Ch
     mov di, 5690h
-    call sub_8D7B
+    call TestHitboxOverlap
     jae loc_6FBB
-    cmp byte ptr ds:byte_A330, 0
+    cmp byte ptr ds:LandingFlag, 0
     je loc_6FBB
     mov ax, 0FFC0h
     cmp byte ptr ds:byte_27EA, 0
     je loc_6FB8
     mov ax, 0FF80h
 loc_6FB8:
-    mov word ptr word_4F2A, ax
+    mov word ptr PlayerVelY, ax
 loc_6FBB:
     mov di, 4F0Ah
     mov si, 5648h
@@ -5249,9 +5249,9 @@ loc_6FBB:
     add si, ax
     cmp word ptr [di+4], -1
     je loc_6FDE
-    mov byte ptr byte_A312, 1
-    call sub_8D7B
-    mov byte ptr byte_A312, 0
+    mov byte ptr FollowerOverlapMode, 1
+    call TestHitboxOverlap
+    mov byte ptr FollowerOverlapMode, 0
     jb loc_7001
 loc_6FDE:
     mov di, 4F2Eh
@@ -5259,9 +5259,9 @@ loc_6FDE:
 loc_6FE4:
     cmp word ptr [di+4], -1
     je loc_6FF9
-    mov byte ptr byte_A312, 1
-    call sub_8D7B
-    mov byte ptr byte_A312, 0
+    mov byte ptr FollowerOverlapMode, 1
+    call TestHitboxOverlap
+    mov byte ptr FollowerOverlapMode, 0
     jb loc_7001
 loc_6FF9:
     add di, 12h
@@ -5288,23 +5288,23 @@ loc_702B:
     jne loc_70A5
     mov ax, word ptr word_5648
     sub ax, 0C8h
-    mov word ptr word_A336, ax
+    mov word ptr EffectOriginX, ax
     mov ax, word ptr word_564A
-    mov word ptr word_A338, ax
-    call sub_94F3
-    add word ptr word_A336, 20h
-    add word ptr word_A338, 20h
-    call sub_94F3
-    sub word ptr word_A336, 40h
-    call sub_94F3
-    sub word ptr word_A336, 20h
-    sub word ptr word_A338, 40h
-    call sub_94F3
+    mov word ptr EffectOriginY, ax
+    call SpawnFourDebrisParticles
+    add word ptr EffectOriginX, 20h
+    add word ptr EffectOriginY, 20h
+    call SpawnFourDebrisParticles
+    sub word ptr EffectOriginX, 40h
+    call SpawnFourDebrisParticles
+    sub word ptr EffectOriginX, 20h
+    sub word ptr EffectOriginY, 40h
+    call SpawnFourDebrisParticles
     xor dx, dx
     xor ax, ax
     mov cx, 1
-    mov word ptr word_A33A, 63h
-    call sub_8D1B
+    mov word ptr EffectFrame, 63h
+    call SpawnEffectBurst
     mov di, 55EEh
     mov cx, 5
 loc_708B:
@@ -5320,11 +5320,11 @@ loc_709B:
 loc_70A5:
     cmp word ptr ds:PlayerX, 3D8h
     jle loc_70CB
-    mov byte ptr byte_4F2D, 2Ch
+    mov byte ptr PlayerHurtTimer, 2Ch
     mov byte ptr byte_6BD0, 0
-    mov word ptr word_4F2A, 0FF70h
+    mov word ptr PlayerVelY, 0FF70h
     mov byte ptr byte_4F24, 3
-    mov word ptr word_4F22, 0FF60h
+    mov word ptr PlayerVelX, 0FF60h
     call sub_824D
 loc_70CB:
     mov ax, 1
@@ -5676,23 +5676,23 @@ loc_7491:
     mov word ptr word_5682, ax
     mov word ptr word_5694, ax
     mov ax, word ptr word_5648
-    mov word ptr word_A336, ax
+    mov word ptr EffectOriginX, ax
     mov ax, word ptr word_564A
-    mov word ptr word_A338, ax
-    call sub_94F3
-    add word ptr word_A336, 20h
-    add word ptr word_A338, 20h
-    call sub_94F3
-    sub word ptr word_A336, 40h
-    call sub_94F3
-    sub word ptr word_A336, 20h
-    sub word ptr word_A338, 40h
-    call sub_94F3
+    mov word ptr EffectOriginY, ax
+    call SpawnFourDebrisParticles
+    add word ptr EffectOriginX, 20h
+    add word ptr EffectOriginY, 20h
+    call SpawnFourDebrisParticles
+    sub word ptr EffectOriginX, 40h
+    call SpawnFourDebrisParticles
+    sub word ptr EffectOriginX, 20h
+    sub word ptr EffectOriginY, 40h
+    call SpawnFourDebrisParticles
     xor dx, dx
     xor ax, ax
     mov cx, 1
-    mov word ptr word_A33A, 63h
-    call sub_8D1B
+    mov word ptr EffectFrame, 63h
+    call SpawnEffectBurst
     ret
 loc_74EA:
     cmp byte ptr ds:byte_91FE, 7
@@ -7194,13 +7194,13 @@ sub_8182:
     cmp ax, 19Ch
     jne loc_81A8
 loc_819C:
-    call sub_8D7B
+    call TestHitboxOverlap
     jae loc_81A8
     mov word ptr [si+4], 0FFFFh
     jmp short loc_81B2
 loc_81A8:
     mov di, word ptr ds:word_A425
-    call sub_8D7B
+    call TestHitboxOverlap
     ret
 
 unused_81B0:
@@ -7219,9 +7219,9 @@ sub_81B4:
     mov di, word ptr ds:word_A423
     call sub_81F3
     mov di, word ptr ds:word_A425
-    call sub_8D7B
+    call TestHitboxOverlap
     jae loc_81F2
-    cmp byte ptr ds:byte_A330, 0
+    cmp byte ptr ds:LandingFlag, 0
     je loc_81F2
     mov ax, 0FFC0h
     cmp byte ptr ds:byte_27EA, 0
@@ -7230,7 +7230,7 @@ sub_81B4:
     mov dx, 3
     call StartSoundEffect
 loc_81EF:
-    mov word ptr word_4F2A, ax
+    mov word ptr PlayerVelY, ax
 loc_81F2:
     ret
 
@@ -7242,7 +7242,7 @@ sub_81F3:
 loc_81FF:
     jmp short loc_824C
 loc_8201:
-    call sub_8D7B
+    call TestHitboxOverlap
     jae loc_824C
     mov al, 4
     sub al, byte ptr byte_91FB
@@ -7253,9 +7253,9 @@ loc_8217:
     call sub_824D
     mov dx, 1
     call StartSoundEffect
-    mov byte ptr byte_4F2D, 2Ch
+    mov byte ptr PlayerHurtTimer, 2Ch
     mov byte ptr byte_6BD0, 0
-    mov word ptr word_4F2A, 0FF80h
+    mov word ptr PlayerVelY, 0FF80h
     mov byte ptr byte_4F24, 3
     mov ax, 80h
     mov dx, word ptr word_91FF
@@ -7263,7 +7263,7 @@ loc_8217:
     jge loc_8244
     neg ax
 loc_8244:
-    mov word ptr word_4F22, ax
+    mov word ptr PlayerVelX, ax
     mov byte ptr byte_6BC7, 0
 loc_824C:
     ret
@@ -7280,10 +7280,10 @@ sub_824D:
     call sub_65B3
 loc_8264:
     mov ax, word ptr PlayerX
-    mov word ptr word_A336, ax
+    mov word ptr EffectOriginX, ax
     mov ax, word ptr PlayerY
     sub ax, 30h
-    mov word ptr word_A338, ax
+    mov word ptr EffectOriginY, ax
     mov cx, 1
     mov ax, 30h
     test byte ptr byte_6BC9, 1
@@ -7291,8 +7291,8 @@ loc_8264:
     neg ax
 loc_8282:
     mov dx, 0FF80h
-    mov word ptr word_A33A, 2046h
-    call sub_8D1B
+    mov word ptr EffectFrame, 2046h
+    call SpawnEffectBurst
     pop dx
     pop cx
     pop ax
@@ -7300,8 +7300,20 @@ loc_8282:
 loc_8292:
     jmp near ptr loc_83CE
 
-sub_8295:
-    cmp byte ptr ds:byte_4F2D, 0
+; Per-frame player contact pass. Tests the 12 render slots at 4FD0h, then the 52-entry effect
+; pool at 50A8h, against the player record (PlayerX/PlayerY, slot 4F1Ch). Each contact starts
+; a stomp, hurt, pickup or hazard reaction, sometimes through SpawnEffectBurst and
+; SpawnDebrisElement.
+; While PlayerHurtTimer (byte_4F2D) is nonzero the slot loop is skipped and only the pool runs.
+; In: DS = DATA. Reads PlayerX, PlayerY, PlayerVelX, PlayerVelY, CurrentLevel and the slot records.
+; Out: none. Slot and pool records, PlayerX/PlayerY, score and sound effects may change.
+; Notes: slot record (18 bytes): +0 X, +2 Y, +4 frame word (FFFFh = free), +5 flags (20h active,
+;   40h hit this frame), +6 sprite-def pointer ([bx+4] & 10h = not a contact), +0Eh state
+;   (0FFh = dead), +0Fh hit points. Pool records keep an owner link at +9 (FFFFh = none).
+;   Pool dispatch key = frame & 1FFFh; the frame codes are level-specific sprite numbers.
+;   Called once per frame from the main loop (MODULE1 0232).
+ProcessPlayerContacts:
+    cmp byte ptr ds:PlayerHurtTimer, 0
     je loc_829F
     jmp near ptr loc_83D7
 loc_829F:
@@ -7318,14 +7330,14 @@ loc_82A8:
     jne loc_8292
     cmp byte ptr [di+0Eh], 0FFh
     je loc_8292
-    call sub_8D7B
+    call TestHitboxOverlap
     jae loc_8292
     cmp word ptr ds:word_6BE2, 0
     je loc_82D5
-    call sub_8C72
+    call DestroyObjectWithDebris
     jmp near ptr loc_83CE
 loc_82D5:
-    cmp byte ptr ds:byte_A330, 0
+    cmp byte ptr ds:LandingFlag, 0
     jne loc_82DF
     jmp near ptr loc_838A
 loc_82DF:
@@ -7335,7 +7347,7 @@ loc_82DF:
 loc_82E9:
     cmp byte ptr ds:byte_6BC7, 0
     je loc_8348
-    cmp word ptr ds:word_4F2A, 20h
+    cmp word ptr ds:PlayerVelY, 20h
     jle loc_8343
     mov al, byte ptr [di+10h]
     and al, 3
@@ -7343,7 +7355,7 @@ loc_82E9:
     cbw
     shl ax, 1
     add ax, 52h
-    call sub_8875
+    call SpawnDebrisElement
     or byte ptr [di+5], 40h
     cmp dl, 2
     jne loc_8340
@@ -7352,7 +7364,7 @@ loc_82E9:
     mov bx, word ptr [di+6]
     and byte ptr [bx+4], 0F7h
     mov word ptr [di+0Ah], 0FF38h
-    mov ax, word ptr word_4F2A
+    mov ax, word ptr PlayerVelY
     or ax, ax
     jns loc_832C
     neg ax
@@ -7387,16 +7399,16 @@ loc_8348:
     jb loc_836D
     xor bh, bh
     mov ax, word ptr [bx-5C1Bh]
-    call sub_8875
+    call SpawnDebrisElement
 loc_836D:
     mov ax, 0FFC0h
     cmp byte ptr ds:byte_27EA, 0
     je loc_837A
     mov ax, 0FF20h
 loc_837A:
-    mov word ptr word_4F2A, ax
+    mov word ptr PlayerVelY, ax
     mov byte ptr byte_6BD2, 0
-    mov ax, word ptr word_A331
+    mov ax, word ptr LandingDepth
     sub word ptr PlayerY, ax
     ret
 loc_838A:
@@ -7404,14 +7416,14 @@ loc_838A:
     call StartSoundEffect
     mov di, word ptr [di+6]
     and byte ptr [di+4], 0FEh
-    mov byte ptr byte_4F2D, 2Ch
+    mov byte ptr PlayerHurtTimer, 2Ch
     mov byte ptr byte_6BD0, 0
-    mov word ptr word_4F2A, 0FF80h
-    mov ax, word ptr word_4F22
+    mov word ptr PlayerVelY, 0FF80h
+    mov ax, word ptr PlayerVelX
     shl ax, 1
     shl ax, 1
     neg ax
-    mov word ptr word_4F22, ax
+    mov word ptr PlayerVelX, ax
     mov byte ptr byte_6BC7, 0
     cmp byte ptr ds:byte_6BC5, 0
     mov byte ptr byte_6BC5, 0
@@ -7443,7 +7455,7 @@ loc_83F3:
     jne loc_83FC
     jmp near ptr loc_860E
 loc_83FC:
-    call sub_8D7B
+    call TestHitboxOverlap
     jb loc_8404
     jmp near ptr loc_860E
 loc_8404:
@@ -7464,7 +7476,7 @@ loc_8412:
     je loc_840F
     mov ax, 0FFFFh
     xchg word ptr [si+4], ax
-    mov word ptr word_A33A, ax
+    mov word ptr EffectFrame, ax
     and ah, 1Fh
     cmp ax, 1CAh
     jne loc_843A
@@ -7639,7 +7651,7 @@ loc_8582:
     mov byte ptr byte_6BEA, 7
 loc_85A5:
     mov word ptr [si+6], ax
-    mov ax, word ptr word_A33A
+    mov ax, word ptr EffectFrame
     mov word ptr [si+4], ax
     jmp short loc_860E
 loc_85B0:
@@ -7676,7 +7688,7 @@ loc_85ED:
     mov byte ptr byte_6BC9, 0
     mov ax, 0E2h
 loc_860B:
-    call sub_8875
+    call SpawnDebrisElement
 loc_860E:
     add si, 12h
     dec cx
@@ -7692,24 +7704,24 @@ loc_8618:
 loc_8624:
     mov dx, 1
     call StartSoundEffect
-    mov byte ptr byte_4F2D, 2Ch
+    mov byte ptr PlayerHurtTimer, 2Ch
     mov byte ptr byte_4F2C, 0
     mov byte ptr byte_4F27, 8
     dec byte ptr byte_27D6
     mov al, byte ptr byte_27D6
     push ax
     mov byte ptr byte_27D6, 1
-    call sub_867E
+    call SpawnPlayerBurst
     pop ax
     mov byte ptr byte_27D6, al
     jmp short loc_860E
 loc_864F:
     mov dx, 1
     call StartSoundEffect
-    mov byte ptr byte_4F2D, 2Ch
+    mov byte ptr PlayerHurtTimer, 2Ch
     mov byte ptr byte_4F2C, 0
     mov byte ptr byte_4F27, 8
-    call sub_867E
+    call SpawnPlayerBurst
     mov byte ptr byte_6BEA, 7
     mov bx, word ptr [si+9]
     cmp bx, -1
@@ -7719,13 +7731,19 @@ loc_8679:
     mov ax, 0E4h
     jmp short loc_860B
 
-sub_867E:
+; Fires the player's burst: 6 * byte_27D6 + byte_6BC9 particles from the player position.
+; In: byte_27D6 (charge count), byte_6BC9 (phase counter). Out: nothing when the count is 0;
+;   otherwise byte_27D6 = 0, byte_6BC9 = 0 and SpawnEffectBurst has run (frame 2046h,
+;   seeds AX = 30h, DX = FF80h).
+; Notes: origin is (PlayerX, PlayerY - 30h). Preserves CX. Callers are in ProcessPlayerContacts
+;   (loc_8618 sets byte_27D6 = 1 around the call; loc_864F calls it directly).
+SpawnPlayerBurst:
     push cx
     mov ax, word ptr PlayerX
-    mov word ptr word_A336, ax
+    mov word ptr EffectOriginX, ax
     mov ax, word ptr PlayerY
     sub ax, 30h
-    mov word ptr word_A338, ax
+    mov word ptr EffectOriginY, ax
     mov al, 6
     mul byte ptr byte_27D6
     mov cx, ax
@@ -7735,8 +7753,8 @@ sub_867E:
     mov dx, 0FF80h
     mov byte ptr byte_27D6, 0
     mov byte ptr byte_6BC9, 0
-    mov word ptr word_A33A, 2046h
-    call sub_8D1B
+    mov word ptr EffectFrame, 2046h
+    call SpawnEffectBurst
 loc_86B5:
     pop cx
     ret
@@ -7762,7 +7780,7 @@ loc_86CC:
     jne loc_86E4
     test byte ptr [di+5], 20h
     je loc_86E4
-    call sub_8C72
+    call DestroyObjectWithDebris
 loc_86E4:
     add di, 12h
     loop loc_86CC
@@ -7806,12 +7824,12 @@ loc_871F:
     test byte ptr [di+5], 20h
     je loc_874B
     mov ax, word ptr [di]
-    mov word ptr word_A336, ax
+    mov word ptr EffectOriginX, ax
     mov ax, word ptr [di+2]
-    mov word ptr word_A338, ax
+    mov word ptr EffectOriginY, ax
     mov byte ptr [di+0Eh], 0FFh
     mov word ptr [di+4], 0FFFFh
-    call sub_94F3
+    call SpawnFourDebrisParticles
 loc_874B:
     add di, 12h
     loop loc_871F
@@ -7878,7 +7896,7 @@ loc_87E6:
     push si
     mov ax, 0E3h
     mov si, 4F1Ch
-    call sub_8875
+    call SpawnDebrisElement
     pop si
     jmp near ptr loc_853F
 loc_87FD:
@@ -7938,7 +7956,14 @@ loc_8867:
     pop cx
     jmp near ptr loc_85B0
 
-sub_8875:
+; Spawns one debris element (sprite frame AX) at the source record's position in the 16-entry
+; pool at 5450h. Codes 4Ah..5Ah also add the matching ScoreLow/ScoreHigh amount (table A353).
+; In: AX = frame/code, SI = source record (slot or pool). Out: flags clobbered;
+;   LastDebrisSlot = the new entry. The score is added before the pool search, so a full pool
+;   still scores.
+; Notes: new entry gets lifetime +0Ch = 2Ch. When SI is a pool record (SI >= 50A8h) its owner
+;   record (+9) is marked dead (+4 = FFFFh). Preserves all registers except flags.
+SpawnDebrisElement:
     push di
     push cx
     push ax
@@ -7950,8 +7975,8 @@ sub_8875:
     ja loc_8894
     shl bx, 1
     mov bx, word ptr [bx-5CADh]
-    add word ptr word_6C0E, bx
-    adc word ptr word_6C10, 0
+    add word ptr ScoreLow, bx
+    adc word ptr ScoreHigh, 0
 loc_8894:
     mov cx, 10h
     mov di, 5450h
@@ -7968,7 +7993,7 @@ loc_88A7:
     mov ax, word ptr [si+2]
     mov word ptr [di+2], ax
     mov word ptr [di+0Ch], 2Ch
-    mov word ptr ds:word_A33E, di
+    mov word ptr ds:LastDebrisSlot, di
     cmp si, 50A8h
     jb loc_88D2
     push di
@@ -7985,16 +8010,22 @@ loc_88D2:
     pop di
     ret
 
-sub_88D7:
+; Runs the follower slots: the slot before the player at 4F0Ah (only while byte_6BC5 is 0) and the
+; four records at 4F2Eh with stride 12h. Each active one is tested for an object hit
+; (ApplyFollowerHitToObjects) and for a cell-change record (TriggerCellChangeGroup).
+; In: DS = DATA. Out: word_4F2A = FFB0h if the 4F0Ah slot hits while word_4F2A is 0.
+; Notes: FollowerOverlapMode (byte_A312) is 1 during the scan, so TestHitboxOverlap uses the
+;   follower test; it is reset to 0 at exit.
+UpdateFollowerSlots:
     mov si, 4F2Eh
     mov cx, 4
-    mov byte ptr byte_A312, 1
+    mov byte ptr FollowerOverlapMode, 1
 loc_88E2:
     cmp word ptr [si+4], -1
     je loc_88F0
-    call sub_8C21
+    call ApplyFollowerHitToObjects
     jb loc_88F0
-    call sub_899E
+    call TriggerCellChangeGroup
 loc_88F0:
     add si, 12h
     loop loc_88E2
@@ -8003,19 +8034,27 @@ loc_88F0:
     mov si, 4F0Ah
     cmp word ptr [si+4], -1
     je loc_891C
-    call sub_8C21
+    call ApplyFollowerHitToObjects
     jb loc_890F
-    call sub_899E
+    call TriggerCellChangeGroup
     jae loc_891C
 loc_890F:
-    cmp word ptr ds:word_4F2A, 0
+    cmp word ptr ds:PlayerVelY, 0
     je loc_891C
-    mov word ptr word_4F2A, 0FFB0h
+    mov word ptr PlayerVelY, 0FFB0h
 loc_891C:
-    mov byte ptr byte_A312, 0
+    mov byte ptr FollowerOverlapMode, 0
     ret
 
-sub_8922:
+; Builds the ambient effect draw list at 52E8h (18-byte records, FFFFh frame = end) from the 70
+; effect sources at 8F1Dh (7 bytes each: +0 X, +2 Y, +4 frame or FFFFh free, +6 sway byte).
+; Sources inside the camera window (cell column offset 0..16h, row offset 0..2Bh) are copied, at
+; most 20. Each emitted source's Y advances by a sway value kept in +6 (stepped on even
+; SnowFrameTick).
+; In: CameraCol, CameraRow, SnowFrameTick. Out: draw list written; sources updated in place.
+; Notes: writes a FFFFh frame word into every unused list slot up to the 20-record limit.
+;   Each list record stores its source pointer at +9.
+BuildEffectDrawList:
     mov di, 52E8h
     mov si, 8F1Dh
     mov dx, 46h
@@ -8072,7 +8111,15 @@ loc_8992:
 loc_899D:
     ret
 
-sub_899E:
+; Tests the follower at SI against the 80 pending cell-change records at 8C8Dh (5 bytes each,
+; +3 cell word, FFFFh = none). For each record whose cell is within one column and one row of
+; the follower, the follower is killed ([si+4] = FFFFh) and TickCellChangeTimer is called on that
+; record. When it reports due (CF = 1), every not-yet-applied record in the 3x3 neighbourhood of
+; that record is applied through ApplyCellChangeRecord.
+; In: SI = follower slot. Out: [si+4] = FFFFh when a record matched; cells may change.
+; Notes: cell word = row in the high byte and column in the low byte. Applied-flag table at 0A2A8h
+;   (80 bytes) is cleared at each cluster application.
+TriggerCellChangeGroup:
     push cx
     mov di, 8C8Dh
     mov cl, 4
@@ -8110,7 +8157,7 @@ loc_89DE:
     jae loc_8A4E
     mov word ptr [si+4], 0FFFFh
     mov dx, word ptr [di+3]
-    call sub_8A5A
+    call TickCellChangeTimer
     jae loc_8A4E
     mov ax, ds
     mov es, ax
@@ -8147,7 +8194,7 @@ loc_8A22:
     inc byte ptr [di-5D58h]
     push word ptr [si+3]
     mov di, si
-    call sub_8B6E
+    call ApplyCellChangeRecord
 loc_8A3F:
     add si, 5
     loop loc_8A06
@@ -8169,7 +8216,14 @@ loc_8A57:
     pop cx
     ret
 
-sub_8A5A:
+; Advances the cell-change record at DI and reports whether its change is due.
+; In: DI = change record: +1 replacement tile, +2 timer byte (80h = armed countdown, 40h = spark
+;   mode), +3 cell word. Out: CF = 1 when the change is due (applied, or an armed countdown has
+;   run out), CF = 0 otherwise.
+; Notes: unarmed records advance at most once per 6 SnowFrameTick steps (word_A33C). The armed
+;   path bursts sparks through SpawnEffectBurst, then applies. Entered by a shared tail:
+;   the sub-routine pushes its own registers and jumps to the pops at ApplyCellChangeRecord.
+TickCellChangeTimer:
     push ax
     push bx
     push cx
@@ -8199,24 +8253,24 @@ sub_8A5A:
 loc_8A8B:
     push cx
     push dx
-    call sub_8BF6
+    call SetEffectOriginFromRecord
 loc_8A90:
     call NextWindRandom
     and ax, 7
     je loc_8A90
     add ax, 6Eh
-    mov word ptr word_A33A, ax
+    mov word ptr EffectFrame, ax
     mov ax, 0
     mov dx, 0
-    sub word ptr word_A338, 70h
-    call sub_8D1B
+    sub word ptr EffectOriginY, 70h
+    call SpawnEffectBurst
     pop dx
     pop cx
     jmp near ptr loc_8B77
 loc_8AB1:
     mov ax, word ptr SnowFrameTick
     push ax
-    sub ax, word ptr word_A33C
+    sub ax, word ptr LastEffectTick
     jns loc_8ABD
     neg ax
 loc_8ABD:
@@ -8225,10 +8279,10 @@ loc_8ABD:
     pop ax
     jmp near ptr loc_8BEB
 loc_8AC6:
-    pop word ptr word_A33C
+    pop word ptr LastEffectTick
     push dx
     push cx
-    call sub_8BF6
+    call SetEffectOriginFromRecord
     test byte ptr [di+2], 40h
     je loc_8B40
     cmp byte ptr [di+2], 40h
@@ -8245,11 +8299,11 @@ loc_8AC6:
     je loc_8AF7
     mov cx, 134h
 loc_8AF7:
-    mov word ptr word_A33A, cx
+    mov word ptr EffectFrame, cx
     mov ax, 20h
     mov dx, 0FFD0h
     mov cx, 2
-    call sub_8D1B
+    call SpawnEffectBurst
     mov ax, 136h
     cmp byte ptr ds:CurrentLevel, 8
     je loc_8B43
@@ -8268,15 +8322,15 @@ loc_8B19:
     je loc_8B31
     mov cx, 134h
 loc_8B31:
-    mov word ptr word_A33A, cx
+    mov word ptr EffectFrame, cx
     mov ax, 30h
     mov dx, 0FFA0h
     mov cx, 4
     jmp short loc_8B61
 loc_8B40:
-    call sub_8C13
+    call RandomDebrisFrame
 loc_8B43:
-    mov word ptr word_A33A, ax
+    mov word ptr EffectFrame, ax
     mov ax, 30h
     cmp si, 4F1Ch
     jae loc_8B56
@@ -8290,14 +8344,21 @@ loc_8B5A:
 loc_8B5E:
     mov dx, 0FF90h
 loc_8B61:
-    call sub_8D1B
+    call SpawnEffectBurst
     pop cx
     pop dx
     sub byte ptr [di+2], 1
     jb loc_8B77
     jmp short loc_8BEB
 
-sub_8B6E:
+; Writes the record's replacement tile into the level map at its cell and redraws it if visible.
+; In: DI = change record (see TickCellChangeTimer). Out: CF = 1 always. Its +3 cell word is set
+;   to FFFFh. word_2A76 incremented (applied-change count).
+; Notes: the level map is LevelSegment with 256-byte rows: offset = row * 256 + column. A visible
+;   cell is blitted through BlitTileToRing and sets AnimVisibleFlag and GridDirtyFlag.
+;   PrevCameraCol is set to 55AAh to force a camera refresh. loc_8B77 is also the tail that
+;   TickCellChangeTimer jumps to; that caller pushes its own registers first.
+ApplyCellChangeRecord:
     push ax
     push bx
     push cx
@@ -8308,6 +8369,8 @@ sub_8B6E:
     push es
     push bp
 loc_8B77:
+; shared tail: TickCellChangeTimer jumps here after pushing its own registers; this entry
+; applies the record and always exits with CF = 1 through loc_8BE8.
     inc word ptr word_2A76
     mov ax, 0FFFFh
     xchg word ptr [di+3], ax
@@ -8371,29 +8434,40 @@ loc_8BEC:
     pop ax
     ret
 
-sub_8BF6:
+; Sets EffectOriginX/EffectOriginY from the cell word at [di+3] of a change record.
+; In: DI = change record. Out: EffectOriginX = column * 16, EffectOriginY = row * 16, CX = 1.
+; Notes: the cell is split as (row = high byte, column = low byte).
+SetEffectOriginFromRecord:
     mov ax, word ptr [di+3]
     mov cl, 4
     mov dl, al
     xor dh, dh
     shl dx, cl
-    mov word ptr word_A336, dx
+    mov word ptr EffectOriginX, dx
     mov dl, ah
     xor dh, dh
     shl dx, cl
-    mov word ptr word_A338, dx
+    mov word ptr EffectOriginY, dx
     mov cx, 1
     ret
 
-sub_8C13:
+; Returns a random debris sprite frame word.
+; Out: AX = 2080h + r, r uniform in 0..5Eh (drawn by rejection from 0..7Fh). CF/flags clobbered.
+; Notes: uses NextWindRandom; on reject it re-enters from the top.
+RandomDebrisFrame:
     call NextWindRandom
     and ax, 7Fh
     cmp al, 5Fh
-    jae sub_8C13
+    jae RandomDebrisFrame
     add ax, 2080h
     ret
 
-sub_8C21:
+; Tests the follower at SI against the 12 render slots at 4FD0h. The first active, contactable
+; object that overlaps (TestHitboxOverlap) takes damage byte_7B19, and the follower is removed.
+; In: SI = follower slot. Out: CF = 1 when an object was hit (follower [si+4] = FFFFh), else 0.
+; Notes: the object's +5 gets 40h; its +0Fh hit points drop by byte_7B19. On a borrow the
+;   object is destroyed through DestroyObjectWithDebris (sound 2); otherwise X drops by vel/4.
+ApplyFollowerHitToObjects:
     mov di, 4FD0h
     mov dx, 0Ch
 loc_8C27:
@@ -8404,7 +8478,7 @@ loc_8C27:
     mov bx, word ptr [di+6]
     test byte ptr [bx+4], 10h
     jne loc_8C68
-    call sub_8D7B
+    call TestHitboxOverlap
     jae loc_8C68
     or byte ptr [di+5], 40h
     mov al, byte ptr byte_7B19
@@ -8412,7 +8486,7 @@ loc_8C27:
     jae loc_8C58
     mov dx, 2
     call StartSoundEffect
-    call sub_8C72
+    call DestroyObjectWithDebris
     jmp short loc_8C61
 loc_8C58:
     mov ax, word ptr [di+8]
@@ -8432,7 +8506,14 @@ loc_8C70:
     clc
     ret
 
-sub_8C72:
+; Destroys a render-slot object and spawns its debris and score popups.
+; In: DI = object record, BX = its sprite-definition record ([bx+8] = debris class byte).
+; Out: object +0Eh = FFh (dead). Debris count from table ds:A3F1h indexed by
+;   (object +10h >> 3) & 7.
+; Notes: each piece calls SpawnDebrisElement with code (bx+8) + 4Ah, with the position stepped by
+;   X += 9, Y += 7; the object then either bursts (SpawnEffectBurst, count 6) or, when bit 0
+;   (01h) of the sprite flags is set, is knocked back using byte_7B19. BX is restored on exit.
+DestroyObjectWithDebris:
     mov al, byte ptr [bx+8]
     cbw
     add ax, 4Ah
@@ -8451,8 +8532,8 @@ sub_8C72:
     push word ptr [si+2]
     push di
 loc_8C96:
-    call sub_8875
-    mov di, word ptr ds:word_A33E
+    call SpawnDebrisElement
+    mov di, word ptr ds:LastDebrisSlot
     push dx
     shl dx, 1
     shl dx, 1
@@ -8471,14 +8552,14 @@ loc_8C96:
     jne loc_8CE1
     push cx
     mov ax, word ptr [di]
-    mov word ptr word_A336, ax
+    mov word ptr EffectOriginX, ax
     mov ax, word ptr [di+2]
-    mov word ptr word_A338, ax
+    mov word ptr EffectOriginY, ax
     mov cx, 6
     mov ax, 30h
     mov dx, 0FF80h
-    mov word ptr word_A33A, 2046h
-    call sub_8D1B
+    mov word ptr EffectFrame, 2046h
+    call SpawnEffectBurst
     pop cx
     ret
 loc_8CE1:
@@ -8510,7 +8591,14 @@ loc_8D17:
     mov word ptr [di+8], ax
     ret
 
-sub_8D1B:
+; Fills up to CX free records of the effect pool (50A8h..52E8h, 52 x 18 bytes) with particles
+; placed at EffectOriginX/EffectOriginY and frame EffectFrame.
+; In: AX, DX = velocity seeds, CX = particle count, EffectOriginX/Y, EffectFrame.
+; Out: pool records filled (free = +4 == FFFFh). Particles beyond the free records are dropped.
+; Notes: each particle gets lifetime +0Ch = 0C6h, owner +9 = FFFFh, velocities AX into +6 and DX
+;   into +0Eh. AX is then negated; every second particle reduces AX and DX by 10h (AX is zeroed
+;   first once the particle index exceeds 12). Ends with CX = 0 or on a full pool.
+SpawnEffectBurst:
     push ax
     push bx
     push cx
@@ -8521,13 +8609,13 @@ sub_8D1B:
 loc_8D25:
     cmp word ptr [bx+4], -1
     jne loc_8D6C
-    mov bp, word ptr word_A33A
+    mov bp, word ptr EffectFrame
     mov word ptr [bx+4], bp
     mov byte ptr [bx+11h], 0
     mov word ptr [bx+0Ch], 0C6h
-    mov bp, word ptr word_A336
+    mov bp, word ptr EffectOriginX
     mov word ptr [bx], bp
-    mov bp, word ptr word_A338
+    mov bp, word ptr EffectOriginY
     mov word ptr [bx+2], bp
     mov word ptr [bx+6], ax
     mov word ptr [bx+0Eh], dx
@@ -8557,14 +8645,21 @@ loc_8D75:
     pop ax
     ret
 
-sub_8D7B:
+; Axis-aligned overlap test of two sprite records.
+; In: SI, DI = records (+0 X, +2 Y, +4 frame word; the frame index selects FrameWidths,
+;   FrameHeights and FrameHotX). Out: CF = 1 when the boxes overlap, else CF = 0.
+; Side effects: LandingFlag (byte_A330) = 1 and LandingDepth (word_A331) set when SI stands on DI
+;   with FollowerOverlapMode 0 (the player test). Clobbers those two words only.
+; Notes: rejects |dx| >= 40h or |dy| >= 46h first. FollowerOverlapMode 1 skips the landing test
+;   and uses the full width (the player test halves it). All registers are preserved.
+TestHitboxOverlap:
     push ax
     push bx
     push dx
     push si
     push di
     push bp
-    mov byte ptr byte_A330, 0
+    mov byte ptr LandingFlag, 0
     mov ax, word ptr [si]
     sub ax, word ptr [di]
     jns loc_8D8E
@@ -8599,10 +8694,10 @@ loc_8DBB:
     sub ax, bx
     cmp ax, dx
     jge loc_8E3D
-    cmp byte ptr ds:byte_A312, 0
+    cmp byte ptr ds:FollowerOverlapMode, 0
     jne loc_8DF1
     sub dx, ax
-    cmp word ptr ds:word_4F2A, 80h
+    cmp word ptr ds:PlayerVelY, 80h
     jge loc_8DE9
     shr bx, 1
     cmp dx, bx
@@ -8610,8 +8705,8 @@ loc_8DBB:
     cmp si, 4F1Ch
     je loc_8DF1
 loc_8DE9:
-    inc byte ptr byte_A330
-    mov word ptr word_A331, dx
+    inc byte ptr LandingFlag
+    mov word ptr LandingDepth, dx
 loc_8DF1:
     mov bx, word ptr [si+4]
     and bh, 1Fh
@@ -8634,7 +8729,7 @@ loc_8DF1:
     mov bl, byte ptr ds:[bp+FrameWidths]
 loc_8E24:
     xor bh, bh
-    cmp byte ptr ds:byte_A312, 0
+    cmp byte ptr ds:FollowerOverlapMode, 0
     jne loc_8E2F
     sar bx, 1
 loc_8E2F:
@@ -8659,7 +8754,19 @@ loc_8E3D:
     clc
     ret
 
-sub_8E45:
+; Front-end flow: MODE select, ENTER CODE and level start. Loads and fades in the start picture,
+; then loops until a menu request or a timeout.
+; In: none. Out: CurrentLevel and ExpertFlag (byte_B198, byte_083D/083E) are set for the level.
+; Notes: picture = PageInResource slot 8 shown at 160 entries (ShowMode13PictureFadeIn).
+;   MODE request (byte_27F6, or byte_282D | byte_2810) runs RunCallbackMapScreen with
+;   UpdateModeSelectFrame; ENTER CODE (byte_27F7) runs it with UpdateCodeEntryFrame and
+;   CurrentLevel = FFh. A negative CurrentLevel afterwards restarts this routine.
+;   When word_27F0 >= 10Eh with no request the level starts: fade out, load slot 0Ch, planar
+;   picture, RunLevelIntroScene, byte_2879 = 1 and CurrentLevel/ExpertFlag from 083E/083D.
+;   Exit path: DATA 003Fh..083Dh is filled with 55AAh words, then level (083Eh) and expert
+;   (083Dh) are stored there; word_78C4 = 78C6h when CpuClass >= 3; FadeOutPaletteToBlack.
+;   Entered from the main startup (MODULE1 0160).
+RunFrontEnd:
     mov ax, seg DATA
     mov ds, ax
     xor ax, ax
@@ -8673,7 +8780,7 @@ sub_8E45:
     mov ds, word ptr LevelSegment
     xor si, si
     mov cl, 0A0h
-    call sub_919F
+    call ShowMode13PictureFadeIn
     mov ax, seg DATA
     mov ds, ax
     xor ax, ax
@@ -8690,17 +8797,17 @@ loc_8E7B:
     jne loc_8EC9
     cmp word ptr ds:word_27F0, 10Eh
     jb loc_8E7B
-    call sub_9286
+    call FadeOutPaletteToBlack
     mov cx, 0Ch
     call PageInResource
     mov word ptr LevelSegment, ax
     mov ds, ax
     xor si, si
-    call sub_9155
+    call ShowPlanarPicture
     mov ax, seg DATA
     mov ds, ax
-    call sub_8F2D
-    call sub_9286
+    call RunLevelIntroScene
+    call FadeOutPaletteToBlack
     mov byte ptr byte_2879, 1
     mov al, byte ptr ds:byte_083E
     mov byte ptr CurrentLevel, al
@@ -8722,7 +8829,7 @@ loc_8EDE:
     call RunCallbackMapScreen
     cmp byte ptr ds:CurrentLevel, 0
     jge loc_8EFB
-    jmp near ptr sub_8E45
+    jmp near ptr RunFrontEnd
 loc_8EFB:
     jmp short loc_8EFD
 loc_8EFD:
@@ -8742,10 +8849,16 @@ loc_8EFD:
     jb loc_8F29
     mov word ptr word_78C4, 78C6h
 loc_8F29:
-    call sub_9286
+    call FadeOutPaletteToBlack
     ret
 
-sub_8F2D:
+; Level-start scene: saves the backdrop, places the player and three followers, then runs the
+; intro frames until byte_4F21 bit 20h clears, and a second walk-off loop.
+; In: DS = DATA. Out: player, camera and follower records reset. Frames drawn and presented.
+; Notes: the first loop adds about 5 to PlayerX per frame and the walk-off loop subtracts 7 until
+;   PlayerX is negative. The backdrop saved here is the 1F40h bytes of each plane at A000:0 into
+;   3F40h. Role inferred from the sequence, not from a named caller path.
+RunLevelIntroScene:
     call SetLatchCopyMode
     mov ax, 0A000h
     mov ds, ax
@@ -8766,7 +8879,7 @@ sub_8F2D:
     mov word ptr PlayerX, ax
     mov word ptr PlayerY, 0A9h
     mov word ptr word_4F25, ax
-    mov word ptr word_4F22, ax
+    mov word ptr PlayerVelX, ax
     mov word ptr word_4F28, 7BA7h
     mov word ptr word_4F2E, 30h
     mov word ptr word_4F30, 0A9h
@@ -8780,8 +8893,8 @@ loc_8F96:
     mov bx, word ptr word_4F28
     call sub_638B
     mov si, 4F2Eh
-    call sub_9047
-    call sub_9071
+    call StepSpriteAnimation
+    call RestoreBackdropToDrawPage
     call DrawSpriteObjects
     call PresentFrame
     mov ax, 5
@@ -8820,7 +8933,7 @@ loc_9002:
     mov si, 4F2Eh
 loc_900F:
     sub word ptr [si], 5
-    call sub_9047
+    call StepSpriteAnimation
     cmp word ptr [si+2], 0A9h
     jbe loc_901F
     neg word ptr [si+0Eh]
@@ -8834,14 +8947,18 @@ loc_901F:
     add word ptr [si+2], ax
     add si, 12h
     loop loc_900F
-    call sub_9071
+    call RestoreBackdropToDrawPage
     call DrawSpriteObjects
     call PresentFrame
     sub word ptr PlayerX, 7
     jns loc_9002
     ret
 
-sub_9047:
+; Advances one render slot's animation script and writes its frame.
+; In: SI = render slot; [si+0Ch] = script pointer. Out: [si+4] = frame word, [si+0Ch] advanced.
+; Notes: script word >= 0 is a frame number; negative is a relative jump to the loop start.
+;   Frame = (word & 1Fh) + 138h, with the flip bit (80h of [si+9]) copied into the high byte.
+StepSpriteAnimation:
     push ax
     push bx
     push dx
@@ -8866,7 +8983,10 @@ loc_9057:
     pop ax
     ret
 
-sub_9071:
+; Copies 1F40h bytes of each VRAM plane from A000:3F40h (saved backdrop) to the draw page.
+; In: DrawPage. Out: draw page holds the backdrop. Sets latch copy mode (SetLatchCopyMode).
+; Notes: pairs with the backdrop save in RunLevelIntroScene (A000:0 -> 3F40h).
+RestoreBackdropToDrawPage:
     push ax
     push cx
     push si
@@ -8885,7 +9005,16 @@ sub_9071:
     pop ax
     ret
 
-sub_9090:
+; Shows the PRESENT.SQZ title: 320x200 mode 13h background, logo overlay and palette morph.
+; In: none (filename at ds:A2F8h). Out: title on screen; the morph runs to completion.
+; Notes: asset layout (SQZ output): 0..2FFh 6-bit palette, 300h..0FA00h background,
+;   10300h..(+7440h) logo strip (320x93) copied to A000:0. NextFreeSegment and LevelSegment
+;   are set to the asset segment. sub_919F fades in 255 entries first (FadeEntryCount = 0FFh).
+;   The morph reads 768 bytes at ds:ACE7h as target and ramps each component by +/-2 toward it
+;   (snap when |diff| = 1). It repeats passes until a pass changes nothing. A retrace is waited
+;   after every 82 (52h) component writes, and that counter is continuous across passes.
+;   Not gated by OptionBits. Leaves the DAC showing the morphed palette.
+ShowPresentTitle:
     mov ax, seg DATA
     mov ds, ax
     push ds
@@ -8898,7 +9027,7 @@ sub_9090:
     mov word ptr NextFreeSegment, ax
     mov word ptr LevelSegment, ax
     mov cl, 0FFh
-    call sub_919F
+    call ShowMode13PictureFadeIn
     pop ds
     mov ax, word ptr NextFreeSegment
     add ax, 1030h
@@ -8970,7 +9099,11 @@ loc_911F:
     mov ds, ax
     ret
 
-sub_912B:
+; Shows TITUS.SQZ (filename at ds:A304h): 16-entry fade-in, hold, then fade out.
+; In: none. Out: image on screen; DAC left as the faded palette.
+; Notes: sub_919F with FadeEntryCount = 10h. Waits 46h (70) retraces. FadeOutPaletteToBlack
+;   runs only when OptionBits bit 0 is set and OptionVByte is 5 (CheckVgaAdapter).
+ShowTitusScreen:
     mov ax, seg DATA
     mov ds, ax
     push ds
@@ -8983,22 +9116,28 @@ sub_912B:
     mov word ptr NextFreeSegment, ax
     mov word ptr LevelSegment, ax
     mov cl, 10h
-    call sub_919F
+    call ShowMode13PictureFadeIn
     mov cx, 46h
 loc_9149:
     call WaitVerticalRetrace
     loop loc_9149
-    call sub_9286
+    call FadeOutPaletteToBlack
     pop ds
     ret
-cvar_9153 label byte
+FadeEntryCount label byte
 ; DATA: bound and index bytes
     db 00h
-cvar_9154 label byte
+FadeEntryIndex label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
 
-sub_9155:
+; Shows a planar (mode 0Dh) picture: four 8000-byte planes followed by a 16-colour palette.
+; In: DS = picture segment, SI = 0. Out: picture in VRAM; DAC faded in.
+; Notes: sets mode through SetLevelVideoMode and clears all DAC entries. Writes planes through map
+;   masks 1, 2, 4, 8. The palette is at S:7D00h; S:7D30h..7FFFh is zeroed afterwards. The fade
+;   count is whatever FadeEntryCount holds (from the previous sub_919F, 0A0h in RunFrontEnd),
+;   so entries 16..159 read zero targets and stay black. Fade rules as ShowMode13PictureFadeIn.
+ShowPlanarPicture:
     push ds
     call SetLevelVideoMode
     call WaitVerticalRetrace
@@ -9037,8 +9176,16 @@ loc_9177:
     mov ds, si
     jmp short loc_91CF
 
-sub_919F:
-    mov byte ptr cs:cvar_9153, cl
+; Shows a mode 13h picture and fades its palette in. Used for the title pictures.
+; In: CL = entry count (stored as FadeEntryCount), DS = picture segment: 0..2FFh 6-bit palette,
+;   300h.. 320x200 pixels. Out: picture on screen; DS restored; BL = green of the last entry read.
+; Notes: sets mode 13h (INT 10h), clears all 256 DAC entries, copies 64000 bytes, enables video.
+;   Fade-in (OptionBits bit 0 set): entries 0..count-1 step each component +2 toward the target
+;   while it is <= 3Dh (so the value stops below the target when it is 3Eh or 3Fh). A retrace
+;   wait happens every 32 entries; passes repeat until none changes. With bit 0 clear, 160 entries
+;   (480 bytes) are written at once and FadeEntryCount is ignored (loc_925E).
+ShowMode13PictureFadeIn:
+    mov byte ptr cs:FadeEntryCount, cl
     push ds
     mov ax, 13h
     int 10h
@@ -9051,7 +9198,7 @@ sub_919F:
 loc_91B7:
     out dx, al
     loop loc_91B7
-    call sub_926E
+    call SetPictureCopyPointers
     mov cx, 7D00h
     rep movsw
     call WaitVerticalRetrace
@@ -9060,18 +9207,20 @@ loc_91B7:
     sub si, 30h
     mov ds, si
 loc_91CF:
-    mov byte ptr cs:cvar_9154, 0
+    mov byte ptr cs:FadeEntryIndex, 0
     xor si, si
     xor bp, bp
 loc_91D9:
-    test byte ptr cs:cvar_9154, 1Fh
+    test byte ptr cs:FadeEntryIndex, 1Fh
     jne loc_91E4
     call WaitVerticalRetrace
 loc_91E4:
+; OptionBits bit 0 is the fade switch: /F clears it (MODULE1 OptionBits comment).
+; The MODULE1 comment saying "no reader in R1" is stale: this routine reads it.
     test word ptr cs:OptionBits, 1
     je loc_925E
     mov dx, 3C7h
-    mov al, byte ptr cs:cvar_9154
+    mov al, byte ptr cs:FadeEntryIndex
     out dx, al
     mov dl, 0C9h
     jmp short loc_91F9
@@ -9090,7 +9239,7 @@ loc_9207:
     and al, 3Fh
     mov bh, al
     mov dl, 0C8h
-    mov al, byte ptr cs:cvar_9154
+    mov al, byte ptr cs:FadeEntryIndex
     out dx, al
     inc dx
     mov al, ah
@@ -9121,9 +9270,9 @@ loc_9230:
 loc_923F:
     out dx, al
     add si, 3
-    inc byte ptr cs:cvar_9154
-    mov al, byte ptr cs:cvar_9153
-    cmp byte ptr cs:cvar_9154, al
+    inc byte ptr cs:FadeEntryIndex
+    mov al, byte ptr cs:FadeEntryCount
+    cmp byte ptr cs:FadeEntryIndex, al
     jae loc_9255
     jmp short loc_91D9
 loc_9255:
@@ -9133,6 +9282,8 @@ loc_9255:
 loc_925C:
     jmp short loc_926C
 loc_925E:
+; bit 0 of OptionBits clear: instant palette write of 160 entries (480 bytes) from ds:0,
+; ignoring FadeEntryCount. The 1E0h count is a literal, not the entry count.
     mov dx, 3C8h
     mov al, 0
     out dx, al
@@ -9146,7 +9297,9 @@ loc_926C:
     pop ds
     ret
 
-sub_926E:
+; Sets DS to LevelSegment + 300h (picture bytes), SI = 0, ES = A000h, DI = 0.
+; Out: DS, SI, ES, DI as above; other registers preserved.
+SetPictureCopyPointers:
     mov ax, seg DATA
     mov ds, ax
     mov si, word ptr LevelSegment
@@ -9158,7 +9311,15 @@ sub_926E:
     xor di, di
     ret
 
-sub_9286:
+; Fades the first FadeEntryCount DAC entries to black by 4 per pass.
+; In: FadeEntryCount, FadeEntryIndex (scratch). Out: DAC faded or unchanged.
+; Gate: returns at once unless OptionBits bit 0 is set and OptionVByte is 5 (the VGA probe passed).
+; Notes: passes start at entry 0 with a retrace wait every 32 entries. Each component drops by
+;   4 with saturation at 0. The loop condition ORs the red value read at the start of each entry's
+;   pass into BP (AH is never reloaded), so it continues while any red was nonzero or any green
+;   or blue was above 4. The final pass therefore ends one step after red reaches 0.
+;   Re-invokes itself after a pass that changed something (jmp to the top).
+FadeOutPaletteToBlack:
     test word ptr cs:OptionBits, 1
     jne loc_9292
     jmp near ptr loc_932E
@@ -9168,15 +9329,15 @@ loc_9292:
     je loc_929B
     ret
 loc_929B:
-    mov byte ptr cs:cvar_9154, 0
+    mov byte ptr cs:FadeEntryIndex, 0
     xor bp, bp
 loc_92A3:
-    test byte ptr cs:cvar_9154, 1Fh
+    test byte ptr cs:FadeEntryIndex, 1Fh
     jne loc_92AE
     call WaitVerticalRetrace
 loc_92AE:
     mov dx, 3C7h
-    mov al, byte ptr cs:cvar_9154
+    mov al, byte ptr cs:FadeEntryIndex
     out dx, al
     mov dl, 0C9h
     jmp short loc_92BA
@@ -9195,7 +9356,7 @@ loc_92C8:
     and al, 3Fh
     mov bh, al
     mov dl, 0C8h
-    mov al, byte ptr cs:cvar_9154
+    mov al, byte ptr cs:FadeEntryIndex
     out dx, al
     inc dx
     mov al, ah
@@ -9231,19 +9392,36 @@ loc_92C8:
     adc al, 0
     or bp, ax
     out dx, al
-    inc byte ptr cs:cvar_9154
-    mov al, byte ptr cs:cvar_9153
-    cmp byte ptr cs:cvar_9154, al
+    inc byte ptr cs:FadeEntryIndex
+    mov al, byte ptr cs:FadeEntryCount
+    cmp byte ptr cs:FadeEntryIndex, al
     jae loc_9327
     jmp near ptr loc_92A3
 loc_9327:
     or bp, bp
     je loc_932E
-    jmp near ptr sub_9286
+    jmp near ptr FadeOutPaletteToBlack
 loc_932E:
     ret
 
-sub_932F:
+; Returns the 16-bit level password for an index.
+; In: AX = index (0..12h for the ENTER CODE check; the level index for BuildDecorList, where
+;   CurrentLevel is +0Ah in expert mode). DX preserved.
+; Out: AX = rol16(((AX xor 55A3h) * BiosSeed) & 0FFFFh, CpuClass) (low word of the product).
+; Flags: from the final ROL. BiosSeed is computed once: when BiosSeedReady is 0,
+;   DX = fold of the 16 bytes F000:FFF0..FFFF (dl += b, dh = dh - b - carry);
+;   then option ROMs at C000h, then 0x400 paragraphs upward (0x400 paragraphs = 16 KB) until F0h.
+;   A segment whose first word is 0AA55h has its first 128 bytes summed (dl += b, dh ^= b). Next
+;   segment = segment + (ROM length byte at +2) * 20h paragraphs (512-byte units).
+;   BiosSeed = DX, or 0020h if DX was 0. BiosSeedReady = 1.
+; Notes: the password depends on this machine's BIOS ROM bytes and on CpuClass (cs:0005: 0, 2 or
+;   3, set by ProbeCpuClass; not a constant). A translator must supply BiosSeed and CpuClass.
+;   Quirks: a ROM whose length byte is 0 never advances (infinite loop). Option ROMs off the 16 KB
+;   grid are missed unless reached from an earlier ROM's length. The fold uses xor for ROM bytes
+;   and a borrow chain for the BIOS date bytes.
+;   Callers: BuildDecorList (MODULE2 411C) for the displayed code; the ENTER CODE validation loop
+;   (MODULE4 9A70..9AAA) compares the entered value with ComputePasswordCode(0..12h).
+ComputePasswordCode:
     push bx
     push cx
     push dx
@@ -9254,7 +9432,7 @@ sub_932F:
     push ax
     mov dx, seg DATA
     mov ds, dx
-    cmp byte ptr ds:byte_A335, 0
+    cmp byte ptr ds:BiosSeedReady, 0
     jne loc_939B
     xor dx, dx
     mov ax, 0F000h
@@ -9292,12 +9470,12 @@ loc_9384:
     jne loc_9392
     mov dl, 20h
 loc_9392:
-    mov word ptr word_A333, dx
-    mov byte ptr byte_A335, 1
+    mov word ptr BiosSeed, dx
+    mov byte ptr BiosSeedReady, 1
 loc_939B:
     pop ax
     xor ax, 55A3h
-    mul word ptr word_A333
+    mul word ptr BiosSeed
     mov cl, byte ptr cs:CpuClass
     rol ax, cl
     pop es
@@ -9448,7 +9626,12 @@ loc_94EE:
     add bx, 6
     jmp short loc_94E0
 
-sub_94F3:
+; Spawns four debris particles at the origin, with random frames and a fan of velocities.
+; In: EffectOriginX/EffectOriginY = origin (set by the caller). Out: up to four pool records.
+; Notes: per particle calls RandomDebrisFrame then SpawnEffectBurst (count 1, seeds AX = 20h and
+;   DX = FF60h; AX is negated after each particle, and AX and DX are reduced by 10h when the
+;   negated AX is not negative).
+SpawnFourDebrisParticles:
     push ax
     push dx
     push cx
@@ -9459,10 +9642,10 @@ loc_94FF:
     push cx
     mov cx, 1
     push ax
-    call sub_8C13
-    mov word ptr word_A33A, ax
+    call RandomDebrisFrame
+    mov word ptr EffectFrame, ax
     pop ax
-    call sub_8D1B
+    call SpawnEffectBurst
     neg ax
     js loc_9518
     sub ax, 10h

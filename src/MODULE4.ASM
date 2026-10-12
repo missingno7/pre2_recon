@@ -42,18 +42,18 @@ CODE segment word public 'CODE'
 assume cs:CODE, ds:DATA, es:nothing, ss:nothing
 ; module interface (tools/symtab.py)
 extrn ActivateResourceSlot:near
+extrn ComputePasswordCode:near
 extrn CpuClass:byte
 extrn DisableVideoOutput:near
 extrn DrawSpriteObjects:near
 extrn EnableVideoOutput:near
+extrn FadeOutPaletteToBlack:near
 extrn NextWindRandom:near
 extrn PageInResource:near
 extrn PollInputState:near
 extrn PresentFrame:near
 extrn SetCpuWriteMode:near
 extrn SetLatchCopyMode:near
-extrn sub_9286:near
-extrn sub_932F:near
 ; end module interface
 
 ; World map (stage select) scroll-in. Called at MODULE1 01A8 when CurrentLevel < 0Ah, unless
@@ -255,7 +255,7 @@ loc_96C1:
     mov ax, seg DATA
     mov ds, ax
     sti
-    call sub_9286
+    call FadeOutPaletteToBlack
     mov byte ptr LastScanCode, 0
     mov byte ptr byte_6BE5, 0
     ret
@@ -468,7 +468,7 @@ loc_9877:
     jmp near ptr loc_97A8
 loc_9881:
     sti
-    call sub_9286
+    call FadeOutPaletteToBlack
     ret
 
 ; Draws a string of glyphs at the current text position, erasing the previous cell first.
@@ -732,7 +732,7 @@ loc_9A6E:
     xor dx, dx
 loc_9A70:
     mov ax, dx
-    call sub_932F
+    call ComputePasswordCode
     cmp word ptr ds:[0B1B9h], ax
     je loc_9A9B
     inc dx
@@ -953,7 +953,7 @@ loc_9C62:
     cmp byte ptr ds:byte_27E8, 0
     je loc_9C62
 loc_9C83:
-    call sub_9286
+    call FadeOutPaletteToBlack
 loc_9C86:
     ret
 

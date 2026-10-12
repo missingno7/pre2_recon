@@ -10,6 +10,8 @@ public AnimTileFlags
 public AnimVisibleFlag
 public BackFileChar
 public BackdropCursor
+public BiosSeed
+public BiosSeedReady
 public CameraCol
 public CameraLeftLimit
 public CameraRow
@@ -26,11 +28,15 @@ public CurrentLevel
 public CurrentObject
 public DisplayPage
 public DrawPage
+public EffectFrame
+public EffectOriginX
+public EffectOriginY
 public ExpandDstSegment
 public ExpandSrcSegment
 public ExpertFlag
 public FineScroll
 public FlakeTable
+public FollowerOverlapMode
 public FrameCallback
 public FrameDataOffsets
 public FrameDataSegments
@@ -48,6 +54,10 @@ public IrisRadius
 public IrisSpeed
 public IrisSpeedCounter
 public KeyDownTable
+public LandingDepth
+public LandingFlag
+public LastDebrisSlot
+public LastEffectTick
 public LastScanCode
 public LevelFileChar
 public LevelFlags
@@ -68,6 +78,9 @@ public OptionBits
 public OptionVByte
 public PageInResource
 public PictureSegment
+public PlayerHurtTimer
+public PlayerVelX
+public PlayerVelY
 public PlayerX
 public PlayerY
 public PollInputState
@@ -82,6 +95,8 @@ public RandomSeed
 public RenderSlots
 public RingTileOffset
 public RowRing
+public ScoreHigh
+public ScoreLow
 public ScreenExitRequested
 public ScreenFirstFrame
 public ScreenRowBytes
@@ -148,7 +163,6 @@ public byte_4F24
 public byte_4F27
 public byte_4F2B
 public byte_4F2C
-public byte_4F2D
 public byte_564D
 public byte_565F
 public byte_5671
@@ -216,7 +230,6 @@ public byte_7B7F
 public byte_7F5E
 public byte_91FB
 public byte_91FE
-public byte_A312
 public byte_A324
 public byte_A325
 public byte_A328
@@ -224,8 +237,6 @@ public byte_A329
 public byte_A32A
 public byte_A32B
 public byte_A32C
-public byte_A330
-public byte_A335
 public byte_A340
 public byte_A3F9
 public byte_A3FA
@@ -253,10 +264,8 @@ public word_2DD2
 public word_4F0C
 public word_4F0E
 public word_4F20
-public word_4F22
 public word_4F25
 public word_4F28
-public word_4F2A
 public word_4F2E
 public word_4F30
 public word_4F32
@@ -304,8 +313,6 @@ public word_6C06
 public word_6C08
 public word_6C0A
 public word_6C0C
-public word_6C0E
-public word_6C10
 public word_6C9E
 public word_6CA0
 public word_6CA2
@@ -326,13 +333,6 @@ public word_A30E
 public word_A310
 public word_A326
 public word_A32E
-public word_A331
-public word_A333
-public word_A336
-public word_A338
-public word_A33A
-public word_A33C
-public word_A33E
 public word_A341
 public word_A3F7
 public word_A3FB
@@ -370,19 +370,26 @@ CODE segment para public 'CODE'
 assume cs:CODE, ds:DATA, es:nothing, ss:nothing
 ; module interface (tools/symtab.py)
 extrn AnimateTiles:near
+extrn BuildEffectDrawList:near
 extrn CheckVgaAdapter:near
 extrn CopyRingWindowToPage:near
 extrn DrawForegroundOverSprites:near
 extrn DrawSpriteObjects:near
 extrn EnterLevelView:near
+extrn FadeOutPaletteToBlack:near
 extrn LoadLevel:near
 extrn LoadSpriteSheet:near
 extrn PresentFrame:near
+extrn ProcessPlayerContacts:near
 extrn ReadClockYear:near
 extrn RedrawOverlayTiles:near
+extrn RunFrontEnd:near
 extrn SetCpuWriteMode:near
 extrn SetLevelVideoMode:near
 extrn ShowLateYearCredits:near
+extrn ShowMode13PictureFadeIn:near
+extrn ShowPresentTitle:near
+extrn ShowTitusScreen:near
 extrn ShowWorldMapScrollIn:near
 extrn sub_454E:near
 extrn sub_45AF:near
@@ -425,14 +432,7 @@ extrn sub_6673:near
 extrn sub_6772:near
 extrn sub_67D7:near
 extrn sub_6822:near
-extrn sub_8295:near
-extrn sub_88D7:near
-extrn sub_8922:near
-extrn sub_8E45:near
-extrn sub_9090:near
-extrn sub_912B:near
-extrn sub_919F:near
-extrn sub_9286:near
+extrn UpdateFollowerSlots:near
 extrn UpdateWindAndFlakes:near
 ; end module interface
 ; Unused: no reader or writer in src/ (initial bytes at cs:0000: 03h FFh FFh 1Fh 00h 00h 00h 00h).
@@ -589,10 +589,10 @@ loc_007E:
     mov word ptr ds:[3Dh], ax
     call ShowLateYearCredits
     call InitSoundDevices
-    call sub_912B
+    call ShowTitusScreen
     mov ax, 3
     call ActivateResourceSlot
-    call sub_9090
+    call ShowPresentTitle
     call InitResourceMemory
     test word ptr cs:OptionBits, 2
     je loc_0126
@@ -617,7 +617,7 @@ LevelRestart:
     mov word ptr NextFreeSegment, dx
     or ax, ax
     je loc_0163
-    call sub_9286
+    call FadeOutPaletteToBlack
     call SetLevelVideoMode
     mov byte ptr byte_27D8, 2
     mov byte ptr byte_6CA7, 0
@@ -626,7 +626,7 @@ LevelRestart:
     mov byte ptr byte_6CA8, 0
     mov ax, 3
     call ActivateResourceSlot
-    call sub_8E45
+    call RunFrontEnd
 loc_0163:
     cmp byte ptr ds:CurrentLevel, 8
     jb loc_019E
@@ -645,7 +645,7 @@ loc_0163:
     xor si, si
     mov ds, ax
     mov cl, 0FFh
-    call sub_919F
+    call ShowMode13PictureFadeIn
     mov ax, seg DATA
     mov ds, ax
     call WaitForButtonPressRelease
@@ -698,15 +698,15 @@ MainFrameLoop:
     mov ds, ax
     sti
     call sub_581E
-    call sub_88D7
+    call UpdateFollowerSlots
     call sub_6822
     call sub_6210
     call sub_60FE
     call sub_60DF
     call sub_4907
     call sub_5850
-    call sub_8295
-    call sub_8922
+    call ProcessPlayerContacts
+    call BuildEffectDrawList
     call sub_52FE
     call sub_53F6
     call sub_5643
@@ -6123,7 +6123,7 @@ word_4F20 label word
 byte_4F21 label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
-word_4F22 label word
+PlayerVelX label word
 ; UNKNOWN: not yet classified as code or data
     db 00h
 byte_4F23 label byte
@@ -6141,7 +6141,7 @@ byte_4F27 label byte
 word_4F28 label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_4F2A label word
+PlayerVelY label word
 ; UNKNOWN: not yet classified as code or data
     db 00h
 byte_4F2B label byte
@@ -6150,7 +6150,7 @@ byte_4F2B label byte
 byte_4F2C label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
-byte_4F2D label byte
+PlayerHurtTimer label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
 word_4F2E label word
@@ -6494,10 +6494,10 @@ word_6C0A label word
 word_6C0C label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_6C0E label word
+ScoreLow label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_6C10 label word
+ScoreHigh label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
 byte_6C12 label byte
@@ -7010,7 +7010,7 @@ word_A30E label word
 word_A310 label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-byte_A312 label byte
+FollowerOverlapMode label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h, 17h, 10h, 10h, 07h, 14h, 04h, 04h, 04h, 00h, 00h
     db 00h, 00h, 00h, 00h, 00h, 00h
@@ -7041,31 +7041,31 @@ byte_A32C label byte
 word_A32E label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-byte_A330 label byte
+LandingFlag label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
-word_A331 label word
+LandingDepth label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_A333 label word
+BiosSeed label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-byte_A335 label byte
+BiosSeedReady label byte
 ; UNKNOWN: not yet classified as code or data
     db 00h
-word_A336 label word
+EffectOriginX label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_A338 label word
+EffectOriginY label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_A33A label word
+EffectFrame label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_A33C label word
+LastEffectTick label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
-word_A33E label word
+LastDebrisSlot label word
 ; UNKNOWN: not yet classified as code or data
     db 00h, 00h
 byte_A340 label byte
@@ -7079,6 +7079,7 @@ word_A343 label word
     db 78h, 00h, 64h, 00h, 0A6h, 0FFh, 6Eh, 00h, 88h, 0FFh, 28h, 00h
     db 50h, 00h, 3Ch, 00h
 word_A353 label word
+; DATA: score table: word per debris code 4Ah..5Ah (10,20,..,10000); ScoreLow/High += it
 ; UNKNOWN: not yet classified as code or data
     db 0Ah, 00h, 14h, 00h, 1Eh, 00h, 32h, 00h, 3Ch, 00h, 46h, 00h
     db 4Bh, 00h, 50h, 00h, 64h, 00h, 0C8h, 00h, 0F4h, 01h, 20h, 03h
@@ -7099,6 +7100,7 @@ word_A3E5 label word
 ; UNKNOWN: not yet classified as code or data
     db 9Bh, 00h, 0E0h, 00h, 0E1h, 00h, 2Dh, 01h, 2Eh, 01h, 2Fh, 01h
 byte_A3F1 label byte
+; DATA: debris count table: byte i = pieces for (object phase >> 3) & 7 (6 bytes + 2 zero)
 ; UNKNOWN: not yet classified as code or data
     db 01h, 02h, 03h, 04h, 06h, 08h
 word_A3F7 label word

@@ -149,6 +149,7 @@ DATA ends
 CODE segment word public 'CODE'
 assume cs:CODE, ds:DATA, es:nothing, ss:nothing
 ; module interface (tools/symtab.py)
+extrn ComputePasswordCode:near
 extrn cvar_0000:byte
 extrn HaltWithMessage:near
 extrn LoadSqzFile:near
@@ -162,7 +163,6 @@ extrn SetLevelPalette:near
 extrn SetStartupPalette:near
 extrn sub_5634:near
 extrn sub_6772:near
-extrn sub_932F:near
 extrn WaitForButtonPressRelease:near
 extrn WaitSoundTicks:near
 ; end module interface
@@ -3780,7 +3780,7 @@ loc_4109:
     add al, 0Ah
 loc_411B:
     cbw
-    call sub_932F
+    call ComputePasswordCode
     mov si, 6A88h
 loc_4122:
     mov dx, ax
