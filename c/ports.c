@@ -10,7 +10,7 @@
 #include <string.h>
 
 static uint8_t preset[0x400];           /* test/host configuration, not game state */
-static char logbuf[1 << 16];
+static char logbuf[1 << 20];          /* joystick calibration polls the port ~10k times */
 static size_t loglen;
 static PortDevice *devices;
 
