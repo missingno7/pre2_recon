@@ -15,6 +15,7 @@
 #include "vga.h"
 #include "sqz.h"
 #include "sprites.h"
+#include "render.h"
 
 #define SPRITE_SQZ_NAME  0x2A2Eu   /* DATA offset of "SPRITES.SQZ" (anonymous string, MODULE1 DATA) */
 #define BITREV_TABLE     CS_BitReverseTable   /* 256 bytes, byte i = reverse8(i), read by XLAT */
@@ -39,12 +40,6 @@ static uint8_t vmem_xchg(uint16_t off, uint8_t v)
 /* XLAT through cs:[BX] with BX = BITREV_TABLE. */
 static uint8_t bitrev(uint8_t v) { return CB((uint16_t)(BITREV_TABLE + v)); }
 
-/* SetCpuWriteMode (cs:452Bh, outside this region): GC 05h = 00h, GC 03h = 00h. */
-static void set_cpu_write_mode(void)
-{
-    vga_out(0x3CE, 5); vga_out(0x3CF, 0);
-    vga_out(0x3CE, 3); vga_out(0x3CF, 0);
-}
 
 static void seq_index(uint8_t index) { vga_out(0x3C4, index); }
 
@@ -634,7 +629,7 @@ static void draw_object(uint16_t si)
 
     /* loc_28B6: the record is marked drawn, the flash request is consumed. */
     SET_DB(si + 5, (uint8_t)((DB(si + 5) | 0x20) & 0xBF));
-    set_cpu_write_mode();
+    SetCpuWriteMode();
     vga_out(0x3C4, 0x02); vga_out(0x3C5, 0x0F);        /* map mask: all four planes (for the clear) */
 
     Blit b;

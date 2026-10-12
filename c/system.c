@@ -14,6 +14,7 @@
 #include "vga.h"
 #include "sqz.h"
 #include "system.h"
+#include "render.h"
 
 #define RESOURCE_NAMES   0x09E0u    /* DATA: NUL-terminated resource names, PRES.TRK first */
 #define RF(slot)         ((uint16_t)(DS_ResourceFlags + (slot)))
@@ -31,13 +32,6 @@ static uint8_t shr8(uint8_t v, uint8_t cl)
     return n >= 8 ? 0 : (uint8_t)(v >> n);
 }
 
-/* SetCpuWriteMode (cs:452Bh, MODULE2): GC 05h = 00h, GC 03h = 00h. A file-local copy, as
- * in sprites.c, because that routine belongs to another region. */
-static void set_cpu_write_mode(void)
-{
-    port_out16(0x3CE, 0x0005);
-    port_out16(0x3CE, 0x0003);
-}
 
 /* ---- sound effects (cs:0282h) ------------------------------------------------------- */
 
@@ -299,7 +293,7 @@ void DrawFontChar(uint8_t al)
     SET_DW(DS_TextByteColumn, (uint16_t)(DW(DS_TextByteColumn) + 1));
     if (al == 0x20) {
         /* a space clears the 12-row column in all four planes (map mask 0Fh) */
-        set_cpu_write_mode();
+        SetCpuWriteMode();
         port_out16(0x3C4, 0x0F02);
         for (int row = 0; row < 12; row++) {
             vga_write(di, 0);
@@ -312,7 +306,7 @@ void DrawFontChar(uint8_t al)
     if (g > 9) g = (uint8_t)(g - 2);
     uint16_t si = (uint16_t)(g * 0x30);         /* 48 bytes per glyph: 12 rows x 4 planes */
     uint16_t fseg = DW(DS_word_003D);           /* the ALLFONTS segment */
-    set_cpu_write_mode();
+    SetCpuWriteMode();
     port_out8(0x3C4, 2);
     uint8_t plane = 1;
     do {

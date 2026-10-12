@@ -1830,8 +1830,8 @@ ClearDisplayPage:
 ;   clears the spans outside them with BlackoutSpan, then PresentFrame, sub_6772 (the
 ;   fade pass, outside this region), and subtracts IrisSpeed from IrisRadius.
 ; Out: exits when IrisRadius <= 0.
-; Notes: the second render-slot clearing loop (73h entries) repeats the first (71h entries)
-;   with the same value; the second is redundant. IrisCenterX/Y come from PlayerX/Y.
+; Notes: the second render-slot clearing loop runs 73h entries against the first's 71h, so it
+;   clears two more slots (not redundant). IrisCenterX/Y come from PlayerX/Y.
 RunIrisClose:
     mov di, word ptr ds:DisplayPage
     mov si, word ptr DrawPage
@@ -3634,8 +3634,8 @@ loc_3F9C:
     mov dx, 3CEh
     mov ax, 4
 loc_3FE9:
-; quirk: the four read-map passes all write LevelSegment:0 with the same length, so only the
-;   last pass (read map 3) survives. Confirm the intent before translation.
+; quirk: the destination offset is not reset between the four read-map passes, so the plane
+;   blocks follow each other from LevelSegment:0, wrapping at 64 KiB (verified by tests/render.py).
     out dx, ax
     mov cx, 3120h
     mov si, 9DC0h
