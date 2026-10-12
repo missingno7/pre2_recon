@@ -17,7 +17,7 @@
 #include "sprites.h"
 
 #define SPRITE_SQZ_NAME  0x2A2Eu   /* DATA offset of "SPRITES.SQZ" (anonymous string, MODULE1 DATA) */
-#define BITREV_TABLE     0x2F34u   /* cs:2F34h: 256 bytes, byte i = reverse8(i); no label, read by XLAT */
+#define BITREV_TABLE     CS_BitReverseTable   /* 256 bytes, byte i = reverse8(i), read by XLAT */
 #define SCREEN_ROW_BYTES 40u       /* the blitter's row stride constant (sub ax, 28h) */
 #define FRAME_309_BX     0x026Au   /* frame 309 as a frame-table index (word, bx = frame * 2) */
 
@@ -118,8 +118,7 @@ static void mirror_or_aligned(Blit *b)
             b->si = (uint16_t)(b->si + 2u * cbw(b->vis));
             b->di = (uint16_t)(b->di - bp);
         } while (row_dec() != 0);
-        SET_CB(CS_CurrentPlaneMask, (uint8_t)(CB(CS_CurrentPlaneMask) << 1));
-        al = CB(CS_CurrentPlaneMask);
+        al = (uint8_t)(al << 1);                 /* mov al,CPM; shl al,1: the memory byte is not shifted */
         if (al >= 0x10) break;
     }
 }
@@ -180,8 +179,7 @@ static void mirror_or_partial(Blit *b)
             b->si = (uint16_t)(b->si + 2u * cbw(b->vis));
             b->di = (uint16_t)(b->di - bp);
         } while (row_dec() != 0);
-        SET_CB(CS_CurrentPlaneMask, (uint8_t)(CB(CS_CurrentPlaneMask) << 1));
-        al = CB(CS_CurrentPlaneMask);
+        al = (uint8_t)(al << 1);                 /* mov al,CPM; shl al,1: the memory byte is not shifted */
         if (al >= 0x10) break;
     }
 }
@@ -348,8 +346,7 @@ static void straight_or_aligned(Blit *b)
             } while (--cx != 0);
             b->di = (uint16_t)(b->di - bp);
         } while (--dl != 0);
-        SET_CB(CS_CurrentPlaneMask, (uint8_t)(CB(CS_CurrentPlaneMask) << 1));
-        al = CB(CS_CurrentPlaneMask);
+        al = (uint8_t)(al << 1);                 /* mov al,CPM; shl al,1: the memory byte is not shifted */
         if (al >= 0x10) break;
     }
 }
@@ -408,8 +405,7 @@ static void straight_or_partial(Blit *b)
             (void)vmem_xchg(b->di, ah);
             b->di = (uint16_t)(b->di - bp);
         } while (--dl != 0);
-        SET_CB(CS_CurrentPlaneMask, (uint8_t)(CB(CS_CurrentPlaneMask) << 1));
-        al = CB(CS_CurrentPlaneMask);
+        al = (uint8_t)(al << 1);                 /* mov al,CPM; shl al,1: the memory byte is not shifted */
         if (al >= 0x10) break;
     }
 }
@@ -791,6 +787,15 @@ EXPORT int c_LoadSpriteSheet(Regs *r)
     int e = LoadSpriteSheet();
     r->ds = DATA_SEG;
     return e;
+}
+
+/* ExpandSpriteFrames falls through into BuildFrameOffsets (the original's loop exit). */
+EXPORT int c_ExpandSpriteFrames(Regs *r)
+{
+    ExpandSpriteFrames();
+    BuildFrameOffsets(DW(DS_SpriteDataSegment));
+    r->ds = DATA_SEG;
+    return 0;
 }
 
 EXPORT int c_DrawSpriteObjects(Regs *r)

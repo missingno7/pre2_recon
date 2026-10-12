@@ -1603,6 +1603,7 @@ loc_2F2A:
     pop bx
     pop ax
     ret
+BitReverseTable label byte
 ; DATA: bit-reversal table, byte i = reverse8(i): mirrors sprite rows through `xlat byte ptr cs:[bx]` (BX = 2F34h at 291C)
     db 00h, 80h, 40h, 0C0h, 20h, 0A0h, 60h, 0E0h, 10h, 90h, 50h, 0D0h
     db 30h, 0B0h, 70h, 0F0h, 08h, 88h, 48h, 0C8h, 28h, 0A8h, 68h, 0E8h
