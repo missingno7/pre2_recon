@@ -1,9 +1,19 @@
 ; Prehistorik 2 (PRE2.EXE), link module 3 of 4
 ; module interface (tools/symtab.py)
+public ApplyProjectileHeavy
+public ApplyProjectileLight
 public BuildEffectDrawList
+public CeilingTileHeadBump
+public CeilingTileNone
 public ComputePasswordCode
 public DrawStatusBarBackground
 public FadeOutPaletteToBlack
+public GroundTileLand
+public GroundTileLandSlope1
+public GroundTileLandSlope2
+public GroundTileLandSlope3
+public GroundTileReleaseLand
+public GroundTileSnapOrFall
 public ProcessPlayerContacts
 public ResetLevelState
 public ResetRenderSlots
@@ -11,7 +21,13 @@ public RunFrontEnd
 public ShowMode13PictureFadeIn
 public ShowPresentTitle
 public ShowTitusScreen
+public SideTileBlockStop
+public SideTileWallImpactHandler
+public StepPaletteFade
+public TickDebrisSlots
+public TriggerPlayerRespawn
 public TryCaveTrigger
+public UpdateBurstParticles
 public UpdateCameraFixedStep
 public UpdateCameraFollow
 public UpdateCameraShake
@@ -20,43 +36,43 @@ public UpdateFireflies
 public UpdateFollowerSlots
 public UpdateHud
 public UpdateLevelState
+public UpdateObjects
+public UpdatePlayer
+public UpdatePlayerAltStateBounce
+public UpdatePlayerProjectiles
+public UpdatePlayerStateAttack
+public UpdatePlayerStateCharge
+public UpdatePlayerStateCrouch
+public UpdatePlayerStateHurt
+public UpdatePlayerStateIdle
+public UpdatePlayerStateJump
+public UpdatePlayerStateRun
 public UpdatePopupRing
 public UpdateProximityTriggers
 public UpdateTerrainEntities
-public sub_5850
-public sub_5CCE
-public sub_5CDB
-public sub_5E62
-public sub_5E96
-public sub_5EC4
-public sub_5F13
-public sub_5F30
-public sub_5F96
-public sub_60DF
-public sub_60FE
-public sub_6210
-public sub_6272
-public sub_6277
-public sub_652C
-public sub_6539
-public sub_65AF
-public sub_65EF
-public sub_6641
-public sub_6645
-public sub_6657
-public sub_6660
-public sub_6669
-public sub_6672
-public sub_6673
-public sub_6772
 public sub_67D7
-public sub_6822
 DATA segment word public 'DATA'
+extrn AirborneFlag:byte
+extrn AltMomentumStep:byte
+extrn AnimSeqPtrTable:word
 extrn AnimVisibleFlag:byte
+extrn AttackAnimLock:byte
+extrn AttackRecoveryTimer:byte
 extrn BiosSeed:word
 extrn BiosSeedReady:byte
 extrn BonusFlashTimer:byte
 extrn BonusLetterMask:byte
+extrn BossAnimPtr:word
+extrn BossCounter:byte
+extrn BossDistX:word
+extrn BossEnergy:word
+extrn BossState:byte
+extrn BossStateTimer:word
+extrn BossVelX:word
+extrn BossVelY:word
+extrn BossX:word
+extrn BossY:word
+extrn BridgeDipTile:word
 extrn byte_0666:byte
 extrn byte_083D:byte
 extrn byte_083E:byte
@@ -71,18 +87,12 @@ extrn byte_27F7:byte
 extrn byte_280D:byte
 extrn byte_2810:byte
 extrn byte_282D:byte
-extrn byte_282F:byte
 extrn byte_2830:byte
 extrn byte_2879:byte
 extrn byte_287C:byte
 extrn byte_287D:byte
 extrn byte_4F1B:byte
-extrn byte_4F21:byte
-extrn byte_4F23:byte
-extrn byte_4F24:byte
-extrn byte_4F27:byte
 extrn byte_4F2B:byte
-extrn byte_4F2C:byte
 extrn byte_564D:byte
 extrn byte_565F:byte
 extrn byte_5671:byte
@@ -90,44 +100,17 @@ extrn byte_5683:byte
 extrn byte_5695:byte
 extrn byte_6BC0:byte
 extrn byte_6BC1:byte
-extrn byte_6BC5:byte
-extrn byte_6BC6:byte
-extrn byte_6BC7:byte
-extrn byte_6BC8:byte
 extrn byte_6BC9:byte
-extrn byte_6BCC:byte
-extrn byte_6BCD:byte
-extrn byte_6BCE:byte
-extrn byte_6BCF:byte
-extrn byte_6BD0:byte
-extrn byte_6BD1:byte
-extrn byte_6BD2:byte
-extrn byte_6BD3:byte
-extrn byte_6BDB:byte
-extrn byte_6BDC:byte
-extrn byte_6BE0:byte
-extrn byte_6BE1:byte
 extrn byte_6BE8:byte
-extrn byte_6BF3:byte
 extrn byte_6BFF:byte
-extrn byte_6C01:byte
-extrn byte_6C02:byte
-extrn byte_6C03:byte
 extrn byte_6C04:byte
-extrn byte_6C05:byte
 extrn byte_6CA8:byte
 extrn byte_7090:byte
 extrn byte_78C6:byte
 extrn byte_7B06:byte
 extrn byte_7B07:byte
 extrn byte_7B08:byte
-extrn byte_7B18:byte
-extrn byte_7B19:byte
-extrn byte_7B1A:byte
-extrn byte_7B7F:byte
-extrn byte_7F5E:byte
 extrn byte_91FB:byte
-extrn byte_91FE:byte
 extrn byte_A324:byte
 extrn byte_A325:byte
 extrn byte_A328:byte
@@ -135,7 +118,6 @@ extrn byte_A329:byte
 extrn byte_A32A:byte
 extrn byte_A32B:byte
 extrn byte_A32C:byte
-extrn byte_A340:byte
 extrn byte_A3F9:byte
 extrn byte_A3FA:byte
 extrn byte_A515:byte
@@ -144,16 +126,16 @@ extrn byte_B198:byte
 extrn CameraCol:word
 extrn CameraLeftLimit:word
 extrn CameraRow:word
+extrn CeilingTileHandlers:word
+extrn ChargeLevel:byte
 extrn CheckpointX:word
 extrn CheckpointY:word
 extrn CollectTotalDecor:word
 extrn CollectTotalMain:word
+extrn CurrentAnimId:byte
 extrn CurrentLevel:byte
 extrn DisplayPage:word
 extrn DrawPage:word
-extrn dtbl_79EC:word
-extrn dtbl_7D2F:word
-extrn dtbl_7D95:word
 extrn EffectFrame:word
 extrn EffectOriginX:word
 extrn EffectOriginY:word
@@ -161,26 +143,42 @@ extrn EndSignal:byte
 extrn Energy:byte
 extrn ExpertFlag:byte
 extrn ExtraLifeBlocks:word
+extrn FadeInActive:byte
+extrn FadeOutActive:byte
+extrn FallCounter:byte
 extrn FineScroll:byte
 extrn FollowerOverlapMode:byte
 extrn FrameDataOffsets:word
 extrn FrameDataSegments:word
+extrn FrameFlagsRaw:byte
 extrn FrameHeights:byte
 extrn FrameHotX:byte
 extrn FrameWidths:byte
 extrn GridDirtyFlag:byte
+extrn GroundTileHandlers:word
+extrn GroundTypeTable:byte
+extrn HorizontalInputHeld:byte
 extrn HScrollDir:byte
 extrn HudCacheBonus:byte
 extrn HudCacheEnergy:byte
 extrn HudCacheLives:byte
 extrn HudCacheScoreHigh:word
 extrn HudCacheScoreLow:word
+extrn InputAnimTable:byte
 extrn ItemTallyCounts:byte
 extrn ItemTotal:word
+extrn JumpArcVelTable:word
+extrn JumpCooldown:byte
+extrn JumpFrame:byte
+extrn LandingBlockTimer:byte
 extrn LandingDepth:word
 extrn LandingFlag:byte
 extrn LastDebrisSlot:word
 extrn LastEffectTick:word
+extrn LastLandY:word
+extrn LastSpawnedChild:word
+extrn Level5Phase:word
+extrn Level9ScriptPtr:word
 extrn LevelEndMode:byte
 extrn LevelFlags:byte
 extrn LevelPaletteTable:word
@@ -191,33 +189,55 @@ extrn LevelStartX:word
 extrn LevelStartY:word
 extrn Lives:byte
 extrn MapRows:byte
+extrn MomentumCounter:byte
+extrn MotionShift:byte
 extrn NextFreeSegment:word
+extrn PaletteFadeStep:byte
 extrn PlatformDeltaX:word
 extrn PlatformDeltaY:word
+extrn PlayerActionTicks:byte
+extrn PlayerAirFlags:byte
+extrn PlayerAltModeFlag:byte
 extrn PlayerAnimPtr:word
+extrn PlayerAttackPower:byte
+extrn PlayerFacing:word
+extrn PlayerFrameHigh:byte
+extrn PlayerFrameWord:word
 extrn PlayerHurtTimer:byte
 extrn PlayerOnPlatform:byte
 extrn PlayerRenderY:word
 extrn PlayerSprite:word
 extrn PlayerVelX:word
+extrn PlayerVelXHigh:byte
 extrn PlayerVelY:word
+extrn PlayerWeaponType:byte
 extrn PlayerX:word
 extrn PlayerY:word
 extrn PopupRingHead:word
 extrn PrevCameraCol:word
+extrn ProjectileKindHandlers:word
 extrn RenderSlots:word
+extrn RespawnRequestFlag:byte
 extrn RespawnState:byte
 extrn ScoreHigh:word
 extrn ScoreLow:word
 extrn ScriptFrameCounter:word
+extrn ScriptFrameFlags:byte
 extrn ScriptPointer:word
 extrn ScrollFollowGate:byte
 extrn ShakeMagnitude:byte
 extrn ShakeRows:word
+extrn SideTileHandlers:word
 extrn SineTable:byte
 extrn SnowFrameTick:byte
 extrn SnowWind:word
+extrn SpawnSideToggle:byte
+extrn StateFrameCounter:word
+extrn StateHandlers:word
+extrn StrokeCounter:byte
+extrn SubAnimKey:byte
 extrn TileClassTable:byte
+extrn VerticalInputHeld:byte
 extrn VScrollActive:byte
 extrn word_0039:word
 extrn word_003D:word
@@ -227,8 +247,6 @@ extrn word_27F2:word
 extrn word_287A:word
 extrn word_2A76:word
 extrn word_2A7A:word
-extrn word_4F20:word
-extrn word_4F25:word
 extrn word_4F2E:word
 extrn word_4F30:word
 extrn word_4F32:word
@@ -257,37 +275,20 @@ extrn word_5682:word
 extrn word_5690:word
 extrn word_5692:word
 extrn word_5694:word
-extrn word_6BAB:word
 extrn word_6BB1:word
-extrn word_6BCA:word
 extrn word_6BE2:word
-extrn word_6BEB:word
 extrn word_6BF1:word
-extrn word_6C06:word
-extrn word_6C08:word
 extrn word_6C0A:word
 extrn word_78C4:word
-extrn word_79CE:word
 extrn word_7B04:word
 extrn word_7B1B:word
-extrn word_7CDF:word
-extrn word_7D9B:word
-extrn word_7DA9:word
 extrn word_91F7:word
 extrn word_91F9:word
-extrn word_91FC:word
-extrn word_91FF:word
-extrn word_9201:word
 extrn word_A30E:word
 extrn word_A310:word
-extrn word_A326:word
-extrn word_A32E:word
 extrn word_A341:word
-extrn word_A3F7:word
-extrn word_A3FB:word
 extrn word_A3FD:word
 extrn word_A3FF:word
-extrn word_A401:word
 extrn word_A403:word
 extrn word_A405:word
 extrn word_A407:word
@@ -312,7 +313,6 @@ extrn word_A421:word
 extrn word_A423:word
 extrn word_A425:word
 extrn word_A4F7:word
-extrn word_A517:word
 extrn word_A519:word
 DATA ends
 ; end module interface
@@ -433,7 +433,7 @@ UpdateHud:
     add word ptr ExtraLifeBlocks, ax
     jmp short loc_45D3
 loc_45D0:
-    call sub_65D6
+    call IncrementPlayerLives
 loc_45D3:
     dec al
     jns loc_45D0
@@ -793,13 +793,13 @@ loc_483B:
 ;      words keep the values from the previous frame.
 ; Notes: bit 7 of the flag byte mirrors dx. The frame may be taken from word_7B1B[byte_7B1A].
 UpdatePlayerRenderSlot:
-    cmp byte ptr ds:byte_6BC5, 0
+    cmp byte ptr ds:PlayerAltModeFlag, 0
     jne loc_4858
     jmp near ptr loc_4906
 loc_4858:
-    cmp byte ptr ds:byte_6BC7, 0
+    cmp byte ptr ds:PlayerAirFlags, 0
     je loc_488C
-    and word ptr word_4F20, 8000h
+    and word ptr PlayerFrameWord, 8000h
     mov dx, 30h
     mov ax, word ptr PlayerVelX
     or ax, ax
@@ -813,28 +813,28 @@ loc_4871:
     ja loc_487D
     inc dx
 loc_487D:
-    mov al, byte ptr byte_7B1A
+    mov al, byte ptr AltMomentumStep
     cmp al, 3
     jae loc_4888
     mov dl, 33h
     sub dl, al
 loc_4888:
-    or word ptr word_4F20, dx
+    or word ptr PlayerFrameWord, dx
 loc_488C:
     mov si, 7B29h
-    mov ax, word ptr word_4F20
+    mov ax, word ptr PlayerFrameWord
     mov dl, ah
     and ah, 1Fh
     mov bl, byte ptr byte_27EA
     or bl, byte ptr byte_27EB
     jne loc_48B2
     mov bl, 1
-    cmp byte ptr ds:byte_7B1A, 3
+    cmp byte ptr ds:AltMomentumStep, 3
     je loc_48B2
     jb loc_48AE
     neg bl
 loc_48AE:
-    add byte ptr byte_7B1A, bl
+    add byte ptr AltMomentumStep, bl
 loc_48B2:
     mov cx, word ptr [si]
     jcxz loc_4906
@@ -846,7 +846,7 @@ loc_48B2:
     mov ax, word ptr [si+2]
     cmp ax, 79h
     jb loc_48D4
-    mov bl, byte ptr byte_7B1A
+    mov bl, byte ptr AltMomentumStep
     xor bh, bh
     shl bx, 1
     mov ax, word ptr [bx+word_7B1B]
@@ -856,7 +856,7 @@ loc_48D4:
     or ah, dl
     neg cx
 loc_48DD:
-    cmp byte ptr ds:byte_6BC8, 18h
+    cmp byte ptr ds:StrokeCounter, 18h
     jbe loc_48E9
     cmp al, 79h
     jae loc_48E9
@@ -957,9 +957,9 @@ loc_49AE:
     mov bh, dl
     mov bl, byte ptr es:[bx]
     xor bh, bh
-    cmp byte ptr [bx+byte_7F5E], 0
+    cmp byte ptr [bx+GroundTypeTable], 0
     je loc_49CB
-    cmp byte ptr [bx+byte_7F5E], 6
+    cmp byte ptr [bx+GroundTypeTable], 6
     je loc_49CB
 loc_49C3:
     mov byte ptr [si+0Ah], 2
@@ -1139,10 +1139,10 @@ loc_4B29:
     pop word ptr PlayerY
     jae loc_4B89
     mov byte ptr PlayerOnPlatform, 1
-    mov byte ptr byte_4F24, 0
+    mov byte ptr MotionShift, 0
     mov ax, word ptr PlatformDeltaX
     add word ptr PlayerX, ax
-    call sub_64DF
+    call FinishPlayerLanding
     mov bx, word ptr [di+4]
     and bh, 1Fh
     shl bx, 1
@@ -1269,9 +1269,9 @@ UpdateCameraShake:
     xor ax, ax
     test byte ptr SnowFrameTick, 1
     je loc_4C5E
-    cmp byte ptr ds:byte_4F27, 5
+    cmp byte ptr ds:CurrentAnimId, 5
     je loc_4C55
-    cmp byte ptr ds:byte_4F27, 20h
+    cmp byte ptr ds:CurrentAnimId, 20h
     je loc_4C55
     sub word ptr PlayerY, 3
 loc_4C55:
@@ -1360,9 +1360,9 @@ loc_4CBA:
 LevelTransitionStart:
     cmp byte ptr ds:byte_6C04, 0
     je loc_4CE1
-    mov byte ptr byte_6C01, 0
-    mov byte ptr byte_6C02, 1
-    mov byte ptr byte_6C03, 0
+    mov byte ptr FadeOutActive, 0
+    mov byte ptr FadeInActive, 1
+    mov byte ptr PaletteFadeStep, 0
 loc_4CE1:
     call RunIrisClose
     mov ax, 0Fh
@@ -1381,16 +1381,16 @@ loc_4CE1:
     sub word ptr PlayerX, ax
     mov word ptr CameraCol, 0
     mov word ptr CameraRow, 0
-    mov word ptr word_4F25, 0
+    mov word ptr PlayerFacing, 0
     mov word ptr PlayerVelX, 0
     call SetCpuWriteMode
     call RenderTallyPanel
-    mov byte ptr byte_6BC5, 0
+    mov byte ptr PlayerAltModeFlag, 0
     mov word ptr PlayerSprite, 0FFFFh
     mov word ptr PlayerAnimPtr, 7BA7h
 loc_4D37:
     mov bx, word ptr PlayerAnimPtr
-    call sub_638B
+    call AdvancePlayerAnim
     xor bp, bp
     mov ax, word ptr PlayerX
     mov dx, 3Ch
@@ -1438,7 +1438,7 @@ loc_4D7A:
     mov word ptr word_4F56, 68h
 loc_4DBE:
     mov bx, word ptr PlayerAnimPtr
-    call sub_638B
+    call AdvancePlayerAnim
     call ClearDrawPage
     call AnimateTallyPotFlame
     call RenderTallyPanel
@@ -1455,16 +1455,16 @@ loc_4DBE:
 ItemTallyPath:
     mov word ptr PlayerAnimPtr, 7C6Bh
     mov word ptr PlayerVelX, 40h
-    mov byte ptr byte_4F24, 2
+    mov byte ptr MotionShift, 2
 loc_4E06:
     mov bx, word ptr PlayerAnimPtr
-    call sub_638B
+    call AdvancePlayerAnim
     call ClearDrawPage
     call AnimateTallyPotFlame
     call RenderTallyPanel
     call DrawSpriteObjects
     call PresentFrame
-    call sub_6333
+    call ApplyPlayerFriction
     mov ax, word ptr PlayerVelX
     sar ax, 1
     sar ax, 1
@@ -1477,7 +1477,7 @@ loc_4E06:
     xor di, di
 loc_4E3A:
     mov bx, word ptr PlayerAnimPtr
-    call sub_638B
+    call AdvancePlayerAnim
     call ClearDrawPage
     call AnimateTallyPotFlame
     call RenderTallyPanel
@@ -1566,7 +1566,7 @@ LevelExitNoTally:
     mov word ptr PlayerAnimPtr, 7BA7h
 loc_4F1A:
     mov bx, word ptr PlayerAnimPtr
-    call sub_638B
+    call AdvancePlayerAnim
     call ClearDrawPage
     call AnimateTallyPotFlame
     call RenderTallyPanel
@@ -1726,7 +1726,7 @@ GameOverPath:
     mov ax, 11h
     call ActivateResourceSlot
     call RunGameOverScreen
-    mov word ptr word_4F20, 0Dh
+    mov word ptr PlayerFrameWord, 0Dh
     mov byte ptr CurrentLevel, 0
     mov word ptr ScoreLow, 0
     mov word ptr ScoreHigh, 0
@@ -1754,7 +1754,7 @@ PlayDeathBounce:
     mov dx, 7
     call StartSoundEffect
     mov byte ptr PlayerHurtTimer, 0
-    mov word ptr word_4F20, 21h
+    mov word ptr PlayerFrameWord, 21h
     mov word ptr PlayerVelY, 0Fh
     mov ax, word ptr PlayerX
     mov dx, word ptr CameraCol
@@ -1774,10 +1774,10 @@ loc_50DE:
     push cx
     mov word ptr PlayerSprite, 0FFFFh
     call UpdatePopupRing
-    call sub_6822
-    call sub_6210
-    call sub_60FE
-    call sub_60DF
+    call UpdateObjects
+    call UpdatePlayerProjectiles
+    call UpdateBurstParticles
+    call TickDebrisSlots
     call AnimateTiles
     call RedrawOverlayTiles
     call CopyRingWindowToPage
@@ -1993,7 +1993,7 @@ ResetLevelState:
     mov di, 815Eh
     mov cx, 10A5h
     rep movsb
-    mov byte ptr byte_4F2C, al
+    mov byte ptr SubAnimKey, al
     mov word ptr PrevCameraCol, 55AAh
     mov word ptr PopupRingHead, 4F76h
     mov ax, 0FFFFh
@@ -2021,7 +2021,7 @@ loc_527A:
     mov di, 7DAFh
     rep stosb
     mov byte ptr Energy, 3
-    mov word ptr word_A517, 0FFFFh
+    mov word ptr Level9ScriptPtr, 0FFFFh
     mov bl, byte ptr CurrentLevel
     xor bh, bh
     shl bx, 1
@@ -2081,9 +2081,9 @@ TryCaveTrigger:
     mov ax, seg DATA
     mov ds, ax
     mov es, ax
-    cmp byte ptr ds:byte_6BE1, 0
+    cmp byte ptr ds:LandingBlockTimer, 0
     je loc_5325
-    cmp byte ptr ds:byte_6BC5, 0
+    cmp byte ptr ds:PlayerAltModeFlag, 0
     jne loc_5325
     call GetPlayerTile
     mov si, 8367h
@@ -2139,13 +2139,13 @@ loc_5389:
     pop word ptr CameraLeftLimit
     mov al, byte ptr [si+6]
     mov byte ptr ScrollFollowGate, al
-    mov byte ptr byte_6BE1, 0
+    mov byte ptr LandingBlockTimer, 0
     cmp byte ptr ds:CurrentLevel, 5
     jne loc_53D7
     and byte ptr LevelFlags, 1
     mov byte ptr byte_A324, 0
     mov byte ptr byte_A325, 5
-    mov byte ptr word_A326, 0
+    mov byte ptr Level5Phase, 0
     mov byte ptr byte_A328, 0
     mov byte ptr byte_A32A, 1
     mov byte ptr byte_A329, 0
@@ -2160,7 +2160,7 @@ loc_53D7:
     call CopyRingWindowToPage
     call UpdateTerrainEntities
     call BuildEffectDrawList
-    call sub_6822
+    call UpdateObjects
     call DrawSpriteObjects
     call DrawForegroundOverSprites
     call UpdateFireflies
@@ -2214,7 +2214,7 @@ loc_5449:
 loc_544B:
     mov al, byte ptr es:[di+100h]
     mov byte ptr es:[di], al
-    call sub_653D
+    call RedrawTileIfVisible
     inc di
     dec ah
     jne loc_544B
@@ -2231,7 +2231,7 @@ loc_5471:
     mov al, byte ptr [bx]
     mov ds, bp
     mov byte ptr es:[di], al
-    call sub_653D
+    call RedrawTileIfVisible
     inc di
     inc bx
     dec dl
@@ -2660,7 +2660,7 @@ loc_57F0:
 loc_57F6:
     cmp word ptr ds:PlayerVelX, 0
     je loc_5806
-    test byte ptr byte_4F23, 80h
+    test byte ptr PlayerVelXHigh, 80h
     je loc_5813
     jmp short loc_580B
 loc_5806:
@@ -2709,7 +2709,30 @@ loc_584D:
     loop loc_5825
     ret
 
-sub_5850:
+; Per-frame player update, called once per gameplay frame from the main loop (022Fh).
+; Reads the input bytes, selects the player state, runs its handler, integrates X and Y,
+; runs tile collision (UpdatePlayerCollision) and then ticks the player timers.
+; In: none (player record at ds:4F1Ch; input bytes 27ECh, 27EDh, 27EAh, 27EBh, 27E8h).
+; Out: player record. Preserves all registers (AX..BP, DS, ES are pushed and restored).
+; Notes: state index = (R<<4)|(L<<3)|(Up<<2)|(Down<<1)|Fire from bit 0 of 27EC (right),
+;   27ED (left), 27EA (up), 27EB (down), 27E8 (fire). Only bit 0 of each byte is used, and
+;   the bytes are 0, 1 or FFh. 27E9 is not in the index. InputAnimTable[index] gives the state
+;   0..7. PlayerHurtTimer >= 16h forces state 8 (hurt). AttackRecoveryTimer != 0 forces index 0.
+;   Handler = StateHandlers[2*state], or AltStateHandlers[2*state+40h] when PlayerAltModeFlag
+;   is set. When the state differs from CurrentAnimId, StateFrameCounter and SubAnimKey clear.
+;   Facing: 27EC sets PlayerFacing = +1 and 27ED sets -1 (not when both are held).
+;   X integrate after the handler: X' = PlayerX + (PlayerVelX sar 4). X' is committed only if
+;   8 <= X' < 0FF8h and X' < (CameraLeftLimit+20)*16 (signed compares). Otherwise X is kept and
+;   nothing is flagged. Y integrate is unconditional: PlayerY += PlayerVelY sar 4.
+;   Then UpdatePlayerCollision. The tail decrements (saturating, sub 1 then adc 0) are
+;   ChargeLevel, AttackRecoveryTimer, ShakeMagnitude, byte 6BE8, RespawnState,
+;   LandingBlockTimer, byte 6C00 and word 6BE2.
+;   Quirk: in alt mode with PlayerAirFlags bit 0 set, the momentum block runs and the handler
+;   call is skipped (control goes straight to the X integrate).
+;   Quirk: a respawn request (RespawnRequestFlag with RespawnState 0) calls
+;   TriggerPlayerRespawn and the timer is then decremented in the same frame.
+;   Quirk: the input-wait loop at 5888h re-tests byte 2830h and spins while it is zero.
+UpdatePlayer:
     push ax
     push bx
     push cx
@@ -2724,9 +2747,9 @@ sub_5850:
     mov word ptr PlayerSprite, 0FFFFh
     cmp byte ptr ds:RespawnState, 0
     jne loc_587C
-    cmp byte ptr ds:byte_282F, 0
+    cmp byte ptr ds:RespawnRequestFlag, 0
     je loc_587C
-    call sub_65AF
+    call TriggerPlayerRespawn
     dec byte ptr RespawnState
     jmp near ptr loc_5A8C
 loc_587C:
@@ -2744,30 +2767,30 @@ loc_5892:
 loc_589A:
     mov es, word ptr LevelSegment
     mov si, 4F1Ch
-    call sub_6294
+    call WaitFrameSyncFlag
     call PollInputState
     mov dl, byte ptr byte_27ED
     or dl, byte ptr byte_27EC
-    mov byte ptr byte_6BDB, dl
+    mov byte ptr HorizontalInputHeld, dl
     mov dl, byte ptr byte_27EA
     or dl, byte ptr byte_27EB
-    mov byte ptr byte_6BDC, dl
+    mov byte ptr VerticalInputHeld, dl
     cmp byte ptr ds:byte_27EC, 0
     je loc_58E2
     cmp byte ptr ds:byte_27ED, 0
     jne loc_58FC
-    cmp word ptr ds:word_4F25, 1
+    cmp word ptr ds:PlayerFacing, 1
     je loc_58FC
-    mov word ptr word_4F25, 1
-    mov word ptr word_6BEB, 0
+    mov word ptr PlayerFacing, 1
+    mov word ptr StateFrameCounter, 0
     jmp short loc_58FC
 loc_58E2:
     cmp byte ptr ds:byte_27ED, 0
     je loc_58FC
-    cmp word ptr ds:word_4F25, -1
+    cmp word ptr ds:PlayerFacing, -1
     je loc_58FC
-    mov word ptr word_4F25, 0FFFFh
-    mov word ptr word_6BEB, 0
+    mov word ptr PlayerFacing, 0FFFFh
+    mov word ptr StateFrameCounter, 0
 loc_58FC:
     xor ah, ah
     mov al, byte ptr byte_27EC
@@ -2785,68 +2808,68 @@ loc_58FC:
     mov al, byte ptr byte_27E8
     shr al, 1
     rcl ah, 1
-    cmp byte ptr ds:byte_6BCD, 0
+    cmp byte ptr ds:AttackRecoveryTimer, 0
     je loc_592A
     xor ah, ah
 loc_592A:
     mov bl, ah
     xor bh, bh
-    mov al, byte ptr [bx+byte_7B7F]
+    mov al, byte ptr [bx+InputAnimTable]
     mov dl, byte ptr PlayerHurtTimer
     mov byte ptr byte_4F1B, dl
     cmp dl, 16h
     jb loc_5941
     mov al, 8
 loc_5941:
-    cmp byte ptr byte_4F27, al
+    cmp byte ptr CurrentAnimId, al
     je loc_5952
-    mov word ptr word_6BEB, 0
-    mov byte ptr byte_4F2C, 0
+    mov word ptr StateFrameCounter, 0
+    mov byte ptr SubAnimKey, 0
 loc_5952:
-    add word ptr word_6BEB, 1
-    sbb word ptr word_6BEB, 0
+    add word ptr StateFrameCounter, 1
+    sbb word ptr StateFrameCounter, 0
     mov bl, al
     shl bx, 1
-    cmp byte ptr ds:byte_6BC5, 0
+    cmp byte ptr ds:PlayerAltModeFlag, 0
     jne loc_596A
     jmp near ptr loc_5A0B
 loc_596A:
     add bx, 40h
-    and byte ptr byte_6BC7, 1
+    and byte ptr PlayerAirFlags, 1
     jne loc_5977
     jmp near ptr loc_59FE
 loc_5977:
     cmp byte ptr ds:byte_27EA, 0
     je loc_59B1
-    cmp byte ptr ds:byte_7B1A, 6
+    cmp byte ptr ds:AltMomentumStep, 6
     jne loc_5993
     cmp word ptr ds:PlayerVelY, 10h
     jle loc_5997
-    or byte ptr byte_6BC7, 2
+    or byte ptr PlayerAirFlags, 2
     jmp short loc_5997
 loc_5993:
-    inc byte ptr byte_7B1A
+    inc byte ptr AltMomentumStep
 loc_5997:
-    cmp byte ptr ds:byte_6BC6, 0
+    cmp byte ptr ds:MomentumCounter, 0
     je loc_59B1
-    dec byte ptr byte_6BC6
-    cmp byte ptr ds:byte_7B1A, 4
+    dec byte ptr MomentumCounter
+    cmp byte ptr ds:AltMomentumStep, 4
     jb loc_5A0F
     mov word ptr PlayerVelY, 0FFC0h
     jmp short loc_5A0F
 loc_59B1:
     cmp byte ptr ds:byte_27EB, 0
     jne loc_59C4
-    sub byte ptr byte_6BC6, 1
-    adc byte ptr byte_6BC6, 0
+    sub byte ptr MomentumCounter, 1
+    adc byte ptr MomentumCounter, 0
     jmp short loc_5A0F
 loc_59C4:
-    cmp byte ptr ds:byte_7B1A, 0
+    cmp byte ptr ds:AltMomentumStep, 0
     je loc_59CF
-    dec byte ptr byte_7B1A
+    dec byte ptr AltMomentumStep
 loc_59CF:
-    or byte ptr byte_6BC7, 2
-    cmp byte ptr ds:byte_7B1A, 1
+    or byte ptr PlayerAirFlags, 2
+    cmp byte ptr ds:AltMomentumStep, 1
     ja loc_5A0F
     push ax
     mov ax, word ptr PlayerVelX
@@ -2860,18 +2883,18 @@ loc_59EB:
     mov dl, al
     mov ah, 5
     mul ah
-    cmp byte ptr byte_6BC6, al
+    cmp byte ptr MomentumCounter, al
     jae loc_59FB
-    add byte ptr byte_6BC6, dl
+    add byte ptr MomentumCounter, dl
 loc_59FB:
     pop ax
     jmp short loc_5A0F
 loc_59FE:
     cmp word ptr ds:PlayerVelY, 0A0h
     jle loc_5A0B
-    mov byte ptr byte_6BC7, 1
+    mov byte ptr PlayerAirFlags, 1
 loc_5A0B:
-    call word ptr [bx+dtbl_7D2F]
+    call word ptr [bx+StateHandlers]
 loc_5A0F:
     mov ax, word ptr PlayerVelX
     mov cl, 4
@@ -2893,21 +2916,21 @@ loc_5A36:
     mov cl, 4
     sar ax, cl
     add word ptr PlayerY, ax
-    call sub_5A96
+    call UpdatePlayerCollision
     call UpdatePlayerRenderSlot
     mov dx, 1
-    sub byte ptr byte_6BCE, dl
-    adc byte ptr byte_6BCE, dh
-    sub byte ptr byte_6BCD, dl
-    adc byte ptr byte_6BCD, dh
+    sub byte ptr ChargeLevel, dl
+    adc byte ptr ChargeLevel, dh
+    sub byte ptr AttackRecoveryTimer, dl
+    adc byte ptr AttackRecoveryTimer, dh
     sub byte ptr ShakeMagnitude, dl
     adc byte ptr ShakeMagnitude, dh
     sub byte ptr byte_6BE8, dl
     adc byte ptr byte_6BE8, dh
     sub byte ptr RespawnState, dl
     adc byte ptr RespawnState, dh
-    sub byte ptr byte_6BE1, dl
-    adc byte ptr byte_6BE1, dh
+    sub byte ptr LandingBlockTimer, dl
+    adc byte ptr LandingBlockTimer, dh
     sub byte ptr BonusFlashTimer, dl
     adc byte ptr BonusFlashTimer, dh
     sub word ptr word_6BE2, 1
@@ -2924,7 +2947,25 @@ loc_5A8C:
     pop ax
     ret
 
-sub_5A96:
+; Ground and tile collision after the X and Y integrate. Computes the foot cell, range-checks
+; it against the camera, calls UpdatePlayerTileContact, runs the airborne tail, and scans the
+; column of cells above the foot for side-wall handling.
+; In: PlayerX, PlayerY, PlayerVelX (sign for the edge offset), PlayerVelY, FrameHeights.
+; Out: PlayerY, PlayerVelY, PlayerX (via handlers), AirborneFlag, FallCounter, camera requests.
+; Notes: foot cell = ((PlayerX + edge) sar 4) + (((PlayerY sar 4) - 1) << 8). The edge is +9
+;   when PlayerVelX > 0, -9 when < 0, 0 otherwise. The tile probed for the ground is the cell
+;   one row lower (PlayerY sar 4). Rows >= MapRows read as tile 0.
+;   Range check (absolute values, unsigned): |row - CameraRow| > 11 or |col - CameraCol| > 20.
+;   With LevelFlags bit 2, PlayerY < CameraRow*16 is also out of range. PlayerY > (MapRows+1)*16
+;   is out of range. Out of range in CurrentLevel 0Eh sets EndSignal = FFh; any other
+;   level calls TriggerPlayerRespawn. PlayerY < 0 skips the range check (see the tile worker).
+;   Airborne tail (AirborneFlag == 1): when ScriptedHoldFlag (byte 6BFEh) is zero, it calls
+;   ApplyAirMotionAnim and increments FallCounter while PlayerVelY > 0. Otherwise it calls
+;   FinishPlayerLanding and clears FallCounter. Not airborne: FallCounter = 0.
+;   Column scan: the foot cell goes to DispatchSideTileHandler. Then one cell up per 16 px of
+;   the frame height (FrameHeights) goes to DispatchSideTileClass24. The scan ends when the
+;   row index underflows (row 0 is the last cell visited).
+UpdatePlayerCollision:
     push ax
     push cx
     push dx
@@ -2934,7 +2975,7 @@ sub_5A96:
     sar ax, cl
     dec ax
     xchg ah, al
-    mov bx, word ptr word_4F20
+    mov bx, word ptr PlayerFrameWord
     and bh, 1Fh
     shl bx, 1
     mov dh, byte ptr [bx+FrameHeights]
@@ -2988,24 +3029,24 @@ loc_5B18:
     mov byte ptr EndSignal, 0FFh
     jmp short loc_5B29
 loc_5B26:
-    call sub_65AF
+    call TriggerPlayerRespawn
 loc_5B29:
-    mov byte ptr byte_6BF3, 0
-    call sub_5B81
-    cmp byte ptr ds:byte_6BF3, 1
+    mov byte ptr AirborneFlag, 0
+    call UpdatePlayerTileContact
+    cmp byte ptr ds:AirborneFlag, 1
     jne loc_5B54
     cmp byte ptr ds:PlayerOnPlatform, 0
     je loc_5B44
-    call sub_64DF
+    call FinishPlayerLanding
     jmp short loc_5B54
 loc_5B44:
-    call sub_63B5
+    call ApplyAirMotionAnim
     cmp word ptr ds:PlayerVelY, 0
     jle loc_5B59
-    inc byte ptr byte_6BD2
+    inc byte ptr FallCounter
     jmp short loc_5B59
 loc_5B54:
-    mov byte ptr byte_6BD2, 0
+    mov byte ptr FallCounter, 0
 loc_5B59:
     pop bx
     pop ax
@@ -3014,10 +3055,10 @@ loc_5B59:
     add bx, word ptr PlayerX
     sar bx, cl
     add bx, ax
-    call sub_5C92
+    call DispatchSideTileHandler
     jmp short loc_5B72
 loc_5B6F:
-    call sub_5CAC
+    call DispatchSideTileClass24
 loc_5B72:
     sub bx, 100h
     jb loc_5B7D
@@ -3029,14 +3070,27 @@ loc_5B7D:
     pop ax
     ret
 
-sub_5B81:
+; Tile interaction for the foot cell: bridge dip, ground handler and ceiling handler.
+; In: BX = foot cell, ES = LevelSegment, PlayerY, PlayerVelY. PlayerY <= -1 is handled first.
+; Out: map tile bytes (bridge dip), AirborneFlag, PlayerY/PlayerVelY/PlayerX via the handlers.
+; Notes: PlayerY <= -1: ApplyAirMotionAnim, AirborneFlag = FFh, return. Otherwise the ground tile
+;   is the map byte at cell+100h. Its GroundTypeTable value selects GroundTileHandlers[2*type].
+;   Bridge dip: BridgeDipTile holds the dipping tile (55AAh = none). Stepping onto a new tile with
+;   TileFlagsTable flag 20h sets BridgeDipTile and steps the tile id up by one. Previously dipping
+;   tiles are walked back one id at a time while the next lower id has flag 20h. Each changed
+;   tile goes to RefreshChangedTile.
+;   Ceiling (only when PlayerVelY <= 0): the tile above is at cell-100h. Its TileFlagsTable low
+;   nibble selects CeilingTileHandlers[2*n]. The handler's AH result is discarded (the value is
+;   restored from the stack). The corner nudge of PlayerX by +/-2 uses the side class (bit 0)
+;   of the foot cell read before the call, not the ceiling handler's result.
+UpdatePlayerTileContact:
     push ax
     push bx
     push bp
     cmp word ptr ds:PlayerY, -1
     jg loc_5B96
-    call sub_63B5
-    mov byte ptr byte_6BF3, 0FFh
+    call ApplyAirMotionAnim
+    mov byte ptr AirborneFlag, 0FFh
     jmp near ptr loc_5C77
 loc_5B96:
     push bx
@@ -3052,45 +3106,45 @@ loc_5BA8:
     xor ah, ah
     mov bx, ax
     shl bx, 1
-    cmp word ptr ds:word_6BAB, di
+    cmp word ptr ds:BridgeDipTile, di
     je loc_5C04
     push ax
     push bx
     push di
-    cmp word ptr ds:word_6BAB, 55AAh
+    cmp word ptr ds:BridgeDipTile, 55AAh
     je loc_5BE8
     push di
-    mov di, word ptr ds:word_6BAB
+    mov di, word ptr ds:BridgeDipTile
     mov bl, byte ptr es:[di]
     xor bh, bh
 loc_5BCD:
     dec bx
     test byte ptr [bx-7FA2h], 20h
     jne loc_5BDE
-    mov word ptr word_6BAB, 55AAh
+    mov word ptr BridgeDipTile, 55AAh
     pop di
     jmp short loc_5BE8
 loc_5BDE:
     mov al, bl
     mov byte ptr es:[di], al
-    call sub_5C7B
+    call RefreshChangedTile
     jmp short loc_5BCD
 loc_5BE8:
     mov bl, byte ptr es:[di]
     xor bh, bh
     test byte ptr [bx-7FA2h], 20h
     je loc_5C01
-    mov word ptr ds:word_6BAB, di
+    mov word ptr ds:BridgeDipTile, di
     inc bx
     mov al, bl
     mov byte ptr es:[di], al
-    call sub_5C7B
+    call RefreshChangedTile
 loc_5C01:
     pop di
     pop bx
     pop ax
 loc_5C04:
-    call word ptr [bx+word_7D9B]
+    call word ptr [bx+GroundTileHandlers]
     pop bx
     sub bx, 100h
     jb loc_5C77
@@ -3109,7 +3163,7 @@ loc_5C04:
     xor bh, bh
     shl bx, 1
     push ax
-    call word ptr [bx+word_7DA9]
+    call word ptr [bx+CeilingTileHandlers]
     pop ax
     and ah, 1
     je loc_5C77
@@ -3145,17 +3199,27 @@ loc_5C77:
     pop ax
     ret
 
-sub_5C7B:
+; Refreshes a changed tile: class >= 1 marks the grid dirty and forces a full redraw
+; (GridDirtyFlag = 1, PrevCameraCol = 55AAh). Class 0 redraws the tile directly.
+; In: DI = map cell, BX = new tile id (indexes TileClassTable).
+; Out: GridDirtyFlag / PrevCameraCol, or the screen through RedrawTileIfVisible.
+RefreshChangedTile:
     cmp byte ptr [bx+TileClassTable], 1
     jb loc_5C8E
     mov byte ptr GridDirtyFlag, 1
     mov word ptr PrevCameraCol, 55AAh
     ret
 loc_5C8E:
-    call sub_653D
+    call RedrawTileIfVisible
     ret
 
-sub_5C92:
+; Calls SideTileHandlers[2*class] for the tile at ES:BX, where class = byte at ds:7E5Eh indexed
+; by the tile id (xlat). Used for the foot cell of the column scan.
+; In: BX = map cell, ES = LevelSegment. Out: none (handler effects only).
+; Notes: entries 0 (wall impact), 1 (horizontal block), 2 (trigger). SideTileHandlers + 6 is
+;   GroundTileHandlers, so class 3 calls GroundTileSnapOrFall, class 4 calls GroundTileLand,
+;   and classes 5..8 call the slope and release handlers (aliasing).
+DispatchSideTileHandler:
     push bx
     push dx
     push di
@@ -3166,13 +3230,16 @@ sub_5C92:
     xor ah, ah
     mov bx, ax
     shl bx, 1
-    call word ptr [bx+dtbl_7D95]
+    call word ptr [bx+SideTileHandlers]
     pop di
     pop dx
     pop bx
     ret
 
-sub_5CAC:
+; Column-scan variant of DispatchSideTileHandler. Calls the side handler only for classes 2 and
+; 4; other classes do nothing. Class 4 reaches GroundTileLand through the alias above.
+; In: BX = map cell, ES = LevelSegment. Out: none.
+DispatchSideTileClass24:
     push bx
     push dx
     push di
@@ -3188,38 +3255,59 @@ loc_5CC0:
     xor ah, ah
     mov bx, ax
     shl bx, 1
-    call word ptr [bx+dtbl_7D95]
+    call word ptr [bx+SideTileHandlers]
 loc_5CCA:
     pop di
     pop dx
     pop bx
     ret
 
-sub_5CCE:
-    call sub_62EC
-    call sub_6333
-    call sub_6374
-    call sub_638B
+; State 8 (hurt). Chosen by PlayerHurtTimer >= 16h (not by the input index).
+; In: AL = 8, BX = 10h (ground dispatch). Out: PlayerVelX (wind, friction), anim, PlayerAnimPtr.
+; Notes: applies ApplyWindDrift and ApplyPlayerFriction, then SetPlayerAnim and AdvancePlayerAnim.
+;   Quirk: in alt mode AltStateHandlers[8] reads the text bytes 'LE' at ds:7D7Fh as a code
+;   pointer (word 454Ch). Reached only with PlayerAltModeFlag set and PlayerHurtTimer >= 16h.
+UpdatePlayerStateHurt:
+    call ApplyWindDrift
+    call ApplyPlayerFriction
+    call SetPlayerAnim
+    call AdvancePlayerAnim
     ret
 
-sub_5CDB:
-    cmp byte ptr ds:byte_6BD0, 0
+; State 0 (stand, look-around, and falling/airborne with no input). Also the target of the
+; jump and charge states when they hand over.
+; In: AL = anim, BX = 2*anim (from the dispatch, or 8 from UpdatePlayerStateCharge).
+; Out: anim and frame, PlayerVelX, camera pans, PlayerActionTicks, CurrentAnimId cleared.
+; Notes: first gate: when ScriptedHoldFlag (byte 6BFEh) is zero and PlayerVelY != 0, the
+;   handler applies ApplyWindDrift again if JumpFrame > 4 and returns without setting an anim.
+;   Otherwise: |PlayerVelX| >= 8 sets anim 12h if PlayerFrameHigh bit 7 (facing) equals
+;   PlayerVelXHigh bit 7 (moving in the facing direction), else the turn anim (BX-indexed).
+;   |PlayerVelX| in 1..7 uses the turn anim. PlayerVelX == 0 with PlayerActionTicks >= 1Eh and
+;   no L/R-both and no 27E9 sets anim 10h and subtracts 3 from PlayerActionTicks.
+;   Otherwise, with 27E9 set or both L and R held: anim 13h (look-around) pans the camera right
+;   (ScrollViewRight) while PlayerX>>4 - CameraCol > 2 (unsigned), or left (ScrollViewLeft)
+;   while the offset < 11h (unsigned) when facing left. Otherwise an idle table at 79E0h is
+;   searched by word 27F0h & 1FFh. Its fourth pair starts with the pointer word 6272h, which is
+;   larger than any key, so it acts as an implicit end marker.
+;   Ends with CurrentAnimId = 0 so the next frame sets the anim again.
+UpdatePlayerStateIdle:
+    cmp byte ptr ds:AttackAnimLock, 0
     je loc_5CE5
-    jmp near ptr loc_5F93
+    jmp near ptr ContinueAttackAnim
 loc_5CE5:
     push ax
     push bx
     push dx
-    mov byte ptr byte_6BC8, 0
-    call sub_62EC
-    call sub_6333
+    mov byte ptr StrokeCounter, 0
+    call ApplyWindDrift
+    call ApplyPlayerFriction
     cmp byte ptr ds:PlayerOnPlatform, 0
     jne loc_5D0E
     cmp word ptr ds:PlayerVelY, 0
     je loc_5D0E
-    cmp byte ptr ds:byte_6BD1, 4
+    cmp byte ptr ds:JumpFrame, 4
     jbe loc_5D0B
-    call sub_62EC
+    call ApplyWindDrift
 loc_5D0B:
     jmp near ptr loc_5E0D
 loc_5D0E:
@@ -3230,8 +3318,8 @@ loc_5D0E:
 loc_5D17:
     cmp ax, 8
     jb loc_5D42
-    mov al, byte ptr byte_4F21
-    mov ah, byte ptr byte_4F23
+    mov al, byte ptr PlayerFrameHigh
+    mov ah, byte ptr PlayerVelXHigh
     rol al, 1
     rol ah, 1
     and ax, 101h
@@ -3241,27 +3329,27 @@ loc_5D17:
 loc_5D31:
     mov bx, 24h
     mov al, 12h
-    call sub_635D
-    call sub_638B
-    call sub_5E11
+    call SetPlayerAnimLocked
+    call AdvancePlayerAnim
+    call MaybeEmitPlayerTrail
     jmp near ptr loc_5E08
 loc_5D42:
     or ax, ax
     je loc_5D49
     jmp near ptr loc_5DED
 loc_5D49:
-    cmp byte ptr ds:byte_6BD3, 1Eh
+    cmp byte ptr ds:PlayerActionTicks, 1Eh
     jb loc_5D73
     cmp byte ptr ds:byte_27E9, 0
     jne loc_5D83
     mov al, byte ptr byte_27EC
     and al, byte ptr byte_27ED
     jne loc_5D83
-    sub byte ptr byte_6BD3, 3
+    sub byte ptr PlayerActionTicks, 3
     mov bx, 20h
     mov al, 10h
-    call sub_635D
-    call sub_638B
+    call SetPlayerAnimLocked
+    call AdvancePlayerAnim
     jmp near ptr loc_5E08
 loc_5D73:
     mov al, byte ptr byte_27EC
@@ -3274,8 +3362,8 @@ loc_5D83:
     jne loc_5DC9
     mov bx, 26h
     mov al, 13h
-    call sub_635D
-    call sub_638B
+    call SetPlayerAnimLocked
+    call AdvancePlayerAnim
     test byte ptr LevelFlags, 2
     jne loc_5E08
     cmp byte ptr ds:ScrollFollowGate, 0
@@ -3284,7 +3372,7 @@ loc_5D83:
     mov cl, 4
     sar ax, cl
     sub ax, word ptr CameraCol
-    test byte ptr byte_4F21, 80h
+    test byte ptr PlayerFrameHigh, 80h
     jne loc_5DBF
     cmp ax, 2
     jbe loc_5E08
@@ -3309,31 +3397,37 @@ loc_5DD2:
 loc_5DE0:
     mov bx, 22h
     mov al, 11h
-    call sub_635D
-    call sub_638B
+    call SetPlayerAnimLocked
+    call AdvancePlayerAnim
     jmp short loc_5E08
 loc_5DED:
-    mov bx, word ptr [bx+word_7CDF]
+    mov bx, word ptr [bx+AnimSeqPtrTable]
     mov word ptr PlayerAnimPtr, bx
     mov ax, word ptr [bx]
-    mov dh, byte ptr word_4F25
+    mov dh, byte ptr PlayerFacing
     and dh, 80h
     or ah, dh
-    mov word ptr word_4F20, ax
-    mov byte ptr byte_4F2C, 0
+    mov word ptr PlayerFrameWord, ax
+    mov byte ptr SubAnimKey, 0
 loc_5E08:
-    mov byte ptr byte_4F27, 0
+    mov byte ptr CurrentAnimId, 0
 loc_5E0D:
     pop dx
     pop bx
     pop ax
     ret
 
-sub_5E11:
+; Emits a trail record on every fourth frame (SnowFrameTick low two bits zero).
+; In: none. Out: EmitPlayerTrail when the test passes, else nothing.
+MaybeEmitPlayerTrail:
     test byte ptr SnowFrameTick, 3
     jne loc_5E40
 
-sub_5E18:
+; Writes one trail record at the player position and advances PopupRingHead.
+; In: PlayerX, PlayerY. Out: record at [PopupRingHead] = X, Y, 35h; PopupRingHead moves.
+; Notes: ring of 5 slots 4F76h, 4F88h, 4F9Ah, 4FACh, 4FBEh (stride 12h, descending). A step
+;   below 4F76h wraps to 4FBEh.
+EmitPlayerTrail:
     push ax
     push bx
     mov bx, word ptr PopupRingHead
@@ -3353,7 +3447,9 @@ loc_5E3A:
 loc_5E40:
     ret
 
-sub_5E41:
+; As EmitPlayerTrail, with the position from the caller.
+; In: AX = X (pixels), DX = Y (pixels). Out: record at PopupRingHead, which then advances.
+EmitPlayerTrailAt:
     push bx
     mov bx, word ptr PopupRingHead
     mov word ptr [bx], ax
@@ -3368,14 +3464,18 @@ loc_5E5C:
     pop bx
     ret
 
-sub_5E62:
-    cmp byte ptr ds:byte_6BD0, 0
+; State 4 (crouch-creep and charge). Entered when Down is held with L or R.
+; In: AL = 4, BX = 8. Out: PlayerVelX, PlayerActionTicks = 0, LandingBlockTimer = 4, anim.
+; Notes: if |PlayerVelX| > 20h (unsigned, absolute value) it tail-jumps to UpdatePlayerStateIdle.
+;   Otherwise it accelerates by 20h, sets the anim and charges (IncrementChargeLevel).
+UpdatePlayerStateCharge:
+    cmp byte ptr ds:AttackAnimLock, 0
     je loc_5E6C
-    jmp near ptr loc_5F93
+    jmp near ptr ContinueAttackAnim
 loc_5E6C:
-    mov byte ptr byte_6BD3, 0
-    mov byte ptr byte_6BE1, 4
-    call sub_5EB7
+    mov byte ptr PlayerActionTicks, 0
+    mov byte ptr LandingBlockTimer, 4
+    call IncrementChargeLevel
     mov ax, word ptr PlayerVelX
     or ax, ax
     jns loc_5E82
@@ -3384,37 +3484,48 @@ loc_5E82:
     mov bp, 20h
     cmp ax, bp
     jbe loc_5E8C
-    jmp near ptr sub_5CDB
+    jmp near ptr UpdatePlayerStateIdle
 loc_5E8C:
-    call sub_62B1
-    call sub_6374
-    call sub_638B
+    call ApplyPlayerAcceleration
+    call SetPlayerAnim
+    call AdvancePlayerAnim
     ret
 
-sub_5E96:
-    cmp byte ptr ds:byte_6BD0, 0
+; State 5 (crouch, charge). Entered when Down is held alone.
+; In: AL = 5, BX = 0Ah. Out: StrokeCounter = 0, LandingBlockTimer = 4, anim, PlayerVelX, ChargeLevel.
+; Notes: sets the anim, advances it, applies symmetric friction, then IncrementChargeLevel.
+UpdatePlayerStateCrouch:
+    cmp byte ptr ds:AttackAnimLock, 0
     je loc_5EA0
-    jmp near ptr loc_5F93
+    jmp near ptr ContinueAttackAnim
 loc_5EA0:
-    mov byte ptr byte_6BC8, 0
-    mov byte ptr byte_6BE1, 4
-    call sub_6374
-    call sub_638B
-    call sub_6333
-    call sub_5EB7
+    mov byte ptr StrokeCounter, 0
+    mov byte ptr LandingBlockTimer, 4
+    call SetPlayerAnim
+    call AdvancePlayerAnim
+    call ApplyPlayerFriction
+    call IncrementChargeLevel
     ret
 
-sub_5EB7:
-    cmp byte ptr ds:byte_6BCE, 30h
+; Adds 2 to ChargeLevel while it is <= 30h (unsigned compare), so it reaches at most 32h.
+; In: ChargeLevel. Out: ChargeLevel.
+; Notes: any nonzero ChargeLevel multiplies PlayerAttackPower by 4 in UpdatePlayerStateAttack.
+IncrementChargeLevel:
+    cmp byte ptr ds:ChargeLevel, 30h
     ja loc_5EC3
-    add byte ptr byte_6BCE, 2
+    add byte ptr ChargeLevel, 2
 loc_5EC3:
     ret
 
-sub_5EC4:
-    cmp byte ptr ds:byte_6BD0, 0
+; State 1 (run). Entered when L or R is held alone.
+; In: AL = 1, BX = 2. Out: PlayerVelX, PlayerActionTicks (saturating), anim, StrokeCounter.
+; Notes: accelerates to +/-50h (ApplyPlayerAcceleration), applies ApplyWindDrift, sets the anim
+;   and advances it. In alt mode with |PlayerVelX| >= 40h it counts StrokeCounter and emits a
+;   trail record when the count reaches 17h. PlayerActionTicks saturates at FFh.
+UpdatePlayerStateRun:
+    cmp byte ptr ds:AttackAnimLock, 0
     je loc_5ECE
-    jmp near ptr loc_5F93
+    jmp near ptr ContinueAttackAnim
 loc_5ECE:
     push ax
     mov ax, word ptr PlayerVelX
@@ -3424,25 +3535,29 @@ loc_5ECE:
 loc_5ED8:
     cmp ax, 40h
     jl loc_5EF8
-    cmp byte ptr ds:byte_6BC5, 0
+    cmp byte ptr ds:PlayerAltModeFlag, 0
     je loc_5EF8
-    add byte ptr byte_6BC8, 1
-    sbb byte ptr byte_6BC8, 0
-    cmp byte ptr ds:byte_6BC8, 17h
+    add byte ptr StrokeCounter, 1
+    sbb byte ptr StrokeCounter, 0
+    cmp byte ptr ds:StrokeCounter, 17h
     jne loc_5EF8
-    call sub_5E18
+    call EmitPlayerTrail
 loc_5EF8:
     pop ax
-    add byte ptr byte_6BD3, 1
-    sbb byte ptr byte_6BD3, 0
+    add byte ptr PlayerActionTicks, 1
+    sbb byte ptr PlayerActionTicks, 0
     mov bp, 50h
-    call sub_62B1
-    call sub_62EC
-    call sub_6374
-    call sub_638B
+    call ApplyPlayerAcceleration
+    call ApplyWindDrift
+    call SetPlayerAnim
+    call AdvancePlayerAnim
     ret
 
-sub_5F13:
+; Alt-mode state 2. Bounce, or the jump body of UpdatePlayerStateJump.
+; In: AL = 2, BX = 44h (alt dispatch). Out: PlayerAirFlags, MomentumCounter, PlayerY, StrokeCounter.
+; Notes: when StrokeCounter >= 18h: PlayerAirFlags = 1, MomentumCounter = 18h, PlayerY -= 3,
+;   StrokeCounter = 0, then ApplyWindDrift twice. Otherwise it runs the jump body (loc_5F41).
+UpdatePlayerAltStateBounce:
     cmp byte ptr ds:[6BC8h], 18h
     jb loc_5F41
     mov byte ptr ds:[6BC7h], 1
@@ -3451,22 +3566,32 @@ sub_5F13:
     mov byte ptr ds:[6BC8h], 0
     jmp short loc_5F8C
 
-sub_5F30:
-    cmp byte ptr ds:byte_6BD0, 0
-    jne loc_5F93
-    cmp byte ptr ds:byte_6BE0, 0
+; State 2 (jump). Adds the jump arc to PlayerVelY, then drives PlayerVelX.
+; In: AL = 2, BX = 4 (ground dispatch). Out: PlayerVelY, PlayerVelX, anim 2, JumpFrame.
+; Notes: refused when JumpCooldown != 0 (tail-jumps to UpdatePlayerStateIdle).
+;   JumpFrame (unsigned byte, incremented every frame, no saturation) indexes JumpArcVelTable.
+;   For JumpFrame < 9 the arc value (-65, -51, -35, -20, -10, -5, -2, -1, 0) is added to
+;   PlayerVelY (halved in alt mode). From frame 9 on, ApplyPlayerGravity runs with cap 0C0h.
+;   Horizontal: if PlayerVelX >= 30h (UNSIGNED compare) friction runs, else ApplyPlayerAcceleration
+;   with 30h. Quirk: left-moving (negative) velocities are >= 30h unsigned, so left motion takes
+;   the friction branch and never accelerates here. Ends with two ApplyWindDrift calls.
+;   JumpCooldown is set to 6 by ApplyAirMotionAnim and decremented by FinishPlayerLanding.
+UpdatePlayerStateJump:
+    cmp byte ptr ds:AttackAnimLock, 0
+    jne ContinueAttackAnim
+    cmp byte ptr ds:JumpCooldown, 0
     je loc_5F41
-    jmp near ptr sub_5CDB
+    jmp near ptr UpdatePlayerStateIdle
 loc_5F41:
     mov byte ptr PlayerOnPlatform, 0
-    mov bl, byte ptr byte_6BD1
+    mov bl, byte ptr JumpFrame
     xor bh, bh
-    inc byte ptr byte_6BD1
+    inc byte ptr JumpFrame
     cmp bl, 9
     jae loc_5F6A
     shl bx, 1
-    mov ax, word ptr [bx+word_79CE]
-    cmp byte ptr ds:byte_6BC5, 0
+    mov ax, word ptr [bx+JumpArcVelTable]
+    cmp byte ptr ds:PlayerAltModeFlag, 0
     je loc_5F64
     sar ax, 1
 loc_5F64:
@@ -3474,54 +3599,72 @@ loc_5F64:
     jmp short loc_5F70
 loc_5F6A:
     mov bp, 0C0h
-    call sub_6309
+    call ApplyPlayerGravity
 loc_5F70:
     mov bp, 30h
     cmp word ptr PlayerVelX, bp
     jb loc_5F7E
-    call sub_6333
+    call ApplyPlayerFriction
     jmp short loc_5F81
 loc_5F7E:
-    call sub_62B1
+    call ApplyPlayerAcceleration
 loc_5F81:
     mov bx, 4
     mov al, 2
-    call sub_6374
-    call sub_638B
+    call SetPlayerAnim
+    call AdvancePlayerAnim
 loc_5F8C:
-    call sub_62EC
-    call sub_62EC
+    call ApplyWindDrift
+    call ApplyWindDrift
     ret
-loc_5F93:
-    mov al, byte ptr byte_4F27
+; Attack-lock entry (AttackAnimLock != 0): AL = CurrentAnimId, then falls into the body of
+; UpdatePlayerStateAttack (render path only).
+; In: CurrentAnimId. Out: as UpdatePlayerStateAttack.
+ContinueAttackAnim:
+    mov al, byte ptr CurrentAnimId
 
-sub_5F96:
-    call sub_6374
-    call sub_638B
-    call sub_6333
-    add byte ptr byte_6BD3, 1
-    sbb byte ptr byte_6BD3, 0
+; States 3, 6 and 7 (attack). The attack lock path (ContinueAttackAnim) enters the same code.
+; In: AL = state, BX = 2*state. Out: anim, PlayerVelY kick, projectile slot, sound,
+;   AttackRecoveryTimer, AttackAnimLock, PlayerAttackPower, PlayerSprite/Y.
+; Notes: AttackAnimLock = 40h when bit 6 of FrameFlagsRaw is clear, else 0. While the lock is set,
+;   the other handlers redirect here and only the frame and display are advanced (render path).
+;   Weapon record (5 bytes at word_7B04 + 5*PlayerWeaponType): +0 word frame-table pointer,
+;   +2 AttackRecoveryTimer (input lockout), +3 PlayerAttackPower (x4 when ChargeLevel != 0),
+;   +4 flags: bit 0 = projectile, kind = (flags >> 1) & 3.
+;   Sound: type 0 -> sfx 5, type 1 -> sfx 0, type 2 -> sfx 0Ah.
+;   PlayerVelY kick (not while byte 6BFEh is set): anim 6 -> 0, anim 3 -> -32, otherwise -48.
+;   A projectile is spawned when the flag bit is set and FindFreeProjectileSlot succeeds.
+;   Display: the frame table at the record pointer (8-byte rows, key/frame/x/y, 55AAh ends)
+;   gives PlayerSprite/PlayerRenderY relative to the player. PlayerSprite is FFFFh
+;   (hidden) while FallCounter is nonzero or no key matches.
+;   Quirk: PlayerWeaponType 0..2 are the only values the game sets (type 3 exists only as data).
+UpdatePlayerStateAttack:
+    call SetPlayerAnim
+    call AdvancePlayerAnim
+    call ApplyPlayerFriction
+    add byte ptr PlayerActionTicks, 1
+    sbb byte ptr PlayerActionTicks, 0
     mov al, 5
-    mul byte ptr byte_7B18
+    mul byte ptr PlayerWeaponType
     mov bx, ax
     mov al, byte ptr [bx+byte_7B07]
-    cmp byte ptr ds:byte_6BCE, 0
+    cmp byte ptr ds:ChargeLevel, 0
     je loc_5FC0
     shl al, 1
     shl al, 1
 loc_5FC0:
-    mov byte ptr byte_7B19, al
-    mov al, byte ptr byte_6BCF
+    mov byte ptr PlayerAttackPower, al
+    mov al, byte ptr FrameFlagsRaw
     and al, 40h
     xor al, 40h
-    mov byte ptr byte_6BD0, al
+    mov byte ptr AttackAnimLock, al
     je loc_5FD2
     jmp near ptr loc_6081
 loc_5FD2:
     mov al, byte ptr [bx+byte_7B06]
-    mov byte ptr byte_6BCD, al
+    mov byte ptr AttackRecoveryTimer, al
     mov dx, 5
-    mov al, byte ptr byte_7B18
+    mov al, byte ptr PlayerWeaponType
     or al, al
     je loc_5FEB
     mov dl, 0
@@ -3531,14 +3674,14 @@ loc_5FD2:
 loc_5FEB:
     call StartSoundEffect
     xor dx, dx
-    mov al, byte ptr byte_4F27
+    mov al, byte ptr CurrentAnimId
     cmp al, 6
     je loc_6004
     mov dx, 0FFE0h
     cmp al, 3
     je loc_6004
     mov dx, 0FFD0h
-    call sub_5E11
+    call MaybeEmitPlayerTrail
 loc_6004:
     cmp byte ptr ds:PlayerOnPlatform, 0
     jne loc_600F
@@ -3547,7 +3690,7 @@ loc_600F:
     mov al, byte ptr [bx+byte_7B08]
     shr al, 1
     jae loc_6075
-    call sub_627C
+    call FindFreeProjectileSlot
     jb loc_6075
     and al, 3
     mov byte ptr [si+8], al
@@ -3563,7 +3706,7 @@ loc_6025:
     mov cx, word ptr [bx-4]
     mov bx, word ptr [bx-2]
     mov word ptr [si+0Eh], bx
-    mov dh, byte ptr word_4F25
+    mov dh, byte ptr PlayerFacing
     and dh, 80h
     je loc_604B
     or ah, dh
@@ -3588,13 +3731,13 @@ loc_604B:
     mov ax, 0FFFFh
     jmp short loc_60AE
 loc_6075:
-    cmp byte ptr ds:byte_6BD2, 0
+    cmp byte ptr ds:FallCounter, 0
     je loc_6081
     mov ax, 0FFFFh
     jmp short loc_60AE
 loc_6081:
     mov si, word ptr [bx+word_7B04]
-    mov ax, word ptr word_4F20
+    mov ax, word ptr PlayerFrameWord
     mov dh, ah
     and ah, 1Fh
     mov bx, 0FFF8h
@@ -3634,7 +3777,11 @@ loc_60AE:
 loc_60DE:
     ret
 
-sub_60DF:
+; Ticks the 16 debris slots at 5450h (stride 12h).
+; In: none. Out: slot Y (+2), lifetime (+0Ch), free flags (frame word +4 = FFFFh).
+; Notes: each tick Y -= 1 and lifetime -= 1. The slot is freed only when the lifetime reaches
+;   exactly 0 (equality test; a lifetime starting at 0 never frees).
+TickDebrisSlots:
     mov si, 5450h
     mov cx, 10h
 loc_60E5:
@@ -3649,7 +3796,21 @@ loc_60F8:
     loop loc_60E5
     ret
 
-sub_60FE:
+; Updates the 32 burst/particle slots at 50A8h (stride 12h): timer, motion, tile bounce, frames.
+; In: ES = LevelSegment. Out: slot position, velocities, frame word, countdown byte +11h.
+; Notes: timer (+0Ch) > 0 runs the physics. At 0 the countdown byte +11h is set to 0Fh. When
+;   the timer is negative and +11h is zero, the slot is freed. Key frames 136h, 134h, 12Ch and
+;   132h clamp the timer to 32h and skip the rest. Key 0E5h skips the rest.
+;   Physics: X += VelX sar 4. X < 0 clamps X to 0 and negates VelX. X >= 1000h negates VelX.
+;   VelY (+0Eh) gets +9 and Y += VelY sar 4. The +9 is stored only while the sum stays below
+;   100h (signed), otherwise VelY keeps its old value.
+;   Cell = (X>>4 low byte, Y>>4 low byte). Falling (VelY > 0) onto a tile with GroundTypeTable
+;   class != 0 negates and halves VelY and moves VelX 8 toward zero. Rising (VelY <= 0) under a
+;   tile with SideTileClassTable != 0 negates VelX and steps X by the new VelX.
+;   Frame animation: keys 46h..49h cycle (every second frame when SnowFrameTick bit 0 is 0).
+;   Quirk: the countdown byte +11h is never decremented in this routine, so a slot that has
+;   reached it stays frozen unless another routine rewrites it (not traced).
+UpdateBurstParticles:
     mov si, 50A8h
     mov bp, 20h
     mov cl, 4
@@ -3769,7 +3930,15 @@ loc_6206:
 loc_620F:
     ret
 
-sub_6210:
+; Updates the four projectile slots at 4F2Eh (stride 12h).
+; In: none (ES unused). Out: slot positions, frame words, kind handler effects.
+; Notes: a slot whose frame word is -1 is skipped. Bit 5 of its flags byte (+5) clear frees the
+;   slot (frame = FFFFh). Otherwise X += VelX sar 4 and Y += VelY sar 4, the frame script
+;   advances (a negative word is a relative jump, then the next key is read) and
+;   ProjectileKindHandlers[2*kind] runs. kind = (flags >> 1) & 3 from the weapon record, so the
+;   shipped records only use kinds 0 and 1. ProjectileKindHandlers entries 2 and 3 are data words
+;   (0022h, 003Ah), not handlers.
+UpdatePlayerProjectiles:
     mov si, 4F2Eh
     mov cx, 4
 loc_6216:
@@ -3809,21 +3978,28 @@ loc_6251:
     mov bl, byte ptr [si+8]
     xor bh, bh
     shl bx, 1
-    call word ptr [bx+dtbl_79EC]
+    call word ptr [bx+ProjectileKindHandlers]
 loc_626C:
     add si, 12h
     loop loc_6216
     ret
 
-sub_6272:
+; Projectile kind 0 per-frame step: VelY (+0Eh) += 20h.
+; In: SI = slot. Out: slot+0Eh. Clobbers: none.
+ApplyProjectileHeavy:
     add word ptr [si+0Eh], 20h
     ret
 
-sub_6277:
+; Projectile kind 1 per-frame step: VelY (+0Eh) -= 10h.
+; In: SI = slot. Out: slot+0Eh. Clobbers: none.
+ApplyProjectileLight:
     sub word ptr [si+0Eh], 10h
     ret
 
-sub_627C:
+; Finds a free projectile slot (frame word FFFFh) among the four slots at 4F2Eh.
+; Out: CF = 0 and SI = slot when one is free; CF = 1 when none is free.
+; Clobbers: SI, CX (AX preserved).
+FindFreeProjectileSlot:
     push cx
     mov si, 4F2Eh
     mov cx, 4
@@ -3840,7 +4016,10 @@ loc_6291:
     clc
     ret
 
-sub_6294:
+; Waits for the frame sync flag (byte 280Dh). Returns at once when it is zero. Otherwise waits
+; for it to clear, then to set, then to clear again.
+; In: none. Out: none. Notes: no writer of byte 280Dh exists in the source tree (external pulse).
+WaitFrameSyncFlag:
     cmp byte ptr ds:byte_280D, 0
     je loc_62B0
 loc_629B:
@@ -3855,22 +4034,27 @@ loc_62A9:
 loc_62B0:
     ret
 
-sub_62B1:
+; PlayerVelX += (facing * 16) sar MotionShift when HorizontalInputHeld != 0. Then clamps to
+; +/-BP (signed compares).
+; In: BP = positive limit. Out: PlayerVelX.
+; Notes: the step is 16 >> MotionShift in 12.4 units (1, 1/2, 1/4, 1/8 px per frame per frame).
+;   sar of a negative step rounds toward minus infinity.
+ApplyPlayerAcceleration:
     push ax
     push cx
     push dx
     push bp
     xor ax, ax
     xor dx, dx
-    cmp byte ptr ds:byte_6BDB, 0
+    cmp byte ptr ds:HorizontalInputHeld, 0
     je loc_62CB
-    mov ax, word ptr word_4F25
+    mov ax, word ptr PlayerFacing
     shl ax, 1
     shl ax, 1
     shl ax, 1
     shl ax, 1
 loc_62CB:
-    mov cl, byte ptr byte_4F24
+    mov cl, byte ptr MotionShift
     sar ax, cl
     mov dx, word ptr PlayerVelX
     add dx, ax
@@ -3888,7 +4072,10 @@ loc_62E3:
     pop ax
     ret
 
-sub_62EC:
+; PlayerVelX -= (SnowWind >> 3), then floors PlayerVelX at -60h (signed compare).
+; In: SnowWind (word, set by the weather code). Out: PlayerVelX.
+; Notes: SnowWind is shifted with SHR (unsigned). The only clamp is the lower bound (-60h).
+ApplyWindDrift:
     push ax
     mov ax, word ptr SnowWind
     shr ax, 1
@@ -3902,13 +4089,17 @@ loc_6307:
     pop ax
     ret
 
-sub_6309:
+; PlayerVelY = min(PlayerVelY + g, BP), signed. g = 10h, or 4 when PlayerAirFlags == 1, and
+; the cap BP is divided by 8 in that case.
+; In: BP = cap. Out: PlayerVelY.
+; Notes: if PlayerVelY is already above the cap it is reduced to the cap.
+ApplyPlayerGravity:
     push ax
     push cx
     push dx
     mov dx, word ptr PlayerVelY
     mov ax, 10h
-    cmp byte ptr ds:byte_6BC7, 1
+    cmp byte ptr ds:PlayerAirFlags, 1
     jne loc_6323
     mov ax, 4
     sar bp, 1
@@ -3926,7 +4117,9 @@ loc_632B:
     pop ax
     ret
 
-sub_6333:
+; Moves |PlayerVelX| toward zero by 0Ch >> MotionShift, floored at 0, sign kept.
+; In: MotionShift. Out: PlayerVelX.
+ApplyPlayerFriction:
     push cx
     push dx
     xor ch, ch
@@ -3936,7 +4129,7 @@ sub_6333:
     neg ax
     inc ch
 loc_6342:
-    mov cl, byte ptr byte_4F24
+    mov cl, byte ptr MotionShift
     mov dx, 0Ch
     shr dx, cl
     sub ax, dx
@@ -3952,29 +4145,38 @@ loc_6357:
     pop cx
     ret
 
-sub_635D:
-    cmp byte ptr byte_4F2C, al
+; Keyed by SubAnimKey. When AL equals SubAnimKey, BX = PlayerAnimPtr (no change). Otherwise
+; SubAnimKey = AL, PlayerAnimPtr = AnimSeqPtrTable[BX], BX = PlayerAnimPtr.
+; In: AL = key, BX = 2*anim. Out: BX = PlayerAnimPtr, SubAnimKey, PlayerAnimPtr.
+SetPlayerAnimLocked:
+    cmp byte ptr SubAnimKey, al
     je loc_636F
-    mov byte ptr byte_4F2C, al
-    mov bx, word ptr [bx+word_7CDF]
+    mov byte ptr SubAnimKey, al
+    mov bx, word ptr [bx+AnimSeqPtrTable]
     mov word ptr PlayerAnimPtr, bx
     ret
 loc_636F:
     mov bx, word ptr PlayerAnimPtr
     ret
 
-sub_6374:
-    cmp byte ptr byte_4F27, al
+; Keyed by CurrentAnimId, with the same logic as SetPlayerAnimLocked.
+; In: AL = anim id, BX = 2*anim. Out: BX = PlayerAnimPtr, CurrentAnimId, PlayerAnimPtr.
+SetPlayerAnim:
+    cmp byte ptr CurrentAnimId, al
     je loc_6386
-    mov byte ptr byte_4F27, al
-    mov bx, word ptr [bx+word_7CDF]
+    mov byte ptr CurrentAnimId, al
+    mov bx, word ptr [bx+AnimSeqPtrTable]
     mov word ptr PlayerAnimPtr, bx
     ret
 loc_6386:
     mov bx, word ptr PlayerAnimPtr
     ret
 
-sub_638B:
+; Steps the animation script at BX. A negative word is a relative jump. Otherwise the frame word
+; goes to PlayerFrameWord (bit 7 of its high byte = facing) and FrameFlagsRaw keeps the whole
+; high byte (bit 6 = attack-frame flag). PlayerAnimPtr advances by one word.
+; In: BX = script pointer. Out: PlayerFrameWord, FrameFlagsRaw, PlayerAnimPtr.
+AdvancePlayerAnim:
     push ax
     push bx
     push dx
@@ -3984,12 +4186,12 @@ sub_638B:
     add bx, ax
     mov ax, word ptr [bx]
 loc_6398:
-    mov byte ptr byte_6BCF, ah
+    mov byte ptr FrameFlagsRaw, ah
     and ah, 1Fh
-    mov dh, byte ptr word_4F25
+    mov dh, byte ptr PlayerFacing
     and dh, 80h
     or ah, dh
-    mov word ptr word_4F20, ax
+    mov word ptr PlayerFrameWord, ax
     inc bx
     inc bx
     mov word ptr PlayerAnimPtr, bx
@@ -3998,14 +4200,20 @@ loc_6398:
     pop ax
     ret
 
-sub_63B5:
+; Air step, run every frame in the falling and jumping paths: ApplyPlayerAcceleration(50h), then
+; ApplyPlayerGravity(cap 0C0h). Then the animation: alt mode uses frame 2Dh (PlayerVelY < 0) or
+; 2Eh. Otherwise, while PlayerVelY > 0, JumpCooldown = 6 and, when AttackAnimLock is clear, frame
+; 0Ch, or 0Dh when FallCounter >= 12.
+; In: PlayerVelX, PlayerVelY, FallCounter, AttackAnimLock. Out: PlayerVelX, PlayerVelY,
+;   JumpCooldown, PlayerFrameWord.
+ApplyAirMotionAnim:
     push ax
     push bp
     mov bp, 50h
-    call sub_62B1
+    call ApplyPlayerAcceleration
     mov bp, 0C0h
-    call sub_6309
-    cmp byte ptr ds:byte_6BC5, 0
+    call ApplyPlayerGravity
+    cmp byte ptr ds:PlayerAltModeFlag, 0
     je loc_63D6
     mov al, 2Dh
     cmp word ptr ds:PlayerVelY, 0
@@ -4015,27 +4223,31 @@ sub_63B5:
 loc_63D6:
     cmp word ptr ds:PlayerVelY, 0
     jle loc_63FE
-    mov byte ptr byte_6BE0, 6
-    cmp byte ptr ds:byte_6BD0, 0
+    mov byte ptr JumpCooldown, 6
+    cmp byte ptr ds:AttackAnimLock, 0
     jne loc_63FE
     mov al, 0Ch
-    cmp byte ptr ds:byte_6BD2, 0Ch
+    cmp byte ptr ds:FallCounter, 0Ch
     jb loc_63F4
     inc al
 loc_63F4:
-    mov ah, byte ptr word_4F25
+    mov ah, byte ptr PlayerFacing
     and ah, 80h
-    mov word ptr word_4F20, ax
+    mov word ptr PlayerFrameWord, ax
 loc_63FE:
     pop bp
     pop ax
     ret
 
-sub_6401:
-    or byte ptr byte_6BF3, 1
+; Sets bit 0 of AirborneFlag (the player is in the air this frame).
+; In: none. Out: AirborneFlag.
+SetPlayerAirborne:
+    or byte ptr AirborneFlag, 1
     ret
 
-sub_6407:
+; Wall block: PlayerX -= PlayerVelX sar 4 (undoes the step), then PlayerVelX = 0.
+; In: PlayerVelX. Out: PlayerX, PlayerVelX.
+BlockPlayerHorizontal:
     push ax
     mov ax, word ptr PlayerVelX
     sar ax, 1
@@ -4047,13 +4259,25 @@ sub_6407:
     pop ax
     ret
 
-sub_641F:
-    mov byte ptr byte_4F24, 0
+; Lands the player on the foot tile: snaps PlayerY to the row top (low nibble cleared), adds
+; the slope offset of the foot tile or of the tile above, and applies the landing impact.
+; In: PlayerY, PlayerVelY, PlayerAirFlags, ES = LevelSegment, DI = foot cell.
+; Out: PlayerY, PlayerVelY, PlayerAirFlags = 0, FallCounter, LastLandY, ShakeMagnitude,
+;   PlayerFrameWord (land frame 0Ch), MotionShift = 0.
+; Notes: PlayerVelY < 0 -> SetPlayerAirborne and return. Soft landing (FinishPlayerLanding with
+;   PlayerVelY = 0) when FallCounter <= 4, or when PlayerY - LastLandY < 20h, or PlayerVelY < 50h
+;   (signed). Otherwise: LastLandY = PlayerY. FallCounter >= 14h and PlayerVelY > 0A0h set
+;   ShakeMagnitude = 8. FallCounter <= 0Ah is a soft landing. Otherwise the bounce:
+;   PlayerVelY = -20h unless LevelFlags bit 0 is set, the land frame is set, FallCounter = 0.
+;   Quirk: the bounce path does not reach FinishPlayerLanding, so AirborneFlag and JumpFrame are
+;   not updated by it.
+LandPlayerOnGround:
+    mov byte ptr MotionShift, 0
     cmp word ptr ds:PlayerVelY, 0
     jge loc_642D
-    jmp short sub_6401
+    jmp short SetPlayerAirborne
 loc_642D:
-    mov byte ptr byte_6BC7, 0
+    mov byte ptr PlayerAirFlags, 0
     and byte ptr PlayerY, 0F0h
     mov bl, byte ptr es:[di]
     xor bh, bh
@@ -4061,7 +4285,7 @@ loc_642D:
     cbw
     or ax, ax
     je loc_645E
-    call sub_661A
+    call SlopeHeightOffset
     mov bx, word ptr PlayerVelY
     sar bx, 1
     sar bx, 1
@@ -4078,54 +4302,59 @@ loc_645E:
     mov al, byte ptr [bx-71E3h]
     or al, al
     je loc_647C
-    call sub_661A
+    call SlopeHeightOffset
     cmp ax, 10h
     jge loc_647C
     sub ax, 10h
 loc_6478:
     add word ptr PlayerY, ax
 loc_647C:
-    cmp byte ptr ds:byte_6BD2, 4
+    cmp byte ptr ds:FallCounter, 4
     jbe loc_64D9
-    call sub_5E18
+    call EmitPlayerTrail
     mov ax, word ptr PlayerY
-    sub ax, word ptr word_6BCA
+    sub ax, word ptr LastLandY
     cmp ax, 20h
     jl loc_64D9
     cmp word ptr ds:PlayerVelY, 50h
     jl loc_64D9
     mov ax, word ptr PlayerY
-    mov word ptr word_6BCA, ax
-    cmp byte ptr ds:byte_6BD2, 14h
+    mov word ptr LastLandY, ax
+    cmp byte ptr ds:FallCounter, 14h
     jb loc_64B3
     cmp word ptr ds:PlayerVelY, 0A0h
     jle loc_64B3
     mov byte ptr ShakeMagnitude, 8
 loc_64B3:
-    cmp byte ptr ds:byte_6BD2, 0Ah
+    cmp byte ptr ds:FallCounter, 0Ah
     jbe loc_64D9
     test byte ptr LevelFlags, 1
     jne loc_64C7
     mov word ptr PlayerVelY, 0FFE0h
 loc_64C7:
-    mov ax, word ptr word_4F20
+    mov ax, word ptr PlayerFrameWord
     and ax, 0E000h
     or ax, 0Ch
-    mov word ptr word_4F20, ax
-    mov byte ptr byte_6BD2, 0
+    mov word ptr PlayerFrameWord, ax
+    mov byte ptr FallCounter, 0
     ret
 loc_64D9:
     mov word ptr PlayerVelY, 0
 
-sub_64DF:
-    sub byte ptr byte_6BE0, 1
-    adc byte ptr byte_6BE0, 0
-    mov byte ptr byte_6BD1, 0
-    mov byte ptr byte_6BF3, 2
+; Landing tail (soft landing): JumpCooldown (sat dec), JumpFrame = 0, AirborneFlag = 2,
+; LastLandY = PlayerY. Entered with PlayerVelY = 0.
+FinishPlayerLanding:
+    sub byte ptr JumpCooldown, 1
+    adc byte ptr JumpCooldown, 0
+    mov byte ptr JumpFrame, 0
+    mov byte ptr AirborneFlag, 2
     mov ax, word ptr PlayerY
-    mov word ptr word_6BCA, ax
+    mov word ptr LastLandY, ax
     ret
-loc_64FA:
+; Writes a wall-impact record (X<<3, Y<<3, three zero bytes) into the first free of 20 8-byte
+; slots at 6EA9h. A slot is free when its first word is 55AAh.
+; In: PlayerX, PlayerY. Out: one slot, or nothing when all 20 are in use.
+RecordWallImpact:
     mov si, 6EA9h
 loc_64FD:
     cmp word ptr [si], 55AAh
@@ -4148,18 +4377,25 @@ loc_6522:
 loc_652B:
     ret
 
-sub_652C:
+; Side class 0. Calls RecordWallImpact when TileFlagsTable flag 10h is set for the tile at ES:DI.
+; In: ES:DI = side tile. Out: optional wall record.
+SideTileWallImpactHandler:
     mov bl, byte ptr es:[di]
     xor bh, bh
     test byte ptr [bx-7FA2h], 10h
-    jne loc_64FA
+    jne RecordWallImpact
     ret
 
-sub_6539:
-    call sub_6407
+; Side class 1. Calls BlockPlayerHorizontal (wall block).
+SideTileBlockStop:
+    call BlockPlayerHorizontal
     ret
 
-sub_653D:
+; Draws the tile at map cell DI straight into the screen ring when it is inside the view window
+; (column offset < 14h and row offset < 0Ch from the camera origin at 2DE4h/2DE6h).
+; In: DI = cell. Out: CF = 0 when drawn (byte 6BBDh set to 1), CF = 1 when outside the window.
+; Notes: the blit parameters change with OptionVByte >= 3 (SetLatchCopyMode).
+RedrawTileIfVisible:
     push ax
     push bx
     push cx
@@ -4226,11 +4462,16 @@ loc_65A5:
     pop ax
     ret
 
-sub_65AF:
-    call sub_65B3
+; Respawn request: called from the out-of-range path, the side class 2, the ceiling class 2, the
+; ground class 6, and by RespawnRequestFlag in UpdatePlayer. Calls TriggerPlayerRespawnCore.
+; In: none. Out: Lives, RespawnState, EndSignal.
+TriggerPlayerRespawn:
+    call TriggerPlayerRespawnCore
     ret
 
-sub_65B3:
+; Does nothing while RespawnState != 0. Otherwise, with Lives == 0 sets EndSignal =
+; 1. With lives left, Lives is decremented, byte 27D6h is cleared and RespawnState = 2.
+TriggerPlayerRespawnCore:
     cmp byte ptr ds:RespawnState, 0
     jne loc_65CF
     cmp byte ptr ds:Lives, 0
@@ -4244,7 +4485,10 @@ loc_65D0:
     mov byte ptr EndSignal, 1
     ret
 
-sub_65D6:
+; Adds one to Lives unless it is already 63h (99). The self-modifying tail is reached only
+; when the count is already above 63h on entry. It writes 0CFh (IRET) to cs:26FAh, the first byte
+; of DrawSpriteObjects. From this routine's own increments the count never exceeds 63h.
+IncrementPlayerLives:
     push si
     mov si, 2172h
     cmp byte ptr [si+byte_0666], 63h
@@ -4257,7 +4501,11 @@ loc_65ED:
     pop si
     ret
 
-sub_65EF:
+; Ground class 0. At rest (PlayerVelY == 0), if the tile one row below the foot has
+; TileSolidProps != 0 and a slope offset < 10h, steps PlayerY down one tile and lands.
+; Otherwise airborne (SetPlayerAirborne).
+; In: DI = foot cell, PlayerVelY. Out: PlayerY, AirborneFlag.
+GroundTileSnapOrFall:
     cmp word ptr ds:PlayerVelY, 0
     jne loc_6616
     mov al, byte ptr es:[di+100h]
@@ -4265,17 +4513,21 @@ sub_65EF:
     xlat
     or al, al
     je loc_6616
-    call sub_661A
+    call SlopeHeightOffset
     cmp ax, 10h
     jge loc_6616
     add di, 100h
     add word ptr PlayerY, 10h
-    jmp short sub_6641
+    jmp short GroundTileLand
 loc_6616:
-    call sub_6401
+    call SetPlayerAirborne
     ret
 
-sub_661A:
+; Slope offset from the property byte in AX (TileSolidProps). When bit 4 or bit 5 is set:
+; quotient = (PlayerX and 0Fh) / 3. Bit 4 set: offset = quotient + height; otherwise
+; height - quotient, where height = low nibble. Else AX is returned unchanged.
+; In: AX = property. Out: AX (sign-extended). Clobbers: BX, DX.
+SlopeHeightOffset:
     test al, 30h
     je loc_6640
     push bx
@@ -4300,37 +4552,46 @@ loc_663E:
 loc_6640:
     ret
 
-sub_6641:
-    call sub_641F
+; Ground class 1 (plain land). Calls LandPlayerOnGround.
+GroundTileLand:
+    call LandPlayerOnGround
     ret
 
-sub_6645:
-    mov byte ptr byte_4F24, 0
-    cmp byte ptr ds:byte_6BE1, 0
+; Ground class 5. Clears MotionShift. Airborne when LandingBlockTimer != 0, else lands.
+GroundTileReleaseLand:
+    mov byte ptr MotionShift, 0
+    cmp byte ptr ds:LandingBlockTimer, 0
     jne loc_6654
-    jmp near ptr sub_641F
+    jmp near ptr LandPlayerOnGround
 loc_6654:
-    jmp near ptr sub_6401
+    jmp near ptr SetPlayerAirborne
 
-sub_6657:
-    call sub_641F
-    mov byte ptr byte_4F24, 1
+; Ground class 2: lands (LandPlayerOnGround), then MotionShift = 1.
+GroundTileLandSlope1:
+    call LandPlayerOnGround
+    mov byte ptr MotionShift, 1
     ret
 
-sub_6660:
-    call sub_641F
-    mov byte ptr byte_4F24, 2
+; Ground class 3: lands, then MotionShift = 2.
+GroundTileLandSlope2:
+    call LandPlayerOnGround
+    mov byte ptr MotionShift, 2
     ret
 
-sub_6669:
-    call sub_641F
-    mov byte ptr byte_4F24, 3
+; Ground class 4: lands, then MotionShift = 3. Also reached as side class 4.
+GroundTileLandSlope3:
+    call LandPlayerOnGround
+    mov byte ptr MotionShift, 3
     ret
 
-sub_6672:
+; Ceiling class 0: no-op.
+CeilingTileNone:
     ret
 
-sub_6673:
+; Ceiling class 1. With PlayerVelY != 0: PlayerVelY = 0 and PlayerY = (PlayerY and FFF0h) + 10h.
+; Quirk: the +10h puts the feet one row below the ceiling row. With PlayerVelY == 0 a push-out
+;   branch reads the position record pointer word_6BB1 (not traced in this region).
+CeilingTileHeadBump:
     cmp word ptr ds:PlayerVelY, 0
     je loc_668B
     mov word ptr PlayerVelY, 0
@@ -4338,7 +4599,7 @@ sub_6673:
     add word ptr PlayerY, 10h
     ret
 loc_668B:
-    mov al, byte ptr word_4F20
+    mov al, byte ptr PlayerFrameWord
     cmp al, 0Ah
     je loc_66D2
     cmp al, 15h
@@ -4375,6 +4636,8 @@ loc_66D0:
 loc_66D2:
     ret
 
+; Dead code (no caller in the source tree). Tests two records for overlap (|dx| < 40h,
+; |dy| < 46h) and uses the tables at 7191h and 752Ah. Kept as unused; meaning not confirmed.
 unused_66D3:
     push ax
     push bx
@@ -4447,6 +4710,7 @@ loc_675B:
     clc
     ret
 
+; Dead code (no caller). Returns X + 0Ch, or X - 0Ah when bit 7 of byte +5 is set.
 unused_6760:
     mov ax, word ptr [si]
     mov dx, 0Ch
@@ -4457,14 +4721,20 @@ loc_676E:
     add ax, dx
     ret
 CameraFixedStep label byte
+; Code-segment flag byte, set and cleared in MODULE3 source lines 2304..2432 (another region).
+; Meaning not proven in this region.
 ; DATA: flag byte
     db 00h
 
-sub_6772:
-    mov al, byte ptr byte_6C01
-    or al, byte ptr byte_6C02
+; One fade step of the 16-colour DAC palette (48 bytes). Each component moves toward its target
+; by the step counter PaletteFadeStep. FadeInActive swaps source and target. Both flags clear
+; when every component has reached its target.
+; In: FadeOutActive, FadeInActive. Out: DAC palette, PaletteFadeStep.
+StepPaletteFade:
+    mov al, byte ptr FadeOutActive
+    or al, byte ptr FadeInActive
     je loc_67D6
-    inc byte ptr byte_6C03
+    inc byte ptr PaletteFadeStep
     mov bl, byte ptr CurrentLevel
     xor bh, bh
     shl bx, 1
@@ -4475,13 +4745,13 @@ sub_6772:
     mov bx, 0ACB7h
     mov cx, 30h
     xor bp, bp
-    cmp byte ptr ds:byte_6C02, 0
+    cmp byte ptr ds:FadeInActive, 0
     je loc_67A2
     xchg si, bx
 loc_67A2:
     lodsb
     mov ah, byte ptr [bx]
-    mov dl, byte ptr byte_6C03
+    mov dl, byte ptr PaletteFadeStep
     mov dh, dl
     sub al, ah
     jns loc_67B3
@@ -4503,11 +4773,15 @@ loc_67C1:
     loop loc_67A2
     or bp, bp
     jne loc_67D6
-    mov byte ptr byte_6C01, 0
-    mov byte ptr byte_6C02, 0
+    mov byte ptr FadeOutActive, 0
+    mov byte ptr FadeInActive, 0
 loc_67D6:
     ret
 
+; Placeholder kept. When byte 6CA7h == 1Fh, places an effect at the player (word_A336,
+; word_A338, word_A33A) via sub_8D1B and sets byte 6BFFh = 1 and byte 6C00h = 2Ch. Otherwise
+; clears bits 3..5 of byte 6CA8h when they are all set and sets word_6BE2 = 294h. The meaning
+; of byte 6CA7h is not established in this region.
 sub_67D7:
     cmp byte ptr ds:BonusLetterMask, 1Fh
     jne loc_680D
@@ -4536,22 +4810,43 @@ loc_680D:
 loc_6821:
     ret
 
-sub_6822:
-    cmp byte ptr ds:byte_91FE, 0FFh
+; Per-frame update of the object lists; called once per frame from the main loop (1030:0220).
+; Order: boss (UpdateBossFight while BossState != 0FFh), level 5 (UpdateLevel5Sequence when
+; CurrentLevel = 5, LevelFlags & 0FEh = 0 and Level5Phase != 3), level 9 (RunLevel9Script when
+; CurrentLevel = 9); then the 12 child slots 4FD0h..50A7h; then the entity list at 8489h.
+; Child slot (18 bytes, see RECORDS): skipped when +4 = FFFFh; Y += YVel>>4; X += XVel>>4 unless
+; XVel = FFFFh; if owner flags & 08h, UpdateObjectTerrain; script step at +0Ch (a negative word
+; is a relative jump, other words are frame commands: low 13 bits frame, bits 13..15 copied to
+; ScriptFrameFlags); frame mapped to a sprite id; then ChildHandlerTable[owner kind].
+; Entity: skipped when +2 = FFFFh, when +4 & 04h (child busy), or when kind bit 7 is set and
+; byte_B198 != 1; otherwise EntityHandlerTable[kind] with SI = entity. CF = 0 from the handler
+; means a child was spawned (LastSpawnedChild); the walker then sets the child's script pointer
+; from the table at ds:A86Fh (lookup by kind and X - 138h).
+; In: object records in ds. Out: records updated; all registers and segments preserved.
+; Notes: the entity walk ends at the first stride byte >= 32h (unsigned compare; MODULE2
+;   RebaseEntitySpriteRefs uses ja, so a stride of exactly 32h is treated differently there).
+;   Stride 0 loops forever. The kind is shifted as 8 bits (shl bl,1): kinds 80h..FFh act as
+;   kind-80h, and kinds 13..127 index past the 13-entry tables (no range check). The same 8-bit
+;   shift applies to the owner kind of a child.
+;   The ds:A86Fh lookup has no bound: a missing entry runs past the table.
+;   Children spawned during the child walk can be updated the same frame if their slot is above
+;   the walk index; entity spawns are first updated next frame (entities run after children).
+UpdateObjects:
+    cmp byte ptr ds:BossState, 0FFh
     je loc_682C
-    call sub_70D7
+    call UpdateBossFight
 loc_682C:
     cmp byte ptr ds:CurrentLevel, 5
     jne loc_6844
     test byte ptr LevelFlags, 0FEh
     jne loc_6844
-    cmp word ptr ds:word_A326, 3
+    cmp word ptr ds:Level5Phase, 3
     je loc_6844
-    call sub_6D34
+    call UpdateLevel5Sequence
 loc_6844:
     cmp byte ptr ds:CurrentLevel, 9
     jne loc_684E
-    call sub_6ADD
+    call RunLevel9Script
 loc_684E:
     mov si, 4FD0h
     mov bp, 0Ch
@@ -4574,7 +4869,7 @@ loc_6875:
     mov bx, word ptr [si+6]
     test byte ptr [bx+4], 8
     je loc_6881
-    call sub_698C
+    call UpdateObjectTerrain
 loc_6881:
     mov bx, word ptr [si+0Ch]
 loc_6884:
@@ -4588,7 +4883,7 @@ loc_688F:
     and dh, 1Fh
     and ah, 0E0h
     or ah, byte ptr word_6BE2
-    mov byte ptr byte_A340, ah
+    mov byte ptr ScriptFrameFlags, ah
     add dx, 138h
     cmp word ptr ds:word_6BE2, 0
     je loc_68D2
@@ -4633,7 +4928,7 @@ loc_68D7:
     push ds
     push es
     push bp
-    call word ptr cs:[bx+tbl_6AA9]
+    call word ptr cs:[bx+ChildHandlerTable]
     pop bp
     pop es
     pop ds
@@ -4674,7 +4969,7 @@ loc_6934:
     push ds
     push es
     push bp
-    call word ptr cs:[bx+tbl_6AC3]
+    call word ptr cs:[bx+EntityHandlerTable]
     pop bp
     pop es
     pop ds
@@ -4706,7 +5001,7 @@ loc_6975:
     inc bx
     jmp short loc_6975
 loc_697D:
-    mov di, word ptr ds:word_A32E
+    mov di, word ptr ds:LastSpawnedChild
     mov word ptr [di+0Ch], bx
 loc_6984:
     mov al, byte ptr [si]
@@ -4716,7 +5011,14 @@ loc_6984:
 loc_698B:
     ret
 
-sub_698C:
+; Terrain response for a child whose owner has flag 08h (called from UpdateObjects).
+; In: SI = child, [SI+6] = owner entity (flags at owner+4: 40h and 80h select the climb or bounce
+;   response). Reads LevelSegment tile bytes at (Y>>4, X>>4) and the translation tables at
+;   ds:7E5Eh and ds:7F5Eh; ComputeBobOffset gives a wobble term.
+; Out: child position, velocities, state; owner fields; the child script may be stepped back
+;   (ScriptStepBack) or forward (ScriptStepForward).
+; Notes: the 7E5Eh table is also the overflow area of AllocDebrisRecord (see there).
+UpdateObjectTerrain:
     push ax
     push bx
     push cx
@@ -4755,7 +5057,7 @@ loc_69BB:
     sub word ptr [si], ax
     jmp near ptr loc_6A77
 loc_69E3:
-    call sub_8048
+    call ScriptStepBack
     mov word ptr [si+0Ah], 0
     and byte ptr [bx+4], 7Fh
     sub word ptr [si+2], 10h
@@ -4765,7 +5067,7 @@ loc_69F6:
     je loc_6A21
     test byte ptr [bx+4], 40h
     je loc_6A17
-    call sub_8058
+    call ScriptStepForward
     or byte ptr [bx+4], 80h
     mov word ptr [si+0Ah], 0FFF0h
     mov ax, word ptr [si+8]
@@ -4794,7 +5096,7 @@ loc_6A21:
     je loc_6A6C
 loc_6A3E:
     mov al, dl
-    call sub_6A7D
+    call ComputeBobOffset
     and byte ptr [si+2], 0F0h
     add word ptr [si+2], ax
     mov bx, word ptr [si+6]
@@ -4826,7 +5128,12 @@ loc_6A77:
     pop ax
     ret
 
-sub_6A7D:
+; Returns a small signed offset from a motion class byte.
+; In: AL = class byte, SI = child (X word at +0). The class is first translated through the
+;   256-byte table at ds:8E1Dh. If the result has bits 30h clear, AX = result (sign-extended).
+;   Otherwise AX = (X & 0Fh) / 3 + (result & 0Fh), negated when result bit 10h is clear.
+; Out: AX = signed offset. BX and DX are preserved.
+ComputeBobOffset:
     push bx
     push dx
     mov bx, 8E1Dh
@@ -4852,41 +5159,68 @@ loc_6AA5:
     pop dx
     pop bx
     ret
-tbl_6AA9 label word
-    dw offset sub_7C90
-    dw offset sub_7C8C
-    dw offset sub_7C2D
-    dw offset sub_7B91
-    dw offset sub_7ADF
-    dw offset sub_7A60
-    dw offset sub_78EC
-    dw offset sub_7898
-    dw offset sub_77DE
-    dw offset sub_773D
-    dw offset sub_7665
-    dw offset sub_760F
-    dw offset sub_75C4
-tbl_6AC3 label word
-    dw offset sub_7F6C
-    dw offset sub_7F26
-    dw offset sub_7EE2
-    dw offset sub_7ED8
-    dw offset sub_7EBF
-    dw offset sub_7EB5
-    dw offset sub_7EB5
-    dw offset sub_7EB5
-    dw offset sub_7EB5
-    dw offset sub_7E97
-    dw offset sub_7D9B
-    dw offset sub_7D6E
-    dw offset sub_7D1B
+; Dispatch table for child records: index = owner kind byte [owner+1] (8-bit shifted, see
+; UpdateObjects). 13 entries, code offsets only:
+;   0 UpdateGroundChild      1 CullChildOnly        2 UpdateBobChild
+;   3 UpdateWalkerChild      4 UpdateOrbitChild     5 UpdatePounceChild
+;   6 UpdateWanderingChild   7 UpdateLeaperChild    8 UpdateHopChild
+;   9 UpdatePatrolChild     10 UpdateChargerChild  11 UpdateLeapChild
+;  12 UpdateLaunchedChild
+; Notes: each handler is called with SI = child, BX = owner, and all registers pushed. The
+;   handler may write memory and the child/owner fields; SI, BX, BP, CX, DX are restored.
+ChildHandlerTable label word
+    dw offset UpdateGroundChild
+    dw offset CullChildOnly
+    dw offset UpdateBobChild
+    dw offset UpdateWalkerChild
+    dw offset UpdateOrbitChild
+    dw offset UpdatePounceChild
+    dw offset UpdateWanderingChild
+    dw offset UpdateLeaperChild
+    dw offset UpdateHopChild
+    dw offset UpdatePatrolChild
+    dw offset UpdateChargerChild
+    dw offset UpdateLeapChild
+    dw offset UpdateLaunchedChild
+; Dispatch table for entity records: index = entity kind byte [entity+1] (low 7 bits, see
+; UpdateObjects). 13 entries. Each handler gets SI = entity and returns CF = 1 when it did not
+; spawn, CF = 0 when it spawned a child (LastSpawnedChild = the child):
+;   0 SpawnDropOverPlayer      1 SpawnChildWhenVisible    2 SpawnFixedChild
+;   3 SpawnChildLatchState37   4 SpawnChildResetCounters  5..8 SpawnChildLatched
+;   9 SpawnChildWithFlags     10 SpawnChildOnPlayerBox   11 SpawnChildRandomY
+;  12 SpawnChildOnApproach
+; Notes: the entity kind 10 handler is a code offset (7D9Bh); the data word at ds:7D9Bh is the
+;   player movement-state table (pre2_port conflict B). They are different namespaces.
+EntityHandlerTable label word
+    dw offset SpawnDropOverPlayer
+    dw offset SpawnChildWhenVisible
+    dw offset SpawnFixedChild
+    dw offset SpawnChildLatchState37
+    dw offset SpawnChildResetCounters
+    dw offset SpawnChildLatched
+    dw offset SpawnChildLatched
+    dw offset SpawnChildLatched
+    dw offset SpawnChildLatched
+    dw offset SpawnChildWithFlags
+    dw offset SpawnChildOnPlayerBox
+    dw offset SpawnChildRandomY
+    dw offset SpawnChildOnApproach
 
-sub_6ADD:
+; Level 9 bytecode interpreter (CurrentLevel = 9). Reads the script at Level9ScriptPtr, one
+; command group per frame:
+;   FFh = SpawnDriftParticle; FEh = SpawnFallingParticle; FDh = StartSoundEffect 2;
+;   00h..7Fh = end of the group: Level9ScriptPtr += 1, DrawLevel9Panel with AL = the byte;
+;   80h..FCh = signed relative jump of the cursor (the repeat counter byte_A515 is decremented
+;     unless the byte is 83h).
+; The four 4F2Eh slots are tested against a window at X = B9h, Y = 1Eh; a hit sets the script to
+; 0A534h, decrements the countdown word_A519, and at zero calls EmitLevel9Sparkles.
+; In: none. Out: script cursor, countdown, counters; DS = data segment, ES = A000h (VGA).
+RunLevel9Script:
     mov ax, seg DATA
     mov ds, ax
     mov ax, 0A000h
     mov es, ax
-    cmp word ptr ds:word_A517, -1
+    cmp word ptr ds:Level9ScriptPtr, -1
     jne loc_6B04
     mov word ptr word_A4F7, 0A4F9h
     mov word ptr word_A519, 18h
@@ -4896,11 +5230,11 @@ loc_6B04:
     mov cx, word ptr word_A519
     sar cx, 1
     sar cx, 1
-    call sub_7585
+    call SetGaugeSprites
     cmp word ptr ds:word_A519, 0
     jne loc_6B1C
     mov al, 2
-    call sub_6C0D
+    call DrawLevel9Panel
     ret
 loc_6B1C:
     cmp byte ptr ds:byte_A515, 0
@@ -4912,7 +5246,7 @@ loc_6B1C:
     add bx, word ptr [bx+2]
     mov ax, word ptr [bx]
 loc_6B33:
-    mov word ptr word_A517, ax
+    mov word ptr Level9ScriptPtr, ax
     mov ax, word ptr [bx+2]
     mov byte ptr byte_A515, al
     add bx, 4
@@ -4931,33 +5265,33 @@ loc_6B49:
     sub ax, 1Eh
     cmp ax, 32h
     jae loc_6B8C
-    mov word ptr word_A517, 0A534h
+    mov word ptr Level9ScriptPtr, 0A534h
     sub byte ptr word_A519, 1
     adc byte ptr word_A519, 0
     jne loc_6B79
-    call sub_6BDB
+    call EmitLevel9Sparkles
 loc_6B79:
     inc byte ptr byte_A516
     and byte ptr byte_A516, 3
     jne loc_6B91
-    mov word ptr word_A517, 0A540h
+    mov word ptr Level9ScriptPtr, 0A540h
     jmp short loc_6B91
 loc_6B8C:
     add si, 12h
     loop loc_6B49
 loc_6B91:
-    mov bx, word ptr word_A517
+    mov bx, word ptr Level9ScriptPtr
 loc_6B95:
     mov al, byte ptr [bx]
     cmp al, 0FFh
     jne loc_6BA1
-    call sub_6CA7
+    call SpawnDriftParticle
     inc bx
     jmp short loc_6B95
 loc_6BA1:
     cmp al, 0FEh
     jne loc_6BAB
-    call sub_6CF1
+    call SpawnFallingParticle
     inc bx
     jmp short loc_6B95
 loc_6BAB:
@@ -4977,14 +5311,17 @@ loc_6BB8:
 loc_6BCA:
     cbw
     add bx, ax
-    mov word ptr word_A517, bx
+    mov word ptr Level9ScriptPtr, bx
     jmp short loc_6B95
 loc_6BD3:
-    inc word ptr word_A517
-    call sub_6C0D
+    inc word ptr Level9ScriptPtr
+    call DrawLevel9Panel
     ret
 
-sub_6BDB:
+; Emits four single particles (four calls to sub_8D1B with count 1) at (B9h, 1Eh) with sprite
+; 2137h; the X velocity steps by 10h per particle and the Y velocity by 10h. Out: 50A8h particle
+; slots (if free). Note the exact velocity rule is not fully traced.
+EmitLevel9Sparkles:
     mov ax, 0B9h
     mov word ptr EffectOriginX, ax
     mov ax, 1Eh
@@ -5008,7 +5345,11 @@ loc_6C09:
     loop loc_6BF0
     ret
 
-sub_6C0D:
+; Draws one 6-column x 7-row block of the level-9 panel: the tile indices are read from
+; LevelSegment + 14h + 6*AL, each mapped to a 32-byte tile at ds:5E80h + index*32, and copied to
+; VRAM with the latch copy mode (SetLatchCopyMode), starting at 3F58h.
+; In: AL = row (multiplied by 6 in 8 bits). Out: VRAM written; DS restored.
+DrawLevel9Panel:
     mov di, 3F40h
     add di, 18h
     call SetLatchCopyMode
@@ -5094,7 +5435,10 @@ loc_6C23:
 loc_6CA6:
     ret
 
-sub_6CA7:
+; Adds one particle (sprite 1CAh) at (C8h, 58h) to the 32-slot particle pool at 50A8h, with X
+; velocity -8*(NextWindRandom & 0Fh) and lifetime 84h. Nothing when the pool is full.
+; Notes: uses the PRNG NextWindRandom (contradicts pre2_port Q23 "no RNG in gameplay").
+SpawnDriftParticle:
     push cx
     push si
     mov si, 50A8h
@@ -5125,7 +5469,9 @@ loc_6CEE:
     pop cx
     ret
 
-sub_6CF1:
+; Adds one particle (sprite 1CBh) at Y = 0, X = (NextWindRandom & 7Fh) - 10h, lifetime 42h, to
+; the particle pool at 50A8h. Nothing when the pool is full.
+SpawnFallingParticle:
     push cx
     push si
     mov si, 50A8h
@@ -5154,11 +5500,18 @@ loc_6D31:
     pop cx
     ret
 
-sub_6D34:
+; Level 5 sequence controller: Level5Phase (0..3) and byte_A324/A325/A328..A32C timers drive five
+; L6 projectile records at 7DAFh (see L5Projectile). Their positions are mirrored into render
+; slots 55EEh..(5 slots) each frame. The phase-2 and phase-0 spawns are at PlayerX + offset and
+; PlayerY - 96h (projectile spawn); the flash bit (xor 40h on +5) of the 5648h-group parts is
+; toggled on contact (loc_7001).
+; Calls SetGaugeSprites with count 2*(2 - Level5Phase). At phase 3 the sequence is over.
+; Out: records, timers, Level5Phase. Other routines (sub_94F3, sub_8D1B) are called for effects.
+UpdateLevel5Sequence:
     mov cx, 2
-    sub cx, word ptr word_A326
+    sub cx, word ptr Level5Phase
     shl cx, 1
-    call sub_7585
+    call SetGaugeSprites
     mov bx, 7DAFh
     mov si, 4F1Ch
     mov di, 55EEh
@@ -5172,11 +5525,11 @@ loc_6D4C:
     call TestHitboxOverlap
     jae loc_6D80
     mov byte ptr PlayerHurtTimer, 2Ch
-    mov byte ptr byte_6BD0, 0
+    mov byte ptr AttackAnimLock, 0
     mov word ptr PlayerVelY, 0FF80h
-    mov byte ptr byte_4F24, 3
+    mov byte ptr MotionShift, 3
     mov word ptr PlayerVelX, 0FF80h
-    call sub_824D
+    call DrainPlayerEnergy
     jmp short loc_6DC9
 loc_6D80:
     mov dx, word ptr [bx+6]
@@ -5229,7 +5582,7 @@ loc_6DDE:
     mov ax, 0FFFFh
     mov word ptr word_5670, ax
     mov word ptr word_565E, ax
-    cmp word ptr ds:word_A326, 2
+    cmp word ptr ds:Level5Phase, 2
     jae loc_6E12
     mov al, 0Ch
     mul byte ptr byte_A329
@@ -5273,7 +5626,7 @@ loc_6E12:
     lodsw
     mov word ptr word_564A, ax
     lodsw
-    cmp word ptr ds:word_A326, 0
+    cmp word ptr ds:Level5Phase, 0
     je loc_6E55
     mov ax, 0FFFFh
 loc_6E55:
@@ -5394,12 +5747,12 @@ loc_6F59:
 loc_6F69:
     mov word ptr PlayerVelY, 0FF60h
     mov byte ptr PlayerHurtTimer, 2Ch
-    mov byte ptr byte_6BD0, 0
-    mov byte ptr byte_4F24, 3
+    mov byte ptr AttackAnimLock, 0
+    mov byte ptr MotionShift, 3
     mov word ptr PlayerVelX, 0FF80h
-    call sub_824D
-    call sub_824D
-    call sub_824D
+    call DrainPlayerEnergy
+    call DrainPlayerEnergy
+    call DrainPlayerEnergy
     jmp short loc_6FBB
 loc_6F8F:
     cmp byte ptr ds:RespawnState, 0
@@ -5422,7 +5775,7 @@ loc_6FBB:
     mov di, 4F0Ah
     mov si, 5648h
     mov al, 24h
-    mul byte ptr word_A326
+    mul byte ptr Level5Phase
     add si, ax
     cmp word ptr [di+4], -1
     je loc_6FDE
@@ -5446,13 +5799,13 @@ loc_6FF9:
     jmp near ptr loc_70A5
 loc_7001:
     xor byte ptr [si+5], 40h
-    cmp word ptr ds:word_A326, 0
+    cmp word ptr ds:Level5Phase, 0
     je loc_7010
     xor byte ptr [si-0Dh], 40h
 loc_7010:
     mov word ptr [di+4], 0FFFFh
     mov byte ptr byte_A324, 6
-    cmp word ptr ds:word_A326, 2
+    cmp word ptr ds:Level5Phase, 2
     jae loc_702B
     mov byte ptr byte_A329, 3
     mov byte ptr byte_A32A, 3
@@ -5460,8 +5813,8 @@ loc_702B:
     dec byte ptr byte_A325
     jne loc_70A5
     mov byte ptr byte_A325, 7
-    inc word ptr word_A326
-    cmp word ptr ds:word_A326, 3
+    inc word ptr Level5Phase
+    cmp word ptr ds:Level5Phase, 3
     jne loc_70A5
     mov ax, word ptr word_5648
     sub ax, 0C8h
@@ -5498,52 +5851,61 @@ loc_70A5:
     cmp word ptr ds:PlayerX, 3D8h
     jle loc_70CB
     mov byte ptr PlayerHurtTimer, 2Ch
-    mov byte ptr byte_6BD0, 0
+    mov byte ptr AttackAnimLock, 0
     mov word ptr PlayerVelY, 0FF70h
-    mov byte ptr byte_4F24, 3
+    mov byte ptr MotionShift, 3
     mov word ptr PlayerVelX, 0FF60h
-    call sub_824D
+    call DrainPlayerEnergy
 loc_70CB:
     mov ax, 1
     sub byte ptr byte_A32B, al
     adc byte ptr byte_A32B, ah
     ret
 
-sub_70D7:
-    mov cx, word ptr word_91FC
+; Boss AI: state machine over BossState (0FFh = inactive; 6 = defeated, set in CheckBossHits;
+; 0..7 active). BossX/BossY move with BossVelX/BossVelY (1/16 px per frame) and are clamped against
+; the level tiles (LevelSegment, table 7F5Eh). BossEnergy is the boss energy; the gauge is
+; SetGaugeSprites(BossEnergy >> 3, capped at 8). Animation: BossAnimPtr (0A4xxh table) and
+; BossStateTimer control the frame ops (entries of 14h bytes at 0A571h + op*14h).
+; Out: BossState, BossX/Y, velocities, the boss part records 5648h..5690h, BossAnimPtr.
+; Notes: evidence for the name is the energy gauge (count = BossEnergy >> 3, the same shift as
+;   the spawn count in pre2_port 3.7) and the energy loss in CheckBossHits. States 1..5 are not
+;   individually named.
+UpdateBossFight:
+    mov cx, word ptr BossEnergy
     shr cx, 1
     shr cx, 1
     shr cx, 1
     mov di, word ptr ds:word_564C
     cmp di, -1
     je loc_70F7
-    cmp byte ptr ds:byte_91FE, 6
+    cmp byte ptr ds:BossState, 6
     je loc_70F7
     test di, 2000h
     jne loc_70F9
 loc_70F7:
     xor cx, cx
 loc_70F9:
-    call sub_7585
+    call SetGaugeSprites
     mov cl, 4
-    mov ax, word ptr word_6C06
+    mov ax, word ptr BossVelX
     sar ax, cl
-    add ax, word ptr word_91FF
+    add ax, word ptr BossX
     js loc_7118
     cmp word ptr word_91F7, ax
     jg loc_7118
     cmp word ptr word_91F9, ax
     jl loc_7118
-    mov word ptr word_91FF, ax
+    mov word ptr BossX, ax
 loc_7118:
-    mov ax, word ptr word_6C08
+    mov ax, word ptr BossVelY
     sar ax, cl
-    add word ptr word_9201, ax
-    cmp word ptr ds:word_6C08, 0
+    add word ptr BossY, ax
+    cmp word ptr ds:BossVelY, 0
     jl loc_7165
-    mov bx, word ptr word_9201
+    mov bx, word ptr BossY
     sar bx, cl
-    mov ax, word ptr word_91FF
+    mov ax, word ptr BossX
     sar ax, cl
     mov bh, bl
     mov bl, al
@@ -5553,38 +5915,38 @@ loc_7118:
     xlat
     or al, al
     je loc_7165
-    and byte ptr word_9201, 0F0h
-    cmp word ptr ds:word_6C08, 0
+    and byte ptr BossY, 0F0h
+    cmp word ptr ds:BossVelY, 0
     je loc_7157
     mov byte ptr ShakeMagnitude, 7
 loc_7157:
-    mov word ptr word_6C08, 0
-    mov word ptr word_6C06, 0
+    mov word ptr BossVelY, 0
+    mov word ptr BossVelX, 0
     jmp short loc_7172
 loc_7165:
-    cmp word ptr ds:word_6C08, 0E0h
+    cmp word ptr ds:BossVelY, 0E0h
     jge loc_7172
-    add word ptr word_6C08, 10h
+    add word ptr BossVelY, 10h
 loc_7172:
     xor dx, dx
     mov ax, word ptr PlayerX
-    cmp word ptr word_91FF, ax
+    cmp word ptr BossX, ax
     jae loc_717E
     inc dx
 loc_717E:
     mov byte ptr byte_A3FA, dl
     mov ax, word ptr PlayerX
-    sub ax, word ptr word_91FF
+    sub ax, word ptr BossX
     jns loc_718D
     neg ax
 loc_718D:
-    mov word ptr word_A3FB, ax
+    mov word ptr BossDistX, ax
     cmp ax, 190h
     jbe loc_7198
     jmp near ptr loc_7579
 loc_7198:
     mov ax, word ptr PlayerY
-    sub ax, word ptr word_9201
+    sub ax, word ptr BossY
     jns loc_71A3
     neg ax
 loc_71A3:
@@ -5592,110 +5954,110 @@ loc_71A3:
     jbe loc_71AB
     jmp near ptr loc_7579
 loc_71AB:
-    cmp byte ptr ds:byte_91FE, 0
+    cmp byte ptr ds:BossState, 0
     jne loc_71D6
-    cmp word ptr ds:word_A3FB, 0FAh
+    cmp word ptr ds:BossDistX, 0FAh
     jb loc_71C8
-    mov byte ptr byte_6C05, 0
-    mov word ptr word_A401, 0A427h
+    mov byte ptr BossCounter, 0
+    mov word ptr BossAnimPtr, 0A427h
     jmp near ptr loc_7534
 loc_71C8:
-    mov word ptr word_A3F7, 0
-    mov byte ptr byte_91FE, 1
+    mov word ptr BossStateTimer, 0
+    mov byte ptr BossState, 1
     jmp near ptr loc_7534
 loc_71D6:
-    cmp byte ptr ds:byte_91FE, 1
+    cmp byte ptr ds:BossState, 1
     je loc_71E0
     jmp near ptr loc_7262
 loc_71E0:
-    cmp word ptr ds:word_A3FB, 0FAh
+    cmp word ptr ds:BossDistX, 0FAh
     jb loc_71F0
-    mov byte ptr byte_91FE, 0
+    mov byte ptr BossState, 0
     jmp near ptr loc_7534
 loc_71F0:
-    inc word ptr word_A3F7
-    cmp word ptr ds:word_91FC, 3Ch
+    inc word ptr BossStateTimer
+    cmp word ptr ds:BossEnergy, 3Ch
     jae loc_7203
-    mov byte ptr byte_91FE, 2
+    mov byte ptr BossState, 2
     jmp near ptr loc_7534
 loc_7203:
-    mov word ptr word_A401, 0A434h
-    cmp word ptr ds:word_A3F7, 6Eh
+    mov word ptr BossAnimPtr, 0A434h
+    cmp word ptr ds:BossStateTimer, 6Eh
     jb loc_7221
-    mov byte ptr byte_91FE, 2
-    call sub_757A
-    mov word ptr word_A3F7, 0
+    mov byte ptr BossState, 2
+    call IncrementBossCounter
+    mov word ptr BossStateTimer, 0
     jmp near ptr loc_7534
 loc_7221:
-    cmp byte ptr ds:byte_6BD0, 0
+    cmp byte ptr ds:AttackAnimLock, 0
     je loc_7235
     test byte ptr SnowFrameTick, 7
     jne loc_7235
-    call sub_757A
+    call IncrementBossCounter
     jmp near ptr loc_7534
 loc_7235:
-    cmp byte ptr ds:byte_6C05, 0Ah
+    cmp byte ptr ds:BossCounter, 0Ah
     jb loc_724A
-    mov byte ptr byte_91FE, 3
-    mov word ptr word_A3F7, 0
+    mov byte ptr BossState, 3
+    mov word ptr BossStateTimer, 0
     jmp near ptr loc_7534
 loc_724A:
-    cmp byte ptr ds:byte_6C05, 3
+    cmp byte ptr ds:BossCounter, 3
     ja loc_7254
     jmp near ptr loc_7534
 loc_7254:
-    mov byte ptr byte_91FE, 2
-    mov word ptr word_A3F7, 0
+    mov byte ptr BossState, 2
+    mov word ptr BossStateTimer, 0
     jmp near ptr loc_7534
 loc_7262:
-    cmp byte ptr ds:byte_91FE, 2
+    cmp byte ptr ds:BossState, 2
     je loc_726C
     jmp near ptr loc_7366
 loc_726C:
-    inc word ptr word_A3F7
-    cmp word ptr ds:word_A3F7, 2Ch
+    inc word ptr BossStateTimer
+    cmp word ptr ds:BossStateTimer, 2Ch
     je loc_7299
     ja loc_72C4
-    call sub_81B4
-    cmp word ptr ds:word_A3FB, 4Bh
+    call CheckPlayerBossContact
+    cmp word ptr ds:BossDistX, 4Bh
     jae loc_7290
-    mov byte ptr byte_91FE, 3
-    mov word ptr word_A3F7, 0
+    mov byte ptr BossState, 3
+    mov word ptr BossStateTimer, 0
     jmp short loc_7296
 loc_7290:
-    mov word ptr word_A401, 0A43Bh
+    mov word ptr BossAnimPtr, 0A43Bh
 loc_7296:
     jmp near ptr loc_7534
 loc_7299:
-    call sub_81B4
-    mov word ptr word_6C08, 0FF20h
-    cmp word ptr ds:word_91FC, 28h
+    call CheckPlayerBossContact
+    mov word ptr BossVelY, 0FF20h
+    cmp word ptr ds:BossEnergy, 28h
     jae loc_72BB
-    cmp word ptr ds:word_A3FB, 50h
+    cmp word ptr ds:BossDistX, 50h
     jae loc_72BB
-    mov byte ptr byte_91FE, 4
-    mov word ptr word_A3F7, 0
+    mov byte ptr BossState, 4
+    mov word ptr BossStateTimer, 0
 loc_72BB:
-    mov word ptr word_A401, 0A45Eh
+    mov word ptr BossAnimPtr, 0A45Eh
     jmp near ptr loc_7534
 loc_72C4:
-    cmp word ptr ds:word_6C08, 0
+    cmp word ptr ds:BossVelY, 0
     jle loc_72DB
     mov ax, 0A460h
-    cmp word ptr ds:word_91FC, 64h
+    cmp word ptr ds:BossEnergy, 64h
     jge loc_72D8
     mov ax, 0A462h
 loc_72D8:
-    mov word ptr word_A401, ax
+    mov word ptr BossAnimPtr, ax
 loc_72DB:
-    cmp word ptr ds:word_A3FB, 50h
+    cmp word ptr ds:BossDistX, 50h
     ja loc_72F5
-    mov word ptr word_A3F7, 0
-    mov byte ptr byte_91FE, 3
-    mov byte ptr byte_6C05, 0Bh
+    mov word ptr BossStateTimer, 0
+    mov byte ptr BossState, 3
+    mov byte ptr BossCounter, 0Bh
     jmp near ptr loc_7534
 loc_72F5:
-    cmp word ptr ds:word_A3F7, 58h
+    cmp word ptr ds:BossStateTimer, 58h
     jae loc_72FF
     jmp near ptr loc_7534
 loc_72FF:
@@ -5704,8 +6066,8 @@ loc_72FF:
     mov ah, 50h
     mul ah
     mov bx, ax
-    mov word ptr word_A401, 0A45Eh
-    mov ax, word ptr word_91FF
+    mov word ptr BossAnimPtr, 0A45Eh
+    mov ax, word ptr BossX
     sub ax, word ptr PlayerX
     push ax
     jns loc_731C
@@ -5726,32 +6088,32 @@ loc_7328:
     shr dx, 1
     neg ax
 loc_7338:
-    mov word ptr word_6C08, ax
+    mov word ptr BossVelY, ax
     pop ax
     or ax, ax
     jl loc_7342
     neg dx
 loc_7342:
-    mov word ptr word_6C06, dx
+    mov word ptr BossVelX, dx
     jmp near ptr loc_7534
 loc_7349:
-    cmp word ptr ds:word_6C08, 0
+    cmp word ptr ds:BossVelY, 0
     je loc_7353
     jmp near ptr loc_7534
 loc_7353:
-    mov byte ptr byte_6C05, 3
-    mov word ptr word_A3F7, 0
-    mov byte ptr byte_91FE, 1
+    mov byte ptr BossCounter, 3
+    mov word ptr BossStateTimer, 0
+    mov byte ptr BossState, 1
     jmp near ptr loc_7534
 loc_7366:
-    cmp byte ptr ds:byte_91FE, 3
+    cmp byte ptr ds:BossState, 3
     je loc_7370
     jmp near ptr loc_741A
 loc_7370:
-    call sub_81B4
-    inc word ptr word_A3F7
+    call CheckPlayerBossContact
+    inc word ptr BossStateTimer
     mov dx, 42h
-    mov ax, word ptr word_91FC
+    mov ax, word ptr BossEnergy
     sub ax, 32h
     jns loc_7384
     neg ax
@@ -5760,92 +6122,92 @@ loc_7384:
     ja loc_738C
     mov dx, 9Ah
 loc_738C:
-    cmp word ptr word_A3F7, dx
+    cmp word ptr BossStateTimer, dx
     ja loc_740C
-    mov ax, word ptr word_6C08
+    mov ax, word ptr BossVelY
     or ax, ax
     je loc_73AD
     jg loc_73A4
-    mov word ptr word_A401, 0A45Eh
+    mov word ptr BossAnimPtr, 0A45Eh
     jmp near ptr loc_7534
 loc_73A4:
-    mov word ptr word_A401, 0A464h
+    mov word ptr BossAnimPtr, 0A464h
     jmp near ptr loc_7534
 loc_73AD:
-    mov ax, word ptr word_A3FB
+    mov ax, word ptr BossDistX
     cmp ax, 64h
     jae loc_73F1
     cmp ax, 19h
     jbe loc_73DA
     cmp ax, 23h
     jbe loc_73E3
-    cmp byte ptr ds:byte_6C05, 0
+    cmp byte ptr ds:BossCounter, 0
     jne loc_73D1
-    mov byte ptr byte_91FE, 7
-    mov word ptr word_A3F7, 0
+    mov byte ptr BossState, 7
+    mov word ptr BossStateTimer, 0
 loc_73D1:
-    mov word ptr word_A401, 0A46Bh
+    mov word ptr BossAnimPtr, 0A46Bh
     jmp near ptr loc_7534
 loc_73DA:
-    mov word ptr word_A401, 0A470h
+    mov word ptr BossAnimPtr, 0A470h
     jmp near ptr loc_7534
 loc_73E3:
-    mov byte ptr byte_91FE, 4
-    mov word ptr word_A3F7, 0
+    mov byte ptr BossState, 4
+    mov word ptr BossStateTimer, 0
     jmp near ptr loc_7534
 loc_73F1:
-    mov word ptr word_6C08, 0FFAFh
+    mov word ptr BossVelY, 0FFAFh
     mov dx, 50h
-    mov ax, word ptr word_91FF
+    mov ax, word ptr BossX
     cmp word ptr PlayerX, ax
     jg loc_7405
     neg dx
 loc_7405:
-    mov word ptr word_6C06, dx
+    mov word ptr BossVelX, dx
     jmp near ptr loc_7534
 loc_740C:
-    mov word ptr word_A3F7, 0
-    mov byte ptr byte_91FE, 2
+    mov word ptr BossStateTimer, 0
+    mov byte ptr BossState, 2
     jmp near ptr loc_7534
 loc_741A:
-    cmp byte ptr ds:byte_91FE, 4
+    cmp byte ptr ds:BossState, 4
     jne loc_7452
-    call sub_81B4
-    inc word ptr word_A3F7
-    cmp word ptr ds:word_A3F7, 42h
+    call CheckPlayerBossContact
+    inc word ptr BossStateTimer
+    cmp word ptr ds:BossStateTimer, 42h
     jbe loc_743D
-    mov byte ptr byte_91FE, 3
-    mov word ptr word_A3F7, 0
+    mov byte ptr BossState, 3
+    mov word ptr BossStateTimer, 0
     jmp near ptr loc_7534
 loc_743D:
-    mov word ptr word_A401, 0A475h
-    cmp word ptr ds:word_6C08, 0
+    mov word ptr BossAnimPtr, 0A475h
+    cmp word ptr ds:BossVelY, 0
     jne loc_744F
     mov byte ptr ShakeMagnitude, 4
 loc_744F:
     jmp near ptr loc_7534
 loc_7452:
-    cmp byte ptr ds:byte_91FE, 5
+    cmp byte ptr ds:BossState, 5
     jne loc_747A
-    inc word ptr word_A3F7
-    cmp word ptr ds:word_A3F7, 13h
+    inc word ptr BossStateTimer
+    cmp word ptr ds:BossStateTimer, 13h
     jbe loc_7471
     xor ax, ax
-    mov word ptr word_A3F7, ax
-    mov byte ptr byte_91FE, 1
+    mov word ptr BossStateTimer, ax
+    mov byte ptr BossState, 1
     jmp near ptr loc_7534
 loc_7471:
-    mov word ptr word_A401, 0A47Eh
+    mov word ptr BossAnimPtr, 0A47Eh
     jmp near ptr loc_7534
 loc_747A:
-    cmp byte ptr ds:byte_91FE, 6
+    cmp byte ptr ds:BossState, 6
     jne loc_74EA
-    mov word ptr word_A401, 0A480h
-    cmp word ptr ds:word_6C08, 0
+    mov word ptr BossAnimPtr, 0A480h
+    cmp word ptr ds:BossVelY, 0
     jge loc_7491
     jmp near ptr loc_7534
 loc_7491:
-    mov byte ptr byte_91FE, 0FFh
+    mov byte ptr BossState, 0FFh
     mov ax, 0FFFFh
     mov word ptr word_564C, ax
     mov word ptr word_565E, ax
@@ -5872,32 +6234,32 @@ loc_7491:
     call SpawnEffectBurst
     ret
 loc_74EA:
-    cmp byte ptr ds:byte_91FE, 7
+    cmp byte ptr ds:BossState, 7
     jne loc_7534
-    inc word ptr word_A3F7
-    cmp word ptr ds:word_A3F7, 2Ch
+    inc word ptr BossStateTimer
+    cmp word ptr ds:BossStateTimer, 2Ch
     jbe loc_7503
-    mov byte ptr byte_91FE, 1
+    mov byte ptr BossState, 1
     jmp short loc_7534
 loc_7503:
-    mov word ptr word_A401, 0A45Eh
-    cmp word ptr ds:word_6C08, 0
+    mov word ptr BossAnimPtr, 0A45Eh
+    cmp word ptr ds:BossVelY, 0
     je loc_751A
     jl loc_7534
-    mov word ptr word_A401, 0A460h
+    mov word ptr BossAnimPtr, 0A460h
     jmp short loc_7534
 loc_751A:
-    mov word ptr word_6C08, 0FF9Fh
+    mov word ptr BossVelY, 0FF9Fh
     mov dx, 0FFD0h
-    mov ax, word ptr word_91FF
+    mov ax, word ptr BossX
     cmp word ptr PlayerX, ax
     jg loc_752E
     neg dx
 loc_752E:
-    mov word ptr word_6C06, dx
+    mov word ptr BossVelX, dx
     jmp short loc_7534
 loc_7534:
-    mov ax, word ptr word_A401
+    mov ax, word ptr BossAnimPtr
     cmp word ptr word_6C0A, ax
     je loc_7543
     mov word ptr word_6C0A, ax
@@ -5918,21 +6280,28 @@ loc_7554:
     mul ah
     mov si, ax
     add si, 0A571h
-    mov ax, word ptr word_91FF
+    mov ax, word ptr BossX
     mov word ptr word_A403, ax
-    mov ax, word ptr word_9201
+    mov ax, word ptr BossY
     mov word ptr word_A405, ax
     call sub_93B2
-    call sub_80DE
+    call CheckBossHits
 loc_7579:
     ret
 
-sub_757A:
-    add byte ptr byte_6C05, 1
-    sbb byte ptr byte_6C05, 0
+; BossCounter += 1 with saturation at 0FFh (add/sbb idiom). Preserves all other registers.
+IncrementBossCounter:
+    add byte ptr BossCounter, 1
+    sbb byte ptr BossCounter, 0
     ret
 
-sub_7585:
+; Shows a gauge of CX sprites (0..8) in render slots 56A2h..5731h (8 slots): the first CX slots
+; get frame 135h, Y = 0AAh and X = 0Dh + 5*i; the others are set to FFFFh (empty). When CX != 0
+; the routine first calls ActivateResourceSlot with AX = 0Dh.
+; In: CX (larger values are capped at 8). Out: slots written; SI, BX, AX changed.
+; Notes: callers pass BossEnergy >> 3 (UpdateBossFight), 2*(2 - Level5Phase) (UpdateLevel5Sequence)
+;   and the level-9 countdown >> 2 (RunLevel9Script).
+SetGaugeSprites:
     mov si, 56A2h
     mov ax, 8
     mov dx, 0AAh
@@ -5963,7 +6332,11 @@ loc_75B9:
 loc_75C3:
     ret
 
-sub_75C4:
+; Child kind 12: horizontal shot. State 0 sets XVel = +-(owner+0Dh << 4) toward the player and
+; moves to state 1. State 1 counts frames in owner+7 (reset to 0 while the child is drawn, bit
+; 20h of +5); at 9Ah the child goes to state 0FFh (death path loc_7CDA). No Y motion.
+; Notes: pre2_port idx 12 says falling/quake; this routine only moves in X.
+UpdateLaunchedChild:
     mov bx, word ptr [si+6]
     mov cl, 4
     mov al, byte ptr [si+0Eh]
@@ -6000,13 +6373,16 @@ loc_7607:
 loc_760E:
     ret
 
-sub_760F:
+; Child kind 11: leap. State 0 waits until ScriptFrameFlags is nonzero, then clears owner flag
+; 10h, sets XVel = +-(owner+0Dh << 4) toward the player, YVel = -(owner+0Eh << 4), state 1.
+; State 1 adds 8 to YVel per frame until it reaches owner+0Fh << 4 (fall limit).
+UpdateLeapChild:
     mov cl, 4
-    call sub_8084
+    call CullChildFarFromPlayer
     mov al, byte ptr [si+0Eh]
     cmp al, 0
     jne loc_7649
-    cmp byte ptr ds:byte_A340, 0
+    cmp byte ptr ds:ScriptFrameFlags, 0
     je loc_7664
     mov byte ptr [si+0Eh], 1
     and byte ptr [bx+4], 0EFh
@@ -6042,8 +6418,13 @@ loc_765D:
 loc_7664:
     ret
 
-sub_7665:
-    call sub_8084
+; Child kind 10: charger. State 0 sets owner flags |= 18h and goes to state 1 once YVel = 0; state 1
+; goes to state 2 (owner+7 = 1Eh, script step) if YVel is still 0, else back to state 0. State 2
+; sets XVel toward the player at owner+0Dh speed while owner+7 counts down; then state 3
+; (YVel = 0, owner+4 = 36h). State 3 removes the child (death path) when ScriptFrameFlags is set.
+; State 0FFh = death path.
+UpdateChargerChild:
+    call CullChildFarFromPlayer
     mov al, byte ptr [si+0Eh]
     cmp byte ptr ds:CurrentLevel, 5
     jne loc_7685
@@ -6073,7 +6454,7 @@ loc_7698:
 loc_76A7:
     mov byte ptr [bx+7], 1Eh
     mov byte ptr [si+0Eh], 2
-    call sub_8058
+    call ScriptStepForward
     ret
 loc_76B3:
     cmp al, 2
@@ -6085,7 +6466,7 @@ loc_76B3:
 loc_76C0:
     cmp ax, 10h
     jae loc_76E1
-    cmp byte ptr ds:byte_A340, 0
+    cmp byte ptr ds:ScriptFrameFlags, 0
     je loc_7702
     mov byte ptr [bx+4], 0Fh
     mov dl, byte ptr [bx+0Dh]
@@ -6106,13 +6487,13 @@ loc_76E1:
     mov cl, 0Fh
     sar word ptr [si+8], cl
     mov byte ptr [bx+4], 36h
-    call sub_8058
+    call ScriptStepForward
 loc_7702:
     ret
 loc_7703:
     cmp al, 3
     jne loc_7712
-    cmp byte ptr ds:byte_A340, 0
+    cmp byte ptr ds:ScriptFrameFlags, 0
     je loc_7711
     jmp near ptr loc_7CFF
 loc_7711:
@@ -6137,7 +6518,11 @@ loc_7731:
 loc_773C:
     ret
 
-sub_773D:
+; Child kind 9: patrol. Owner+11h is the signed speed, ramped by 3 per frame up to cap owner+12h;
+; the child reverses at the word bounds owner+0Dh (left) and owner+0Fh (right). It is removed (child
+; +4 = FFFFh, owner flag 04h cleared) when |Y - PlayerY| >= 0BEh or the player is outside the
+; window owner+0Dh .. owner+0Fh + 1E0h.
+UpdatePatrolChild:
     mov bx, word ptr [si+6]
     test byte ptr [si+5], 20h
     jne loc_7785
@@ -6212,8 +6597,14 @@ loc_77D6:
 loc_77DD:
     ret
 
-sub_77DE:
-    call sub_8084
+; Child kind 8: hop attack. State 0 waits for the owner timer; when the player is within owner+0Dh
+; tiles in X and owner+10h tiles in Y, it starts a hop: YVel = -(owner+0Eh << 4), XVel =
+; +-(owner+0Fh << 4) toward the player, owner flags = (flags & 0D3h) | 2Ch, state 0Ah.
+; State 0Ah waits for YVel >= 0 (apex passed), then state 0Bh waits for YVel > 0 (landed), then
+; state 0Ch: owner script stepped back twice, XVel = 0, owner+7 = 0. State 0Ch hops again when the
+; owner timer is ready.
+UpdateHopChild:
+    call CullChildFarFromPlayer
     mov cl, 4
     cmp word ptr [si+8], 0
     jne loc_77F8
@@ -6228,7 +6619,7 @@ loc_77F8:
     mov al, byte ptr [si+0Eh]
     or al, al
     jne loc_7857
-    call sub_8001
+    call TickEntityTimer
     jb loc_7825
     mov ax, word ptr PlayerX
     sub ax, word ptr [si]
@@ -6268,7 +6659,7 @@ loc_7842:
     and al, 0D3h
     or al, 2Ch
     mov byte ptr [bx+4], al
-    call sub_8058
+    call ScriptStepForward
     ret
 loc_7857:
     cmp al, 0Ah
@@ -6276,7 +6667,7 @@ loc_7857:
     cmp word ptr [si+0Ah], 0
     jl loc_7897
     mov byte ptr [si+0Eh], 0Bh
-    call sub_8058
+    call ScriptStepForward
     ret
 loc_7869:
     cmp al, 0Bh
@@ -6284,15 +6675,15 @@ loc_7869:
     cmp word ptr [si+0Ah], 0
     jg loc_7897
     mov byte ptr [si+0Eh], 0Ch
-    call sub_8048
-    call sub_8048
+    call ScriptStepBack
+    call ScriptStepBack
     mov word ptr [si+8], 0
     mov byte ptr [bx+7], 0
     ret
 loc_7887:
     cmp al, 0Ch
     jne loc_7890
-    call sub_8001
+    call TickEntityTimer
     jae loc_7827
 loc_7890:
     cmp al, 0FFh
@@ -6301,8 +6692,12 @@ loc_7890:
 loc_7897:
     ret
 
-sub_7898:
-    call sub_8084
+; Child kind 7: leaper. State 0 faces the player (XVel = +-1). When the player is within owner+0Dh
+; tiles in X the child takes state 0Ah with YVel = owner+0Eh << 4 and XVel = +-(owner+0Eh << 4),
+; the sign from the child's +9 bit 50h and the player side. State 0Ah does nothing until the
+; death path or another routine changes the state.
+UpdateLeaperChild:
+    call CullChildFarFromPlayer
     mov cl, 4
     mov al, byte ptr [si+0Eh]
     or al, al
@@ -6332,7 +6727,7 @@ loc_78BC:
     neg ax
 loc_78D8:
     mov word ptr [si+8], ax
-    call sub_8058
+    call ScriptStepForward
     ret
 loc_78DF:
     cmp al, 0Ah
@@ -6345,13 +6740,19 @@ loc_78E4:
 loc_78EB:
     ret
 
-sub_78EC:
-    call sub_8084
+; Child kind 6: wanderer. State 0 becomes state 1 when the player is within owner+0Dh tiles in X.
+; State 1 sets owner+11h/13h (fixed-point X/Y accumulators, X << 3 and Y << 3 at entry) and
+; moves toward the player when the squared distance (word_A30E, 32-bit) is below 10000 and
+; byte_6BD0 is set; otherwise it takes random steps (byte_6BC0/6BC1 from NextWindRandom and
+; StepRandomSeed). Child X/Y = accumulators >> 3.
+; Notes: pre2_port idx 6 says earthquake/screen-shake; this code has no screen-shake write.
+UpdateWanderingChild:
+    call CullChildFarFromPlayer
     mov cl, 4
     mov al, byte ptr [si+0Eh]
     or al, al
     jne loc_7930
-    call sub_7A50
+    call SetChildDirToPlayer
     mov ax, word ptr PlayerX
     sub ax, word ptr [si]
     jns loc_7904
@@ -6379,7 +6780,7 @@ loc_7930:
     je loc_7937
     jmp near ptr loc_7A48
 loc_7937:
-    call sub_7A50
+    call SetChildDirToPlayer
     mov ax, word ptr PlayerX
     sub ax, word ptr [si]
     mov bp, ax
@@ -6403,7 +6804,7 @@ loc_7959:
     jne loc_799F
     cmp word ptr ds:word_A30E, 2710h
     jae loc_799F
-    cmp byte ptr ds:byte_6BD0, 0
+    cmp byte ptr ds:AttackAnimLock, 0
     je loc_799F
     mov al, 40h
     cmp word ptr ds:word_A30E, 0E10h
@@ -6508,7 +6909,9 @@ loc_7A48:
 loc_7A4F:
     ret
 
-sub_7A50:
+; XVel = +1 when the child is at or left of the player, -1 otherwise (child +8 word).
+; In: SI = child. Out: child+8 set; DX changed.
+SetChildDirToPlayer:
     mov dx, 1
     mov ax, word ptr PlayerX
     cmp word ptr [si], ax
@@ -6518,8 +6921,12 @@ loc_7A5C:
     mov word ptr [si+8], dx
     ret
 
-sub_7A60:
-    call sub_8084
+; Child kind 5: pounce. State 0 faces the player; when |dX| >> 4 < owner+0Dh and |dY| >> 4 <
+; owner+0Eh it starts state 0Ah with XVel = +-(owner+0Fh << 4) (sign from child +9 bit 80h) and
+; YVel = owner+0Fh << 4. State 0Ah lands when |Y - PlayerY| <= 8: script step, state 0Bh (idle),
+; YVel = 0.
+UpdatePounceChild:
+    call CullChildFarFromPlayer
     mov cl, 4
     mov al, byte ptr [si+0Eh]
     or al, al
@@ -6568,7 +6975,7 @@ loc_7AB7:
 loc_7AC6:
     cmp ax, 8
     ja loc_7ADE
-    call sub_8058
+    call ScriptStepForward
     mov byte ptr [si+0Eh], 0Bh
     mov word ptr [si+0Ah], 0
 loc_7AD7:
@@ -6578,22 +6985,27 @@ loc_7AD7:
 loc_7ADE:
     ret
 
-sub_7ADF:
+; Child kind 4: orbit / pendulum. State 0: timer, emits debris (SpawnDebrisLine kind 0), sinks 2 px
+; per frame until the Y offset from owner+0Bh reaches owner+0Dh, then state 1. State 1 raises the
+; amplitude owner+0Fh by 4 per frame up to owner+0Eh, then state 2. State 2 advances the angle
+; owner+0Fh by the rate owner+10h, which itself changes by +-1 per frame. Positions come from
+; SetChildOrbitPosition in states 1 and 2.
+UpdateOrbitChild:
     mov bx, word ptr [si+6]
     mov ax, word ptr [bx+9]
     mov dx, word ptr [bx+0Bh]
-    call sub_8089
+    call CullChildAt
     mov al, byte ptr [si+0Eh]
     mov cl, 4
     cmp al, 0
     jne loc_7B15
-    call sub_8001
+    call TickEntityTimer
     jb loc_7B2F
     mov dx, word ptr [si+2]
     sub dx, word ptr [bx+0Bh]
     push dx
     xor al, al
-    call sub_7FD9
+    call SpawnDebrisLine
     pop dx
     cmp byte ptr [bx+0Dh], dl
     jbe loc_7B10
@@ -6605,7 +7017,7 @@ loc_7B10:
 loc_7B15:
     cmp al, 1
     jne loc_7B30
-    call sub_7B53
+    call SetChildOrbitPosition
     add byte ptr [bx+0Fh], 4
     mov al, byte ptr [bx+0Eh]
     cmp byte ptr [bx+0Fh], al
@@ -6617,7 +7029,7 @@ loc_7B2F:
 loc_7B30:
     cmp al, 2
     jne loc_7B4B
-    call sub_7B53
+    call SetChildOrbitPosition
     mov dl, 1
     cmp byte ptr [bx+0Fh], 0
     js loc_7B41
@@ -6634,7 +7046,11 @@ loc_7B4B:
 loc_7B52:
     ret
 
-sub_7B53:
+; Orbit position: X = owner+9 + ((SineTable[a] >> 2) * r) >> 4, Y = owner+0Bh + ((byte_7090[a] >> 2)
+; * r) >> 4, with a = owner+0Fh (angle index), r = owner+0Dh (radius). The table at 7090h is the
+; cosine-like one for Y (pre2_port conflict O: the code uses SineTable for X).
+; In: SI = child, BX = owner. Out: child +0 and +2 set; AX, CH, DI changed.
+SetChildOrbitPosition:
     mov al, byte ptr [bx+0Fh]
     xor ah, ah
     mov di, ax
@@ -6658,16 +7074,21 @@ sub_7B53:
     mov word ptr [si+2], ax
     mov al, byte ptr [bx+0Fh]
     mov dl, byte ptr [bx+0Dh]
-    call sub_7FD9
+    call SpawnDebrisLine
     ret
 
-sub_7B91:
-    call sub_8084
+; Child kind 3: falling walker. State 0 waits (timer) and, when the player is within owner+0Dh
+; tiles in X, takes state 1 with YVel = 20h. State 1 emits debris (SpawnDebrisLine, kind 0) and
+; checks the level tile under the child (table 7F5Eh): on contact it snaps Y, sets YVel = 0,
+; XVel = +-30h toward the player, owner flags |= 48h, state 2. State 2 negates XVel when the child X
+; is negative (compares the world X with 0; a quirk).
+UpdateWalkerChild:
+    call CullChildFarFromPlayer
     mov al, byte ptr [si+0Eh]
     mov cl, 4
     cmp al, 0
     jne loc_7BC5
-    call sub_8001
+    call TickEntityTimer
     jb loc_7BC4
     mov ax, word ptr [bx+9]
     sub ax, word ptr PlayerX
@@ -6680,7 +7101,7 @@ loc_7BAD:
     and byte ptr [bx+4], 0EFh
     mov byte ptr [si+0Eh], 1
     mov word ptr [si+0Ah], 20h
-    call sub_8058
+    call ScriptStepForward
 loc_7BC4:
     ret
 loc_7BC5:
@@ -6689,7 +7110,7 @@ loc_7BC5:
     mov dx, word ptr [si+2]
     sub dx, word ptr [bx+0Bh]
     xor al, al
-    call sub_7FD9
+    call SpawnDebrisLine
     mov ax, word ptr [si+2]
     sar ax, cl
     mov bh, al
@@ -6714,7 +7135,7 @@ loc_7BC5:
     neg dx
 loc_7C11:
     mov word ptr [si+8], dx
-    call sub_8058
+    call ScriptStepForward
     ret
 loc_7C18:
     cmp al, 2
@@ -6731,8 +7152,11 @@ loc_7C25:
 loc_7C2C:
     ret
 
-sub_7C2D:
-    call sub_8084
+; Child kind 2: vertical bob. In states 0 and 1 it first calls SpawnDebrisLine (kind 0).
+; State 0: YVel = +(owner+0Eh << 4) (down) until the Y offset from owner+0Bh reaches owner+0Dh,
+; then state 1 with YVel = -(owner+0Eh << 4) (up). States 2 and above: death path.
+UpdateBobChild:
+    call CullChildFarFromPlayer
     mov cl, 4
     mov al, byte ptr [si+0Eh]
     cmp al, 2
@@ -6741,7 +7165,7 @@ sub_7C2D:
     mov dx, word ptr [si+2]
     sub dx, word ptr [bx+0Bh]
     xor al, al
-    call sub_7FD9
+    call SpawnDebrisLine
     pop ax
     or al, al
     jne loc_7C66
@@ -6754,7 +7178,7 @@ sub_7C2D:
     cmp byte ptr [bx+0Dh], al
     jge loc_7C8B
     mov byte ptr [si+0Eh], 1
-    call sub_8058
+    call ScriptStepForward
     ret
 loc_7C66:
     cmp al, 1
@@ -6768,7 +7192,7 @@ loc_7C66:
     sub ax, word ptr [bx+0Bh]
     jge loc_7C8B
     mov byte ptr [si+0Eh], 0
-    call sub_8048
+    call ScriptStepBack
     ret
 loc_7C85:
     cmp al, 0FFh
@@ -6777,16 +7201,21 @@ loc_7C85:
 loc_7C8B:
     ret
 
-sub_7C8C:
-    call sub_8084
+; Child kind 1: despawn only (calls CullChildFarFromPlayer).
+CullChildOnly:
+    call CullChildFarFromPlayer
     ret
 
-sub_7C90:
-    call sub_8084
+; Child kind 0: ground enemy. State 0 waits (timer) and removes the child (death path) when its Y
+; is 176 px or more below the player; otherwise owner flag 08h (terrain) is set and state 1.
+; State 1 waits until YVel = 0 (landed), then state 2 with XVel = +-20h toward the player.
+; Notes: spawned by SpawnDropOverPlayer at PlayerY - 176.
+UpdateGroundChild:
+    call CullChildFarFromPlayer
     mov al, byte ptr [si+0Eh]
     cmp al, 0
     jne loc_7CB4
-    call sub_8001
+    call TickEntityTimer
     jb loc_7CB3
     mov ax, word ptr [si+2]
     sub ax, word ptr PlayerY
@@ -6809,7 +7238,7 @@ loc_7CB4:
     neg dx
 loc_7CCE:
     mov word ptr [si+8], dx
-    call sub_8058
+    call ScriptStepForward
     ret
 loc_7CD5:
     cmp al, 2
@@ -6842,7 +7271,11 @@ loc_7CFF:
 loc_7D1A:
     ret
 
-sub_7D1B:
+; Entity kind 12: timed spawn when the player is passed. Enters the timer when the player is
+; 320..640 px away in X, or within 320 px and 180..360 px below the entity Y (entity +0Bh word).
+; On the period (TickEntityTimer): SpawnChildAtOwner, entity +4 = 8Fh, +7 = 0.
+; Out: CF = 0 when a child was spawned.
+SpawnChildOnApproach:
     mov ax, word ptr [si+0Bh]
     cmp word ptr PlayerY, ax
     jle loc_7D6C
@@ -6869,7 +7302,7 @@ loc_7D49:
     shr al, 1
     cmp byte ptr [si+6], al
     ja loc_7D6C
-    call sub_7F31
+    call SpawnChildAtOwner
     jb loc_7D6C
     mov byte ptr [si+4], 8Fh
     mov byte ptr [si+7], 0
@@ -6879,7 +7312,10 @@ loc_7D6C:
     stc
     ret
 
-sub_7D6E:
+; Entity kind 11: periodic spawn with a random Y offset. Gated by the timer period (entity +6 vs
+; +7 >> 2) and SpawnChildWhenVisible's camera test; the child Y is lowered by NextWindRandom & 3Fh;
+; entity +4 = 37h. Out: CF = 0 when spawned.
+SpawnChildRandomY:
     add byte ptr [si+7], 1
     sbb byte ptr [si+7], 0
     mov al, byte ptr [si+7]
@@ -6887,7 +7323,7 @@ sub_7D6E:
     shr al, 1
     cmp byte ptr [si+6], al
     ja loc_7D96
-    call sub_7F26
+    call SpawnChildWhenVisible
     jb loc_7D96
     mov byte ptr [si+4], 37h
     call NextWindRandom
@@ -6902,12 +7338,18 @@ loc_7D96:
 loc_7D98:
     jmp near ptr loc_7E95
 
-sub_7D9B:
+; Entity kind 10: when the player is inside the entity tile box (+9 X tile, +0Ah Y tile, +0Bh width,
+; +0Ch height) and the period has elapsed, spawns a child. X = PlayerX + ring offset (the index
+; word_A341 selects one of 8 words at ds:A343h; the index is updated each spawn), Y = the first
+; passable tile row found above PlayerY in the level column (LevelSegment, table 7F5Eh).
+; Level 5 blocks spawning while ShakeMagnitude is nonzero or Level5Phase = 3.
+; Out: CF = 0 when spawned; entity +4 = 17h, child +8 = +-direction.
+SpawnChildOnPlayerBox:
     cmp byte ptr ds:CurrentLevel, 5
     jne loc_7DB0
     cmp byte ptr ds:ShakeMagnitude, 0
     jne loc_7D98
-    cmp word ptr ds:word_A326, 3
+    cmp word ptr ds:Level5Phase, 3
     je loc_7D98
 loc_7DB0:
     add byte ptr [si+7], 1
@@ -6932,10 +7374,10 @@ loc_7DB0:
     jb loc_7D98
     cmp byte ptr [si+0Ch], al
     jb loc_7D98
-    call sub_806C
+    call AllocChildRecord
     jb loc_7D98
     mov byte ptr [di+10h], 0
-    mov word ptr ds:word_A32E, di
+    mov word ptr ds:LastSpawnedChild, di
     mov bx, word ptr word_A341
     mov ax, word ptr PlayerX
     mov dx, ax
@@ -7008,11 +7450,13 @@ loc_7E95:
     stc
     ret
 
-sub_7E97:
+; Entity kind 9: clears entity +11h, spawns through SpawnChildWhenVisible, and then sets entity +4
+; to (old | 5), or (old | 85h) on level 6. Out: CF from the spawn.
+SpawnChildWithFlags:
     mov byte ptr [si+11h], 0
     mov al, byte ptr [si+4]
     push ax
-    call sub_7F26
+    call SpawnChildWhenVisible
     pop ax
     jb loc_7EBE
     or al, 5
@@ -7024,15 +7468,17 @@ loc_7EB0:
     clc
     ret
 
-sub_7EB5:
-    call sub_7F26
+; Entity kinds 5..8: SpawnChildWhenVisible, then entity +4 = 5 (busy). Out: CF from the spawn.
+SpawnChildLatched:
+    call SpawnChildWhenVisible
     jb loc_7EBE
     mov byte ptr [si+4], 5
 loc_7EBE:
     ret
 
-sub_7EBF:
-    call sub_7F26
+; Entity kind 4: SpawnChildWhenVisible, then entity +4 = 5, +0Fh = 0, +10h = 0. Out: CF as spawn.
+SpawnChildResetCounters:
+    call SpawnChildWhenVisible
     jb loc_7ED7
     mov byte ptr [si+4], 5
     mov byte ptr [si+0Fh], 0
@@ -7042,22 +7488,26 @@ sub_7EBF:
 loc_7ED7:
     ret
 
-sub_7ED8:
-    call sub_7F26
+; Entity kind 3: SpawnChildWhenVisible, then entity +4 = 37h. Out: CF from the spawn.
+SpawnChildLatchState37:
+    call SpawnChildWhenVisible
     jb loc_7EE1
     mov byte ptr [si+4], 37h
 loc_7EE1:
     ret
 
-sub_7EE2:
+; Entity kind 2: if the entity point (+9 X word, +0Bh Y word, pixels) is in the camera window
+; (IsInCameraWindow), allocates a child there with sprite +2, zero velocity, owner +0Fh copied from
+; child +0Fh = entity +5; entity +4 = 5. Out: CF = 0 when spawned.
+SpawnFixedChild:
     mov ax, word ptr [si+9]
     mov dx, word ptr [si+0Bh]
-    call sub_8022
+    call IsInCameraWindow
     jb loc_7F25
-    call sub_806C
+    call AllocChildRecord
     jb loc_7F25
     mov byte ptr [di+10h], 0
-    mov word ptr ds:word_A32E, di
+    mov word ptr ds:LastSpawnedChild, di
     mov ax, word ptr [si+9]
     mov word ptr [di], ax
     mov ax, word ptr [si+0Bh]
@@ -7076,17 +7526,22 @@ sub_7EE2:
 loc_7F25:
     ret
 
-sub_7F26:
+; Entity kind 1: if the entity point (+9 X word, +0Bh Y word) is in the camera window, calls
+; SpawnChildAtOwner and sets entity +4 = 17h. Out: CF = 0 when spawned, 1 when outside or full.
+SpawnChildWhenVisible:
     mov ax, word ptr [si+9]
     mov dx, word ptr [si+0Bh]
-    call sub_8022
+    call IsInCameraWindow
     jb loc_7F6B
 
-sub_7F31:
-    call sub_806C
+; Shared spawn tail: AllocChildRecord, then child X = entity +9 word, Y = entity +0Bh word, frame =
+; entity +2 word, velocities zero, state 0, owner = entity (+6), child +0Fh = entity +5. Entity +4
+; = 17h (busy, keep sprite). Sets LastSpawnedChild. Out: CF = 0 spawned, 1 when the pool is full.
+SpawnChildAtOwner:
+    call AllocChildRecord
     jb loc_7F6B
     mov byte ptr [di+10h], 0
-    mov word ptr ds:word_A32E, di
+    mov word ptr ds:LastSpawnedChild, di
     mov ax, word ptr [si+9]
     mov word ptr [di], ax
     mov ax, word ptr [si+0Bh]
@@ -7104,7 +7559,10 @@ sub_7F31:
 loc_7F6B:
     ret
 
-sub_7F6C:
+; Entity kind 0: when the player is inside the entity tile box (+9 X tile, +0Ah Y tile, +0Bh width,
+; +0Ch height), spawns a child at X = PlayerX +- 0C0h (the sign toggles with SpawnSideToggle) and
+; Y = PlayerY - 0B0h, frame = entity +2. Entity +4 = 7 (busy). Out: CF = 0 when spawned.
+SpawnDropOverPlayer:
     mov cl, 4
     mov ax, word ptr PlayerX
     sar ax, cl
@@ -7119,12 +7577,12 @@ sub_7F6C:
     jb loc_7FD8
     cmp byte ptr [si+0Ch], al
     jb loc_7FD8
-    call sub_806C
+    call AllocChildRecord
     jb loc_7FD8
     mov byte ptr [di+10h], 0
-    mov word ptr ds:word_A32E, di
+    mov word ptr ds:LastSpawnedChild, di
     mov dx, 0C0h
-    xor byte ptr byte_6BCC, 1
+    xor byte ptr SpawnSideToggle, 1
     je loc_7FA6
     neg dx
 loc_7FA6:
@@ -7147,14 +7605,17 @@ loc_7FA6:
 loc_7FD8:
     ret
 
-sub_7FD9:
+; Emits three debris records (AllocDebrisRecord) for the owner in BX: X = owner +9 word,
+; Y = owner +0Bh word - 18h, kind byte = AL, phase byte stepping by DL >> 2. Preserves SI.
+; In: BX = owner entity, AL = kind, DL = spacing source. Out: three debris records (if free).
+SpawnDebrisLine:
     sar dl, 1
     sar dl, 1
     mov ah, dl
     mov ch, dl
     mov bp, 3
 loc_7FE4:
-    call sub_8014
+    call AllocDebrisRecord
     mov dx, word ptr [bx+9]
     mov word ptr [di], dx
     mov dx, word ptr [bx+0Bh]
@@ -7167,7 +7628,9 @@ loc_7FE4:
     jne loc_7FE4
     ret
 
-sub_8001:
+; Advances owner +7 (saturating at 0FFh) and returns CF = 1 while (owner+7) >> 2 < owner+6 (the
+; period has not elapsed), CF = 0 when it has. In: BX = owner. Out: owner+7 incremented.
+TickEntityTimer:
     add byte ptr [bx+7], 1
     sbb byte ptr [bx+7], 0
     mov al, byte ptr [bx+7]
@@ -7176,7 +7639,11 @@ sub_8001:
     cmp al, byte ptr [bx+6]
     ret
 
-sub_8014:
+; Returns DI = the first free record of the 20-record debris pool at 7DE6h (6 bytes each, word +0
+; = FFFFh is free). No other register changes.
+; Notes: there is no bound. When all 20 are used the search runs past 7E5Eh into the 256-byte xlat
+;   table that UpdateObjectTerrain reads; a word FFFFh there is taken and written (corruption).
+AllocDebrisRecord:
     mov di, 7DE6h
 loc_8017:
     cmp word ptr [di], -1
@@ -7186,7 +7653,10 @@ loc_8017:
 loc_8021:
     ret
 
-sub_8022:
+; Tests a world point against the visible window: tile X - CameraCol in [-2, 22] and tile
+; Y - CameraRow in [-2, 13] (16-px tiles, a two-tile margin on the left and top).
+; In: AX = world X, DX = world Y. Out: CF = 0 inside, CF = 1 outside. BX, CX preserved.
+IsInCameraWindow:
     mov cl, 4
     sar ax, cl
     sub ax, word ptr CameraCol
@@ -7206,7 +7676,9 @@ loc_8046:
     stc
     ret
 
-sub_8048:
+; Moves the child script pointer (+0Ch) back to the previous negative (jump) word.
+; In: SI = child. Out: +0Ch updated. BX is preserved.
+ScriptStepBack:
     push bx
     mov bx, word ptr [si+0Ch]
 loc_804C:
@@ -7218,7 +7690,9 @@ loc_804C:
     pop bx
     ret
 
-sub_8058:
+; Moves the child script pointer (+0Ch) forward past the next negative (jump) word.
+; In: SI = child. Out: +0Ch updated. BX is preserved.
+ScriptStepForward:
     push bx
     mov bx, word ptr [si+0Ch]
 loc_805C:
@@ -7234,7 +7708,9 @@ loc_8065:
     pop bx
     ret
 
-sub_806C:
+; Allocates the lowest free child slot (4FD0h..50A7h, 12 slots; +4 = FFFFh is free). Out: CF = 0
+; and DI = slot; CF = 1 when all 12 are used (the caller then does nothing). CX is preserved.
+AllocChildRecord:
     push cx
     mov di, 4FD0h
     mov cx, 0Ch
@@ -7251,11 +7727,17 @@ loc_8081:
     clc
     ret
 
-sub_8084:
+; Loads the child X and Y into AX and DX and falls into CullChildAt.
+; In: SI = child, BX = owner.
+CullChildFarFromPlayer:
     mov ax, word ptr [si]
     mov dx, word ptr [si+2]
 
-sub_8089:
+; Removes a child that is too far from the player, unless it is in a dying state or drawn.
+; In: SI = child, AX = X, DX = Y, BX = owner. Skipped when child state = 0FFh or child +5 & 20h.
+; Far when |X - PlayerX| > 140h or |Y - PlayerY| > 12Ch. Then state >= 0Ah goes to the full death
+; path (loc_7CFF); lower states: child +4 = FFFFh, owner flags &= ~04h, owner+7 = 0.
+CullChildAt:
     mov bx, word ptr [si+6]
     cmp byte ptr [si+0Eh], 0FFh
     je loc_80CA
@@ -7285,7 +7767,9 @@ loc_80BD:
 loc_80CA:
     ret
 
-sub_80CB:
+; Moves the script pointer of the record in DI (+0Ch) forward past the next word 7D00h.
+; Notes: no bound on the scan. Callers are outside this region (lines 7351 and 8485).
+SkipScriptToMarker:
     push si
     mov si, word ptr [di+0Ch]
 loc_80CF:
@@ -7299,14 +7783,19 @@ loc_80CF:
     pop si
     ret
 
-sub_80DE:
+; Tests the hazard slots 4F0Ah and 4F2Eh..4F6Dh (five slots) with CheckHazardHitsBoss. A body
+; hit (CF = 1) costs BossEnergy the damage byte_7B19 (14h), unless the last damage was within 22
+; frames (word_A3FD). A damage hit sets flash bit 40h on the boss parts' +5, calls
+; IncrementBossCounter and plays SFX 8. When BossEnergy goes below zero BossState = 6.
+; Out: BossEnergy, BossState, flash flags, hazard slots.
+CheckBossHits:
     mov si, 4F0Ah
-    call sub_8182
+    call CheckHazardHitsBoss
     jb loc_80F7
     mov si, 4F2Eh
     mov cx, 4
 loc_80EC:
-    call sub_8182
+    call CheckHazardHitsBoss
     jb loc_80F7
     add si, 12h
     loop loc_80EC
@@ -7328,39 +7817,42 @@ loc_8104:
     or byte ptr byte_5671, 40h
     or byte ptr byte_5683, 40h
     or byte ptr byte_5695, 40h
-    mov byte ptr byte_6BC5, 0
-    call sub_757A
-    mov al, byte ptr byte_7B19
+    mov byte ptr PlayerAltModeFlag, 0
+    call IncrementBossCounter
+    mov al, byte ptr PlayerAttackPower
     xor ah, ah
-    sub word ptr word_91FC, ax
+    sub word ptr BossEnergy, ax
     jns loc_814C
-    mov byte ptr byte_91FE, 6
-    mov word ptr word_6C08, 0FF80h
+    mov byte ptr BossState, 6
+    mov word ptr BossVelY, 0FF80h
     jmp short loc_8181
 loc_814C:
     cmp al, 14h
     jbe loc_8176
     mov dx, 30h
     mov ax, word ptr PlayerX
-    cmp word ptr word_91FF, ax
+    cmp word ptr BossX, ax
     jge loc_815E
     neg dx
 loc_815E:
-    mov word ptr word_6C06, dx
+    mov word ptr BossVelX, dx
     mov ax, 0FFC0h
-    cmp word ptr ds:word_6C08, 0
+    cmp word ptr ds:BossVelY, 0
     jle loc_816E
     shl ax, 1
 loc_816E:
-    mov word ptr word_6C08, ax
-    mov byte ptr byte_91FE, 5
+    mov word ptr BossVelY, ax
+    mov byte ptr BossState, 5
 loc_8176:
-    mov word ptr word_A3F7, 0
+    mov word ptr BossStateTimer, 0
     mov word ptr [si+4], 0FFFFh
 loc_8181:
     ret
 
-sub_8182:
+; For slot SI: if empty, no hit. Otherwise tests the boss part at word_A423 first (frame 19Dh or
+; 19Ch: a hit there frees the slot with CF = 0, no damage) and then the body part at word_A425
+; (CF = 1 on overlap, sub_8D7B). Out: CF = 1 for a body hit.
+CheckHazardHitsBoss:
     cmp word ptr [si+4], -1
     je loc_81B2
     mov di, word ptr ds:word_A423
@@ -7387,14 +7879,17 @@ loc_81B2:
     clc
     ret
 
-sub_81B4:
+; Player (SI = 4F1Ch) against the boss parts. Skipped while byte_6BE4 (player dying) is nonzero.
+; Parts word_A421 and word_A423 go through ApplyBossPartContact. Part word_A425: on overlap
+; (sub_8D7B) the player bounces with PlayerVelY = FFC0h (FF80h when byte_27EA is set) and SFX 3.
+CheckPlayerBossContact:
     cmp byte ptr ds:RespawnState, 0
     jne loc_81F2
     mov si, 4F1Ch
     mov di, word ptr ds:word_A421
-    call sub_81F3
+    call ApplyBossPartContact
     mov di, word ptr ds:word_A423
-    call sub_81F3
+    call ApplyBossPartContact
     mov di, word ptr ds:word_A425
     call TestHitboxOverlap
     jae loc_81F2
@@ -7411,7 +7906,11 @@ loc_81EF:
 loc_81F2:
     ret
 
-sub_81F3:
+; Player contact with one boss part (DI): when the part is drawn (+5 & 20h) and overlaps the
+; player (sub_8D7B), BossCounter -= (4 - byte_91FB) saturating at zero, DrainPlayerEnergy, SFX 1,
+; knockback: PlayerVelX = +-80h (away from BossX), PlayerVelY = 0FF80h, byte_4F24 = 3,
+; byte_4F2D = 2Ch, byte_6BD0 = 0, byte_6BC7 = 0.
+ApplyBossPartContact:
     cmp word ptr [di+4], -1
     je loc_81FF
     test byte ptr [di+5], 20h
@@ -7423,29 +7922,33 @@ loc_8201:
     jae loc_824C
     mov al, 4
     sub al, byte ptr byte_91FB
-    sub byte ptr byte_6C05, al
+    sub byte ptr BossCounter, al
     jns loc_8217
-    mov byte ptr byte_6C05, 0
+    mov byte ptr BossCounter, 0
 loc_8217:
-    call sub_824D
+    call DrainPlayerEnergy
     mov dx, 1
     call StartSoundEffect
     mov byte ptr PlayerHurtTimer, 2Ch
-    mov byte ptr byte_6BD0, 0
+    mov byte ptr AttackAnimLock, 0
     mov word ptr PlayerVelY, 0FF80h
-    mov byte ptr byte_4F24, 3
+    mov byte ptr MotionShift, 3
     mov ax, 80h
-    mov dx, word ptr word_91FF
+    mov dx, word ptr BossX
     cmp word ptr PlayerX, dx
     jge loc_8244
     neg ax
 loc_8244:
     mov word ptr PlayerVelX, ax
-    mov byte ptr byte_6BC7, 0
+    mov byte ptr PlayerAirFlags, 0
 loc_824C:
     ret
 
-sub_824D:
+; Hurt cooldown: byte_6BC9 counts down; on each wrap it is reset to 5 and energy byte_27D6 is
+; decremented; a negative energy calls sub_65B3 (player death, other region; pre2_port Q18).
+; Always emits one particle (sub_8D1B) at PlayerX, PlayerY - 30h, sprite 2046h, velocity FF80h.
+; Out: byte_6BC9, byte_27D6, particle slot.
+DrainPlayerEnergy:
     push ax
     push cx
     push dx
@@ -7454,7 +7957,7 @@ sub_824D:
     mov byte ptr byte_6BC9, 5
     dec byte ptr Energy
     jns loc_8264
-    call sub_65B3
+    call TriggerPlayerRespawnCore
 loc_8264:
     mov ax, word ptr PlayerX
     mov word ptr EffectOriginX, ax
@@ -7522,7 +8025,7 @@ loc_82DF:
     jge loc_82E9
     jmp near ptr loc_838A
 loc_82E9:
-    cmp byte ptr ds:byte_6BC7, 0
+    cmp byte ptr ds:PlayerAirFlags, 0
     je loc_8348
     cmp word ptr ds:PlayerVelY, 20h
     jle loc_8343
@@ -7537,7 +8040,7 @@ loc_82E9:
     cmp dl, 2
     jne loc_8340
     mov byte ptr [di+0Eh], 0FFh
-    call sub_80CB
+    call SkipScriptToMarker
     mov bx, word ptr [di+6]
     and byte ptr [bx+4], 0F7h
     mov word ptr [di+0Ah], 0FF38h
@@ -7584,7 +8087,7 @@ loc_836D:
     mov ax, 0FF20h
 loc_837A:
     mov word ptr PlayerVelY, ax
-    mov byte ptr byte_6BD2, 0
+    mov byte ptr FallCounter, 0
     mov ax, word ptr LandingDepth
     sub word ptr PlayerY, ax
     ret
@@ -7594,20 +8097,20 @@ loc_838A:
     mov di, word ptr [di+6]
     and byte ptr [di+4], 0FEh
     mov byte ptr PlayerHurtTimer, 2Ch
-    mov byte ptr byte_6BD0, 0
+    mov byte ptr AttackAnimLock, 0
     mov word ptr PlayerVelY, 0FF80h
     mov ax, word ptr PlayerVelX
     shl ax, 1
     shl ax, 1
     neg ax
     mov word ptr PlayerVelX, ax
-    mov byte ptr byte_6BC7, 0
-    cmp byte ptr ds:byte_6BC5, 0
-    mov byte ptr byte_6BC5, 0
+    mov byte ptr PlayerAirFlags, 0
+    cmp byte ptr ds:PlayerAltModeFlag, 0
+    mov byte ptr PlayerAltModeFlag, 0
     jne loc_83CD
     dec byte ptr Energy
     jns loc_83CD
-    call sub_65B3
+    call TriggerPlayerRespawnCore
 loc_83CD:
     ret
 loc_83CE:
@@ -7762,11 +8265,11 @@ loc_8509:
 loc_850A:
     mov dx, 8
     call StartSoundEffect
-    cmp byte ptr ds:byte_6BC5, 0
+    cmp byte ptr ds:PlayerAltModeFlag, 0
     jne loc_84F3
-    mov byte ptr byte_6BC5, 1
+    mov byte ptr PlayerAltModeFlag, 1
     mov ax, 0FFFFh
-    mov byte ptr byte_4F27, al
+    mov byte ptr CurrentAnimId, al
     jmp short loc_853F
 loc_8524:
     mov dx, 8
@@ -7876,14 +8379,14 @@ loc_8617:
 loc_8618:
     cmp byte ptr ds:Energy, 1
     jae loc_8624
-    call sub_65B3
+    call TriggerPlayerRespawnCore
     jmp short loc_860E
 loc_8624:
     mov dx, 1
     call StartSoundEffect
     mov byte ptr PlayerHurtTimer, 2Ch
-    mov byte ptr byte_4F2C, 0
-    mov byte ptr byte_4F27, 8
+    mov byte ptr SubAnimKey, 0
+    mov byte ptr CurrentAnimId, 8
     dec byte ptr Energy
     mov al, byte ptr Energy
     push ax
@@ -7896,8 +8399,8 @@ loc_864F:
     mov dx, 1
     call StartSoundEffect
     mov byte ptr PlayerHurtTimer, 2Ch
-    mov byte ptr byte_4F2C, 0
-    mov byte ptr byte_4F27, 8
+    mov byte ptr SubAnimKey, 0
+    mov byte ptr CurrentAnimId, 8
     call SpawnPlayerBurst
     mov byte ptr ShakeMagnitude, 7
     mov bx, word ptr [si+9]
@@ -8031,45 +8534,45 @@ loc_876C:
     je loc_878D
     mov dx, 1
     call StartSoundEffect
-    mov byte ptr byte_6C02, 0
-    mov byte ptr byte_6C01, 1
-    mov byte ptr byte_6C03, 0
+    mov byte ptr FadeInActive, 0
+    mov byte ptr FadeOutActive, 1
+    mov byte ptr PaletteFadeStep, 0
     mov byte ptr byte_6C04, 1
 loc_878D:
     jmp near ptr loc_853F
 loc_8790:
     cmp byte ptr ds:byte_6C04, 0
     je loc_87AB
-    mov byte ptr byte_6C01, 0
-    mov byte ptr byte_6C02, 1
-    mov byte ptr byte_6C03, 0
+    mov byte ptr FadeOutActive, 0
+    mov byte ptr FadeInActive, 1
+    mov byte ptr PaletteFadeStep, 0
     mov byte ptr byte_6C04, 0
 loc_87AB:
     jmp near ptr loc_853F
 loc_87AE:
     mov dx, 8
     call StartSoundEffect
-    mov byte ptr byte_7B18, 0
+    mov byte ptr PlayerWeaponType, 0
     jmp near ptr loc_853F
 loc_87BC:
     mov dx, 8
     call StartSoundEffect
-    mov byte ptr byte_7B18, 1
+    mov byte ptr PlayerWeaponType, 1
     jmp near ptr loc_853F
 loc_87CA:
     mov dx, 8
     call StartSoundEffect
-    mov byte ptr byte_7B18, 2
+    mov byte ptr PlayerWeaponType, 2
     jmp near ptr loc_853F
 loc_87D8:
     mov dx, 8
     call StartSoundEffect
-    mov byte ptr byte_7B18, 3
+    mov byte ptr PlayerWeaponType, 3
     jmp near ptr loc_853F
 loc_87E6:
     mov dx, 4
     call StartSoundEffect
-    call sub_65D6
+    call IncrementPlayerLives
     push si
     mov ax, 0E3h
     mov si, 4F1Ch
@@ -8206,7 +8709,7 @@ loc_88E2:
 loc_88F0:
     add si, 12h
     loop loc_88E2
-    cmp byte ptr ds:byte_6BC5, 0
+    cmp byte ptr ds:PlayerAltModeFlag, 0
     jne loc_891C
     mov si, 4F0Ah
     cmp word ptr [si+4], -1
@@ -8420,7 +8923,7 @@ TickCellChangeTimer:
     shl ax, cl
     add ax, 8
     add dx, 0Ch
-    call sub_5E41
+    call EmitPlayerTrailAt
     pop dx
     test byte ptr [di+2], 80h
     je loc_8AB1
@@ -8511,7 +9014,7 @@ loc_8B43:
     mov ax, 30h
     cmp si, 4F1Ch
     jae loc_8B56
-    cmp word ptr ds:word_4F25, 0
+    cmp word ptr ds:PlayerFacing, 0
     jmp short loc_8B5A
 loc_8B56:
     cmp word ptr [si+6], 0
@@ -8658,7 +9161,7 @@ loc_8C27:
     call TestHitboxOverlap
     jae loc_8C68
     or byte ptr [di+5], 40h
-    mov al, byte ptr byte_7B19
+    mov al, byte ptr PlayerAttackPower
     sub byte ptr [di+0Fh], al
     jae loc_8C58
     mov dx, 2
@@ -8740,7 +9243,7 @@ loc_8C96:
     pop cx
     ret
 loc_8CE1:
-    call sub_80CB
+    call SkipScriptToMarker
     mov al, byte ptr [bx+4]
     mov ah, al
     and ah, 0F7h
@@ -8749,7 +9252,7 @@ loc_8CE1:
     je loc_8CF5
     mov byte ptr [bx+4], ah
 loc_8CF5:
-    mov al, byte ptr byte_7B19
+    mov al, byte ptr PlayerAttackPower
     xor ah, ah
     cmp ax, 19h
     jbe loc_8D02
@@ -9046,16 +9549,16 @@ RunLevelIntroScene:
     rep movsb
     mov ax, seg DATA
     mov ds, ax
-    mov byte ptr byte_6C01, 0
-    mov byte ptr byte_6C02, 1
-    mov byte ptr byte_6C03, 0
+    mov byte ptr FadeOutActive, 0
+    mov byte ptr FadeInActive, 1
+    mov byte ptr PaletteFadeStep, 0
     mov byte ptr FineScroll, 0
     xor ax, ax
     mov word ptr CameraCol, ax
     mov word ptr CameraRow, ax
     mov word ptr PlayerX, ax
     mov word ptr PlayerY, 0A9h
-    mov word ptr word_4F25, ax
+    mov word ptr PlayerFacing, ax
     mov word ptr PlayerVelX, ax
     mov word ptr PlayerAnimPtr, 7BA7h
     mov word ptr word_4F2E, 30h
@@ -9063,12 +9566,12 @@ RunLevelIntroScene:
     mov word ptr word_4F37, ax
     mov word ptr word_4F34, ax
     mov word ptr word_4F3A, 0AB4Bh
-    mov byte ptr byte_6BC5, 0
+    mov byte ptr PlayerAltModeFlag, 0
     xor bp, bp
 loc_8F96:
     inc bp
     mov bx, word ptr PlayerAnimPtr
-    call sub_638B
+    call AdvancePlayerAnim
     mov si, 4F2Eh
     call StepSpriteAnimation
     call RestoreBackdropToDrawPage
@@ -9081,13 +9584,13 @@ loc_8F96:
     dec ax
 loc_8FBB:
     add word ptr word_4F2E, ax
-    test byte ptr byte_4F21, 20h
+    test byte ptr PlayerFrameHigh, 20h
     jne loc_8F96
     push ds
     pop es
     mov word ptr word_4F37, 0FFFFh
     mov word ptr word_4F3C, 0
-    mov word ptr word_4F25, 0FFFFh
+    mov word ptr PlayerFacing, 0FFFFh
     mov si, 4F2Eh
     lea di, [si+12h]
     mov cx, 3Fh
@@ -9105,7 +9608,7 @@ loc_8FF2:
     loop loc_8FF2
 loc_9002:
     mov bx, word ptr PlayerAnimPtr
-    call sub_638B
+    call AdvancePlayerAnim
     mov cx, 3
     mov si, 4F2Eh
 loc_900F:

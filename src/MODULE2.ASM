@@ -161,7 +161,7 @@ extrn PrintAsciiz:near
 extrn PrintDecimalWord:near
 extrn SetLevelPalette:near
 extrn SetStartupPalette:near
-extrn sub_6772:near
+extrn StepPaletteFade:near
 extrn UpdateCameraFixedStep:near
 extrn WaitForButtonPressRelease:near
 extrn WaitSoundTicks:near
@@ -1960,7 +1960,7 @@ loc_32C5:
     call DrawSpriteObjects
     call FlipDisplayPage
     call WaitVerticalRetrace
-    call sub_6772
+    call StepPaletteFade
     mov ax, word ptr IrisSpeed
     sub word ptr IrisRadius, ax
     jle loc_32DD
