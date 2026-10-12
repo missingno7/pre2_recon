@@ -14,6 +14,9 @@ python tools/verify.py        # exact rebuild: image, header, relocations (~10 s
 python tools/difftest.py      # every differential suite in tests/ (ASM in Unicorn vs C)
 python tools/where.py 107B    # source line for a code offset (ds:XXXX for data)
 python tools/graph.py 107B    # callers, callees, ports, interrupts, DATA of a routine
+python tools/hostbuild.py     # native SDL3 build -> build/host/pre2.exe
+build\host\pre2.exe --assets assets             # play
+build\host\pre2.exe --assets assets --smoke 45  # bounded integration check (docs/smoke-test.md)
 ```
 
 Prerequisites: Python 3.10+ with `capstone` and `unicorn` (pip), MSYS2 mingw64 gcc,
@@ -31,8 +34,10 @@ the private original assets in `assets/` and the DOS tools in `toolchain/`
 - `tools/` - build/verify, address lookup, symbol maintenance (`rename.py`, `define.py`,
   `symtab.py`, `apply.py` for worker proposals), static analysis (`explore.py`,
   `segflow.py`, `graph.py`), the bounded execution harness (`emu.py`) and C build.
-- `docs/` - the oracle boundary (executable.md), architecture, timing model, worker briefs,
-  next work.
+- `host/` - the native SDL3 platform: interrupts at the game's polling points, VGA
+  presentation, Sound Blaster audio, keyboard.
+- `docs/` - the oracle boundary (executable.md), architecture, timing model, smoke test,
+  worker briefs, next work.
 - `metadata/` - pinned inputs, oracle manifest, toolchain and SDL3 locks.
 
 Names, labels and module files are modern reconstructions; original identifiers are
