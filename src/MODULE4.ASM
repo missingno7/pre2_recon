@@ -41,6 +41,7 @@ DATA ends
 CODE segment word public 'CODE'
 assume cs:CODE, ds:DATA, es:nothing, ss:nothing
 ; module interface (tools/symtab.py)
+extrn cvar_0005:byte
 extrn sub_02CC:near
 extrn sub_0492:near
 extrn sub_0DC1:near
@@ -700,7 +701,7 @@ sub_9AE0:
     xchg word ptr ds:[0B19Dh], ax
     mov word ptr ds:[0B199h], ax
     add byte ptr ds:[0B1A5h], 1
-    cmp byte ptr cs:[5], 0
+    cmp byte ptr cs:cvar_0005, 0
     je loc_9B14
     mov al, byte ptr ds:[0B1A5h]
     mov bx, 6F90h

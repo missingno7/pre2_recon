@@ -155,6 +155,10 @@ public byte_B1AA
 public byte_B1AB
 public byte_B1B2
 public byte_B1BB
+public cvar_0000
+public cvar_0001
+public cvar_0003
+public cvar_0005
 public dtbl_79EC
 public dtbl_7D2F
 public dtbl_7D95
@@ -470,39 +474,39 @@ loc_001F:
     and al, 0DFh
     cmp al, 46h
     jne loc_002C
-    and word ptr cs:[3], 0FFFEh
+    and word ptr cs:cvar_0003, 0FFFEh
 loc_002C:
     cmp al, 4Dh
     jne loc_0036
-    mov byte ptr cs:[2], 0
+    mov byte ptr cs:cvar_0002, 0
 loc_0036:
     cmp al, 41h
     jne loc_0040
-    and word ptr cs:[3], 0FFFDh
+    and word ptr cs:cvar_0003, 0FFFDh
 loc_0040:
     cmp al, 45h
     jne loc_004A
-    and word ptr cs:[3], 0FFFBh
+    and word ptr cs:cvar_0003, 0FFFBh
 loc_004A:
     cmp al, 58h
     jne loc_0054
-    and word ptr cs:[3], 0FFF7h
+    and word ptr cs:cvar_0003, 0FFF7h
 loc_0054:
     cmp al, 4Ch
     jne loc_005E
-    and word ptr cs:[3], 0FFEFh
+    and word ptr cs:cvar_0003, 0FFEFh
 loc_005E:
     cmp al, 44h
     jne loc_0068
-    and word ptr cs:[3], 0FFDFh
+    and word ptr cs:cvar_0003, 0FFDFh
 loc_0068:
     cmp al, 42h
     jne loc_0072
-    or word ptr cs:[3], 40h
+    or word ptr cs:cvar_0003, 40h
 loc_0072:
     cmp al, 56h
     jne loc_007E
-    mov byte ptr cs:[1], 1
+    mov byte ptr cs:cvar_0001, 1
     loop loc_0016
 loc_007E:
     mov ax, seg DATA
@@ -522,7 +526,7 @@ loc_007E:
     int 12h
     mov cl, 6
     shl ax, cl
-    mov word ptr cs:[6], ax
+    mov word ptr cs:cvar_0006, ax
     sti
     call sub_23D4
     mov ax, seg DATA
@@ -564,7 +568,7 @@ loc_007E:
     call sub_02CC
     call sub_9090
     call sub_08DC
-    test word ptr cs:[3], 2
+    test word ptr cs:cvar_0003, 2
     je loc_0126
     mov dx, 22h
     push ds
@@ -762,7 +766,7 @@ sub_02CC:
     jne loc_02C9
     cmp byte ptr ds:byte_2879, 1
     je loc_02C9
-    test word ptr cs:[3], 40h
+    test word ptr cs:cvar_0003, 40h
     je loc_0300
     jmp near ptr loc_046F
 loc_0300:
@@ -1062,13 +1066,13 @@ loc_05CA:
 loc_05DA:
     mov dx, ax
     add dx, word ptr word_2875
-    cmp dx, word ptr cs:[6]
+    cmp dx, word ptr cs:cvar_0006
     jb loc_05EA
     jmp near ptr loc_06D5
 loc_05EA:
     mov es, dx
     mov ax, dx
-    sub ax, word ptr cs:[6]
+    sub ax, word ptr cs:cvar_0006
     neg ax
     mov dx, 0F000h
     cmp ax, 0F00h
@@ -1281,7 +1285,7 @@ sub_07C9:
     mov ds, ax
     in al, 21h
     mov byte ptr byte_0E6F, al
-    cmp byte ptr cs:[2], 0
+    cmp byte ptr cs:cvar_0002, 0
     je loc_0849
     mov dx, 859h
     push ds
@@ -1309,7 +1313,7 @@ loc_0802:
 loc_081B:
     call sub_1D22
     jb loc_0839
-    cmp byte ptr cs:[5], 2
+    cmp byte ptr cs:cvar_0005, 2
     jb loc_0839
     call sub_0853
     mov byte ptr cs:cvar_1D6C, 1
@@ -1390,7 +1394,7 @@ loc_08AB:
 sub_08DC:
     mov ax, seg DATA
     mov ds, ax
-    test word ptr cs:[3], 10h
+    test word ptr cs:cvar_0003, 10h
     jne loc_08F7
     mov cx, 12h
     mov di, 0ABCh
@@ -1400,7 +1404,7 @@ loc_08F0:
     loop loc_08F0
     ret
 loc_08F7:
-    test word ptr cs:[3], 4
+    test word ptr cs:cvar_0003, 4
     je loc_094F
     xor ax, ax
     mov es, ax
@@ -1437,7 +1441,7 @@ loc_08F7:
     jne loc_094F
     mov word ptr word_0B55, dx
 loc_094F:
-    test word ptr cs:[3], 8
+    test word ptr cs:cvar_0003, 8
     je loc_0991
     mov ah, 19h
     int 21h
@@ -1476,7 +1480,7 @@ loc_0996:
 loc_09B0:
     test byte ptr [si+byte_0ABC], 8
     jne loc_09C0
-    test word ptr cs:[3], 40h
+    test word ptr cs:cvar_0003, 40h
     jne loc_0A23
 loc_09C0:
     mov al, byte ptr [si+byte_0AAA]
@@ -1502,7 +1506,7 @@ loc_09DD:
 loc_09FF:
     test byte ptr [si+byte_0ABC], 2
     je loc_0A23
-    test word ptr cs:[3], 20h
+    test word ptr cs:cvar_0003, 20h
     je loc_0A1E
     call sub_0B74
     mov bx, si
@@ -1736,7 +1740,7 @@ loc_0BCF:
     ret
 
 sub_0BDC:
-    mov al, byte ptr cs:[1]
+    mov al, byte ptr cs:cvar_0001
     cmp al, 5
     jne loc_0BEE
     mov ax, 1012h
@@ -2335,7 +2339,7 @@ loc_10DD:
     mov cx, word ptr [si]
     add ax, word ptr es:[2875h]
     mov word ptr es:[2875h], ax
-    cmp word ptr cs:[6], ax
+    cmp word ptr cs:cvar_0006, ax
     ja loc_10F9
     jmp near ptr loc_06D5
 loc_10F9:
@@ -2499,7 +2503,7 @@ loc_1260:
     inc ax
     add ax, word ptr es:[2875h]
     mov word ptr es:[2875h], ax
-    cmp word ptr cs:[6], ax
+    cmp word ptr cs:cvar_0006, ax
     ja loc_127A
     jmp near ptr loc_06D5
 loc_127A:
@@ -2724,7 +2728,7 @@ loc_1471:
     mov word ptr es:[2875h], ax
     mov ds, ax
     mov dx, 0F000h
-    sub ax, word ptr cs:[6]
+    sub ax, word ptr cs:cvar_0006
     jb loc_1490
     jmp near ptr loc_06D5
 loc_1490:
@@ -3006,7 +3010,7 @@ loc_16A3:
     mov ax, es
     add ax, 800h
     mov es, ax
-    cmp ax, word ptr cs:[6]
+    cmp ax, word ptr cs:cvar_0006
     jb loc_16BE
     jmp near ptr loc_06D5
 loc_16BE:
@@ -3663,17 +3667,17 @@ sub_1C0C:
     shl al, cl
     cmp al, 1
     je loc_1C40
-    mov byte ptr cs:[5], 0
+    mov byte ptr cs:cvar_0005, 0
     jmp short loc_1C54
 loc_1C40:
     P386
     xor eax, eax
     P8086
-    mov byte ptr cs:[5], 3
+    mov byte ptr cs:cvar_0005, 3
     jmp short loc_1C54
 
 sub_1C4B:
-    mov byte ptr cs:[5], 2
+    mov byte ptr cs:cvar_0005, 2
     add sp, 6
 loc_1C54:
     mov dx, 2C5h
@@ -3767,7 +3771,7 @@ sub_1CEB:
     push dx
     push ax
     push cx
-    cmp byte ptr cs:[5], 3
+    cmp byte ptr cs:cvar_0005, 3
     jae loc_1D0C
     mov dx, 388h
     out dx, al
@@ -4035,9 +4039,9 @@ loc_1E92:
     call sub_2026
     mov byte ptr byte_10BE, cl
     mov word ptr word_10BF, dx
-    test word ptr cs:[3], 40h
+    test word ptr cs:cvar_0003, 40h
     jne loc_1F2F
-    mov ax, word ptr cs:[6]
+    mov ax, word ptr cs:cvar_0006
     mov dx, ss
     sub ax, dx
     cmp ax, 7D00h
@@ -4048,7 +4052,7 @@ loc_1E92:
     mov dx, 9A6h
     int 21h
     call sub_105F
-    or byte ptr cs:[3], 40h
+    or byte ptr cs:cvar_0003, 40h
     jmp short loc_1F2F
 loc_1F23:
     mov ax, word ptr word_2875
@@ -4263,7 +4267,7 @@ loc_2075:
     mov al, ah
     mov al, al
     call sub_1C8E
-    test word ptr cs:[3], 40h
+    test word ptr cs:cvar_0003, 40h
     jne loc_20CF
     call sub_227C
 loc_20CF:
@@ -4298,7 +4302,7 @@ loc_2112:
     mov cx, 54h
     rep stosw
 loc_2119:
-    test word ptr cs:[3], 40h
+    test word ptr cs:cvar_0003, 40h
     jne loc_2140
     xor bx, bx
     call sub_218F

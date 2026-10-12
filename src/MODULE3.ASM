@@ -319,6 +319,9 @@ DATA ends
 CODE segment word public 'CODE'
 assume cs:CODE, ds:DATA, es:nothing, ss:nothing
 ; module interface (tools/symtab.py)
+extrn cvar_0001:byte
+extrn cvar_0003:word
+extrn cvar_0005:byte
 extrn sub_0282:near
 extrn sub_02CC:near
 extrn sub_0492:near
@@ -3999,7 +4002,7 @@ sub_653D:
     push ax
     mov bl, 50h
     mov bh, 2
-    cmp byte ptr cs:[1], 3
+    cmp byte ptr cs:cvar_0001, 3
     jb loc_656E
     call sub_453B
     mov bl, 28h
@@ -8735,7 +8738,7 @@ loc_8EFD:
     mov al, byte ptr byte_B197
     mov byte ptr byte_B198, al
     mov byte ptr byte_083D, al
-    cmp byte ptr cs:[5], 3
+    cmp byte ptr cs:cvar_0005, 3
     jb loc_8F29
     mov word ptr word_78C4, 78C6h
 loc_8F29:
@@ -9065,7 +9068,7 @@ loc_91D9:
     jne loc_91E4
     call sub_44CD
 loc_91E4:
-    test word ptr cs:[3], 1
+    test word ptr cs:cvar_0003, 1
     je loc_925E
     mov dx, 3C7h
     mov al, byte ptr cs:cvar_9154
@@ -9156,11 +9159,11 @@ sub_926E:
     ret
 
 sub_9286:
-    test word ptr cs:[3], 1
+    test word ptr cs:cvar_0003, 1
     jne loc_9292
     jmp near ptr loc_932E
 loc_9292:
-    mov al, byte ptr cs:[1]
+    mov al, byte ptr cs:cvar_0001
     cmp al, 5
     je loc_929B
     ret
@@ -9295,7 +9298,7 @@ loc_939B:
     pop ax
     xor ax, 55A3h
     mul word ptr word_A333
-    mov cl, byte ptr cs:[5]
+    mov cl, byte ptr cs:cvar_0005
     rol ax, cl
     pop es
     pop ds

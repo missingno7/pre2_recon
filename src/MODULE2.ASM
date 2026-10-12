@@ -149,6 +149,9 @@ DATA ends
 CODE segment word public 'CODE'
 assume cs:CODE, ds:DATA, es:nothing, ss:nothing
 ; module interface (tools/symtab.py)
+extrn cvar_0000:byte
+extrn cvar_0001:byte
+extrn cvar_0003:word
 extrn loc_104F:near
 extrn sub_0492:near
 extrn sub_0B92:near
@@ -676,7 +679,7 @@ loc_27DE:
     jmp near ptr loc_2DDA
 loc_27F8:
     mov word ptr cs:cvar_26E8, ax
-    mov cl, byte ptr cs:[0]
+    mov cl, byte ptr cs:cvar_0000
     shr dl, cl
     mov byte ptr cs:cvar_26E4, dl
     mov byte ptr cs:cvar_26E5, dl
@@ -712,7 +715,7 @@ loc_285D:
     mov ax, word ptr cs:cvar_26EA
     or ax, ax
     jns loc_287E
-    mov cl, byte ptr cs:[0]
+    mov cl, byte ptr cs:cvar_0000
     sar ax, cl
     add byte ptr cs:cvar_26E4, al
     neg al
@@ -720,11 +723,11 @@ loc_285D:
     inc byte ptr cs:cvar_26E3
     jmp short loc_28B6
 loc_287E:
-    mov cl, byte ptr cs:[0]
+    mov cl, byte ptr cs:cvar_0000
     sar ax, cl
     add word ptr cs:cvar_26F1, ax
     mov ax, word ptr cs:cvar_26EA
-    mov cl, byte ptr cs:[0]
+    mov cl, byte ptr cs:cvar_0000
     shr ax, cl
     add al, byte ptr cs:cvar_26E4
     adc ah, 0
@@ -2347,7 +2350,7 @@ loc_3717:
     ret
 
 sub_3721:
-    test word ptr cs:[3], 2
+    test word ptr cs:cvar_0003, 2
     je loc_3731
     test byte ptr byte_2DF2, 40h
     jne loc_3732
@@ -3824,7 +3827,7 @@ loc_43C5:
     ret
 
 sub_43D2:
-    cmp byte ptr cs:[1], 0FFh
+    cmp byte ptr cs:cvar_0001, 0FFh
     je loc_43DD
     jmp near ptr sub_447D
 loc_43DD:
@@ -3859,7 +3862,7 @@ loc_4406:
     loop loc_4406
     call sub_443F
     jb loc_441F
-    mov byte ptr cs:[1], 5
+    mov byte ptr cs:cvar_0001, 5
     ret
 loc_441F:
     mov word ptr word_2875, 0
@@ -3951,7 +3954,7 @@ sub_447D:
 sub_44CD:
     push ax
     push dx
-    cmp byte ptr cs:[1], 0
+    cmp byte ptr cs:cvar_0001, 0
     je loc_44E9
     mov dx, 3DAh
     mov ah, 8
