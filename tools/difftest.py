@@ -28,11 +28,12 @@ class Case:
     regs: input registers; out_regs: registers compared after return ('CF', 'ZF' allowed).
     ranges: extra (segment, offset, length) memory ranges to compare. files: use DOS files."""
     def __init__(self, title, routine, cfunc, regs=None, setup=None, out_regs=(), ranges=(), files=False,
-                 budget=50_000_000, port_inputs=None):
+                 budget=50_000_000, port_inputs=None, tick_model=False):
         self.title, self.routine, self.cfunc = title, routine, cfunc
         self.regs, self.setup, self.out_regs = dict(regs or {}), setup, tuple(out_regs)
         self.ranges, self.files, self.budget = tuple(ranges), files, budget
         self.port_inputs = dict(port_inputs or {})     # {port: value IN returns}, both sides
+        self.tick_model = tick_model   # each failed frame-wait check advances TimerTickCount
 
 _dll = None
 def dll():
@@ -53,6 +54,24 @@ def dll():
         _dll.vga_in.restype = ctypes.c_uint8
     return _dll
 
+WAIT_JB = 0x1C7E      # WaitSoundTicks: jb loc_1C6F (the failed check)
+_tick_hooks = {}
+def arm_tick_model(m):
+    """Oracle half of the test tick model: when the frame wait's jb is about to be taken,
+    advance TimerTickCount (the C half is platform_tick_wait in c/platform.c)."""
+    from unicorn import UC_HOOK_CODE
+    if id(m) in _tick_hooks: _tick_hooks[id(m)][1][0] = True; return
+    flag = [True]
+    tick = m.code('TimerTickCount')
+    def hook(uc, address, size, user):
+        if flag[0] and m.reg('FLAGS') & 1:
+            m.ww(tick, m.rw(tick, seg=CODE_SEG) + 1, seg=CODE_SEG)
+    h = m.uc.hook_add(UC_HOOK_CODE, hook, None, CODE_SEG*16 + WAIT_JB, CODE_SEG*16 + WAIT_JB)
+    _tick_hooks[id(m)] = (h, flag)
+
+def disarm_tick_model(m):
+    if id(m) in _tick_hooks: _tick_hooks[id(m)][1][0] = False
+
 def compare_ranges(case):
     rs = [(DATA_SEG, 0, 0x10000), (CODE_SEG, 0, 0x9DFC)]
     return rs + list(case.ranges)
@@ -66,10 +85,12 @@ def run(case, machine=None):
     m.ports = PortLog(); m.ports.preset = dict(case.port_inputs)
     if m.vga: m.vga.vga_reset()
     if case.setup: case.setup(m)
+    if case.tick_model: arm_tick_model(m)
     init = m.snapshot()
     vga_init = bytes(m.vga.pre2_vga_state().contents) if m.vga else None
     regs = dict(case.regs)
-    out = m.call(case.routine, regs, budget=case.budget)
+    try: out = m.call(case.routine, regs, budget=case.budget)
+    finally: disarm_tick_model(m)
     asm_mem = m.snapshot()
     vga_asm = bytes(m.vga.pre2_vga_state().contents) if m.vga else None
     # C side
@@ -79,6 +100,7 @@ def run(case, machine=None):
     if vga_init is not None: ctypes.memmove(d.pre2_vga_state(), vga_init, len(vga_init))
     if case.files: d.pre2_files_reset(str(ROOT/'assets').encode())
     d.pre2_ports_reset()
+    d.pre2_platform_tick_model(1 if case.tick_model else 0)
     for port, value in case.port_inputs.items(): d.pre2_ports_preset(port, value)
     r = Regs(**{k.lower(): v for k, v in regs.items() if k in ('AX', 'BX', 'CX', 'DX', 'SI', 'DI', 'BP', 'DS', 'ES')})
     r.ds = regs.get('DS', DATA_SEG); r.es = regs.get('ES', DATA_SEG); r.flags = 0x0202

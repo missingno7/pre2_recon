@@ -21,6 +21,14 @@
 
 void platform_poll(void) { }
 
+/* Test tick model (off by default): each failed check of the frame wait advances
+ * TimerTickCount by one, as tools/difftest.py's tick_model hook does on the oracle side. */
+static int tick_model;                              /* test configuration, not game state */
+EXPORT void pre2_platform_tick_model(int on) { tick_model = on; }
+void platform_tick_wait(void) { if (tick_model) SET_CW(CS_TimerTickCount, (uint16_t)(CW(CS_TimerTickCount) + 1)); }
+
+uint16_t platform_conventional_kb(void) { return 640; }
+
 void bios_set_mode(uint8_t mode)
 {
     wr8(0x0040, 0x0049, mode);                 /* BIOS data area: current video mode */

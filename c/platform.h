@@ -16,6 +16,9 @@
 #include <stdint.h>
 
 void platform_poll(void);
+/* One failed check of WaitSoundTicks' tick wait: where the timer interrupt can run. */
+void platform_tick_wait(void);
+uint16_t platform_conventional_kb(void);   /* INT 12h: conventional memory in KiB */
 void bios_set_mode(uint8_t mode);
 void bios_set_palette(uint16_t seg, uint16_t off);
 void bios_set_dac_block(uint16_t first, uint16_t count, uint16_t seg, uint16_t off);

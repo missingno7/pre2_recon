@@ -44,6 +44,7 @@ void RenderTallyPercent(void);
 void DrawHudText(uint16_t si, uint16_t di);
 void RenderTallyPanel(void);
 void ResetItemTally(void);
+void ResetItemTallyEs(uint16_t es);   /* the clear goes to ES:ItemTallyCounts */
 void AnimateTallyPotFlame(void);
 void ClearDrawPage(void);
 void ResetLevelState(void);

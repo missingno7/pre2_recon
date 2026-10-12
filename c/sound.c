@@ -288,7 +288,7 @@ void WaitSoundTicks(void)
     for (;;) {
         uint16_t ax = (uint16_t)(DW(DS_word_27EE) - CW(CS_TimerTickCount));
         if (ax & 0x8000) ax = (uint16_t)(-ax);            /* jns / neg */
-        if (ax < 3) { platform_poll(); continue; }
+        if (ax < 3) { platform_tick_wait(); continue; }
         if (ax == 3) SET_DB(DS_byte_6BE7, (uint8_t)(DB(DS_byte_6BE7) + 1));
         break;
     }

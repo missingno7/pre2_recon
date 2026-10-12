@@ -36,7 +36,7 @@ def hud_sheet(m, seed=81):
     m.ww(m.data('word_003D'), HUD_SEG)
 
 def case(title, routine, cfunc, setup=None, regs=None, out_regs=(), ranges=(), level=None,
-         files=True, budget=50_000_000):
+         files=True, budget=50_000_000, tick_model=False):
     def s(m):
         R.base(m)                       # BIOS services and memory top; level_state restores on top
         if level is not None:
@@ -45,7 +45,7 @@ def case(title, routine, cfunc, setup=None, regs=None, out_regs=(), ranges=(), l
         if setup:
             setup(m)
     return Case(title, routine, cfunc, regs=regs or {}, setup=s, out_regs=out_regs, ranges=ranges,
-                files=files, budget=budget)
+                files=files, budget=budget, tick_model=tick_model)
 
 def ds(m, name, value, size=1):
     (m.wb if size == 1 else m.ww)(m.data(name), value)
@@ -558,6 +558,12 @@ def level_cases():
                    level=1, setup=state(mode=2, level=1), out_regs=('AX', 'CF'), budget=BIG))
     cs.append(case('UpdateLevelState: mode 2, warp level 6 (table 0, exit)', 'UpdateLevelState', 'c_UpdateLevelState',
                    level=6, setup=state(mode=2, level=6), out_regs=('AX', 'CF'), budget=BIG))
+    # The level-end transition with its frame loops (tally flights, walk-off): runs with the
+    # test tick model. ES = A000h at its ResetItemTally, so the DATA tally survives (ES audit).
+    for lv, tally in ((4, {0: 3, 5: 2}), (2, {1: 1})):
+        cs.append(case(f'UpdateLevelState: mode 1, level {lv}, tally exit with frame loops', 'UpdateLevelState',
+                       'c_UpdateLevelState', level=lv, setup=state(mode=1, level=lv, item_total=sum(tally.values()),
+                       tally=tally), out_regs=('AX', 'CF'), budget=BIG * 4, tick_model=True))
     def absent(m):
         state(mode=2, level=0x0D)(m)
         m.wb(m.data('WarpLevelTable') + 12, 0x0D)   # the first match past the 10-byte table (slot 12)

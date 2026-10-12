@@ -807,7 +807,9 @@ static int LevelTransitionStart(uint16_t *ax_out)
 
     if (DB(DS_byte_2879) != 0) return GameOverPath(ax_out);
     SET_DB(DS_CurrentLevel, (uint8_t)(DB(DS_CurrentLevel) + 1));
-    ResetItemTally();
+    /* quirk: ES is still A000h from RunIrisClose here, so the tally clear goes to video
+     * memory (A000:6C12h..) and the DATA tally survives the transition (ES audit) */
+    ResetItemTallyEs(0xA000u);
     return level_finish(ax_out);
 }
 
@@ -964,11 +966,17 @@ void RenderTallyPanel(void)
 }
 
 /* Clears the item tally: ItemTallyCounts (71h bytes) and ItemTotal. */
-void ResetItemTally(void)
+/* rep stosb at ES:ItemTallyCounts with the caller's ES; ItemTotal through DS. */
+void ResetItemTallyEs(uint16_t es)
 {
-    for (unsigned k = 0; k < ITEM_TALLY_COUNT; k++) SET_DB((uint16_t)(DS_ItemTallyCounts + k), 0);
+    for (unsigned k = 0; k < ITEM_TALLY_COUNT; k++) {
+        uint16_t off = (uint16_t)(DS_ItemTallyCounts + k);
+        if (es == 0xA000u) vga_write(off, 0); else wr8(es, off, 0);
+    }
     SET_DW(DS_ItemTotal, 0);
 }
+
+void ResetItemTally(void) { ResetItemTallyEs(DATA_SEG); }
 
 /* Every 4th frame advances the tally pot flame sprite id word_4F56 through 68h..6Dh (high byte
  * masked with 1Fh before the step). */
