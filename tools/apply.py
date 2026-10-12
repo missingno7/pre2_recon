@@ -79,7 +79,11 @@ def main():
             for line in p.read_text(encoding='latin-1').splitlines(): every |= {x.upper() for x in symtab.IDENT.findall(symtab.code_text(line))}
         skipped = [(o, n) for o, n in renames if o.upper() not in every and n.upper() in every]
         for o, n in skipped: print(f'skip rename {o} -> {n}: already applied')
-        renames = [r for r in renames if r not in skipped]
+        taken = [(o, n) for o, n in renames if o.upper() not in every and n.upper() not in every]
+        for o, n in taken: print(f'CONFLICT rename {o} -> {n}: {o} was already renamed by another proposal')
+        clash = [(o, n) for o, n in renames if o.upper() in every and n.upper() in every and o.upper() != n.upper()]
+        for o, n in clash: print(f'CONFLICT rename {o} -> {n}: {n} already names another label')
+        renames = [r for r in renames if r not in skipped and r not in taken and r not in clash]
     if renames:
         rename.rename_all(renames)
     for o in ops:
