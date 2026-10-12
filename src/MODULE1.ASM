@@ -1,4 +1,5 @@
 ; Prehistorik 2 (PRE2.EXE), link module 1 of 4
+include RECORDS.INC
 STK segment para stack 'STACK'
     db 200h dup(0)
 STK ends

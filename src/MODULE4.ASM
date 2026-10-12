@@ -38,6 +38,7 @@ extrn word_667A:word
 extrn word_7522:word
 DATA ends
 ; end module interface
+include RECORDS.INC
 CODE segment word public 'CODE'
 assume cs:CODE, ds:DATA, es:nothing, ss:nothing
 ; module interface (tools/symtab.py)

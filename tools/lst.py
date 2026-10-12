@@ -12,6 +12,7 @@ def parse(text, src_lines, name='?'):
     first = src_lines[0].strip()
     for line in text.splitlines():
         if not re.match(r'^\s*\d+ ', line): continue
+        if line[:1].isdigit(): continue          # row of an included file (nesting level in column 0)
         if col is None: col = line.index(first)
         if len(line) <= col: continue
         off = re.match(r'^\s*\d+\s+([0-9A-F]{4})\s', line)
