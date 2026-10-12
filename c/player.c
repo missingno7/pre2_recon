@@ -37,8 +37,6 @@
  *   - CeilingTileHeadBump: the position record pointer word_6BB1 is used as a DS pointer.
  *   - Output of ApplyWindDrift floors VelX at 0FFA0h (-96) and never clamps the top.
  *   - IncrementPlayerLives writes 0CFh (IRET) to cs:26FAh when the count is above 63h.
- * Boundary: TryShowCredits (sprites.c) passes the gate only with keys that cannot be driven by
- * these tests (credits path); the credits status is returned instead of running it.
  */
 #include <stdbool.h>
 #include "pre2.h"
@@ -47,6 +45,7 @@
 #include "effects.h"
 #include "level.h"
 #include "sprites.h"
+#include "credits.h"
 #include "system.h"
 #include "player.h"
 
@@ -199,8 +198,7 @@ int UpdatePlayer(uint16_t cx_in)
         SET_DB(DS_EndSignal, 1);
         return PLAYER_OK;
     }
-    int cr = TryShowCredits();
-    if (cr == SPR_CREDITS) return PLAYER_CREDITS;         /* DrawStatusBarBackground not reached */
+    if (!TryShowCredits()) DrawStatusBarBackground();     /* call; jb loc_589A: CF = 1 skips it */
     WaitFrameSyncFlag();
     PollInputState();                                      /* preserves CX and SI */
 

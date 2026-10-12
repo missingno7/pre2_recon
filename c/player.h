@@ -8,7 +8,6 @@ enum PlayerStatus {
     PLAYER_OK = 0,
     PLAYER_UNSUPPORTED = 401,  /* a handler word read from a DATA table is not a translated routine
                                   (data words past the tables, or a target outside this region) */
-    PLAYER_CREDITS = 402       /* TryShowCredits gate passed: credits screen path not translated */
 };
 
 /* Per-frame player update (MainFrameLoop calls it after UpdateTerrainEntities). `cx_in` is the

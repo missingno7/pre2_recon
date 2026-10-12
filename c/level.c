@@ -21,6 +21,7 @@
 #include "ports.h"
 #include "render.h"
 #include "sprites.h"
+#include "credits.h"
 #include "sqz.h"
 #include "system.h"
 #include "effects.h"
@@ -831,7 +832,7 @@ static int LifeLostPath(uint16_t *ax_out)
 /* Game over: the intro gate, the game-over screen, then score, level and lives are reset. */
 static int GameOverPath(uint16_t *ax_out)
 {
-    if (TryShowIntroKeyed() == SPR_UNSUPPORTED) return LEVEL_UNSUPPORTED;
+    (void)TryShowIntroKeyed();                /* CF is not tested by the ASM caller */
     ActivateResourceSlot(0x11);
     RunGameOverScreen();
     SET_DW(DS_PlayerFrameWord, 0x0D);
@@ -893,7 +894,7 @@ static int ShowEndingPicture(uint16_t *ax_out)
     ShowMode13PictureFadeIn(0x10, 0);       /* SI = 0 and CL = 10h; BX is not an input of the ASM */
     WaitForButtonPressRelease();
     FadeOutPaletteToBlack();
-    if (ShowIntroPicture() == SPR_UNSUPPORTED) return LEVEL_UNSUPPORTED;
+    (void)ShowIntroPicture();                 /* CF is not tested by the ASM caller */
     *ax_out = 1;
     return 1;
 }

@@ -8,12 +8,11 @@
 #include <string.h>
 #include <ctype.h>
 
-#define MAX_FILES 8
+#define MAX_FILES 15
 static struct { FILE *f; int used; } files[MAX_FILES];   /* host handles, not game state */
 static char root[512] = "assets";
 static char logbuf[1 << 16];
 static size_t loglen;
-static int next_handle = 5;
 
 static void logf_(const char *s)
 {
@@ -27,7 +26,7 @@ EXPORT void pre2_files_reset(const char *dir)
 {
     for (int i = 0; i < MAX_FILES; i++) if (files[i].used) { fclose(files[i].f); files[i].used = 0; }
     if (dir) { strncpy(root, dir, sizeof root - 1); root[sizeof root - 1] = 0; }
-    loglen = 0; logbuf[0] = 0; next_handle = 5;
+    loglen = 0; logbuf[0] = 0;
 }
 
 EXPORT const char *pre2_files_log(void) { return logbuf; }
@@ -43,7 +42,8 @@ int dos_open(uint16_t seg, uint16_t off, uint16_t *ax)
     snprintf(path, sizeof path, "%s/%s", root, name);
     FILE *f = fopen(path, "rb");
     if (!f) { *ax = 2; return 1; }
-    int h = next_handle++;
+    int h = 5;                                     /* DOS: the lowest free handle (0..4 are standard) */
+    while (h - 5 < MAX_FILES && files[h - 5].used) h++;
     if (h - 5 >= MAX_FILES) { fclose(f); *ax = 4; return 1; }
     files[h - 5].f = f; files[h - 5].used = 1;
     *ax = (uint16_t)h;

@@ -780,33 +780,6 @@ uint16_t StepRandomSeed(void)
     return ax;
 }
 
-/* The credits gate (cs:247Bh, MODULE2): gate only. Returns 1 (CF set) when the key-state gate
- * fails: nothing is drawn. The gate passes only on a key set this translation does not run: the
- * credits path is not run and SPR_CREDITS is returned instead (UpdatePlayer stops the frame). */
-int TryShowCredits(void)
-{
-    uint8_t al = DB(DS_byte_2811) & DB(DS_byte_282C) & DB(DS_byte_2805);
-    if (al == 0) return 1;
-    for (uint16_t bx = 1; bx < 0x7F; bx++) {
-        if (bx == 0x11 || bx == 0x1D || bx == 0x38) continue;
-        if (DB((uint16_t)(DS_KeyDownTable + bx)) != 0) return 1;
-    }
-    return SPR_CREDITS;
-}
-
-/* Keyed intro gate (cs:25C7, MODULE2): not translated. Returns SPR_UNSUPPORTED: the caller
- * stops at this boundary and the intro is not run. */
-int TryShowIntroKeyed(void)
-{
-    return SPR_UNSUPPORTED;
-}
-
-/* Intro picture (cs:25F6, MODULE2): not translated. Returns SPR_UNSUPPORTED (see above). */
-int ShowIntroPicture(void)
-{
-    return SPR_UNSUPPORTED;
-}
-
 /* ---- differential-test adapters (tests/objects.py) ---------------------------------------- */
 EXPORT int c_StepRandomSeed(Regs *r) { r->ax = StepRandomSeed(); r->ds = DATA_SEG; return 0; }
 

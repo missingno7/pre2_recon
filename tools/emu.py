@@ -189,7 +189,8 @@ class DosFiles:
             path = self.root/raw.upper()
             self.log.append(('open', raw))
             if not path.exists(): return fail(2)
-            h = self.next; self.next += 1
+            h = 5                                   # DOS: the lowest free handle
+            while h in self.files: h += 1
             self.files[h] = [path.read_bytes(), 0]
             return ok(h)
         h = m.reg('BX')
