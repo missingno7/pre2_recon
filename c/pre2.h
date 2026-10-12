@@ -11,6 +11,12 @@
 #define PRE2_H
 #include <stdint.h>
 
+#ifdef _WIN32
+#define EXPORT __declspec(dllexport)   /* entry points used by the test harness */
+#else
+#define EXPORT
+#endif
+
 #define LOAD_SEG   0x1010u              /* PSP at 1000h */
 #define CODE_SEG   (LOAD_SEG + 0x0020u)  /* the code segment frame */
 #define DATA_SEG   (LOAD_SEG + 0x09FFu)  /* DS for all game code */

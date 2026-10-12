@@ -23,6 +23,7 @@ CODE_SEG = LOAD + 0x20
 DATA_SEG = LOAD + 0x9FF
 STACK_SEG = LOAD
 MEM_SIZE = 0x110000
+VGA_LIN = 0xA0000
 REG = {r: globals()['UC_X86_REG_' + r] for r in
        ('AX', 'BX', 'CX', 'DX', 'SI', 'DI', 'BP', 'SP', 'CS', 'DS', 'ES', 'SS', 'IP', 'FLAGS')}
 FLAG = dict(CF=0x001, PF=0x004, AF=0x010, ZF=0x040, SF=0x080, TF=0x100, IF=0x200, DF=0x400, OF=0x800)
@@ -45,7 +46,7 @@ class PortLog:
 class Stop(Exception): pass
 
 class Machine:
-    def __init__(self, exe=None, ports=None):
+    def __init__(self, exe=None, ports=None, vga=None):
         exe = Path(exe or ROOT/'build'/'asm'/'PRE2.EXE')
         _, image, relocations, _ = mz(exe.read_bytes())
         image = bytearray(image)
@@ -57,7 +58,15 @@ class Machine:
         self.ports = ports or PortLog()
         self.ints = {}          # interrupt number -> handler(machine) ; return False to stop
         self.uc = Uc(UC_ARCH_X86, UC_MODE_16)
-        self.uc.mem_map(0, MEM_SIZE)
+        # vga: a loaded build/c/pre2core.dll (ctypes); A000:0000..FFFF then goes to its
+        # VGA model and ports 3C0..3DA to its registers (see c/vga.h)
+        self.vga = vga
+        if vga:
+            self.uc.mem_map(0, VGA_LIN)
+            self.uc.mem_map(VGA_LIN + 0x10000, MEM_SIZE - VGA_LIN - 0x10000)
+            self.uc.mmio_map(VGA_LIN, 0x10000, self._vga_read, None, self._vga_write, None)
+        else:
+            self.uc.mem_map(0, MEM_SIZE)
         self.reset_memory()
         self.uc.hook_add(UC_HOOK_INSN, self._in, None, 1, 0, UC_X86_INS_IN)
         self.uc.hook_add(UC_HOOK_INSN, self._out, None, 1, 0, UC_X86_INS_OUT)
@@ -67,8 +76,25 @@ class Machine:
         self.error = None
 
     def reset_memory(self):
-        self.uc.mem_write(0, b'\0'*MEM_SIZE)
+        self.restore(b'\0'*MEM_SIZE)
         self.uc.mem_write(LOAD*16, self.image)
+
+    def snapshot(self):
+        """The address space as bytes (the VGA window reads as zero when modelled)."""
+        if not self.vga: return bytes(self.uc.mem_read(0, MEM_SIZE))
+        return bytes(self.uc.mem_read(0, VGA_LIN)) + b'\0'*0x10000 + \
+            bytes(self.uc.mem_read(VGA_LIN + 0x10000, MEM_SIZE - VGA_LIN - 0x10000))
+    def restore(self, data):
+        if not self.vga: self.uc.mem_write(0, bytes(data)); return
+        self.uc.mem_write(0, bytes(data[:VGA_LIN]))
+        self.uc.mem_write(VGA_LIN + 0x10000, bytes(data[VGA_LIN + 0x10000:]))
+
+    def _vga_read(self, uc, offset, size, user):
+        v = 0
+        for i in range(size): v |= self.vga.vga_read(offset + i) << (8*i)
+        return v
+    def _vga_write(self, uc, offset, size, value, user):
+        for i in range(size): self.vga.vga_write(offset + i, (value >> (8*i)) & 0xFF)
 
     # -- addressing helpers -------------------------------------------------
     def lin(self, seg, off): return (seg*16 + off) & 0xFFFFF
@@ -95,8 +121,15 @@ class Machine:
 
     # -- hooks ----------------------------------------------------------------
     def _in(self, uc, port, size, user):
+        if self.vga and 0x3C0 <= port <= 0x3DA:
+            v = self.vga.vga_in(port) | (self.vga.vga_in(port + 1) << 8 if size == 2 else 0)
+            self.ports.log.append(('in', port, size)) if hasattr(self.ports, 'log') else None
+            return v
         return self.ports.inp(port, size) & ((1 << (8*size)) - 1)
     def _out(self, uc, port, size, value, user):
+        if self.vga and 0x3C0 <= port <= 0x3DA:
+            self.vga.vga_out(port, value & 0xFF)
+            if size == 2: self.vga.vga_out(port + 1, value >> 8)
         self.ports.out(port, size, value)
     def _intr(self, uc, n, user):
         if n == 0x03 or n not in self.ints or self.ints[n](self) is False:
