@@ -510,7 +510,356 @@ def ready_seed(cls):
         m.wb(m.code('CpuClass'), cls, seg=CODE_SEG)
     return f
 
+# -- gap-closing cases: foreground over sprites, wind script, ring copy, backdrop wrap ---------
+def flag_table(m, mode, seed):
+    """TileFlagsTable bit 40h (foreground) of every tile: 'all' set, 'half' seeded 50%, 'real' kept."""
+    if mode == 'real':
+        return
+    rng = random.Random(seed)
+    for t in range(256):
+        a = m.data('TileFlagsTable') + t
+        v = m.rb(a) & ~0x40
+        if mode == 'all' or rng.random() < 0.5:
+            v |= 0x40
+        m.wb(a, v)
+
+def fg_slots(m, rng, row, col, count=115):
+    """Render slots (x, y, flags at +0, +2, +4) around the camera window: x over the tile
+    columns -3..22 of the window (sar 4, so negative tile columns too), y over map rows -2..13
+    below the window top, half of them off a tile boundary (the extra row), some free (FFFFh) or
+    without the 2000h bit."""
+    for slot in range(count):
+        a = m.data('RenderSlots') + 0x12 * slot
+        kind = rng.random()
+        if kind < 0.12:
+            flags = 0xFFFF
+        elif kind < 0.25:
+            flags = rng.choice((0x0003, 0x1FFF, 0x0000, 0xDFFF))
+        else:
+            flags = 0x2000 | rng.randrange(0x2000)
+        x = (col + rng.randrange(-3, 23)) * 16 + rng.randrange(16)
+        y = (row + 1 + rng.randrange(-2, 14)) * 16 + rng.choice((0, 0, rng.randrange(16)))
+        m.ww(a, x & 0xFFFF)
+        m.ww(a + 2, y & 0xFFFF)
+        m.ww(a + 4, flags)
+
+def fg_scene(seed, flags, row, col, fine=0, option=2, visible=0x40, count=115, dp=0x2000):
+    def s(m):
+        rng = random.Random(seed)
+        set_cam(m, row=row, col=col, fine=fine, dp=dp)
+        m.ww(m.code('OptionBits'), option, seg=CODE_SEG)
+        m.wb(m.data('VisibleTileFlags'), visible)
+        m.ww(m.data('word_003B'), m.rw(m.data('SpriteSheetSegment')))
+        flag_table(m, flags, seed)
+        fg_slots(m, rng, row, col, count)
+        scratch_planes(0x100 + seed)(m)
+    return s
+
+def fg_cases():
+    cs = []
+    for tag, opt, vis in (('OptionBits bit 2 clear', 0x0001, 0x40), ('OptionBits 0', 0x0000, 0x40),
+                          ('VisibleTileFlags bit 40h clear', 0x0002, 0xBF)):
+        cs.append(case(f'DrawForegroundOverSprites: gate closed ({tag})', 'DrawForegroundOverSprites',
+                       'c_DrawForegroundOverSprites', level=4, files=True,
+                       setup=fg_scene(1, 'all', 6, 10, option=opt, visible=vis, count=20)))
+    # every tile flagged: all four cells of every slot are drawn (cell -2, -1, 0, +1), with
+    # slots over the window edges (cl from -3 to 22) and below / above it (ch out of range)
+    cs.append(case('DrawForegroundOverSprites: all tiles foreground, slots around the window (level 4)',
+                   'DrawForegroundOverSprites', 'c_DrawForegroundOverSprites', level=4, files=True,
+                   setup=fg_scene(2, 'all', 6, 10, fine=3), budget=200_000_000))
+    cs.append(case('DrawForegroundOverSprites: half the tiles foreground, FineScroll 15 (level 9)',
+                   'DrawForegroundOverSprites', 'c_DrawForegroundOverSprites', level=9, files=True,
+                   setup=fg_scene(3, 'half', 20, 30, fine=15), budget=200_000_000))
+    cs.append(case('DrawForegroundOverSprites: camera at the map origin, half flagged (level 11)',
+                   'DrawForegroundOverSprites', 'c_DrawForegroundOverSprites', level=11, files=True,
+                   setup=fg_scene(4, 'half', 0, 0, fine=0), budget=200_000_000))
+    cs.append(case('DrawForegroundOverSprites: camera column 0F0h (byte arithmetic wraps), all flagged',
+                   'DrawForegroundOverSprites', 'c_DrawForegroundOverSprites', level=4, files=True,
+                   setup=fg_scene(5, 'all', 2, 0xF0, fine=9, dp=0x0000), budget=200_000_000))
+    def tile(title, row, col, fine, tile_id=0x40, dp=0x2000):
+        cs.append(case(title, 'DrawForegroundTile', 'c_DrawForegroundTile', level=4, files=True,
+                       regs={'AX': (row << 8) | col, 'BX': tile_id},
+                       setup=lambda m: (set_cam(m, row=5, col=7, fine=fine, dp=dp),
+                                        m.ww(m.data('word_003B'), m.rw(m.data('SpriteSheetSegment'))),
+                                        scratch_planes(0x120 + fine)(m))))
+    # destination window DrawPage .. DrawPage + 1900h: below it (FineScroll 40 bytes per unit),
+    # at its first byte, just inside the end, and at / past the end
+    tile('DrawForegroundTile: destination below DrawPage (FineScroll 15, top row)', 5, 7, 15)
+    tile('DrawForegroundTile: first byte of the window is drawn (FineScroll 0, top left)', 5, 7, 0)
+    tile('DrawForegroundTile: row 9 of the window, last column', 14, 26, 0)
+    tile('DrawForegroundTile: row 10, FineScroll 1 (destination 28h bytes inside the end)', 15, 7, 1)
+    tile('DrawForegroundTile: row 10, FineScroll 0 (destination at the end of the window)', 15, 7, 0)
+    tile('DrawForegroundTile: row 11 past the end', 16, 12, 0)
+    tile('DrawForegroundTile: column left of the camera (byte 0FFh scaled)', 6, 6, 2)
+    return cs
+
+# ScriptPointer entries (6 bytes): frame, wind step, limit; the next entry's frame at +6. LevelScriptTable
+# entry 15 (the snow level): (1B8h, 1, 28h) (370h, 1, 64h)... see the data; FFFFh ends the script.
+SNOW_SCRIPT = 0x2D76
+
+def wind_script_cases():
+    cs = []
+    def w(title, frame, wind, ptr=SNOW_SCRIPT, tick=0, rnd=0x1234):
+        def s(m):
+            set_cam(m, row=5, col=5, dp=0x2000)
+            m.ww(m.data('SnowWind'), wind)
+            m.ww(m.data('ScriptFrameCounter'), frame)
+            m.ww(m.data('ScriptPointer'), ptr)
+            m.wb(m.data('SnowFrameTick'), tick)
+            m.ww(m.data('WindRandWord'), rnd)
+            for k in range(0x30):
+                m.ww(m.data('FlakeTable') + 2 * k, (k * 0x2F5 + frame) & 0xFFFF)
+            m.wb(m.data('WindRandA'), rnd & 0xFF); m.wb(m.data('WindRandB'), (rnd >> 3) & 0xFF)
+            m.wb(m.data('WindRandC'), 0x5A)
+            scratch_planes(0x140 + frame)(m)
+        cs.append(case(title, 'UpdateWindAndFlakes', 'c_UpdateWindAndFlakes', level=4, files=True, setup=s))
+    w('UpdateWindAndFlakes: script entry due (counter past 1B8h), wind steps by 1, entry kept', 0x1B8, 0x10)
+    w('UpdateWindAndFlakes: script entry not due (counter before 1B8h), wind only clamped', 5, 0x10)
+    w('UpdateWindAndFlakes: counter reaches the entry frame exactly (1B8h): not yet due', 0x1B7, 0x10)
+    w('UpdateWindAndFlakes: counter at the next frame: entry kept (equal compare)', 0x36F, 0x20)
+    w('UpdateWindAndFlakes: counter past the next frame: pointer advances 6, old limit clamps', 0x370, 0x27)
+    w('UpdateWindAndFlakes: wind above the entry limit is clamped to it', 0x1B8, 0x60)
+    w('UpdateWindAndFlakes: negative wind clamps to 0 (no flakes drawn)', 0x1B8, 0xFFF0)
+    w('UpdateWindAndFlakes: wind exactly the limit, step lands on it', 0x1B8, 0x27)
+    w('UpdateWindAndFlakes: second entry (step 6, limit 64h)', 0x371, 0x30, ptr=SNOW_SCRIPT + 6)
+    w('UpdateWindAndFlakes: third entry, advance to the end marker, limit FFh', 0x529, 0x70, ptr=SNOW_SCRIPT + 12)
+    w('UpdateWindAndFlakes: end marker reached (FFFFh): wind not touched', 0x700, 0x44, ptr=SNOW_SCRIPT + 18)
+    w('UpdateWindAndFlakes: script step skipped on tick 1 (not every fourth frame)', 0x1B8, 0x10, tick=1)
+    return cs
+
+def scratch_wide(seed, end=0xA000):
+    """Seeded bytes over all four planes from 0 to END: the window, the tile ring (3F40h..5D3Fh) and
+    the backdrop ring, so copies from the ring and wraps of the destination have data to move."""
+    def f(m):
+        rng = random.Random(seed)
+        for p in range(4):
+            vga_plane(m, p, 0, bytes(rng.randrange(256) for _ in range(end)))
+    return f
+
+def ring_copy_gap_cases():
+    cs = []
+    def cp(title, cam):
+        cs.append(case(title, 'CopyRingWindowToPage', 'c_CopyRingWindowToPage', level=4, files=True,
+                       setup=lambda m: (set_cam(m, **cam), scratch_wide(0x160)(m))))
+    # first part short: bp = C0h - fine - 10h * RowRing < B0h; shake larger than the second part
+    # leaves bx negative, which folds into the first part (add bp, bx; xor bx, bx)
+    cp('CopyRingWindowToPage: shake 5 over a 2-row second part: second count negative, folded',
+       dict(row=6, col=6, fine=2, rowring=1, colring=4, shake=5))
+    cp('CopyRingWindowToPage: shake equal to the second part (count 0, no fold)',
+       dict(row=6, col=6, fine=3, rowring=1, colring=9, shake=3))
+    cp('CopyRingWindowToPage: shake 25 over fine 1, RowRing 2: fold, small first part',
+       dict(row=6, col=6, fine=1, rowring=2, colring=0, shake=9 + 16))
+    # first part empty: bp = 0 needs FineScroll + 10h * RowRing = C0h (outside the normal 0..15
+    # FineScroll range): the loop counts swap and the second part is copied first
+    cp('CopyRingWindowToPage: first-part count 0 swaps with the second (FineScroll 70h, RowRing 5)',
+       dict(row=6, col=6, fine=0x70, rowring=5, colring=7, shake=0))
+    cp('CopyRingWindowToPage: first-part count 0 swapped, shake 4',
+       dict(row=6, col=6, fine=0x70, rowring=5, colring=19, shake=4))
+    return cs
+
+def latch_copy(m):
+    """Map mask Fh and write mode 1 (the latches go to all planes): a copy moves data in every plane."""
+    m.vga.vga_out(0x3C4, 2); m.vga.vga_out(0x3C5, 0x0F)
+    m.vga.vga_out(0x3CE, 5); m.vga.vga_out(0x3CF, 0x01)
+
+def backdrop_wrap_cases():
+    """RestoreTileBackdrop: the destination wraps at 5D40h after each of the 15 row steps."""
+    cs = []
+    for r in range(15):
+        di = 0x5D40 - 0x28 * (r + 1)
+        cs.append(case(f'RestoreTileBackdrop: destination reaches 5D40h after row {r} (DI {di:04X})',
+                       'RestoreTileBackdrop', 'c_RestoreTileBackdrop', level=4, files=True,
+                       regs={'DI': di, 'ES': 0xA000},
+                       setup=lambda m, r=r: (set_cam(m, fine=r % 16), m.ww(m.data('BackdropCursor'), 0x7E80 + 0x40 * r),
+                                             scratch_wide(0x180 + r)(m), latch_copy(m))))
+    cs.append(case('RestoreTileBackdrop: DI 5E00h (first step already past the wrap)', 'RestoreTileBackdrop',
+                   'c_RestoreTileBackdrop', level=4, files=True, regs={'DI': 0x5E00, 'ES': 0xA000},
+                   setup=lambda m: (set_cam(m, fine=2), m.ww(m.data('BackdropCursor'), 0x7E80), scratch_wide(0x190)(m),
+                                    latch_copy(m))))
+    return cs
+
+def decor_n(count, shuffle):
+    """Effect-source records (7 bytes from 8F1Dh): COUNT records carry a decor word (+4 in 11Bh..12Ah,
+    with a flag bit above), the rest are free (FFFFh). Their targets (+0) point at distinct DATA words
+    in a seeded order, so the sort has swaps to make."""
+    def f(m):
+        rng = random.Random(shuffle)
+        targets = [0x0300 + 6 * k for k in range(count)]
+        rng.shuffle(targets)
+        for k in range(0x46):
+            rec = 0x8F1D + 7 * k
+            if k < count:
+                m.ww(rec, targets[k])
+                m.ww(rec + 4, (0x011B + rng.randrange(16)) | (0x2000 if k % 3 == 1 else 0))
+                m.ww(targets[k], rng.randrange(0x10000))
+            else:
+                m.ww(rec + 4, 0xFFFF)
+    return f
+
+def decor_gap_cases():
+    cs = []
+    for lv, count, b198, tag in ((4, 4, 0, 'one group of four'), (4, 8, 1, 'two groups, byte B198h set'),
+                                 (9, 12, 1, 'three groups, byte B198h set (+0Ah on the password index)'),
+                                 (9, 16, 0, 'four groups'), (4, 6, 1, 'six: not a multiple of four, nothing changes'),
+                                 (4, 0, 1, 'no decor records')):
+        cs.append(case(f'BuildDecorList: level {lv}, {count} records, {tag}', 'BuildDecorList',
+                       'c_BuildDecorList', level=lv, files=True,
+                       setup=lambda m, c=count, b=b198, lv=lv: (decor_n(c, 100 + c + lv)(m), m.wb(m.data('byte_B198'), b))))
+    return cs
+
+def entity_list(m):
+    """Entity records at 8489h: size byte at +0 (signed step), X word at +2; the list ends at a size above 32h."""
+    out, si = [], 0x8489
+    while m.rb(si) <= 0x32:
+        out.append(si)
+        step = m.rb(si)
+        si = (si + (step if step < 0x80 else step - 0x100)) & 0xFFFF
+        if len(out) > 400:
+            break
+    return out
+
+def rebase_gap_cases():
+    cs = []
+    def reb(title, lv, a, b, spread=None):
+        def s(m):
+            if spread:
+                for k, si in enumerate(entity_list(m)):          # a spread of X values over the bank windows
+                    m.ww(si + 2, spread[k % len(spread)])
+            m.ww(m.data('SpriteBankA'), a)
+            m.ww(m.data('SpriteBankB'), b)
+        cs.append(case(title, 'RebaseEntitySpriteRefs', 'c_RebaseEntitySpriteRefs', level=lv, files=True, setup=s))
+    # X at or above bank B: rebased by B; X below B and at or above A: by A; below both: kept; FFFFh: kept
+    spread = (0x0010, 0x0035, 0x0040, 0x0100, 0x0200, 0xFFFF, 0x0120, 0x011F, 0x0030, 0x002F)
+    reb('RebaseEntitySpriteRefs: X between the banks, window A 30h / B 120h', 4, 0x30, 0x120, spread)
+    reb('RebaseEntitySpriteRefs: bank B above every X (all rebased by A)', 4, 0x00, 0x7FFF, spread)
+    reb('RebaseEntitySpriteRefs: bank A above every X below B (all kept)', 9, 0x7FFE, 0x7FFF, spread)
+    reb('RebaseEntitySpriteRefs: the shipped X values, window 30h / 8000h', 9, 0x30, 0x8000)
+    return cs
+
+# -- HUD extra life, fireflies and the horizontal camera follow (c/level.c routines, driven here with
+# the same level states; tests/level.py holds the main matrix) ----------------------------------
+HUD_SEG = 0x9800
+
+def hud_sheet(m, seed=81):
+    rng = random.Random(seed)
+    m.write(HUD_SEG, 0, bytes(rng.randrange(256) for _ in range(0x4000)))
+    m.ww(m.data('word_003D'), HUD_SEG)
+
+def hud_extra_life(score, elb, lives=3, energy=3):
+    def s(m):
+        hud_sheet(m)
+        set_cam(m, dp=0x2000, dd=0)
+        m.wb(m.data('Lives'), lives); m.wb(m.data('Energy'), energy)
+        m.ww(m.data('ScoreLow'), score & 0xFFFF); m.ww(m.data('ScoreHigh'), score >> 16)
+        m.ww(m.data('ExtraLifeBlocks'), elb)
+        m.wb(m.data('RespawnState'), 0); m.wb(m.data('BonusFlashTimer'), 0)
+        m.wb(m.data('BonusLetterMask'), 0x15); m.wb(m.data('SnowFrameTick'), 0)
+        m.ww(m.data('HudCacheScoreLow'), 0x1111); m.ww(m.data('HudCacheScoreHigh'), 0x2222)
+        m.wb(m.data('HudCacheLives'), 0xEE); m.wb(m.data('HudCacheEnergy'), 0xEE); m.wb(m.data('HudCacheBonus'), 0xEE)
+    return s
+
+def hud_gap_cases():
+    cs = []
+    for score, elb, lives, tag in ((25000, 0, 3, 'one block earned: one life, debris spawned'),
+                                   (99999, 0, 5, 'three blocks earned at once'),
+                                   (75000, 2, 9, 'one block earned on top of nine lives'),
+                                   (25000, 3, 4, 'blocks cache above the score (negative difference)'),
+                                   (1000000, 0, 2, 'forty blocks earned at once')):
+        cs.append(case(f'UpdateHud: extra life check, {tag}', 'UpdateHud', 'c_UpdateHud', level=4, files=True,
+                       setup=hud_extra_life(score, elb, lives)))
+    for energy, flash, tick in ((1, 0, 0), (0, 2, 1), (2, 5, 2)):
+        def s(m, energy=energy, flash=flash, tick=tick):
+            hud_extra_life(30000, 1, 3, energy)(m)
+            m.wb(m.data('BonusFlashTimer'), flash); m.wb(m.data('SnowFrameTick'), tick)
+        cs.append(case(f'UpdateHud: energy {energy} (empty pips), bonus flash {flash}, tick {tick}', 'UpdateHud',
+                       'c_UpdateHud', level=4, files=True, setup=s))
+    return cs
+
+def firefly_records(seed, px, py, row, col, tick):
+    """20 firefly records: x, y (1/8 pixel), vx, vy, timer, state. Timers expired (re-seed) or
+    running; the player left of / right of and above / below the flies; two records near the
+    signed overflow of x and one off screen."""
+    def s(m):
+        rng = random.Random(seed)
+        set_cam(m, row=row, col=col, dp=0x2000)
+        m.wb(m.data('SnowFrameTick'), tick)
+        m.ww(m.data('PlayerX'), px); m.ww(m.data('PlayerY'), py)
+        m.ww(m.data('RandomSeed'), 0x1234 + seed)
+        m.wb(m.data('WindRandA'), seed); m.wb(m.data('WindRandB'), 7 * seed); m.wb(m.data('WindRandC'), 0x5A)
+        m.ww(m.data('WindRandWord'), 0x1357 + seed)
+        for k in range(20):
+            a = 0x6EA9 + 8 * k
+            if k == 1:
+                m.ww(a, 0x55AA); continue                           # free record
+            if k == 3:                                                # signed overflow of x going up
+                m.ww(a, 0x7FFE); m.ww(a + 2, row * 128 + 0x200)
+                m.wb(a + 4, 0x20); m.wb(a + 5, 0x03); m.wb(a + 6, 5); m.wb(a + 7, 0); continue
+            if k == 4:                                                # signed overflow of x going down
+                m.ww(a, 0x8003); m.ww(a + 2, row * 128 + 0x100)
+                m.wb(a + 4, 0xE0); m.wb(a + 5, 0xFD); m.wb(a + 6, 4); m.wb(a + 7, 0); continue
+            if k == 5:                                                # off screen below / right (kept running)
+                m.ww(a, col * 128 + 0x4000); m.ww(a + 2, row * 128 + 0x4000)
+                m.wb(a + 4, 1); m.wb(a + 5, 2); m.wb(a + 6, 6); m.wb(a + 7, 0); continue
+            m.ww(a, (col * 128 + rng.randrange(0, 0x600)) & 0xFFFF)
+            m.ww(a + 2, (row * 128 + rng.randrange(0, 0x500)) & 0xFFFF)
+            m.wb(a + 4, rng.randrange(256)); m.wb(a + 5, rng.randrange(256))
+            m.wb(a + 6, rng.choice((0, 0xFF, 0, 3, 0x80, 1, 0)))
+            m.wb(a + 7, rng.choice((0, 1, 2, 7, 8, 0x13, 0xFF)))
+    return s
+
+def firefly_cases():
+    cs = []
+    for seed, px, py, row, col, tick, lv, tag in (
+            (51, 0x0000, 0x0000, 8, 6, 0, 4, 'player at the top left: flies right of and below it, tick 0'),
+            (52, 0x7000, 0x7000, 8, 6, 16, 9, 'player at the bottom right: flies left of and above it, tick 16'),
+            (53, 0x0300, 0x0900, 4, 3, 5, 4, 'player left of the flies, below them'),
+            (54, 0x0600, 0x0100, 4, 3, 8, 11, 'player right of the flies, above them'),
+            (55, 0x0000, 0x0000, 8, 6, 0, 4, 'steep re-seeds: |vy| * 8 / |vx| reaches 20h and is capped'),
+            (67, 0x0000, 0x0000, 8, 6, 0, 9, 'two capped speeds in one pass')):
+        cs.append(case(f'UpdateFireflies: {tag}', 'UpdateFireflies', 'c_UpdateFireflies', level=lv, files=True,
+                       setup=firefly_records(seed, px, py, row, col, tick)))
+    return cs
+
+def hcam_cases():
+    cs = []
+    def cam(title, col, px, hdir, vx=0, platform=0, rowring=0, vxhigh=0):
+        def s(m):
+            set_cam(m, row=8, col=col, fine=0, rowring=rowring, colring=5)
+            m.ww(m.data('PlayerX'), px)
+            m.wb(m.data('HScrollDir'), hdir)
+            m.ww(m.data('PlayerVelX'), vx)
+            m.wb(m.data('PlayerVelXHigh'), vxhigh)
+            m.wb(m.data('PlayerOnPlatform'), platform)
+        cs.append(case(title, 'UpdateHorizontalCamera', 'c_UpdateHorizontalCamera', level=4, files=True, setup=s))
+    # HScrollDir 2 (scroll left) with the player column below 0Fh and a push in progress: the view
+    # scrolls (CF clear) or hits the left map edge (CF set, direction cleared)
+    cam('UpdateHorizontalCamera: scrolling left, column 5 of the view, push in progress', 20, (20 + 5) * 16, 2, vx=0x40)
+    cam('UpdateHorizontalCamera: scrolling left on a platform, column 0Eh', 20, (20 + 14) * 16, 2, platform=1)
+    cam('UpdateHorizontalCamera: scrolling left at the map edge (CameraCol 0): direction cleared',
+        0, 5 * 16, 2, vx=0x40)
+    cam('UpdateHorizontalCamera: scrolling right, column 10 of the view, push in progress', 20, (20 + 10) * 16, 1, vx=0x40)
+    # idle (HScrollDir 0): the direction starts from the push direction or, without a push, the column
+    cam('UpdateHorizontalCamera: idle, no push, platform, column 8: below 0Ah picks left, but 8 > 4', 20, (20 + 8) * 16, 0,
+        platform=1)
+    cam('UpdateHorizontalCamera: idle, no push, platform, column 3: starts the left scroll', 20, (20 + 3) * 16, 0,
+        platform=1)
+    cam('UpdateHorizontalCamera: idle, no push, column 15h: starts the right scroll', 20, (20 + 0x15) * 16, 0)
+    cam('UpdateHorizontalCamera: idle, no push, column 12h: starts right (above 0Ah, 10h reached)', 20, (20 + 0x12) * 16, 0,
+        platform=1)
+    cam('UpdateHorizontalCamera: idle, rightward push, column 0Bh: below 10h, nothing starts', 20, (20 + 11) * 16, 0, vx=0x30)
+    cam('UpdateHorizontalCamera: idle, rightward push, column 11h: starts right', 20, (20 + 0x11) * 16, 0, vx=0x30)
+    cam('UpdateHorizontalCamera: idle, leftward push (high byte 80h), column 4: starts left', 20, (20 + 4) * 16, 0,
+        vx=0xFFC0, vxhigh=0x80)
+    cam('UpdateHorizontalCamera: idle, leftward push, column 9: above 4, nothing starts', 20, (20 + 9) * 16, 0,
+        vx=0xFFC0, vxhigh=0x80)
+    cam('UpdateHorizontalCamera: scrolling right, column 5 of the view: direction cleared', 20, (20 + 5) * 16, 1, vx=0x40)
+    cam('UpdateHorizontalCamera: scrolling left, column 0Fh or more: direction cleared', 20, (20 + 0x0F) * 16, 2, vx=0x40)
+    cam('UpdateHorizontalCamera: centre of the view, no push, not on a platform: idle', 20, (20 + 8) * 16, 2)
+    return cs
+
 # -- the per-run ranges and the assembled suite ---------------------------------------
 CASES = (plain_cases() + palette_cases() + timer_cases() + wipe_cases() + blackout_cases() + iris_cases()
          + scroll_cases() + ring_cases() + tile_cases() + overlay_cases() + wind_cases()
-         + ring_copy_cases() + level_cases())
+         + ring_copy_cases() + level_cases() + fg_cases() + wind_script_cases() + ring_copy_gap_cases()
+         + backdrop_wrap_cases() + decor_gap_cases() + rebase_gap_cases() + hud_gap_cases()
+         + firefly_cases() + hcam_cases())

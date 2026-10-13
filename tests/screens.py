@@ -112,6 +112,7 @@ def base(m, cpu=5, option=1, vbyte=5, count=None):
     """Heap top, module segment, BIOS handler, retrace model, no Sound Blaster, no joystick,
     resource flags as InitResourceMemory leaves them without /L (bit 02h clear)."""
     _ARMED.clear()
+    _POLL['on'] = False
     m.ww(m.code('ConventionalTopSeg'), CONTROL_TOP, seg=CODE_SEG)
     m.ww(m.data('NextFreeSegment'), FREE)
     m.ww(m.data('ModuleSegment'), MODSEG)
@@ -252,13 +253,53 @@ ES_PROBE_CFUNCS = {
 }
 
 def C(title, routine, cfunc, setup=None, regs=None, out_regs=(), ranges=(), budget=20_000_000,
-      port_inputs=None, tick_model=False):
+      port_inputs=None, tick_model=False, c_setup=None):
     """Case with the DOS model (the pictures and resources) and the heap compared."""
     ranges = [HEAP] + list(ranges)
     if cfunc in ES_PROBE_CFUNCS:
         regs = dict(regs or {}, ES=ES_PROBE)
     return Case(title, routine, cfunc, regs=regs or {}, setup=setup, out_regs=out_regs, ranges=ranges,
-                files=True, budget=budget, port_inputs=port_inputs or {}, tick_model=tick_model)
+                files=True, budget=budget, port_inputs=port_inputs or {}, tick_model=tick_model, c_setup=c_setup)
+
+# -- scripted key press at a poll point ---------------------------------------------------------------
+# The frame wait of the map screens (WaitVerticalRetraceStart) polls once per failed read of the
+# status port; the C side calls platform_poll() at the same points. With a retrace period of 1 the
+# first frame has no poll (its first status read is a retrace) and every later frame has one, so a
+# flag set at poll N reaches the callback in frame N + 1: the earlier frames run through the whole
+# loop (copies, then the jump back to the frame head) before the exit flag appears.
+_POLL = {'on': False, 'n': 0, 'at': 0, 'flag': ''}
+_POLL_HOOKED = set()
+
+def arm_poll_key(m, flag, at=1):
+    """Oracle half: set DATA byte FLAG to 1 at the AT-th poll (the je of the status wait taken)."""
+    _POLL.update(on=True, n=0, at=at, flag=flag)
+    if id(m) not in _POLL_HOOKED:
+        addr = CODE_SEG * 16 + m.code('WaitVerticalRetraceStart') + 8
+        def hook(uc, address, size, user):
+            if _POLL['on'] and m.reg('FLAGS') & 0x40:
+                _POLL['n'] += 1
+                if _POLL['n'] == _POLL['at']:
+                    _POLL['on'] = False
+                    m.wb(m.data(_POLL['flag']), 1)
+        m.uc.hook_add(UC_HOOK_CODE, hook, None, addr, addr)
+        _POLL_HOOKED.add(id(m))
+
+def poll_key_c(flag, at=1):
+    """C half: platform_poll runs the same script (pre2_test_poll)."""
+    import re
+    def setup(d):
+        mem = d.pre2_memory().contents
+        sym = (ROOT / 'c' / 'pre2_sym.h').read_text()
+        off = int(re.search(r'#define DS_%s 0x([0-9A-F]+)u' % flag, sym).group(1), 16)
+        st = {'n': 0}
+        @ctypes.CFUNCTYPE(None)
+        def poll():
+            st['n'] += 1
+            if st['n'] == at:
+                mem[DATA_SEG * 16 + off] = 1
+        ctypes.c_void_p.in_dll(d, 'pre2_test_poll').value = ctypes.cast(poll, ctypes.c_void_p).value
+        return poll
+    return setup
 
 def setup_of(*fns):
     def s(m):
@@ -510,6 +551,37 @@ def map_callback_cases():
     rcms('RunCallbackMapScreen: MODE screen, CpuClass 0: no row copy', 0x991F, cpu=0, confirm=1)
     rcms('RunCallbackMapScreen: ENTER screen, cancel key: one frame', 0x9985, fire=1)
     rcms('RunCallbackMapScreen: ENTER screen, confirm key, CpuClass 2', 0x9985, cpu=2, confirm=1)
+    # The screen starts the wave phase at 2 (WavePhase is not an input) and the callback adds one per
+    # frame; the vertical term table6F90[phase] >> 4 is positive for phases 1..7Fh and negative for
+    # 81h..FFh, so the map rows move up (MapScrollY - PrevMapScrollY < 0, the upward row copy) only after
+    # about 80h frames. The exit key arrives at poll N of the status wait (see arm_poll_key): the
+    # first frame has no poll, the others one each, so the screen runs N + 1 frames.
+    def frames(title, callback, polls, flag, cpu=5):
+        def s(m):
+            base(m, cpu=cpu)
+            font(m, seed=22)
+            dvar(m, 'ExpertFlag', 0)
+            dvar(m, 'LastScanCode', 0)
+            dvar(m, 'byte_282D', 0)
+            dvar(m, 'byte_2810', 0)
+            dvar(m, 'CurrentLevel', 0x0FF)
+            dvar(m, 'FrameCallback', 0)
+            m.ww(m.data('MapScrollX'), 0x0044)
+            m.ww(m.data('MapScrollY'), 0x0006)
+            m.ww(m.data('CameraCol'), 0)
+            dac_random(6)(m)
+            if m.vga: m.vga.vga_set_retrace(1)
+            arm_poll_key(m, flag, polls)
+        cs.append(C(title, 'RunCallbackMapScreen', 'c_RunCallbackMapScreen', setup=s,
+                    regs={'DX': callback, 'ES': VGA_SEG}, out_regs=(), budget=900_000_000,
+                    c_setup=poll_key_c(flag, polls)))
+    frames('RunCallbackMapScreen: MODE screen, 2 frames (fire at the second)', 0x991F, 1, 'byte_282D')
+    frames('RunCallbackMapScreen: ENTER screen, 3 frames (confirm at the third)', 0x9985, 2, 'byte_2810')
+    frames('RunCallbackMapScreen: MODE screen, 0A0h frames: wave phase in the negative half, upward row copy',
+           0x991F, 0x9F, 'byte_282D')
+    frames('RunCallbackMapScreen: ENTER screen, 0C8h frames, CpuClass 2: phase through the wave minimum',
+           0x9985, 0xC7, 'byte_2810', cpu=2)
+    frames('RunCallbackMapScreen: MODE screen, CpuClass 0, 8 frames (no wave term)', 0x991F, 7, 'byte_282D', cpu=0)
     return cs
 
 def game_over_cases():
@@ -918,7 +990,7 @@ def sprite_record_cases():
 
 def sprite_update_cases():
     cs = []
-    def upd(title, fine, tick, w5088, seed, phases=(0x00, 0x20, 0x40)):
+    def upd(title, fine, tick, w5088, seed, phases=(0x00, 0x20, 0x40), paths=(0xB020, 0xB032, 0xB054)):
         def s(m):
             base(m)
             rng = random.Random(seed)
@@ -931,7 +1003,7 @@ def sprite_update_cases():
                 m.ww(si + 2, rng.randrange(0, 0x180))
                 m.ww(si + 0x0E, rng.randrange(0, 8))
                 m.wb(si + 0x0E, rng.randrange(0, 16))
-            for k, (ph, path) in enumerate(zip(phases, (0xB020, 0xB032, 0xB054))):
+            for k, (ph, path) in enumerate(zip(phases, paths)):
                 si = 0x5138 + 0x12 * k
                 m.ww(si, rng.randrange(0, 0x200))
                 m.ww(si + 2, rng.randrange(0x40, 0x180))
@@ -943,6 +1015,16 @@ def sprite_update_cases():
     upd('UpdateGameOverSprites: FineScroll B9h holds, snow tick 1 leaves 5088h', 0xB9, 1, 0x0065, 82)
     upd('UpdateGameOverSprites: 5088h wraps to 68h past 6Dh', 0x10, 0, 0x006D, 83)
     upd('UpdateGameOverSprites: velocity wraps at 8 (-7..7)', 0x20, 4, 0x0040, 84)
+    # y of an item = 135h + (table7090[phase] * 10 >> 6): rising phases give items whose later neighbour is
+    # not below the earlier one, which the bubble pass swaps (it restarts after every swap)
+    upd('UpdateGameOverSprites: items in ascending y: bubble swaps until sorted', 0x20, 0, 0x0040, 85,
+        phases=(0x40, 0x20, 0x00))
+    upd('UpdateGameOverSprites: one adjacent pair out of order, one swap', 0x20, 0, 0x0040, 86, phases=(0x20, 0x00, 0x40))
+    # a path script at an end marker (FFF0h, FFE0h, FFEEh): the relative jump goes back to the loop start
+    upd('UpdateGameOverSprites: path pointer at the FFF0h marker jumps back 16 bytes', 0x20, 0, 0x0040, 87,
+        paths=(0xB030, 0xB032, 0xB054))
+    upd('UpdateGameOverSprites: path pointers at the FFE0h and FFEEh markers', 0x20, 0, 0x0040, 88,
+        paths=(0xB052, 0xB066, 0xB054))
     return cs
 
 def cases_all():
