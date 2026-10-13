@@ -267,6 +267,32 @@ EXPORT int c_loc_01AB(Regs *r) { (void)r; return LevelStart(); }
  * MainFrameLoop) or up to RunFrontEnd (the oracle stops at its entry). c_MainFrameLoopRestart:
  * up to CX frames; a restart requested by UpdateLevelState runs on to the next level's first
  * frame or to RunFrontEnd (AX = the restart's AX). */
+/* Differential tests: called at the head of every frame of c_MainFrameLoop (the oracle runs
+ * the same script at MainFrameLoop), e.g. to change the held keys frame by frame. */
+EXPORT void (*pre2_test_frame)(void) = 0;
+/* c_AttractDemo: LevelRestart with AX = 1 through the front end (the tests end its attract
+ * wait through pre2_test_poll), the intro scene, the map, the level start and the demo's
+ * frames, up to the next RunFrontEnd (demo ended: game over or a key) or CX frames; AX = the
+ * frames run. The oracle runs LevelRestart and stops at the second RunFrontEnd entry. */
+EXPORT int c_AttractDemo(Regs *r)
+{
+    uint16_t ax = 1;
+    int st = restart_to_level(&ax, 0);
+    if (st) return st;
+    uint16_t frames = 0;
+    for (;;) {
+        if (frames >= r->cx) { r->ax = frames; return 0; }
+        if (pre2_test_frame) pre2_test_frame();
+        st = MainFrameStep(&ax);
+        frames++;
+        if (st == 1) break;
+        if (st) return st;
+    }
+    r->ax = frames;
+    st = restart_to_level(&ax, 1);
+    return st == GAME_AT_FRONT_END ? 0 : st;
+}
+
 /* c_parse_options: the switch scan of the PSP command tail (the oracle stops at loc_007E). */
 EXPORT int c_parse_options(Regs *r) { (void)r; parse_options(); return 0; }
 EXPORT int c_LevelRestart(Regs *r)
@@ -289,9 +315,6 @@ EXPORT int c_MainFrameLoopRestart(Regs *r)
     }
     return 0;
 }
-/* Differential tests: called at the head of every frame of c_MainFrameLoop (the oracle runs
- * the same script at MainFrameLoop), e.g. to change the held keys frame by frame. */
-EXPORT void (*pre2_test_frame)(void) = 0;
 EXPORT int c_MainFrameLoop(Regs *r)
 {
     for (uint16_t i = 0; i < r->cx; i++) {

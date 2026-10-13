@@ -94,6 +94,12 @@ change. All four reach their next gameplay natively:
 | gameover | EndSignal 1 | death bounce, game-over screen, front end, map, level 0 |
 | castle | CurrentLevel 7, LevelEndMode 1, beginner | exit sequence into level 8, CASTLE picture and button wait, front end, map, level 0 |
 
+| attract | no key from the front end on (with `--year 1995`) | the shipped attract demo plays (player walks to X 500h+); without `--year` the demo player stands still (the date bug, docs/completeness.md) |
+
+Demo recording: `pre2 --assets assets --year 1995 --demo-out demos/NAME.p2d`, play a game
+from the front end, quit (ESC); `python tools/difftest.py demo` replays every demos/*.p2d on
+the original and the C. `--demo-in FILE` makes the native attract mode play a recording.
+
 (The gameplay rates printed in scenario runs include those screens; the cadence figures
 are the plain smoke test's.)
 

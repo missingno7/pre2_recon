@@ -168,6 +168,24 @@ sprite's part 0 position minus (40h, 20h); picking it up turns the dormant exit 
 pool records at the defeat the key never spawns (the exit stays dormant); energy exactly 0
 is not a defeat; a respawn restores the boss but keeps an opened exit.
 
+### The attract demo (tests/demo.py) and its date bug
+
+The attract demo is the game's own input log at ds:003F (KEYB.SQZ seeds it at startup:
+level 0, expert, about 3000 frames). PollInputState plays it back one entry per call, and at
+any other time records the input into the same log from its cursor. On a date from 1996 on
+the late-year credits screen waits for a key with WaitForButtonPressRelease, whose busy-wait
+calls PollInputState in recording mode: the wait records "no input" over the shipped log (255
+polls per entry; a few seconds fill all of it), and the attract demo then shows the player
+standing still. On the original's own dates (1993-95) the screen does not appear and the
+demo plays. Original behaviour, kept; the native host's `--year 1995` avoids it.
+
+Verified on both sides from LevelRestart(AX = 1) through the front end, the intro scene, the
+map, the level start and every demo frame back to the front end: the shipped demo to its
+end, the demo after the late-year screen recorded over its head, and recordings made with
+the native host (`pre2 --demo-out FILE`, files demos/*.p2d: the 2048 bytes ds:003F..083E).
+The replay is the game's own playback: the same input reaches both sides; it need not
+re-enact the live session exactly (an original property of the demo log).
+
 ## 10. Remaining unsupported or unverified cases
 
 | Case | Status | Missing evidence / reason |
