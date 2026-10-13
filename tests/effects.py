@@ -291,8 +291,9 @@ def follower_scan(title, lv, alt=0, vy=0, hit=True, cells=False):
             m.ww(CELL(0) + 3, 0x0405); m.wb(CELL(0) + 1, 0x77); m.wb(CELL(0) + 2, 0)
             m.ww(CELL(1) + 3, 0x0406); m.wb(CELL(1) + 1, 0x78); m.wb(CELL(1) + 2, 0x40)
             m.ww(m.data('SnowFrameTick'), 20); m.ww(m.data('LastEffectTick'), 0)
+    # ES = 3000h on entry: TriggerCellChangeGroup leaves ES = DATA (the ES model is compared)
     return lcase(title, 'UpdateFollowerSlots', 'c_UpdateFollowerSlots', lv=lv, extra=e,
-                 out_regs=(), ranges=())
+                 regs=dict(ES=0x3000), out_regs=(), ranges=())
 add(follower_scan('UpdateFollowerSlots: hits on follower 0 and the 4F0Ah slot, PlayerVelY 0', 4, hit=True))
 add(follower_scan('UpdateFollowerSlots: alt mode skips the 4F0Ah slot', 9, alt=1, vy=0x40))
 add(follower_scan('UpdateFollowerSlots: no hits, PlayerVelY 40h stays', 0, hit=False, vy=0x40))
@@ -383,7 +384,8 @@ def group_case(title, lv, fx, fy, recs, tick=(0x40, 0x3A), cam=(0x00, 0x00), lev
         m.ww(m.data('CameraCol'), cam[0]); m.ww(m.data('CameraRow'), cam[1])
         for k, (cell, flags2, tile) in enumerate(recs):
             m.ww(CELL(k) + 3, cell); m.wb(CELL(k) + 1, tile); m.wb(CELL(k) + 2, flags2)
-    return Case(title, 'TriggerCellChangeGroup', 'c_TriggerCellChangeGroup', regs=dict(SI=si),
+    # ES = 3000h on entry: a cluster application leaves ES = DATA, the other paths keep it
+    return Case(title, 'TriggerCellChangeGroup', 'c_TriggerCellChangeGroup', regs=dict(SI=si, ES=0x3000),
                 setup=level_setup(lv, e), out_regs=('CF',), files=True, ranges=LEVEL_RANGE)
 
 # follower at column 5, row 4: X = 5 << 4, Y = (4 << 4) + 16
@@ -579,9 +581,9 @@ add(sq_table('sub_93F6: chain with sign flip (A3FAh=1)', [0x01A2, 0x0199, 0x019C
 add(sq_table('sub_93F6: bit 40h in A3F9h (A40Bh/A411h/A41Dh/A417h adjusted)', [0x01A1, 0x019A, 0x019C, 0x019D, 0x019E], 0, 0x40))
 add(sq_table('sub_93F6: chain 1A1h/19Ah with sign and bit 40h', [0x01A1, 0x019A, 0x019C, 0x019D, 0x019E], 1, 0x40))
 add(sq_table('sub_93B2: table entries pointing at A415h, A41Bh, A40Fh', [0x01A2, 0x0199, 0x019C, 0x019D, 0x019E],
-             0, 0, fn='sub_93B2', regs=dict(SI=0x9F80), out_regs=('SI', 'DI')))
+             0, 0, fn='sub_93B2', regs=dict(SI=0x9F80, ES=0x3000), out_regs=('SI', 'DI')))
 add(sq_table('sub_93B2: with sign flip and bit 40h', [0x01A1, 0x019A, 0x019C, 0x019D, 0x019E], 1, 0x40,
-             fn='sub_93B2', regs=dict(SI=0x9F80), out_regs=('SI', 'DI')))
+             fn='sub_93B2', regs=dict(SI=0x9F80, ES=0x3000), out_regs=('SI', 'DI')))
 add(lcase('sub_94DC: key 1A2h,199h returns E9F8h', 'sub_94DC', 'c_sub_94DC', lv=4,
           regs=dict(DX=0x01A2, AX=0x0199), out_regs=('AX', 'DX')))
 add(lcase('sub_94DC: last table key 0093h,FFF4h returns 7D01h', 'sub_94DC', 'c_sub_94DC', lv=4,
@@ -610,6 +612,173 @@ add(lcase('TickCellChangeTimer: popup ring head at its last record (ring wraps t
                            m.ww(m.data('LastEffectTick'), 0x30), m.ww(CELL(4) + 3, 0x0A0B),
                            m.wb(CELL(4) + 2, 0x00), m.wb(CELL(4) + 1, 0x52)),
           regs=dict(DI=CELL(4), SI=FOLLOW(0)), out_regs=('CF',)))
+
+# ---- gap closing: contact sweeps with explicit sprite definitions, and the item / exit side effects ------------
+# contact() leaves the sprite definition at SD0 unwritten (scratch DATA: on some levels it reads as "not
+# contactable"), so the stomp/landing/hurt reactions of the slot loop were reached only on some levels.
+def pc_sweep(seed):
+    def e(m):
+        rnd = random.Random(seed)
+        sdef(m, SD0, rnd.choice((0x00, 0x00, 0x01, 0x08)), rnd.choice((0, 3, 6, 0x0A)))
+        sdef(m, SD1, 0x10, 3)
+        vy = rnd.choice((0x0100, 0x0021, 0x0020, 0x8100, 0x0080, 0x007F, 0x0180, 0xFF00))
+        player(m, 0x80, 0x60, vy=vy, air=rnd.choice((0, 1)), energy=rnd.choice((0, 1, 3)), lives=rnd.choice((0, 2)),
+               hurt=rnd.choice((0, 0, 0, 0, 5)), vx=rnd.choice((0, 0x30, 0xFFD0)))
+        m.wb(m.data('PlayerAltModeFlag'), rnd.choice((0, 0, 1)))
+        m.wb(m.data('byte_27EA'), rnd.randrange(2))
+        m.ww(m.data('word_6BE2'), rnd.choice((0, 0, 0, 0, 1)))
+        m.wb(m.data('byte_6BC9'), rnd.choice((0, 1, 5)))
+        for i in range(rnd.randrange(1, 5)):
+            obj(m, SLOT(i), 0x80 + rnd.choice((0, 2, -2)), 0x60 + rnd.choice((0, 0x0C, -0x0C, 0x18, -8, 0x20)),
+                0x0123, flags=0x20, sd=rnd.choice((SD0, SD0, SD1)), st=rnd.choice((0, 0, 0xFF)),
+                hp=rnd.randrange(8), cnt=rnd.choice((0, 1, 2, 3, 6, 8, 0x2C, 0x30)))
+        if rnd.randrange(2):
+            frame = rnd.choice([f for f, _ in POOL_FRAMES])
+            pool_at_player(rnd.randrange(4), frame, owner=rnd.choice((None, SLOT(2), 0xFFFF)))(m)
+    return e
+
+for n in range(200):
+    add(lcase(f'ProcessPlayerContacts: sweep {n}', 'ProcessPlayerContacts', 'c_ProcessPlayerContacts',
+              lv=(0, 4, 9, 11)[n % 4], extra=pc_sweep(0x9C000000 + n)))
+
+# stomp/landing/hurt reactions of the slot loop, each branch on purpose (slot below the player so the overlap
+# test swaps the pair and LandingFlag follows the depth rule)
+def slot_react(title, vy, air, dy=0, cnt=0, b27=0, lives=3, energy=3, alt=0, vx=0):
+    def e(m):
+        sdef(m, SD0, 0x00, 3)
+        player(m, 0x80, 0x60, vy=vy, air=air, energy=energy, lives=lives, vx=vx)
+        m.wb(m.data('PlayerAltModeFlag'), alt); m.wb(m.data('byte_27EA'), b27)
+        frame_dims(m, 0x0123, 0x20, 0x20, 0x10)
+        obj(m, SLOT(0), 0x80, 0x60 + dy, 0x0123, flags=0x20, sd=SD0, hp=4, cnt=cnt)
+    add(lcase(f'ProcessPlayerContacts: {title}', 'ProcessPlayerContacts', 'c_ProcessPlayerContacts', lv=4, extra=e))
+for dy in (0, 0x08, 0x10, 0x14, 0x1F, 0x30):
+    for vy in (0x0100, 0x0000, 0x8100, 0xFF00):
+        slot_react(f'slot {dy:#x} below, PlayerVelY {vy:04X}, airborne', vy, 1, dy=dy, cnt=2)
+        slot_react(f'slot {dy:#x} below, PlayerVelY {vy:04X}, grounded, 27EAh', vy, 0, dy=dy, b27=1)
+for cnt in (0, 4, 0x2C, 0x28, 0x30):
+    slot_react(f'landing on the ground, counter {cnt:02X}', 0x0100, 0, cnt=cnt)
+slot_react('landing with byte_27EA set (0FF20h), grounded', 0x0100, 0, b27=1)
+slot_react('stomp (dl 2) with PlayerVelY positive: velocity from the player, record left of the player', 0x0100, 1, cnt=2)
+slot_react('hurt with alt mode set (energy kept)', 0x0000, 0, alt=1, dy=-0x10)
+slot_react('hurt with energy 0 (respawn core)', 0x0000, 0, energy=0, dy=-0x10)
+slot_react('hurt with PlayerVelX', 0x0000, 0, vx=0x30, dy=-0x10)
+
+# pool items with their side effects on the effect sources, energy, byte_6C04 and the level exits
+def src_rec(m, k, frame4, x=0x40, y=0x40):
+    m.ww(SRC(k), x); m.ww(SRC(k) + 2, y); m.ww(SRC(k) + 4, frame4)
+
+def item_case(title, frame, extra=None, lv=4, **kw):
+    def e(m):
+        sdef(m, SD0, 0x00, 3)
+        pool_at_player(0, frame, owner=SLOT(2))(m)
+        obj(m, SLOT(2), 0, 0, 0x0200)
+        if extra: extra(m)
+    add(contact('ProcessPlayerContacts: ' + title, lv, e, **kw))
+
+item_case('key 2Eh turns the exit objects 116h into 117h (70 sources)', 0x0063,
+          lambda m: (src_rec(m, 3, 0x0116), src_rec(m, 40, 0x0116), src_rec(m, 69, 0x0116), src_rec(m, 5, 0x0118)))
+item_case('key E4h checkpoint turns 118h into 119h and decrements the owner link', 0x0119,
+          lambda m: (src_rec(m, 3, 0x0118), src_rec(m, 69, 0x0118), src_rec(m, 8, 0x0116),
+                     obj(m, SLOT(2), 0, 0, 0x0200)))
+for b6c9, en in ((5, 2), (5, 3), (4, 2), (0, 0), (5, 0)):
+    item_case(f'key 05h energy ring with byte_6BC9 {b6c9} and energy {en}', 0x003A,
+              lambda m, b=b6c9: m.wb(m.data('byte_6BC9'), b), energy=en)
+for en in (3, 2, 0):
+    item_case(f'key 14h energy ring, energy {en}', 0x0049, lambda m: m.wb(m.data('byte_6BC9'), 5), energy=en)
+for lvn in (0, 1, 2, 3, 6, 0x0D, 0x0F, 0x0C, 0x0E):
+    item_case(f'key E2h level exit on CurrentLevel {lvn:02X}', 0x0117,
+              lambda m, l=lvn: m.wb(m.data('CurrentLevel'), l), y=0x60)
+for k6c04 in (0, 1):
+    item_case(f'key B5h fade out with byte_6C04 = {k6c04}', 0x00EA, lambda m, v=k6c04: m.wb(m.data('byte_6C04'), v))
+    item_case(f'key B4h fade in with byte_6C04 = {k6c04}', 0x00E9, lambda m, v=k6c04: m.wb(m.data('byte_6C04'), v))
+for mask in (0x00, 0x0F, 0x1F):
+    for frame in (0x005C, 0x005D, 0x005E, 0x005F, 0x0060, 0x005B, 0x0061):
+        item_case(f'BONUS letter frame {frame:04X}, mask {mask:02X}', frame, lambda m, v=mask: m.wb(m.data('BonusLetterMask'), v))
+for pre in (0x00, 0x07, 0x1F):
+    for frame in (0x0062, 0x0063, 0x0064, 0x0065, 0x0066, 0x0067, 0x0068):
+        item_case(f'key item frame {frame:04X}, byte_6CA8 {pre:02X}', frame, lambda m, v=pre: m.wb(m.data('byte_6CA8'), v))
+for frame in (0x00DB, 0x00DC, 0x00DD, 0x00DE, 0x00DF):
+    for linked in (SLOT(2), 0xFFFF):
+        add(contact(f'ProcessPlayerContacts: lethal/destroy frame {frame:04X}, owner link {linked:04X}', 4,
+                    lambda m, f=frame, ol=linked: (sdef(m, SD0, 0x00, 3), sdef(m, SD1, 0x10, 3),
+                                                   slot_at_player(0, sd=SD0)(m), slot_at_player(1, sd=SD1)(m),
+                                                   slot_at_player(2, sd=SD0, st=0xFF)(m),
+                                                   slot_at_player(3, flags=0, sd=SD0)(m),
+                                                   slot_at_player(4, sd=SD0, x=0x300)(m),
+                                                   pool_at_player(0, f, owner=ol)(m), obj(m, SLOT(2), 0, 0, 0x0200)),
+                    hurt=5))
+
+# ---- TickCellChangeTimer: the tick running behind LastEffectTick, and a record owned by the 4F0Ah slot ----------
+add(tick_case('TickCellChangeTimer: SnowFrameTick behind LastEffectTick (|difference| >= 6)', 4, 0x00,
+              ticks=(0x30, 0x40), last=0x40, cam=(0x0A, 0x0B)))
+add(tick_case('TickCellChangeTimer: SnowFrameTick just behind (|difference| 5, no change)', 4, 0x00,
+              ticks=(0x30, 0x35), last=0x35))
+for facing in (0x0000, 0x2000):
+    add(tick_case(f'TickCellChangeTimer: record for the 4F0Ah slot, PlayerFacing {"set" if facing else "clear"}',
+                  4, 0x00 | facing, si=0x4F0A, cam=(0x0A, 0x0B)))
+
+# ---- chains composed from oracle frames: the level 9 finale and the transform timer --------------------------
+# The compared call starts from the state the oracle's own earlier routines produced, so each link is
+# checked against the state its predecessor really leaves (UpdateObjects -> EmitLevel9Sparkles -> pool).
+def _quiet(m):
+    m.ports.log.clear()
+    if 0x21 in m.ints: m.ints[0x21].log.clear()
+
+def l9_finale_state(m, which, py_off=0):
+    """Level 9, one life left on the countdown, a hazard slot inside the window at (B9h, 1Eh): one oracle
+    frame of UpdateObjects emits the four sparks (pool frame 2137h); the player is then put on spark `which`."""
+    m.wb(m.data('CurrentLevel'), 9)
+    player(m, 0x0200, 0x0100)
+    m.wb(m.data('RespawnState'), 0)
+    m.ww(m.data('word_A519'), 1); m.wb(m.data('byte_A515'), 1); m.ww(m.data('Level9ScriptPtr'), 0xA51B)
+    frame_dims(m, 0x0050)
+    m.ww(0x4F2E, 0xBA); m.ww(0x4F30, 0x20); m.ww(0x4F32, 0x0050)
+    m.call('UpdateObjects', budget=400_000_000)
+    for _ in range(11):                      # the sparks age (timer C6h counts down to the contact limit BCh)
+        m.call('UpdateBurstParticles', budget=100_000_000)
+    _quiet(m)
+    sparks = [k for k in range(32) if m.rw(POOL(k) + 4) == 0x2137]
+    assert len(sparks) == 4, sparks
+    k = sparks[which]
+    frame_dims(m, 0x0137)
+    player(m, m.rw(POOL(k)) + 2, m.rw(POOL(k) + 2) + py_off)
+
+for which in range(4):
+    for py_off in (0, 0x10):
+        add(lcase(f'ProcessPlayerContacts: level 9 finale, player on spark {which} (offset {py_off:#x}) -> LevelEndMode FFh',
+                  'ProcessPlayerContacts', 'c_ProcessPlayerContacts', lv=9,
+                  extra=lambda m, w=which, o=py_off: l9_finale_state(m, w, o), budget=400_000_000))
+add(lcase('ProcessPlayerContacts: level 9 finale, player away from the sparks (no level end)',
+          'ProcessPlayerContacts', 'c_ProcessPlayerContacts', lv=9,
+          extra=lambda m: (l9_finale_state(m, 0), player(m, 0x0300, 0x0200)), budget=400_000_000))
+
+def transform_state(m, preset=0x00, n_items=3):
+    """Pool items 30h, 31h, 32h (frames 65h..67h) on the player set byte_6CA8 bits 3..5 in one contact pass;
+    sub_67D7 then clears them and arms the 660-frame timer word_6BE2 = 294h."""
+    sdef(m, SD0, 0x00, 3)
+    m.wb(m.data('byte_6CA8'), preset)
+    player(m, 0x80, 0x60)
+    for k, frame in enumerate((0x0065, 0x0066, 0x0067)[:n_items]):
+        pool_at_player(k, frame, owner=0xFFFF)(m)
+    m.call('ProcessPlayerContacts', budget=100_000_000)
+    _quiet(m)
+
+add(lcase('ProcessPlayerContacts: three key items 30h..32h set byte_6CA8 bits 3..5', 'ProcessPlayerContacts',
+          'c_ProcessPlayerContacts', lv=4,
+          extra=lambda m: (sdef(m, SD0, 0x00, 3), player(m, 0x80, 0x60),
+                           [pool_at_player(k, f, owner=0xFFFF)(m) for k, f in enumerate((0x0065, 0x0066, 0x0067))])))
+for n_items in (2, 3):
+    def ts(m, n=n_items):
+        transform_state(m, n_items=n)
+        m.call('sub_67D7', budget=100_000_000)
+        _quiet(m)
+        assert m.rw(m.data('word_6BE2')) == (0x294 if n == 3 else 0), hex(m.rw(m.data('word_6BE2')))
+        # slots in contact with the player while the timer runs: every touched object is destroyed
+        sdef(m, SD1, 0x00, 5)
+        for i in range(3): slot_at_player(i, sd=SD1, hp=3)(m)
+        slot_at_player(5, sd=SD1, st=0xFF)(m)
+    add(lcase(f'ProcessPlayerContacts: transform timer armed by {n_items} key items, slots in contact',
+              'ProcessPlayerContacts', 'c_ProcessPlayerContacts', lv=4, extra=ts, budget=100_000_000))
 
 _CASE_TITLES = [c.title for c in CASES]
 assert len(set(_CASE_TITLES)) == len(_CASE_TITLES), 'duplicate case titles'

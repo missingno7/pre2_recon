@@ -71,6 +71,7 @@ static int page_in_disk(uint16_t slot)
 {
     uint16_t saved_top = DW(DS_NextFreeSegment);
     uint16_t decoded = 0;
+    uint16_t es_entry = pre2_es;                 /* unpinned: ES is pushed around the load and the copy */
     int st = LoadSqzFile(ResourceNameAt(slot), &decoded);
     if (st) return st;
     if (DB(DS_byte_0B16) == 0) {
@@ -81,6 +82,7 @@ static int page_in_disk(uint16_t slot)
             dst = (uint16_t)(dst + 1);
             decoded = (uint16_t)(decoded + 1);
         }
+        pre2_es = es_entry;      /* a pinned resource (no copy) keeps the ES LoadSqzFile left */
     }
     SET_DW(DS_NextFreeSegment, saved_top);
     return SYS_OK;
@@ -224,12 +226,14 @@ static int activate_slot_body(uint16_t slot)
 int ActivateResourceSlot(uint16_t slot)
 {
     int st = SYS_OK;
+    uint16_t es_saved = pre2_es;                 /* push es ... pop es: every register is preserved */
     SET_DW(DS_NextFreeSegment, (uint16_t)(DW(DS_NextFreeSegment) + 0x80));
     if (CB(CS_SbDetected) != 0 && !(DB(RF(slot)) & 1) && DB(DS_byte_2879) != 1) {
         if (CW(CS_OptionBits) & 0x40) st = resource_sound_update();
         else st = activate_slot_body(slot);
     }
     SET_DW(DS_NextFreeSegment, (uint16_t)(DW(DS_NextFreeSegment) - 0x80));
+    pre2_es = es_saved;
     return st;
 }
 
@@ -243,11 +247,13 @@ void SetDacBlock0To15IfFlag(uint16_t seg, uint16_t dx)
 
 void SetStartupPalette(void)
 {
+    SET_ES(DATA_SEG);
     SetDacBlock0To15IfFlag(DATA_SEG, 0x287Eu);
 }
 
 void SetLevelPalette(void)
 {
+    SET_ES(DATA_SEG);
     uint16_t bx = (uint16_t)(DB(DS_CurrentLevel) << 1);
     uint16_t dx = DW((uint16_t)(DS_LevelPaletteTable + bx));
     bios_set_dac_block(0, 0x10, DATA_SEG, dx);

@@ -9,9 +9,11 @@
  * StepPaletteFade (cs:6772h) is in this region and is defined here.
  *
  * Dispatch: every `call word ptr [bx+Table]` reads the word from the DATA table in pre2_mem
- * and switches on it against the CS_<Label> offsets (invoke). A word that is not one of the
- * translated handlers (data words past a table, or the 'LE' text read past AltStateHandlers
- * at ds:7D7Fh+...) returns PLAYER_UNSUPPORTED and stops the frame; it is a boundary, not run.
+ * and switches on it against the CS_<Label> offsets (invoke). The hurt state in alt mode
+ * reads AltStateHandlers[8], the text 'LE' at ds:7D7Fh: code word 454Ch, the final `ret` of
+ * SetLatchCopyMode, so the original calls a bare return (quirk; translated as a no-op). Any
+ * other word returns PLAYER_UNSUPPORTED and stops the frame (none occurs with the shipped
+ * levels: docs/completeness.md).
  *
  * Registers: each routine takes the registers its ASM reads on entry and returns the ones the
  * callers consume (SetPlayerAnim returns BX, FindFreeProjectileSlot returns SI). Quirks kept:
@@ -40,6 +42,7 @@
  */
 #include <stdbool.h>
 #include "pre2.h"
+#include "platform.h"
 #include "ports.h"
 #include "render.h"
 #include "effects.h"
@@ -151,6 +154,7 @@ static int invoke(uint16_t target, uint8_t al, uint16_t bx, uint16_t di, uint16_
     case CS_CeilingTileHeadBump:          CeilingTileHeadBump(di); return PLAYER_OK;
     case CS_ApplyProjectileHeavy:         ApplyProjectileHeavy(si); return PLAYER_OK;
     case CS_ApplyProjectileLight:         ApplyProjectileLight(si); return PLAYER_OK;
+    case 0x454Cu:                         return PLAYER_OK;   /* 'LE': the `ret` at cs:454Ch (see above) */
     default:                              return PLAYER_UNSUPPORTED;
     }
 }
@@ -186,7 +190,7 @@ static void AltMomentumBlock(void)
 /* Per-frame update. Order: respawn request, end signal, credits gate, input sampling, facing,
  * state index and handler (or the alt-mode momentum block), X and Y integrate, collision,
  * render slot, timers. */
-int UpdatePlayer(uint16_t cx_in)
+static int UpdatePlayerBody(uint16_t cx_in)
 {
     SET_DW(DS_PlayerSprite, 0xFFFF);
     if (DB(DS_RespawnState) == 0 && DB(DS_RespawnRequestFlag) != 0) {
@@ -194,8 +198,11 @@ int UpdatePlayer(uint16_t cx_in)
         SET_DB(DS_RespawnState, U16(DB(DS_RespawnState) - 1));
         return PLAYER_OK;                                  /* jmp loc_5A8C */
     }
-    if (DB(DS_byte_2830) != 0) {                           /* loc_587C: EndSignal, then return */
+    if (DB(DS_byte_2830) != 0) {                           /* loc_587C: F2 down: EndSignal 1 (give up) */
         SET_DB(DS_EndSignal, 1);
+        /* loc_5888 then spins while byte_2830 is zero: only if F2 was released between the two
+         * tests, which needs a keyboard interrupt there; none is delivered between them (no
+         * service point), so the spin always falls through, as on the original in practice */
         return PLAYER_OK;
     }
     if (!TryShowCredits()) DrawStatusBarBackground();     /* call; jb loc_589A: CF = 1 skips it */
@@ -273,6 +280,16 @@ int UpdatePlayer(uint16_t cx_in)
     dec8_sat(DS_BonusFlashTimer);
     dec16_sat(DS_word_6BE2);
     return PLAYER_OK;
+}
+
+/* UpdatePlayer saves ES on entry and restores it on the way out (push es ... pop es), so the
+ * ES changes of the tile handlers (CeilingTileHeadBump loads LevelSegment) do not leak. */
+int UpdatePlayer(uint16_t cx_in)
+{
+    uint16_t es_saved = pre2_es;
+    int st = UpdatePlayerBody(cx_in);
+    if (st == PLAYER_OK) pre2_es = es_saved;
+    return st;
 }
 
 /* ---- player collision (cs:5A96) ------------------------------------------------------------ */
@@ -653,6 +670,7 @@ void CeilingTileHeadBump(uint16_t di)
     if (al == 0x0A || al == 0x15) return;
     uint16_t p = DW(DS_word_6BB1);
     uint16_t cell = U16((((SAR(DW(U16(p + 2)), 4)) & 0xFF) << 8) | (SAR(DW(p), 4) & 0xFF));
+    SET_ES(LSEG());                  /* mov es, LevelSegment: ES stays LevelSegment past the return (callers' ES) */
     if ((DB(U16(DS_SideTileClassTable + ESB(cell))) & 1) == 0) return;
     int16_t dx = 0x10;
     if ((DB(U16(DS_SideTileClassTable + ESB(U16(cell - 1)))) & 1) == 0) dx = -0x10;
@@ -757,14 +775,15 @@ void StepPaletteFade(void)
     if (bp == 0) { SET_DB(DS_FadeOutActive, 0); SET_DB(DS_FadeInActive, 0); }
 }
 
-/* Waits for the frame sync flag (byte 280Dh): returns when it is zero, else waits for it to clear,
- * to set and to clear again. No writer of 280Dh exists in the source tree (external pulse). */
+/* The pause: byte 280Dh is KeyDownTable[19h], the P key (KeyboardIsr writes it). With P down
+ * the game waits for its release, the next press and that release; the keyboard interrupt
+ * ends each busy-wait, so every turn is a service point (platform_poll). */
 static void WaitFrameSyncFlag(void)
 {
     if (DB(DS_byte_280D) == 0) return;
-    while (DB(DS_byte_280D) != 0) { }
-    while (DB(DS_byte_280D) == 0) { }
-    while (DB(DS_byte_280D) != 0) { }
+    while (DB(DS_byte_280D) != 0) platform_poll();
+    while (DB(DS_byte_280D) == 0) platform_poll();
+    while (DB(DS_byte_280D) != 0) platform_poll();
 }
 
 /* ---- physics helpers ------------------------------------------------------------------- */
@@ -1347,6 +1366,7 @@ static void BurstPhysics(uint16_t si)
 /* Updates the 32 burst/particle slots at 50A8h (stride 12h): timer, motion, tile bounce, frames. */
 void UpdateBurstParticles(void)
 {
+    SET_ES(LSEG());                     /* ES = LevelSegment for the tile probes; it stays so at the return */
     for (int n = 0; n < 32; n++) {
         uint16_t si = U16(PARTICLE_BASE + n * 0x12);
         if (DW(U16(si + 4)) == 0xFFFF) continue;

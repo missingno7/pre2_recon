@@ -14,9 +14,9 @@ harness for single routines or small regions, never for booting the game.
 """
 from common import *
 from image import mz
-from unicorn import Uc, UcError, UC_ARCH_X86, UC_MODE_16, UC_HOOK_INTR, UC_HOOK_INSN, UC_HOOK_CODE
+from unicorn import Uc, UcError, UC_ARCH_X86, UC_MODE_16, UC_HOOK_INTR, UC_HOOK_INSN, UC_HOOK_CODE, UC_HOOK_BLOCK
 from unicorn.x86_const import *
-import re, struct
+import os, re, struct
 
 LOAD = 0x1010
 CODE_SEG = LOAD + 0x20
@@ -75,6 +75,14 @@ class Machine:
         self.stop_at = CODE_SEG*16
         self.uc.hook_add(UC_HOOK_CODE, self._sentinel, None, self.stop_at, self.stop_at)
         self.error = None
+        # PRE2_COVERAGE: record the executed basic blocks of the code segment (code offset,
+        # size) for tools/coverage.py; off by default (it slows execution)
+        self.blocks = None
+        if os.environ.get('PRE2_COVERAGE'):
+            self.blocks = set()
+            base = CODE_SEG*16
+            self.uc.hook_add(UC_HOOK_BLOCK, lambda uc, a, n, u: self.blocks.add((a - base, n)), None,
+                             base, base + 0xFFFF)
 
     def reset_memory(self):
         self.restore(b'\0'*MEM_SIZE)

@@ -373,6 +373,7 @@ int UpdateWalkerChild(uint16_t si)
     if (st == 1) {
         SpawnDebrisLine(owner, 0, (uint8_t)(RW(si, RS_Y) - RW(owner, 0x0B)));
         uint16_t bx = (uint16_t)(((uint8_t)sar16(RW(si, RS_Y), 4)) << 8 | (uint8_t)sar16(RW(si, RS_X), 4));
+        SET_ES(DW(DS_LevelSegment));      /* the ground probe leaves ES = level map (never restored) */
         if (DB((uint16_t)(DS_GroundTypeTable + rd8(DW(DS_LevelSegment), bx))) == 0) return OBJ_OK;
         WB(si, RS_Y, RB(si, RS_Y) & 0xF0);
         WW(si, RS_YVEL, 0);
@@ -775,7 +776,7 @@ int UpdateLaunchedChild(uint16_t si)
 static int SpawnChildAtOwner(uint16_t si, uint16_t *out)
 {
     uint16_t di;
-    if (AllocChildRecord(&di)) return 1;
+    if (AllocChildRecord(&di)) { *out = di; return 1; }   /* DI stays one past the last slot (50A8h) */
     WB(di, RS_COUNT, 0);
     SET_DW(DS_LastSpawnedChild, di);
     WW(di, RS_X, RW(si, ENT_BOX));
@@ -924,6 +925,7 @@ int SpawnChildOnPlayerBox(uint16_t si)
     WW(di, RS_X, x);
     WW(di, RS_XVEL, ((int16_t)px16 >= (int16_t)x) ? 0 : 0xFFFF);
     uint16_t lseg = DW(DS_LevelSegment);
+    SET_ES(lseg);                         /* the ground search leaves ES = level map (never restored) */
     uint16_t bp = (uint16_t)(((uint8_t)sar16(DW(DS_PlayerY), 4) + 4) << 8 | (uint8_t)sar16(x, 4));
     uint16_t limit = (uint16_t)(DB(DS_MapRows) << 8);
     int found = 0;
@@ -1160,6 +1162,7 @@ int UpdateBossFight(void)
 
     SET_DW(DS_BossY, (uint16_t)(DW(DS_BossY) + sar16(DW(DS_BossVelY), 4)));
     if ((int16_t)DW(DS_BossVelY) < 0) goto loc_7165;
+    SET_ES(DW(DS_LevelSegment));          /* the tile probe leaves ES = level map (never restored) */
     bx = (uint16_t)(((uint8_t)sar16(DW(DS_BossY), 4)) << 8 | (uint8_t)sar16(DW(DS_BossX), 4));
     if (DB((uint16_t)(DS_GroundTypeTable + rd8(DW(DS_LevelSegment), bx))) == 0) goto loc_7165;
     SET_DB(DS_BossY, DB(DS_BossY) & 0xF0);
@@ -1531,7 +1534,7 @@ int UpdateLevel5Sequence(void)
         SET_DB(DS_byte_A32B, ah);
         SET_DB(DS_byte_A32C, (uint8_t)(DB(DS_byte_A32C) - 1));
         if (DB(DS_byte_A32C) == 0) {
-            SET_DB(DS_byte_A32C, (uint8_t)((NextWindRandom() & 0x0F) << 2));
+            SET_DB(DS_byte_A32C, (uint8_t)((NextWindRandom() & 0x0F) << 3));
             SET_DB(DS_byte_A32B, (uint8_t)(((NextWindRandom() & 0x0F) << 3) + 0x40));
             SET_DB(DS_byte_A329, 0);
         }
@@ -1682,6 +1685,7 @@ void EmitLevel9Sparkles(void)
 /* RunLevel9Script (cs:6ADD): the level-9 bytecode interpreter; one command group per frame. */
 int RunLevel9Script(void)
 {
+    SET_ES(0xA000);                           /* ES = VGA window for the rest of the frame (never restored) */
     if (DW(DS_Level9ScriptPtr) == 0xFFFF) {
         SET_DW(DS_word_A4F7, 0xA4F9);
         SET_DW(DS_word_A519, 0x18);
@@ -1883,8 +1887,10 @@ int UpdateObjects(void)
 
         int cf = 0;
         uint16_t index = (uint8_t)(RB(owner, ENT_KIND) << 1);
+        uint16_t es_saved = pre2_es;          /* the handler call sits between push es / pop es */
         st = DispatchHandler(CW((uint16_t)(CS_ChildHandlerTable + index)), si, DISPATCH_CHILD, &cf);
         if (st) return st;
+        pre2_es = es_saved;
     }
 
     for (uint16_t e = ENTITY_LIST; ; ) {
@@ -1894,8 +1900,10 @@ int UpdateObjects(void)
             (DB(DS_byte_B198) == 1 || !(RB(e, ENT_KIND) & 0x80))) {
             uint16_t index = (uint8_t)(RB(e, ENT_KIND) << 1);
             int cf = 0;
+            uint16_t es_saved = pre2_es;      /* the handler call sits between push es / pop es */
             st = DispatchHandler(CW((uint16_t)(CS_EntityHandlerTable + index)), e, DISPATCH_ENTITY, &cf);
             if (st) return st;
+            pre2_es = es_saved;
             if (!cf) {
                 /* spawned: the child's script pointer comes from the table at ds:A86Fh */
                 uint16_t ax = (uint16_t)(RW(e, ENT_SPRITE) - 0x138);

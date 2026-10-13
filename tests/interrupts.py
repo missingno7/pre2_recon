@@ -157,3 +157,25 @@ sb('SB block: SFX remainder shorter than a block', option=0x0040, left=0x0051)
 sb('SB block: early exit when SoundState is not 3', option=0x0040, sound=1)
 sb('SB block: counter increments on every IRQ', option=0x0040, sound=0, count=7)
 sb('SB block: tracker and channel mix enabled (OptionBits 0)', option=0x0000, left=0x0000)
+
+
+# -- ES register model: the same cases entered with ES not equal to DATA --------------------------
+# (a routine that must leave ES alone, or set it, is only visible when the entry ES differs from
+# what it would load; tools/difftest.py compares pre2_es with the oracle's ES after every case)
+def _es_variants(cases, picks, es=0x7C20):
+    """picks: (routine, title substring or '', how many) -> clones of the first matching cases."""
+    import copy
+    out = []
+    for routine, sub, limit in picks:
+        n = 0
+        for c in cases:
+            if c.routine == routine and sub in c.title and n < limit:
+                d = copy.copy(c)
+                d.title = c.title + ' [entry ES 7C20h]'
+                d.regs = dict(c.regs, ES=es)
+                out.append(d)
+                n += 1
+    return out
+CASES += _es_variants(CASES, [
+    ('loc_07AD', '', 3), ('loc_17C0', '', 2), ('SpeakerTimerIsr', '', 2), ('SampleTimerIsr', '', 3),
+    ('SbIrqHandler', '', 6)])

@@ -238,12 +238,27 @@ def scan_for(ch):
 def code_digits(code):
     return [CHARS[(code >> s) & 0xF] for s in (12, 8, 4, 0)]
 
+# Entries that never read the incoming ES (they load it before use) run with a probe value in ES, so
+# that the ES comparison (pre2_es against the oracle's ES after the case) sees the routine's own ES
+# loads and not an input that happens to equal them (DATA or A000h).
+ES_PROBE = 0x3456
+ES_PROBE_CFUNCS = {
+    'c_ShowWorldMapScrollIn', 'c_RunCallbackMapScreen', 'c_RunGameOverScreen', 'c_ShowMode13PictureFadeIn',
+    'c_ShowPlanarPicture', 'c_ShowPresentTitle', 'c_ShowTitusScreen', 'c_RunFrontEnd', 'c_loc_8E7B',
+    'c_loc_8E7B_full', 'c_loc_8EDE', 'c_loc_8EFD', 'c_loc_8F29', 'c_enter_code_tail', 'c_level_start_tail',
+    'c_RunLevelIntroScene', 'c_RunLevelIntroScene_once', 'c_loc_8F96', 'c_loc_8F96_frame', 'c_loc_9002',
+    'c_RestoreBackdropToDrawPage', 'c_SetPictureCopyPointers', 'c_loc_91CF', 'c_FadeOutPaletteToBlack',
+    'c_CopyBackdropStrip', 'c_RunGameOverScreen', 'c_loc_9C62', 'c_intro_group_setup',
+}
+
 def C(title, routine, cfunc, setup=None, regs=None, out_regs=(), ranges=(), budget=20_000_000,
-      port_inputs=None):
+      port_inputs=None, tick_model=False):
     """Case with the DOS model (the pictures and resources) and the heap compared."""
     ranges = [HEAP] + list(ranges)
+    if cfunc in ES_PROBE_CFUNCS:
+        regs = dict(regs or {}, ES=ES_PROBE)
     return Case(title, routine, cfunc, regs=regs or {}, setup=setup, out_regs=out_regs, ranges=ranges,
-                files=True, budget=budget, port_inputs=port_inputs or {})
+                files=True, budget=budget, port_inputs=port_inputs or {}, tick_model=tick_model)
 
 def setup_of(*fns):
     def s(m):
@@ -734,6 +749,24 @@ def level_start_cases():
         arm_stop(m, 'loc_8F29')
     cs.append(C('RunFrontEnd level start tail after the intro: fade, level 0Bh from 083Eh, byte_2879 set',
                 head + 0x38, 'c_level_start_tail', setup=tail_setup, budget=50_000_000))
+    # The demo start path end to end: the intro scene runs (ES = A000h), then the level and expert
+    # flag come from 083Eh and 083Dh (here a level number above 9, as the front end's caller tests).
+    def full_setup(level):
+        def s(m):
+            start(m)
+            for plane in range(4):
+                vga_plane(m, plane, 0, bytes(random.Random(91 + plane).randrange(256) for _ in range(0x2000)))
+            dvar(m, 'DrawPage', 0x2000, size=2)
+            timer(m, 0x0200, 0x0203)
+            dvar(m, 'LastScanCode', 0)
+            dvar(m, 'byte_083E', level)
+            dvar(m, 'byte_083D', 1)
+            dvar(m, 'byte_B198', 0)
+        return s
+    for level in (0x0B, 0x03):
+        cs.append(C(f'RunFrontEnd level start end to end (demo path): intro scene, level {level:02X}h from 083Eh',
+                    'loc_8E7B', 'c_loc_8E7B_full', setup=full_setup(level), regs={'AX': 0}, budget=3_000_000_000,
+                    tick_model=True))
     def fade_only(m):
         base(m, cpu=5, option=1, vbyte=5, count=0xA0)
         dac_random(45)(m)
@@ -763,6 +796,27 @@ def enter_cases():
         cs.append(C(title, 'loc_8EDE', 'c_loc_8EDE', setup=s, budget=50_000_000))
     enter('ENTER CODE, cancel key: CurrentLevel stays FFh, RunFrontEnd restarts', fire=1)
     enter('ENTER CODE, confirm key: restart as well', confirm=1)
+    # After the code screen (the compare of CurrentLevel): an accepted code (CurrentLevel >= 0) takes
+    # the exit tail with ES = DATA, a cancelled one (FFh) restarts. The oracle cannot deliver the four
+    # keys of a real acceptance, so the state the screen leaves is constructed.
+    after = _mach().code('loc_8EDE') + 0x13
+    def accepted(title, level, expert, cpu):
+        def s(m):
+            base(m, cpu=cpu)
+            dac_random(48)(m)
+            dvar(m, 'CurrentLevel', level)
+            dvar(m, 'ExpertFlag', expert)
+            dvar(m, 'word_78C4', 0x0000, size=2)
+        cs.append(C(title, after, 'c_enter_code_tail', setup=s, budget=50_000_000))
+    accepted('ENTER CODE accepted, level 7: exit tail (ES = DATA)', 7, 0, 5)
+    accepted('ENTER CODE accepted, level 0Bh (>= 0Ah): exit tail, expert', 0x0B, 1, 2)
+    accepted('ENTER CODE accepted, level 7Fh (largest non-negative)', 0x7F, 1, 3)
+    def cancelled(m):
+        base(m, cpu=5)
+        dvar(m, 'CurrentLevel', 0xFF)
+        arm_stop(m, restart)
+    cs.append(C('ENTER CODE cancelled (CurrentLevel FFh): restart, ES untouched', after, 'c_enter_code_tail',
+                setup=cancelled, budget=5_000_000))
     return cs
 
 def exit_tail_cases():

@@ -5685,7 +5685,7 @@ byte_2806 label byte
 ; DATA: purpose unknown: read by TryShowIntroKeyed; no direct writer found; zero initially
     db 00h, 00h, 00h, 00h, 00h, 00h, 00h
 byte_280D label byte
-; DATA: purpose unknown: read by WaitFrameSyncFlag; no direct writer found; zero initially
+; DATA: KeyDownTable[19h], the P key (KeyboardIsr): the pause in WaitFrameSyncFlag
     db 00h, 00h, 00h
 byte_2810 label byte
 ; DATA: purpose unknown: read by PollInputState, RunFrontEnd; no direct writer found; zero initially

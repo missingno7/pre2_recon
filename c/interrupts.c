@@ -125,6 +125,8 @@ void SampleTimerIsr(void)
  * SbMixBlock (MixChannel stores it in MixSavedSp). */
 void SbIrqHandler(uint16_t sp)
 {
+    uint16_t es_saved = pre2_es;               /* push es ... pop es: the handler leaves ES as it found it */
+    SET_ES(DATA_SEG);
     (void)port_in8(CW(CS_SbAckPort));          /* acknowledge the block */
     SET_DB(DS_SbIrqCount, (uint8_t)(DB(DS_SbIrqCount) + 1));
     if ((CB(CS_SoundState) & 3) == 3) {        /* device ready and output started */
@@ -153,6 +155,7 @@ void SbIrqHandler(uint16_t sp)
         SbMixBlock(sp);
     }
     port_out8(0x20, 0x20);                     /* SbIrqExit: EOI */
+    pre2_es = es_saved;
 }
 
 /* ---- difftest adapters (tests/interrupts.py) -------------------------------------------- */

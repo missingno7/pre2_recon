@@ -10,16 +10,16 @@ Multi-frame cases: setup runs the oracle through the earlier frames on the same 
 the compared frame starts from a state the oracle produced; the C side starts from the same
 memory snapshot. CX is the caller's leftover register (see c/player.c, attack tail).
 
-Not compared: the TryShowCredits path (its key gate passes only with keys these cases do not
-drive: a stated boundary); table targets outside the translated handlers (AltStateHandlers[8]
-= 'LE', ProjectileKindHandlers[2..3], table entries past the translated ones), which return
-PLAYER_UNSUPPORTED. The random cases keep their tables to valid classes, so they do not reach
-those words.
+The in-game credits (Ctrl+Alt+W, TryShowCredits called by UpdatePlayer) run with the button
+wait fed by two playback words (fire down, fire up) before the frame's own word. Not compared:
+table targets outside the translated handlers (ProjectileKindHandlers[2..3], table entries past
+the translated ones), which return PLAYER_UNSUPPORTED. The random cases keep their tables to
+valid classes, so they do not reach those words.
 """
 import random, sys
 from difftest import Case
 from common import ROOT
-from emu import CODE_SEG
+from emu import CODE_SEG, DATA_SEG
 sys.path.insert(0, str(ROOT/'tests'))
 import render as RND                      # oracle LoadLevel state (cached) and the BIOS 10h model
 
@@ -411,6 +411,9 @@ def particle_cases():
             B(m, 'SnowFrameTick', seed)
         cs.append(mk(f'burst particles: seeded slots {seed}', 'UpdateBurstParticles', 'c_UpdateBurstParticles',
                      setup=setup, level=[0, 7, 11][seed], es=True))
+        # ES = DATA on entry: the routine loads ES = LevelSegment itself and leaves it so
+        cs.append(mk(f'burst particles: seeded slots {seed}, ES not preset (ES model)', 'UpdateBurstParticles',
+                     'c_UpdateBurstParticles', setup=setup, level=[0, 7, 11][seed]))
     for seed in range(2):
         def setup(m, seed=seed):
             rng = random.Random(0x7800 + seed)
@@ -462,6 +465,14 @@ def adapter_cases():
     cs.append(mk('CeilingTileHeadBump: velocity up: stop, sit one row lower', 'CeilingTileHeadBump',
                  'c_CeilingTileHeadBump', setup=lambda m: (W(m, 'PlayerVelY', 0xFFE0), W(m, 'PlayerY', 0x0A07)),
                  level=0, es=True))
+    # still, other frame: loads ES = LevelSegment (ES = DATA on entry, so the ES model is exercised);
+    # the wall record at word_6BB1 is PlayerX/PlayerY, the cell is read through the new ES
+    for px, py in ((0x0148, 0x0A08), (0x0168, 0x0A08)):
+        cs.append(mk(f'CeilingTileHeadBump: still, frame 00h: push-out probe at {px:04X},{py:04X}', 'CeilingTileHeadBump',
+                     'c_CeilingTileHeadBump',
+                     setup=lambda m, px=px, py=py: (W(m, 'PlayerVelY', 0), B(m, 'PlayerFrameWord', 0),
+                                                    W(m, 'PlayerX', px), W(m, 'PlayerY', py)),
+                     level=0))
     cs.append(mk('CeilingTileHeadBump: still, frame 0Ah: no push', 'CeilingTileHeadBump',
                  'c_CeilingTileHeadBump', setup=lambda m: (W(m, 'PlayerVelY', 0), B(m, 'PlayerFrameWord', 0x0A)),
                  level=0, es=True))
@@ -514,3 +525,311 @@ def adapter_cases():
 
 CASES = (combo_cases() + state_cases() + hurt_cases() + random_sequences() + physics_cases()
          + projectile_cases() + particle_cases() + adapter_cases())
+
+# ---- alt mode hurt (the 'LE' handler word) and the P pause ---------------------------------
+def alt_hurt_cases():
+    """Hurt state in alt mode: AltStateHandlers[8] reads the text 'LE' (word 454Ch, a bare `ret`
+    in SetLatchCopyMode), so the state handler does nothing that frame."""
+    cs = []
+    for ht in (0x16, 0x30):
+        def setup(m, ht=ht):
+            stand_on_floor(m)
+            B(m, 'PlayerAltModeFlag', 1)
+            B(m, 'PlayerHurtTimer', ht); W(m, 'PlayerVelX', 0x20)
+            playback(m, [value_of(IDX_IDLE)])
+        cs.append(mk(f'alt mode, hurt timer {ht:02X}: handler word 454Ch (ret)', 'UpdatePlayer', 'c_UpdatePlayer',
+                     level=3, setup=setup, out=('CX',)))
+    return cs
+
+P_KEY = 0x19
+def pause_cases():
+    """P held at the frame's input wait (WaitFrameSyncFlag): wait for the release, a press and
+    the release. The same script runs at each busy-wait turn on both sides: the C polls in each
+    loop, the oracle reaches the loop heads loc_629B / loc_62A2 / loc_62A9; turns alternate
+    release, press, release."""
+    import ctypes, re
+    from unicorn import UC_HOOK_CODE
+    from emu import CODE_SEG as CSEG
+    kdt = int(re.search(r'#define DS_KeyDownTable 0x([0-9A-F]+)u', (ROOT/'c'/'pre2_sym.h').read_text()).group(1), 16)
+    def setup(m):
+        stand_on_floor(m)
+        playback(m, [value_of(IDX_IDLE)])
+        m.wb(m.data('KeyDownTable') + P_KEY, 0xFF)
+        st = {'n': 0}
+        def hook(uc, address, size, user):
+            st['n'] += 1
+            m.wb(m.data('KeyDownTable') + P_KEY, 0 if st['n'] % 2 else 0xFF)
+        hooks = []
+        for where in ('loc_629B', 'loc_62A2', 'loc_62A9'):
+            a = CSEG * 16 + m.code(where)
+            hooks.append(m.uc.hook_add(UC_HOOK_CODE, hook, None, a, a))
+        m._pause_hooks = hooks
+    def c_setup(d):
+        mem = d.pre2_memory().contents
+        st = {'n': 0}
+        @ctypes.CFUNCTYPE(None)
+        def poll():
+            st['n'] += 1
+            mem[DATA_SEG * 16 + kdt + P_KEY] = 0 if st['n'] % 2 else 0xFF
+        ctypes.c_void_p.in_dll(d, 'pre2_test_poll').value = ctypes.cast(poll, ctypes.c_void_p).value
+        return poll
+    c = mk('P pause: held at the input wait, released, pressed, released', 'UpdatePlayer', 'c_UpdatePlayer',
+           level=3, setup=setup, out=('CX',))
+    inner = c.setup
+    def s(m):
+        for h in getattr(m, '_pause_hooks', []): m.uc.hook_del(h)
+        m._pause_hooks = []
+        inner(m)
+    c.setup = s
+    c.c_setup = c_setup
+    return [c]
+
+CASES += alt_hurt_cases() + pause_cases()
+
+# ---- differential-test gap closure ---------------------------------------------------------
+# Branches the frame cases above do not reach: the projectile spawn of the attack state (the
+# attack frame flag, bit 6 of the animation word, comes only on the 7th/9th frame of the attack
+# animation, so the earlier frames run in the oracle first), the alt-mode momentum block with
+# up and down held, the camera-relative range checks of UpdatePlayerCollision, side class 2,
+# deep landings, the corner nudge of the ceiling probe, the free wall-impact slot, and the
+# in-game credits gate of UpdatePlayer.
+FONT_SEG = 0x9800
+
+def font_sheet(m, seed=91):
+    """Seeded bytes for the font sheet (word_003D): both sides read the same bytes."""
+    rng = random.Random(seed)
+    m.write(FONT_SEG, 0, bytes(rng.randrange(256) for _ in range(0x4000)))
+    W(m, 'word_003D', FONT_SEG)
+
+def all_slots_free(m):
+    for k in range(4):
+        m.ww(m.data('word_4F2E') + 0x12 * k + 4, 0xFFFF)
+
+def attack_cases():
+    """The projectile spawn (weapon records 2 and 3 carry the projectile flag): UpdatePlayer on
+    the frame whose animation word has the attack-frame flag. State 3 reaches it on its 7th
+    frame, states 6 and 7 on their 9th."""
+    cs = []
+    for idx, name, frames in ((IDX_ATTACK[3], 'state 3', 7), (IDX_ATTACK[6], 'state 6', 9), (IDX_ATTACK[7], 'state 7', 9)):
+        for weapon in (2, 3):
+            for facing in (1, -1):
+                def setup(m, idx=idx, weapon=weapon, facing=facing, frames=frames):
+                    stand_on_floor(m)
+                    W(m, 'PlayerFacing', facing)
+                    B(m, 'PlayerWeaponType', weapon)
+                    all_slots_free(m)
+                    playback(m, [value_of(idx)] * frames)
+                    advance(m, frames - 1, cx=0x0C0D)
+                cs.append(mk(f'attack projectile: {name}, weapon {weapon}, facing {facing:+d}', 'UpdatePlayer',
+                             'c_UpdatePlayer', level=0, setup=setup, out=('CX',), regs={'CX': 0x0C0D}))
+    # one slot only free in the middle (the scan takes the first free), projectile slot busy
+    def second_free(m):
+        stand_on_floor(m)
+        B(m, 'PlayerWeaponType', 3)
+        for k in range(4):
+            m.ww(m.data('word_4F2E') + 0x12 * k + 4, 0xFFFF if k == 2 else 0x0101)
+        playback(m, [value_of(IDX_ATTACK[3])] * 7)
+        advance(m, 6, cx=0)
+    cs.append(mk('attack projectile: only slot 2 free', 'UpdatePlayer', 'c_UpdatePlayer', level=3,
+                 setup=second_free, out=('CX',)))
+    # a charged shot (power x4)
+    def charged(m):
+        stand_on_floor(m)
+        B(m, 'PlayerWeaponType', 2); B(m, 'ChargeLevel', 0xFF)
+        all_slots_free(m)
+        playback(m, [value_of(IDX_ATTACK[3])] * 7)
+        advance(m, 6, cx=0)
+    cs.append(mk('attack projectile: charged shot, weapon 2', 'UpdatePlayer', 'c_UpdatePlayer', level=7,
+                 setup=charged, out=('CX',)))
+    return cs
+
+def momentum_cases():
+    """Alt mode with PlayerAirFlags bit 0 set: the momentum block with up (27EAh) and down
+    (27EBh) held, for every AltMomentumStep boundary."""
+    cs = []
+    def mom(title, idx, step, counter, vx=0x20, vy=0x40, facing=1):
+        def setup(m):
+            stand_on_floor(m, dy=0x30)
+            B(m, 'PlayerAltModeFlag', 1); B(m, 'PlayerAirFlags', 1)
+            B(m, 'AltMomentumStep', step); B(m, 'MomentumCounter', counter)
+            W(m, 'PlayerVelX', vx); W(m, 'PlayerVelY', vy); W(m, 'PlayerFacing', facing)
+            playback(m, [value_of(idx)])
+        cs.append(mk(title, 'UpdatePlayer', 'c_UpdatePlayer', level=3, setup=setup, out=('CX',)))
+    # up held (idx 4: byte_27EA): step 6 with VelY above / at / below 10h; step < 6 increments
+    mom('momentum up: step 6, VelY 40h sets air flag bit 1', IDX_JUMP, 6, 0x30, vy=0x40)
+    mom('momentum up: step 6, VelY 10h keeps flags', IDX_JUMP, 6, 0x30, vy=0x10)
+    mom('momentum up: step 6, VelY negative', IDX_JUMP, 6, 0x00, vy=-0x20)
+    mom('momentum up: step 3 -> 4 with counter, VelY forced to -40h', IDX_JUMP, 3, 0x30)
+    mom('momentum up: step 5 -> 6 with counter', IDX_JUMP, 5, 0x08)
+    mom('momentum up: step 1 -> 2 (< 4) counter 1', IDX_JUMP, 1, 0x01)
+    mom('momentum up: counter 0 falls to the down test, down released', IDX_JUMP, 2, 0x00)
+    # down held (idx 2: byte_27EB) and up released
+    mom('momentum down: step 3 decrements, ja 1 skips the counter', IDX_CROUCH, 3, 0x10)
+    mom('momentum down: step 1 -> 0, counter below 5x speed', IDX_CROUCH, 1, 0x02, vx=0x40)
+    mom('momentum down: step 1 -> 0, negative speed, counter below', IDX_CROUCH, 1, 0x02, vx=-0x40)
+    mom('momentum down: step 2 -> 1, counter at the limit', IDX_CROUCH, 2, 0xFF, vx=-0x50)
+    mom('momentum down: step 0 stays 0, counter grows by speed', IDX_CROUCH, 0, 0x00, vx=0x30)
+    mom('momentum down: step 0, zero speed', IDX_CROUCH, 0, 0x03, vx=0)
+    # up and down held together (idx 6): up wins while the counter lasts
+    mom('momentum up+down: up branch first', 6, 3, 0x20)
+    return cs
+
+def collision_cases():
+    cs = []
+    # UpdatePlayerCollision range checks relative to the camera. The cells around the foot are
+    # cleared, so the foot has no ground and the airborne tail runs.
+    def rng_case(title, px, py, camrow, camcol, flags=0, level=0, lives=3, platform=0, vy=0, vx=0):
+        def setup(m):
+            clear_player(m, x=px, y=py, vx=vx, vy=vy)
+            set_tile(m, 0, ground=0, side=0, flags=0, solid=0)
+            for r in range((py >> 4) - 4, (py >> 4) + 3):
+                for c in range((px >> 4) - 2, (px >> 4) + 3):
+                    set_cell(m, r, c, 0)
+            W(m, 'CameraRow', camrow); W(m, 'CameraCol', camcol)
+            B(m, 'LevelFlags', flags); B(m, 'Lives', lives); B(m, 'PlayerOnPlatform', platform)
+            B(m, 'FallCounter', 3)
+        cs.append(mk(title, 'UpdatePlayerCollision', 'c_UpdatePlayerCollision', setup=setup, level=level, es=True))
+    rng_case('range: player left of the camera column (neg ax)', 0x0200, 0x0140, 0x11, 40)
+    rng_case('range: player right of the camera column', 0x0600, 0x0140, 0x11, 30)
+    rng_case('range: player 21 columns right: out of range, respawn', 0x0900, 0x0140, 0x11, 0x23)
+    rng_case('range: player 21 columns left: out of range', 0x0200, 0x0140, 0x11, 0x2F)
+    rng_case('range: row above the camera by 12: out of range', 0x0500, 0x0140, 0x20, 0x48)
+    rng_case('range: LevelFlags bit 2, above the camera top: out of range', 0x0500, 0x0138, 0x14, 0x48, flags=4)
+    rng_case('range: LevelFlags bit 2, above the camera top, no lives', 0x0500, 0x0138, 0x14, 0x48, flags=4, lives=0)
+    rng_case('range: LevelFlags bit 2, below the camera top: inside', 0x0500, 0x0170, 0x14, 0x48, flags=4)
+    rng_case('range: LevelFlags bit 2, exactly on the camera top', 0x0500, 0x0140, 0x14, 0x48, flags=4)
+    rng_case('range: airborne on a platform: FinishPlayerLanding', 0x0500, 0x0140, 0x11, 0x1F, platform=1, vy=0x10)
+    rng_case('range: airborne on a platform, rising', 0x0500, 0x0140, 0x11, 0x1F, platform=1, vy=-0x10)
+    rng_case('range: airborne, no platform: air motion and FallCounter', 0x0500, 0x0140, 0x11, 0x1F, vy=0x10)
+    rng_case('range: airborne, no platform, rising', 0x0500, 0x0140, 0x11, 0x1F, vy=-0x10)
+    for lvl in (0x0E, 3):
+        rng_case(f'range: below the map in level {lvl:02X}h', 0x0A00, 0x4800, 0x3F, 0x3C, level=lvl)
+    return cs
+
+def spike_cases():
+    """Side class 2 (spikes, TriggerPlayerRespawn) beside the player, UpdatePlayer frames."""
+    cs = []
+    for side, vx in (('right', 0x30), ('left', -0x30)):
+        for lives in (3, 0):
+            for upper in (False, True):
+                def setup(m, vx=vx, side=side, lives=lives, upper=upper):
+                    ground_at(20, 40, 0xC0, 1, solid=0x03)(m)
+                    set_tile(m, 0xC1, side=2, flags=0)
+                    col = 40 + (1 if side == 'right' else -1)
+                    for r in ((19,) if upper else (19, 18)):
+                        set_cell(m, r, col, 0xC1)
+                    B(m, 'Lives', lives)
+                    W(m, 'PlayerVelX', vx); W(m, 'PlayerY', 20 * 16 - 0x20)
+                    playback(m, [value_of(IDX_IDLE)])
+                cs.append(mk(f'spikes (side class 2) {side}, lives {lives}{", one cell" if upper else ""}',
+                             'UpdatePlayer', 'c_UpdatePlayer', level=3, setup=setup, out=('CX',)))
+    return cs
+
+def landing_cases():
+    cs = []
+    # LandPlayerOnGround: the hard landing (FallCounter > 4, fall >= 20h, VelY >= 50h) and its branches
+    for fc, vy, lf, tag in ((0x05, 0x60, 0, 'FallCounter 5, VelY 60h'),
+                            (0x0C, 0x60, 0, 'FallCounter 12 bounces to -20h'),
+                            (0x0C, 0x60, 1, 'FallCounter 12, LevelFlags bit 0 keeps VelY'),
+                            (0x0A, 0x60, 0, 'FallCounter 10 is a soft landing'),
+                            (0x16, 0x60, 0, 'FallCounter 22, VelY 60h: no shake'),
+                            (0x16, 0xB0, 0, 'FallCounter 22, VelY B0h: shake 8, bounce'),
+                            (0x14, 0xA0, 0, 'FallCounter 20, VelY A0h: no shake'),
+                            (0x14, 0xA1, 1, 'FallCounter 20, VelY A1h: shake, no bounce velocity'),
+                            (0x13, 0xB0, 0, 'FallCounter 19, VelY B0h: no shake')):
+        def setup(m, fc=fc, vy=vy, lf=lf):
+            row, col = stand_on_floor(m, dy=4)
+            W(m, 'PlayerVelY', vy); B(m, 'FallCounter', fc); B(m, 'LevelFlags', lf)
+            W(m, 'LastLandY', row * 16 - 0x80)
+            B(m, 'LandingBlockTimer', 0)
+            return {'DI': cell(row, col)}
+        cs.append(mk(f'LandPlayerOnGround: hard landing, {tag}', 'LandPlayerOnGround', 'c_LandPlayerOnGround',
+                     setup=setup, level=0, es=True))
+    # the same landing through a frame: falling onto the floor from a height
+    for fc, vy, lf in ((0x0C, 0x70, 0), (0x16, 0xB0, 0)):
+        def setup(m, fc=fc, vy=vy, lf=lf):
+            row, col = stand_on_floor(m, dy=0x08)
+            W(m, 'PlayerVelY', vy); B(m, 'FallCounter', fc); B(m, 'LevelFlags', lf); B(m, 'PlayerAirFlags', 1)
+            W(m, 'LastLandY', row * 16 - 0x100)
+            playback(m, [value_of(IDX_IDLE)])
+        cs.append(mk(f'UpdatePlayer: falling {fc:02X}/{vy:02X} lands hard', 'UpdatePlayer', 'c_UpdatePlayer',
+                     level=0, setup=setup, out=('CX',)))
+    # ground class 5 (GroundTileReleaseLand) under a falling player: the same landing tail
+    for fc, vy in ((0x0C, 0x70), (0x16, 0xB0), (0x05, 0x60)):
+        def setup(m, fc=fc, vy=vy):
+            ground_at(20, 40, 0xE5, 5, solid=0x13)(m)
+            W(m, 'PlayerVelY', vy); B(m, 'FallCounter', fc); B(m, 'PlayerAirFlags', 1)
+            W(m, 'PlayerY', 20 * 16 - 8); W(m, 'LastLandY', 20 * 16 - 0x100)
+            playback(m, [value_of(IDX_IDLE)])
+        cs.append(mk(f'UpdatePlayer: ground class 5 hard landing {fc:02X}/{vy:02X}', 'UpdatePlayer',
+                     'c_UpdatePlayer', level=0, setup=setup, out=('CX',)))
+    # SideTileWallImpactHandler: a free slot (first word 55AAh) is filled
+    for slot in (0, 7, 19):
+        def setup(m, slot=slot):
+            set_tile(m, 0x77, flags=0x10); set_cell(m, 10, 10, 0x77)
+            W(m, 'PlayerX', 0x0300); W(m, 'PlayerY', 0x0500)
+            for k in range(20):
+                m.ww(0x6EA9 + 8 * k, 0x55AA if k == slot else 0x1234 + k)
+            for k in range(8):
+                m.wb(0x6EA9 + 8 * slot + k + 2, 0xEE)
+            return {'DI': cell(10, 10)}
+        cs.append(mk(f'SideTileWallImpactHandler: free slot {slot} written', 'SideTileWallImpactHandler',
+                     'c_SideTileWallImpactHandler', setup=setup, level=0, es=True))
+    # CeilingTileHeadBump: the corner nudge (still, frame not 0Ah/15h, side class bit 0 under the head)
+    for left_class, tag in ((1, 'left neighbour blocks: +10h'), (0, 'left neighbour open: -10h')):
+        def setup(m, left_class=left_class):
+            W(m, 'PlayerVelY', 0); B(m, 'PlayerFrameWord', 0)
+            W(m, 'PlayerX', 0x0148); W(m, 'PlayerY', 0x00A8)
+            set_tile(m, 0x71, side=1); set_tile(m, 0x72, side=left_class)
+            set_cell(m, 0x0A, 0x14, 0x71); set_cell(m, 0x0A, 0x13, 0x72)
+        cs.append(mk(f'CeilingTileHeadBump: corner nudge, {tag}', 'CeilingTileHeadBump', 'c_CeilingTileHeadBump',
+                     setup=setup, level=0))
+    return cs
+
+def jump_state_cases():
+    cs = []
+    def st(title, idx, vx=0, vy=0, facing=1, level=0, fields=None, dy=0):
+        def setup(m):
+            stand_on_floor(m, dy=dy)
+            W(m, 'PlayerVelX', vx); W(m, 'PlayerVelY', vy); W(m, 'PlayerFacing', facing)
+            for k, v in (fields or {}).items():
+                if k.startswith('B:'): B(m, k[2:], v)
+                else: W(m, k, v)
+            playback(m, [value_of(idx)])
+        cs.append(mk(title, 'UpdatePlayer', 'c_UpdatePlayer', level=level, setup=setup, out=('CX',)))
+    st('state 4 charge, negative speed (neg ax)', IDX_CHARGE, vx=-0x10)
+    st('state 4 charge, negative speed past the limit', IDX_CHARGE, vx=-0x30)
+    return cs
+
+def credits_cases():
+    """The in-game credits: Ctrl+Alt+W held and no other key. TryShowCredits shows the screen,
+    waits for a button (two playback entries: down, up), repaints the palette, and UpdatePlayer
+    then redraws the status bar and runs the frame with the next playback word."""
+    cs = []
+    def keys_down(m, extra=()):
+        for sc in (0x1D, 0x38, 0x11) + tuple(extra):
+            m.wb(m.data('KeyDownTable') + sc, 0xFF)
+    for title, extra, idx in (('gate passes: credits screen, button wait, repaint', (), IDX_IDLE),
+                              ('gate passes, run input in the frame', (), IDX_RUN),
+                              ('gate fails: another key (Q) down', (0x10,), IDX_IDLE),
+                              ('gate fails: key 7Eh down', (0x7E,), IDX_RUN)):
+        def setup(m, extra=extra, idx=idx):
+            stand_on_floor(m)
+            m.ints[0x10] = RND.bios10                       # palette and mode services of the screen
+            font_sheet(m)
+            keys_down(m, extra)
+            playback(m, [0x10, 0x00, value_of(idx)])
+        c = mk(f'UpdatePlayer: Ctrl+Alt+W, {title}', 'UpdatePlayer', 'c_UpdatePlayer', level=0, setup=setup,
+               out=('CX',))
+        c.ranges = ((0x0040, 0, 0x100),) + tuple(c.ranges)
+        cs.append(c)
+    def no_w(m):
+        stand_on_floor(m)
+        for sc in (0x1D, 0x38): m.wb(m.data('KeyDownTable') + sc, 0xFF)
+        playback(m, [value_of(IDX_IDLE)])
+    cs.append(mk('UpdatePlayer: Ctrl+Alt without W: no credits', 'UpdatePlayer', 'c_UpdatePlayer', level=0,
+                 setup=no_w, out=('CX',)))
+    return cs
+
+CASES += (attack_cases() + momentum_cases() + collision_cases() + spike_cases() + landing_cases()
+          + jump_state_cases() + credits_cases())

@@ -29,6 +29,14 @@ Boundaries:
   original register contract (registers, CF/ZF results) onto a C function with explicit
   parameters. C-to-C calls are direct; adapters are removed when no test or ASM caller
   needs them.
+- ES is the one register the original lets flow across routine boundaries and consumes
+  stale (the render-slot fill at loc_01C4, the tally clear, the game-over record copy):
+  the C carries it as a register model, `pre2_es` (c/pre2.h), which every translated
+  routine leaves as the original leaves ES, including its push/pop pairs and the
+  interrupt handlers' save/restore. tools/esflow.py --sets lists the ES-changing routines
+  statically; the differential tests compare `pre2_es` with the oracle's ES after every
+  case. Other registers are explicit parameters; PRE2_POISON=1 difftest runs start every
+  unspecified register as garbage on both sides to show no contract is missing.
 - Platform services are C functions with narrow contracts that replace one hardware or
   DOS interaction each (dos_files.c: INT 21h file requests). The same contract is
   implemented twice only where it must be: once for the oracle side (tools/emu.py
@@ -39,7 +47,14 @@ Boundaries:
 Each case constructs state statically (from known data, real asset files, edge values),
 runs the original routine in tools/emu.py and the C entry in build/c/pre2core.dll from the
 same memory snapshot, then compares the DATA segment, code-segment variables, declared
-output buffers, contract registers/flags and DOS request logs. No case boots the game.
+output buffers, contract registers/flags, the ES model, VGA memory and registers, port
+and DOS request logs. No case boots the game. Composed cases chain routines the way the
+top level does (a frame whose UpdateLevelState requests a restart, LevelRestart, the next
+level's first frame or the front end); waits for a button run a scripted press/release on
+both sides (Case.c_setup and the pre2_test_poll hook on the C side, code hooks at the
+original's matching instructions). PRE2_COVERAGE=1 records the oracle's executed code
+for tools/coverage.py. tests/_vga_kat.py checks the shared VGA model itself against
+documented VGA behaviour (the differential tests cannot: both sides use it).
 Mutation checks (a deliberately wrong C change must fail) confirm that cases observe what
 they claim to.
 

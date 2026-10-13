@@ -48,6 +48,8 @@ void    vga_bios_mode_set(uint8_t al);          /* INT 10h AH=00h on the model (
 
 /* MOVSB and XCHG with A000h:off through the model: a read loads the latches, then the write
  * (XCHG returns the old byte). */
+/* A byte store through ES = `seg` as the CPU makes it: the VGA window through the model. */
+static inline void seg_wr8(uint16_t seg, uint16_t off, uint8_t v) { if (seg == 0xA000u) vga_write(off, v); else wr8(seg, off, v); }
 static inline void vga_movsb(uint16_t si, uint16_t di) { vga_write(di, vga_read(si)); }
 static inline uint8_t vga_xchg(uint16_t off, uint8_t v)
 {

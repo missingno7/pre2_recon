@@ -24,7 +24,15 @@
 void (*pre2_host_poll)(int waiting) = 0;
 void (*pre2_host_io)(uint32_t opens, uint32_t bytes) = 0;
 
-void platform_poll(void) { if (pre2_host_poll) pre2_host_poll(0); }
+/* Differential tests: a scripted input source run at each poll (the oracle side runs the same
+ * script at the original's matching instructions); unset otherwise. */
+EXPORT void (*pre2_test_poll)(void) = 0;
+
+void platform_poll(void)
+{
+    if (pre2_host_poll) pre2_host_poll(0);
+    else if (pre2_test_poll) pre2_test_poll();
+}
 
 /* Test tick model (off by default): each failed check of the frame wait advances
  * TimerTickCount by one, as tools/difftest.py's tick_model hook does on the oracle side. */

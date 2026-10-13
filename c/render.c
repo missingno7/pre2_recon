@@ -168,6 +168,7 @@ void RunIrisClose(void)
     uint16_t di = DW(DS_DisplayPage);
     uint16_t si = DW(DS_DrawPage);
     SetLatchCopyMode();
+    SET_ES(0xA000);                                  /* ES stays A000h to the return */
     for (int k = 0; k < 0x1F40; k++) { vga_movsb(si, di); si++; di++; }
 
     /* render slots 2.. to empty (+4 = FFFFh). The second loop writes two entries more
@@ -655,6 +656,7 @@ void DrawForegroundOverSprites(void)
     if (!(CW(CS_OptionBits) & 2)) return;
     if (!(DB(DS_VisibleTileFlags) & 0x40)) return;
     uint16_t lvl = DW(DS_LevelSegment);
+    SET_ES(lvl);                                /* ES = LevelSegment on every return past the gates */
     SetCpuWriteMode();
     for (uint16_t si = DS_RenderSlots; si < 0x5732; si = (uint16_t)(si + 0x12)) {
         uint16_t bx = DW((uint16_t)(si + 4));
@@ -736,6 +738,7 @@ void UpdateWindAndFlakes(void)
     }
     if (DW(DS_SnowWind) == 0) return;
 
+    SET_ES(0xA000);                             /* ES = A000h on the flake path; the early return keeps it */
     port_out16(0x3CE, 0x1003);                  /* function OR */
     port_out16(0x3CE, 0x0005);                  /* write mode 0 */
     port_out16(0x3C4, 0x0F02);
@@ -821,6 +824,7 @@ void PresentFrame(void)
 int ProbeVideoMemory(void)
 {
     bios_set_mode(0x0D);
+    SET_ES(0xA000);                            /* ES = A000h on both exits */
     port_out16(0x3C4, 0x0102);
     port_out16(0x3CE, 0x0005);
     port_out16(0x3CE, 0x0004);
@@ -853,6 +857,7 @@ int CheckVgaAdapter(void)
         return 0;
     }
     SET_DW(DS_NextFreeSegment, 0);
+    SET_ES(CODE_SEG);                          /* push cs / pop es before the clear; ES stays CS at the halt */
     for (uint16_t k = 0; k < 0x3E8; k++) wr16(CODE_SEG, (uint16_t)(CS_VRAM_CLEAR_AT + 2 * k), 0);
     bios_set_mode(0x03);
     dos_print_dollar(DATA_SEG, VGA_FAIL_TEXT);
@@ -889,6 +894,7 @@ uint16_t LoadLevelTileSet(void)
     SET_DW(DS_NextFreeSegment, var);
     for (uint16_t k = 0; k < 0x100; k++)                       /* rep movsw: variant:0 -> TileIndexTable */
         SET_DW((uint16_t)(TILE_INDEX_TABLE + 2 * k), rd16(var, (uint16_t)(2 * k)));
+    SET_ES(0xA000);                                            /* ES = A000h to the return */
     port_out8(0x3C4, 0x02);
     uint16_t bp = 0x200;
     uint16_t di = 0x5E80;
@@ -919,6 +925,7 @@ uint16_t LoadLevelTileSet(void)
 void UploadSpriteTiles(void)
 {
     uint16_t di = 0x5E80;
+    SET_ES(0xA000);                                         /* ES = A000h to the return */
     port_out8(0x3C4, 0x02);
     for (uint16_t bx = TILE_INDEX_TABLE; bx < 0x27CE; bx = (uint16_t)(bx + 2)) {
         uint16_t w = DW(bx);
@@ -1137,6 +1144,7 @@ void SavePristineTriggerRows(void)
 {
     uint16_t bank = DW(DS_NextFreeSegment);
     uint16_t di = 0;
+    SET_ES(bank);                                        /* ES = NextFreeSegment, reloaded per record */
     wr16(bank, 0, 0xFFFF);
     uint16_t bx = 0x83F3;
     for (int cx = 0x0F; cx != 0; cx--, bx = (uint16_t)(bx + 0x0A)) {
@@ -1147,6 +1155,7 @@ void SavePristineTriggerRows(void)
         uint8_t dl = (uint8_t)(DB((uint16_t)(bx + 3)) + DB((uint16_t)(bx + 8)));
         uint8_t dh = DB((uint16_t)(bx + 2));
         bank = DW(DS_NextFreeSegment);
+        SET_ES(bank);
         uint16_t lseg = DW(DS_LevelSegment);
         wr16(bank, di, si);
         wr16(bank, (uint16_t)(di + 2), (uint16_t)(dh << 8 | dl));
@@ -1187,7 +1196,9 @@ void BuildDecorList(void)
     do {                                                 /* loc_40ED: bubble passes */
         dx = 0;
         uint16_t p = 0x6A88;
-        for (uint16_t cx = bp; cx != 0; cx--, p = (uint16_t)(p + 2)) {   /* loc_40F6 */
+        /* mov cx, bp / jmp loc_4109: the pass enters at its LOOP, so it compares the bp - 1
+         * adjacent pairs of the list (never the stale word after its end) */
+        for (uint16_t cx = (uint16_t)(bp - 1); cx != 0; cx--, p = (uint16_t)(p + 2)) {   /* loc_40F6 */
             uint16_t a = DW(p);
             uint16_t av = DW(a);
             uint16_t b = DW((uint16_t)(p + 2));

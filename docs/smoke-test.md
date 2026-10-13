@@ -80,6 +80,23 @@ lowest level:
   host now charges VGA accesses ISA bus time (0.5 us per memory access, 1 us per port
   access; counted by the model, paid by spinning; --fast-vga turns it off).
 
+## Transition scenarios (`--scenario NAME`, 2026-10-13)
+
+`build\host\pre2.exe --assets assets --smoke 75 --scenario warp|ending|gameover|castle`: 2 s
+into level 1 the harness writes the state that triggers the transition, then follows the
+program through its screens with RETURN taps and prints each top-level step and level
+change. All four reach their next gameplay natively:
+
+| Scenario | State written | Observed |
+|---|---|---|
+| warp | CurrentLevel 3, LevelEndMode 2 | warp taken, bonus room 0Ah running (player at its start X 35h; frame checked) |
+| ending | EndSignal FFh | THEEND and the button wait in the frame loop, front end, map, a new game on level 0 |
+| gameover | EndSignal 1 | death bounce, game-over screen, front end, map, level 0 |
+| castle | CurrentLevel 7, LevelEndMode 1, beginner | exit sequence into level 8, CASTLE picture and button wait, front end, map, level 0 |
+
+(The gameplay rates printed in scenario runs include those screens; the cadence figures
+are the plain smoke test's.)
+
 Limits: one level, a few seconds of input; no claim of exhaustive gameplay parity. Level
 codes depend on the BIOS ROM fold (the native host's F000:FFF0 area is zero) and CPU class
 3 (docs/next-work.md).

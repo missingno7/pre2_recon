@@ -217,3 +217,25 @@ def intro(title, clock):
 intro('intro picture at 1994', 0x07CA)
 intro('intro picture at 2026', 0x07EA)
 intro('no intro picture at 1993', 0x07C9)
+
+
+# -- ES register model: the same cases entered with ES not equal to DATA --------------------------
+# (a routine that must leave ES alone, or set it, is only visible when the entry ES differs from
+# what it would load; tools/difftest.py compares pre2_es with the oracle's ES after every case)
+def _es_variants(cases, picks, es=0x7C20):
+    """picks: (routine, title substring or '', how many) -> clones of the first matching cases."""
+    import copy
+    out = []
+    for routine, sub, limit in picks:
+        n = 0
+        for c in cases:
+            if c.routine == routine and sub in c.title and n < limit:
+                d = copy.copy(c)
+                d.title = c.title + ' [entry ES 7C20h]'
+                d.regs = dict(c.regs, ES=es)
+                out.append(d)
+                n += 1
+    return out
+CASES += _es_variants(CASES, [
+    ('ReadClockYear', '', 2), ('ShowLateYearCredits', '', 3), ('TryShowCredits', '', 4), ('ShowCreditsScreen', '', 1),
+    ('ShowCreditsTimed', '', 1), ('TryShowIntroKeyed', '', 2), ('ShowIntroPicture', '', 3)])

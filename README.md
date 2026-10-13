@@ -17,7 +17,12 @@ python tools/graph.py 107B    # callers, callees, ports, interrupts, DATA of a r
 python tools/hostbuild.py     # native SDL3 build -> build/host/pre2.exe
 build\host\pre2.exe --assets assets             # play
 build\host\pre2.exe --assets assets --smoke 45  # bounded integration check (docs/smoke-test.md)
+build\host\pre2.exe --assets assets --smoke 75 --scenario warp   # also ending, gameover, castle
+python tests/_vga_kat.py                         # VGA model known-answer checks
+python tools/coverage.py                        # routine coverage (after PRE2_COVERAGE=1 difftest)
 ```
+
+Port status, content inventory and evidence: docs/completeness.md.
 
 Prerequisites: Python 3.10+ with `capstone` and `unicorn` (pip), MSYS2 mingw64 gcc,
 the private original assets in `assets/` and the DOS tools in `toolchain/`

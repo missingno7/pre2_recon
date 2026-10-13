@@ -383,3 +383,28 @@ def cases_all():
             poll_cases() + wait_cases() + joy_read_cases() + kbd_cases())
 
 CASES = cases_all()
+
+
+# -- ES register model: the same cases entered with ES not equal to DATA --------------------------
+# (a routine that must leave ES alone, or set it, is only visible when the entry ES differs from
+# what it would load; tools/difftest.py compares pre2_es with the oracle's ES after every case)
+def _es_variants(cases, picks, es=0x7C20):
+    """picks: (routine, title substring or '', how many) -> clones of the first matching cases."""
+    import copy
+    out = []
+    for routine, sub, limit in picks:
+        n = 0
+        for c in cases:
+            if c.routine == routine and sub in c.title and n < limit:
+                d = copy.copy(c)
+                d.title = c.title + ' [entry ES 7C20h]'
+                d.regs = dict(c.regs, ES=es)
+                out.append(d)
+                n += 1
+    return out
+CASES += _es_variants(CASES, [
+    ('PageInResource', '', 6), ('ActivateResourceSlot', '', 12),
+    ('SetLevelPalette', '', 3), ('SetStartupPalette', '', 2),
+    ('SwapInt08Int09Vectors', '', 2), ('DrawFontChar', '', 2), ('PrintAsciiz', '', 1), ('PrintDecimalWord', '', 1),
+    ('PollInputState', '', 3), ('WaitForButtonPressRelease', '', 2), ('StartSoundEffect', '', 2),
+    ('KeyboardIsr', '', 4), ('ReadJoystickTimes', '', 1), ('ResourceNameAt', '', 1)])

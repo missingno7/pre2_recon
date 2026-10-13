@@ -14,7 +14,7 @@ Any difference fails with the first differing addresses.
 """
 from common import *
 from emu import Machine, DosFiles, LOAD, CODE_SEG, DATA_SEG, STACK_SEG, MEM_SIZE
-import ctypes, importlib.util, sys, cbuild
+import ctypes, importlib.util, os, sys, cbuild
 
 class Regs(ctypes.Structure):
     _fields_ = [(n, ctypes.c_uint16) for n in ('ax', 'bx', 'cx', 'dx', 'si', 'di', 'bp', 'ds', 'es', 'flags')]
@@ -28,12 +28,13 @@ class Case:
     regs: input registers; out_regs: registers compared after return ('CF', 'ZF' allowed).
     ranges: extra (segment, offset, length) memory ranges to compare. files: use DOS files."""
     def __init__(self, title, routine, cfunc, regs=None, setup=None, out_regs=(), ranges=(), files=False,
-                 budget=50_000_000, port_inputs=None, tick_model=False):
+                 budget=50_000_000, port_inputs=None, tick_model=False, c_setup=None):
         self.title, self.routine, self.cfunc = title, routine, cfunc
         self.regs, self.setup, self.out_regs = dict(regs or {}), setup, tuple(out_regs)
         self.ranges, self.files, self.budget = tuple(ranges), files, budget
         self.port_inputs = dict(port_inputs or {})     # {port: value IN returns}, both sides
         self.tick_model = tick_model   # each failed frame-wait check advances TimerTickCount
+        self.c_setup = c_setup         # c_setup(dll) before the C call (e.g. a pre2_test_poll script)
 
 _dll = None
 def dll():
@@ -89,7 +90,11 @@ def run(case, machine=None):
     init = m.snapshot()
     vga_init = bytes(m.vga.pre2_vga_state().contents) if m.vga else None
     regs = dict(case.regs)
-    try: out = m.call(case.routine, regs, budget=case.budget)
+    flags = 0x0202
+    if os.environ.get('PRE2_POISON'):
+        for k, v in POISON.items(): regs.setdefault(k, v)
+        flags = 0x0243
+    try: out = m.call(case.routine, regs, flags=flags, budget=case.budget)
     finally: disarm_tick_model(m)
     asm_mem = m.snapshot()
     vga_asm = bytes(m.vga.pre2_vga_state().contents) if m.vga else None
@@ -103,8 +108,11 @@ def run(case, machine=None):
     d.pre2_platform_tick_model(1 if case.tick_model else 0)
     for port, value in case.port_inputs.items(): d.pre2_ports_preset(port, value)
     r = Regs(**{k.lower(): v for k, v in regs.items() if k in ('AX', 'BX', 'CX', 'DX', 'SI', 'DI', 'BP', 'DS', 'ES')})
-    r.ds = regs.get('DS', DATA_SEG); r.es = regs.get('ES', DATA_SEG); r.flags = 0x0202
-    status = getattr(d, case.cfunc)(ctypes.byref(r))
+    r.ds = regs.get('DS', DATA_SEG); r.es = regs.get('ES', DATA_SEG); r.flags = flags
+    c_es = ctypes.c_uint16.in_dll(d, 'pre2_es'); c_es.value = r.es
+    keep = case.c_setup(d) if case.c_setup else None
+    try: status = getattr(d, case.cfunc)(ctypes.byref(r))
+    finally: ctypes.c_void_p.in_dll(d, 'pre2_test_poll').value = None; del keep
     c_mem = bytes(mem)
     if vga_asm is not None:
         vga_c = bytes(d.pre2_vga_state().contents)
@@ -127,8 +135,12 @@ def run(case, machine=None):
         if k in ('CF', 'ZF'):
             bit = {'CF': 1, 'ZF': 0x40}[k]
             a, c = bool(out['FLAGS'] & bit), bool(r.flags & bit)
-        else: a, c = out[k], getattr(r, k.lower())
+        else: a, c = out[k], (c_es.value if k == 'ES' else getattr(r, k.lower()))   # ES: the register model
         if a != c: problems.append(f'{k}: asm {a:#x} c {c:#x}' if not isinstance(a, bool) else f'{k}: asm {a} c {c}')
+    if out['ES'] != c_es.value:            # the ES register model (pre2_es) after every case
+        msg = f'ES after return: asm {out["ES"]:04X} c {c_es.value:04X}'
+        if os.environ.get('PRE2_ES_CENSUS'): print(f'ES-CENSUS {case.routine} {case.title}: {msg}')
+        else: problems.append(msg)
     plog_a = ';'.join(','.join(str(x) for x in e) for e in m.ports.log)
     plog_c = d.pre2_ports_log().decode()
     if plog_a != plog_c: problems.append(f'port log differs:\n    asm {plog_a[:300]}\n    c   {plog_c[:300]}')
@@ -137,6 +149,11 @@ def run(case, machine=None):
         clog = d.pre2_files_log().decode()
         if alog != clog: problems.append(f'DOS file log differs:\n    asm {alog[:300]}\n    c   {clog[:300]}')
     return problems
+
+# PRE2_POISON=1: every register a case does not specify (and CF, ZF) starts as garbage on both
+# sides, so a routine that reads a register its C contract does not carry shows as a difference.
+POISON = {'AX': 0xA5C3, 'BX': 0x5A3C, 'CX': 0x3C5A, 'DX': 0xC3A5, 'SI': 0x6996, 'DI': 0x9669, 'BP': 0x7E81,
+          'ES': 0x7C20}
 
 def load_suite(name):
     path = ROOT/'tests'/f'{name}.py'
@@ -159,6 +176,9 @@ def main():
                 print(f'FAIL {name}: {case.title}'); [print('   ', p) for p in problems]
         print(f'{"PASS" if not failed else "...."} {name}: {len(suite.CASES)} cases')
     print(f'{total - failed}/{total} cases equal')
+    if m.blocks is not None:                      # PRE2_COVERAGE: for tools/coverage.py
+        import json
+        (ROOT/'build'/'coverage.json').write_text(json.dumps({'suites': names, 'blocks': sorted(m.blocks)}))
     if failed: raise SystemExit(1)
 
 if __name__ == '__main__':

@@ -111,6 +111,7 @@ static int DspWriteChecked(uint8_t v)
         } while (cx != 0 && (al & 0x80));
         if (cx != 0) { port_out8(dx, v); return 0; }   /* jcxz not taken */
     }
+    if (CB(CS_IrqProbeHooked) != 0) SET_ES(0);         /* the timeout path unhooks the probe ISRs: ES = 0 */
     return 1;
 }
 
@@ -137,6 +138,7 @@ static void InitAdlibSampler(void)
     port_out8(0x40, 0x00);
     wr16(0x0000, 0x0020, 0x06F6);                /* IVT 08h = SampleTimerIsr (cs:06F6h) */
     wr16(0x0000, 0x0022, CODE_SEG);
+    SET_ES(0);                                   /* the IVT write leaves ES = 0000h */
 }
 
 /* ---- sound set-up after the probe ---------------------------------------------------------- */
@@ -173,8 +175,10 @@ static int SbSetup(const SoundProbe *p)
     uint8_t irq = p->sb_irq;
     SET_DB(DS_SbIrqLine, irq);
     port_out8(0x21, (uint8_t)(DB(DS_PicMaskSaved) & (uint8_t)~(1u << irq)));
+    SET_ES(DATA_SEG);                             /* loc_1E74: es = DATA for the table fill */
     BuildVolumeTable();
 
+    SET_ES(0);                                    /* then es = 0 for the IVT exchange */
     uint16_t slot = (uint16_t)((8u + irq) * 4u);  /* IVT entry of INT 08h+irq */
     uint16_t old_off = rd16(0x0000, slot), old_seg = rd16(0x0000, (uint16_t)(slot + 2));
     wr16(0x0000, slot, CS_SbIrqHandler);
@@ -192,13 +196,14 @@ static int SbSetup(const SoundProbe *p)
 
     if (!(CW(CS_OptionBits) & 0x40u)) {          /* module segment, when memory allows */
         uint16_t room = (uint16_t)(CW(CS_ConventionalTopSeg) - platform_stack_segment());
-        if (room < 0x7D00u) return STARTUP_UNSUPPORTED;   /* "not enough memory" message */
+        if (room < 0x7D00u) return STARTUP_UNSUPPORTED;   /* "not enough memory" message (ES = 0 here) */
         SET_DW(DS_ModuleSegment, DW(DS_NextFreeSegment));
         SET_DW(DS_NextFreeSegment, (uint16_t)(DW(DS_NextFreeSegment) + 0x105Cu));
     }
 
     /* SFX bank: 8-bit unsigned samples to 6-bit signed-biased: (b + 80h) >> 2. */
     uint16_t seg = DW(DS_SfxBankSegment);
+    SET_ES(seg);                                  /* loc_1F2F: es = SfxBankSegment */
     uint16_t count = (uint16_t)(DW(DS_SfxBankParagraphs) << 4);
     uint32_t n = count ? count : 0x10000u;       /* loop with CX = 0 runs 65536 times */
     uint16_t di = 0;
@@ -232,14 +237,16 @@ void ProbeCpuClass(void)
 
 /* ---- InitSoundDevices (cs:0802h) --------------------------------------------------------- */
 
-int InitSoundDevices(void)
+static int init_sound_devices(void)
 {
     SET_DB(DS_PicMaskSaved, port_in8(0x21));
     if (CB(CS_SoundEnabledFlag) == 0) return STARTUP_OK;      /* /M */
 
     uint16_t seg;
+    uint16_t es_entry = pre2_es;
     int e = LoadSqzFile(0x0859u, &seg);                       /* SAMPLE.SQZ */
     if (e) return e;
+    pre2_es = es_entry;                                       /* push ds / push es around the load */
     SET_DW(DS_SfxBankSegment, seg);
     SET_DW(DS_SfxBankParagraphs, (uint16_t)(DW(DS_NextFreeSegment) - seg));
 
@@ -278,6 +285,16 @@ int InitSoundDevices(void)
     return STARTUP_OK;
 }
 
+/* The whole routine is bracketed by push es / pop es: every normal return restores ES. A
+ * failure (a boundary where the original prints a message and waits) stops with ES as is. */
+int InitSoundDevices(void)
+{
+    uint16_t es_entry = pre2_es;
+    int e = init_sound_devices();
+    if (e == STARTUP_OK) pre2_es = es_entry;
+    return e;
+}
+
 /* ---- InitResourceMemory (cs:08F0h) ----------------------------------------------------------- */
 
 /* EMS: the INT 67h vector's device name is compared with DATA:0B49h (4 words at ES:000Ah).
@@ -285,6 +302,7 @@ int InitSoundDevices(void)
 static int EmsNamePresent(void)
 {
     uint16_t es = rd16(0x0000, 0x019E);
+    SET_ES(es);                                   /* mov es, word ptr es:[19Eh]: left behind (loc_0904) */
     for (uint16_t i = 0; i < 4; i++)
         if (rd16(es, (uint16_t)(0x000A + 2 * i)) != DW((uint16_t)(0x0B49 + 2 * i))) return 0;
     return 1;

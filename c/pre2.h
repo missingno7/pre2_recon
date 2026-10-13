@@ -23,6 +23,12 @@
 #define MEM_SIZE   0x110000u
 
 extern uint8_t pre2_mem[MEM_SIZE];
+/* The ES register where the original leaves it changed across routine boundaries (a register
+ * model, not game state): each translated routine leaves pre2_es as the original leaves ES
+ * on return, so a consumer of a stale ES (loc_01C4's render-slot fill) can use it. The
+ * differential tests compare it with the oracle's ES after every case. */
+extern uint16_t pre2_es;
+#define SET_ES(v) (pre2_es = (uint16_t)(v))
 
 static inline uint32_t lin(uint16_t seg, uint16_t off) { return ((uint32_t)seg << 4) + off; }
 static inline uint8_t  rd8 (uint16_t seg, uint16_t off) { return pre2_mem[lin(seg, off)]; }

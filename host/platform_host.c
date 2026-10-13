@@ -175,10 +175,29 @@ static uint8_t pc_scancode(SDL_Scancode s, int *extended)
     case SDL_SCANCODE_F4: return 0x3E; case SDL_SCANCODE_F5: return 0x3F; case SDL_SCANCODE_F6: return 0x40;
     case SDL_SCANCODE_F7: return 0x41; case SDL_SCANCODE_F8: return 0x42; case SDL_SCANCODE_F9: return 0x43;
     case SDL_SCANCODE_F10: return 0x44;
-    case SDL_SCANCODE_UP: return 0x48; case SDL_SCANCODE_LEFT: return 0x4B;
-    case SDL_SCANCODE_RIGHT: return 0x4D; case SDL_SCANCODE_DOWN: return 0x50;
-    case SDL_SCANCODE_KP_8: return 0x48; case SDL_SCANCODE_KP_4: return 0x4B;
-    case SDL_SCANCODE_KP_6: return 0x4D; case SDL_SCANCODE_KP_2: return 0x50;
+    case SDL_SCANCODE_LEFTBRACKET: return 0x1A; case SDL_SCANCODE_RIGHTBRACKET: return 0x1B;
+    case SDL_SCANCODE_SEMICOLON: return 0x27; case SDL_SCANCODE_APOSTROPHE: return 0x28;
+    case SDL_SCANCODE_GRAVE: return 0x29; case SDL_SCANCODE_BACKSLASH: return 0x2B;
+    case SDL_SCANCODE_COMMA: return 0x33; case SDL_SCANCODE_PERIOD: return 0x34;
+    case SDL_SCANCODE_SLASH: return 0x35; case SDL_SCANCODE_KP_MULTIPLY: return 0x37;
+    case SDL_SCANCODE_CAPSLOCK: return 0x3A; case SDL_SCANCODE_NUMLOCKCLEAR: return 0x45;
+    case SDL_SCANCODE_SCROLLLOCK: return 0x46; case SDL_SCANCODE_F11: return 0x57;
+    case SDL_SCANCODE_F12: return 0x58;
+    case SDL_SCANCODE_KP_7: return 0x47; case SDL_SCANCODE_KP_8: return 0x48;
+    case SDL_SCANCODE_KP_9: return 0x49; case SDL_SCANCODE_KP_MINUS: return 0x4A;
+    case SDL_SCANCODE_KP_4: return 0x4B; case SDL_SCANCODE_KP_5: return 0x4C;
+    case SDL_SCANCODE_KP_6: return 0x4D; case SDL_SCANCODE_KP_PLUS: return 0x4E;
+    case SDL_SCANCODE_KP_1: return 0x4F; case SDL_SCANCODE_KP_2: return 0x50;
+    case SDL_SCANCODE_KP_3: return 0x51; case SDL_SCANCODE_KP_0: return 0x52;
+    case SDL_SCANCODE_KP_PERIOD: return 0x53;
+    /* the extended group: E0h, then the code of the numeric-pad / left-hand key it doubles */
+    case SDL_SCANCODE_UP: *extended = 1; return 0x48; case SDL_SCANCODE_LEFT: *extended = 1; return 0x4B;
+    case SDL_SCANCODE_RIGHT: *extended = 1; return 0x4D; case SDL_SCANCODE_DOWN: *extended = 1; return 0x50;
+    case SDL_SCANCODE_HOME: *extended = 1; return 0x47; case SDL_SCANCODE_PAGEUP: *extended = 1; return 0x49;
+    case SDL_SCANCODE_END: *extended = 1; return 0x4F; case SDL_SCANCODE_PAGEDOWN: *extended = 1; return 0x51;
+    case SDL_SCANCODE_INSERT: *extended = 1; return 0x52; case SDL_SCANCODE_DELETE: *extended = 1; return 0x53;
+    case SDL_SCANCODE_RCTRL: *extended = 1; return 0x1D; case SDL_SCANCODE_RALT: *extended = 1; return 0x38;
+    case SDL_SCANCODE_KP_ENTER: *extended = 1; return 0x1C; case SDL_SCANCODE_KP_DIVIDE: *extended = 1; return 0x35;
     default: return 0;
     }
 }
@@ -338,9 +357,15 @@ static void service(int waiting)
     SDL_Event e;
     while (SDL_PollEvent(&e)) {
         if (e.type == SDL_EVENT_QUIT) hw.quit = 1;
-        if ((e.type == SDL_EVENT_KEY_DOWN && !e.key.repeat) || e.type == SDL_EVENT_KEY_UP) {
+        /* key down (also SDL's repeats: the PC keyboard's typematic repeat sends the make
+         * code again, and the game never changes the typematic rate) and key up; keys of the
+         * 101-key keyboard's extended group are preceded by E0h, as the keyboard sends them */
+        if (e.type == SDL_EVENT_KEY_DOWN || e.type == SDL_EVENT_KEY_UP) {
             int ext; uint8_t code = pc_scancode(e.key.scancode, &ext);
-            if (code) run_int09((uint8_t)(code | (e.type == SDL_EVENT_KEY_UP ? 0x80 : 0)));
+            if (code) {
+                if (ext) run_int09(0xE0);
+                run_int09((uint8_t)(code | (e.type == SDL_EVENT_KEY_UP ? 0x80 : 0)));
+            }
         }
     }
     if (host_input_script) host_input_script(host_stats.frames_waited, run_int09);

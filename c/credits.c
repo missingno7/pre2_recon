@@ -77,6 +77,7 @@ static void AddRow(uint16_t delta) { SET_DW(DS_TextRowOffset, (uint16_t)(DW(DS_T
 
 void ShowCreditsScreen(void)
 {
+    uint16_t es_saved = pre2_es;                 /* push es ... pop es: SetStartupPalette sets ES = DATA */
     ClearDisplayPage();
     SetStartupPalette();
     SET_DW(DS_TextByteColumn, 1);
@@ -106,12 +107,14 @@ void ShowCreditsScreen(void)
     AddRow(0x01E0);
     SET_DW(DS_TextByteColumn, 0);
     PrintAsciiz(DATA_SEG, 0x29E4);
+    pre2_es = es_saved;
 }
 
 /* ---- ShowCreditsTimed (cs:24C0h, unused) ----------------------------------------------------- */
 
 void ShowCreditsTimed(void)
 {
+    uint16_t es_saved = pre2_es;                 /* all registers are preserved */
     SetLevelVideoMode();
     ShowCreditsScreen();
     SET_DW(DS_word_27F0, 0);
@@ -122,6 +125,7 @@ void ShowCreditsTimed(void)
         platform_poll();
     }
     SET_DW(DS_word_27F0, 0x0870);
+    pre2_es = es_saved;
 }
 
 /* ---- TryShowCredits (cs:2479h) ----------------------------------------------------------------- */
@@ -134,10 +138,12 @@ int TryShowCredits(void)
         if (sc == 0x11 || sc == 0x1D || sc == 0x38) continue;   /* W, Ctrl, Alt */
         if (DB((uint16_t)(DS_KeyDownTable + sc)) != 0) return 1;
     }
+    uint16_t es_saved = pre2_es;                 /* pushed once the gate has passed */
     ShowCreditsScreen();
     WaitForButtonPressRelease();
     ClearDisplayPage();
     SetLevelPalette();
+    pre2_es = es_saved;
     return 0;
 }
 
@@ -158,6 +164,7 @@ static void CopyPlane(uint16_t src_seg, uint8_t mask)
 
 int ShowIntroBody(void)
 {
+    uint16_t es_saved = pre2_es;                 /* push es ... pop es around the whole body */
     SET_DW(DS_NextFreeSegment, DW(DS_word_0039));
     uint16_t seg = 0;
     LoadSqzFile(0x2A0Cu, &seg);                        /* first load is overwritten (see notes) */
@@ -188,6 +195,7 @@ int ShowIntroBody(void)
 
     WaitForButtonPressRelease();
     SetLevelVideoMode();
+    pre2_es = es_saved;
     return 0;
 }
 

@@ -183,10 +183,12 @@ static void loc_96C1(void)
 
 void ShowWorldMapScrollIn(void)
 {
+    SET_ES(DATA_SEG);
     DisableVideoOutput();
     ActivateResourceSlot(2);
     PageInResource(5);
     uint16_t map = DW(DS_NextFreeSegment);
+    SET_ES(map);                                         /* the stamp writes through ES */
     uint16_t bx = (uint16_t)(DB(DS_CurrentLevel) * 4);
     uint16_t dx = (uint16_t)(DW((uint16_t)(LEVEL_TABLE_X + bx)) >> 3);
     uint16_t yy = (uint16_t)(DW((uint16_t)(LEVEL_TABLE_X + 2 + bx)) - 0x20);
@@ -232,7 +234,8 @@ void ShowWorldMapScrollIn(void)
     SET_DW(DS_PrevMapScrollX, 0);
     SET_DW(DS_PrevMapScrollY, 0);
     SET_DW(DS_MapScrollX, 8);
-    bios_set_dac_block(0, 0x10, DATA_SEG, 0xB0E8);
+    SET_ES(SEG_VGA);                                     /* ES stays A000h to the return; the DAC call's */
+    bios_set_dac_block(0, 0x10, DATA_SEG, 0xB0E8);       /* ES = DATA is push/pop-bracketed */
     EnableVideoOutput();
     SetCpuWriteMode();
     port_out16(0x3D4, 0x2411);
@@ -251,12 +254,14 @@ static void loc_9881(void);
 
 int RunCallbackMapScreen(uint16_t callback)
 {
+    SET_ES(DATA_SEG);
     SET_DW(DS_FrameCallback, callback);
     int st = ActivateResourceSlot(1);
     if (st) return st;
     DisableVideoOutput();
     st = PageInResource(6);
     if (st) return st;
+    SET_ES(SEG_VGA);
     uint16_t map = DW(DS_NextFreeSegment);
 
     /* planes 0 and 1 (map mask 1, 2; the loop stops after 2) from the map buffer to VRAM */
@@ -276,6 +281,7 @@ int RunCallbackMapScreen(uint16_t callback)
         }
     }
 
+    SET_ES(map);                                         /* mov es, NextFreeSegment */
     /* eight pixel-shifted tables of the font (word_003D segment) into the map buffer: each
      * of 0x560 words is byte-swapped, shifted right by the phase, and stored with the bits
      * shifted out (one byte); 30h zero words follow each table */
@@ -307,7 +313,8 @@ int RunCallbackMapScreen(uint16_t callback)
         }
     }
 
-    SET_DW(DS_MapScrollX, 0);
+    SET_ES(SEG_VGA);                                     /* ES = A000h to the return; the DAC call's ES = DATA */
+    SET_DW(DS_MapScrollX, 0);                            /* is push/pop-bracketed */
     SET_DW(DS_MapScrollY, 0);
     SET_DW(DS_PrevMapScrollX, 0);
     SET_DW(DS_PrevMapScrollY, 0);
@@ -611,12 +618,14 @@ static void loc_9C62(void);
 
 void RunGameOverScreen(void)
 {
+    SET_ES(DATA_SEG);                                    /* ES = DATA also on the gameplay early return */
     if (DB(DS_byte_2879) != 0) return;                   /* gameplay: nothing to show */
     SET_DW(DS_CameraCol, 0);
     SET_DW(DS_CameraRow, 0);
     SET_DW(DS_ShakeRows, 0);
     SET_DB(DS_FineScroll, 0);
     PageInResource(0x0B);
+    SET_ES(SEG_VGA);
     uint16_t map = DW(DS_NextFreeSegment);
     /* clear 8000 bytes at 3F40h in all planes, then copy the four planes; DI is not reset
      * after the clear, so the planes land at 5E80h (the 3F40h backdrop stays clear) */
@@ -636,6 +645,7 @@ void RunGameOverScreen(void)
         }
         di = (uint16_t)(di - 0x1F40);
     }
+    SET_ES(DATA_SEG);                                    /* ES = DATA from here to the return */
     bios_set_dac_block(0, 0x10, DATA_SEG, 0xAFE8);
 
     /* object records: 116 inactive, 8 letters, 3 items, 2 archive records */
@@ -810,7 +820,7 @@ void SwapSpriteRecords(uint16_t si, uint16_t di)
 
 void CopySpriteRecord(uint16_t si, uint16_t di)
 {
-    for (int k = 0; k < 0x12; k++) wr8(DATA_SEG, (uint16_t)(di + k), rd8(DATA_SEG, (uint16_t)(si + k)));
+    for (int k = 0; k < 0x12; k++) seg_wr8(pre2_es, (uint16_t)(di + k), rd8(DATA_SEG, (uint16_t)(si + k)));   /* rep movsb to ES:DI */
 }
 
 /* ---- front-end flow (cs:8E45) ----------------------------------------------------------- */
@@ -822,6 +832,7 @@ static uint16_t fade_in_passes(uint16_t pal, uint16_t bx);
 
 uint16_t SetPictureCopyPointers(void)
 {
+    SET_ES(SEG_VGA);
     return (uint16_t)(DW(DS_LevelSegment) + 0x30);      /* DS: picture bytes; SI = 0, ES = A000h, DI = 0 */
 }
 
@@ -886,6 +897,7 @@ void ShowPlanarPicture(uint16_t pic)
     WaitVerticalRetrace();
     port_out8(0x3C8, 0);
     for (int k = 0; k < 0x300; k++) port_out8(0x3C9, 0);
+    SET_ES(SEG_VGA);
     port_out8(0x3C4, 2);
     uint16_t si = 0;
     for (uint8_t al = 1; al < 0x10; al <<= 1) {        /* four planes, 8000 bytes each */
@@ -897,6 +909,7 @@ void ShowPlanarPicture(uint16_t pic)
             di = (uint16_t)(di + 2);
         }
     }
+    SET_ES(pic);                                       /* mov ax, ds; mov es, ax: ES = the picture to the return */
     for (uint16_t k = 0; k < 0x2D0; k++) wr8(pic, (uint16_t)(0x7D30 + k), 0);
     fade_in_passes((uint16_t)(pic + 0x7D0), 0);
 }
@@ -907,17 +920,21 @@ void ShowPlanarPicture(uint16_t pic)
 int ShowPresentTitle(void)
 {
     uint16_t seg = 0;
+    uint16_t es_saved = pre2_es;                         /* push es / pop es around the load */
     int st = LoadSqzFile(0xA2F8, &seg);
+    SET_ES(es_saved);
     if (st) return st;
     SET_DW(DS_NextFreeSegment, seg);
     SET_DW(DS_LevelSegment, seg);
     uint16_t bx = ShowMode13PictureFadeIn(0xFF, 0);
     uint16_t logo = (uint16_t)(seg + 0x1030);            /* 3A20h words: 320 x 93 strip */
+    SET_ES(SEG_VGA);
     for (uint32_t k = 0; k < 0x3A20; k++) {
         uint16_t off = (uint16_t)(2 * k);
         mw_wr(SEG_VGA, off, rd16(logo, off));
     }
     uint16_t cur = seg;
+    SET_ES(DW(DS_NextFreeSegment));                      /* ES = the asset to the return (the morph reads es:[di]) */
     for (int k = 0; k < 0x300; k++) {                    /* 6-bit palette of the screen */
         if (k == 0) port_out8(0x3C7, 0);
         wr8(cur, (uint16_t)k, (uint8_t)(port_in8(0x3C9) & 0x3F));
@@ -957,7 +974,9 @@ int ShowPresentTitle(void)
 int ShowTitusScreen(void)
 {
     uint16_t seg = 0;
+    uint16_t es_saved = pre2_es;                         /* push es / pop es around the load */
     int st = LoadSqzFile(0xA304, &seg);
+    SET_ES(es_saved);
     if (st) return st;
     SET_DW(DS_NextFreeSegment, seg);
     SET_DW(DS_LevelSegment, seg);
@@ -1004,6 +1023,7 @@ static void loc_8EFD(void);
 static void loc_8F29(void);
 static int front_end_loop(int stop_before_intro);
 static void level_start_tail(void);
+static int enter_code_tail(void);
 
 #define FE_RESTART 0x7FFF        /* internal: the ENTER path jumps back to RunFrontEnd */
 
@@ -1026,6 +1046,15 @@ int RunFrontEnd(void)
     }
 }
 
+/* After the ENTER CODE screen (the cmp of CurrentLevel after the call): a cancelled screen
+ * leaves CurrentLevel negative and restarts RunFrontEnd, an accepted code takes the exit tail. */
+static int enter_code_tail(void)
+{
+    if ((int8_t)DB(DS_CurrentLevel) < 0) return FE_RESTART;
+    loc_8EFD();
+    return SCR_OK;
+}
+
 /* The wait loop (loc_8E7B). With stop_before_intro the level start stops before the intro
  * scene (the tests enter at loc_8E7B and stop at the call of RunLevelIntroScene). */
 static int front_end_loop(int stop_before_intro)
@@ -1046,9 +1075,7 @@ static int front_end_loop(int stop_before_intro)
             SET_DB(DS_CurrentLevel, 0xFF);
             int st = RunCallbackMapScreen(CS_UpdateCodeEntryFrame);
             if (st) return st;
-            if ((int8_t)DB(DS_CurrentLevel) < 0) return FE_RESTART;
-            loc_8EFD();
-            return SCR_OK;
+            return enter_code_tail();
         }
         if ((DB(DS_byte_282D) | DB(DS_byte_2810)) != 0) {  /* a key starts the MODE screen */
             SET_DB(DS_CurrentLevel, 0);
@@ -1090,6 +1117,7 @@ static void level_start_tail(void)
  * flag (083Dh), and the CpuClass >= 3 word_78C4 setting. */
 static void loc_8EFD(void)
 {
+    SET_ES(DATA_SEG);                                    /* mov es, ax: the stosw fill; ES = DATA to the return */
     for (uint16_t k = 0; k < 0x400; k++) SET_DW((uint16_t)(0x3F + 2 * k), 0x55AA);
     SET_DB(DS_byte_083E, DB(DS_CurrentLevel));
     SET_DB(DS_byte_B198, DB(DS_ExpertFlag));
@@ -1116,6 +1144,7 @@ static void intro_group_setup(void);
 static void intro_setup(void)
 {
     SetLatchCopyMode();
+    SET_ES(SEG_VGA);                                    /* DS = ES = A000h for the backdrop save */
     for (uint16_t k = 0; k < 0x1F40; k++) {             /* movsb: VRAM 0..1F3Fh -> 3F40h.. */
         uint8_t b = mb_rd(SEG_VGA, k);
         mb_wr(SEG_VGA, (uint16_t)(0x3F40 + k), b);
@@ -1179,6 +1208,7 @@ static void loc_8F96(void)
 /* Group set-up after the walk-in, up to the walk-off head loc_9002. */
 static void intro_group_setup(void)
 {
+    SET_ES(DATA_SEG);                                   /* push ds / pop ds-to-es: DS = DATA here */
     /* rep movsw: 63 words forward from 4F2Eh to 4F30h (overlapping, so the 9-word group repeats) */
     SET_DW(DS_word_4F37, 0xFFFF);
     SET_DW(DS_word_4F3C, 0);
@@ -1244,6 +1274,7 @@ void StepSpriteAnimation(uint16_t si)
 void RestoreBackdropToDrawPage(void)
 {
     SetLatchCopyMode();
+    SET_ES(SEG_VGA);                                    /* DS and ES stay A000h; the pushed registers are restored */
     uint16_t di = DW(DS_DrawPage);
     for (uint16_t k = 0; k < 0x1F40; k++) {
         uint8_t b = mb_rd(SEG_VGA, (uint16_t)(0x3F40 + k));
@@ -1281,6 +1312,8 @@ EXPORT int c_loc_8F29(Regs *r) { (void)r; loc_8F29(); return 0; }
 EXPORT int c_loc_8E7B(Regs *r) { r->ax = (uint16_t)front_end_loop(1); return 0; }
 /* ENTER CODE request entered at its call (loc_8EDE); tests stop at the restart jump. */
 EXPORT int c_loc_8EDE(Regs *r) { r->ax = (uint16_t)front_end_loop(1); return 0; }
+EXPORT int c_enter_code_tail(Regs *r) { r->ax = (uint16_t)enter_code_tail(); return 0; }
+EXPORT int c_loc_8E7B_full(Regs *r) { r->ax = (uint16_t)front_end_loop(0); return 0; }
 EXPORT int c_level_start_tail(Regs *r) { (void)r; level_start_tail(); return 0; }
 EXPORT int c_RunLevelIntroScene(Regs *r) { (void)r; RunLevelIntroScene(); return 0; }
 EXPORT int c_RunLevelIntroScene_once(Regs *r) { (void)r; intro_setup(); r->bp = walk_in_frame(0); return 0; }

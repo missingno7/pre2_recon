@@ -489,6 +489,7 @@ int TriggerCellChangeGroup(uint16_t si)
         if (!TickCellChangeTimer(di, si)) continue;
 
         /* cluster: applied flags at 0A2A8h (80 bytes), worklist of pushed cells */
+        SET_ES(DATA_SEG);                 /* mov ax, ds / mov es, ax: ES = DATA stays to the return (UpdateFollowerSlots does not restore it) */
         for (int j = 0; j < 0x50; j++) SET_DB((uint16_t)(DS_byte_A2A8 + j), 0);
         uint16_t stack[0x51];
         int depth = 0;
@@ -1011,6 +1012,7 @@ uint16_t sub_93F6(uint16_t si)
  * Out: SI after the table (SI + 12), DI = 5648h + 5 * 18h through *di_out. */
 uint16_t sub_93B2(uint16_t si, uint16_t *di_out)
 {
+    SET_ES(DATA_SEG);                           /* the caller's ES is replaced by DATA */
     si = sub_93F6(si);
     uint16_t di = 0x5648;
     for (int n = 0; n < 5; n++) {

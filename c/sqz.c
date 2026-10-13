@@ -77,6 +77,7 @@ static int decode_huffman(uint16_t out, uint16_t hdr0, uint16_t hdr1, uint16_t t
 {
     uint16_t ws, n;
     if (allocate(paragraphs(hdr0, hdr1), &ws)) return SQZ_FATAL_MEMORY;
+    SET_ES(out);
     dos_enter();
     if (dos_read(CW(FILE_HANDLE), ws, 6, tree_bytes, &n)) return SQZ_FATAL_READ;
     dos_leave_dec();
@@ -105,6 +106,11 @@ static int decode_huffman(uint16_t out, uint16_t hdr0, uint16_t hdr1, uint16_t t
     }
     uint16_t ax;
     dos_enter(); dos_close(CW(FILE_HANDLE), &ax); dos_leave_dec();
+    /* ES at HuffmanStreamEnd: the original keeps DI below 4000h by moving ES up 3FFh
+     * paragraphs (and DI down 3FF0h) after every symbol; that follows from the linear
+     * offset of the last completed symbol. */
+    uint32_t off = dst - lin(out, 0);
+    SET_ES(out + (off < 0x4000u ? 0u : (off - 0x4000u) / 0x3FF0u + 1u) * 0x3FFu);
     return 0;
 }
 
@@ -115,7 +121,11 @@ static int decode_huffman(uint16_t out, uint16_t hdr0, uint16_t hdr1, uint16_t t
  *   0Ch next free code, 0Eh.. bit window (2 carried bytes + 1C00h read buffer),
  *   1C10h suffix bytes, 2C10h prefix words, 4C10h output stack. */
 
-static uint16_t lzw_code(uint16_t ws, uint32_t *dst, uint16_t out)
+/* Output cursor: linear position plus the original's ES:DI pair, which is renormalized at
+ * different points (loc_12EF after DI reaches 8000h; ReadLzwCode on each refill). */
+typedef struct { uint32_t dst; uint16_t es, di; } LzwOut;
+
+static uint16_t lzw_code(uint16_t ws, LzwOut *o)
 {
     if (rd16(ws, 0x0A) == rd16(ws, 0x0C) && rd8(ws, 9) != 12) {
         wr8(ws, 9, (uint8_t)(rd8(ws, 9) + 1));
@@ -132,7 +142,8 @@ static uint16_t lzw_code(uint16_t ws, uint32_t *dst, uint16_t out)
         dos_read(CW(FILE_HANDLE), ws, 0x10, 0x1C00, &n);
         dos_leave_dec();
         wr16(ws, 0, (uint16_t)((n + 2) << 3));
-        (void)dst; (void)out;      /* the original renormalizes ES:DI here; linear output is unchanged */
+        o->es = (uint16_t)(o->es + (o->di >> 4));      /* renormalize ES:DI; linear output is unchanged */
+        o->di &= 0x0F;
     }
     uint16_t si = pos >> 3;
     uint8_t cl = pos & 7;
@@ -153,21 +164,23 @@ static int decode_lzw(uint16_t out)
     dos_enter();
     dos_seek(CW(FILE_HANDLE), 0, 0, &pos);
     SET_DB(IN_DOS, 0);
+    SET_ES(DATA_SEG);                                  /* LoadLzwStream: es = DATA until loc_127A */
     dos_enter();
     if (dos_read(CW(FILE_HANDLE), out, 0x0E, 4, &n)) return SQZ_FATAL_READ;
     SET_DB(IN_DOS, 0);
     if ((rd8(out, 0x0F) & 0xF0) != 0x10) return SQZ_LZSS_INSTEAD;
     if (allocate(paragraphs(rd16(out, 0x0E), rd16(out, 0x10)), &ws)) return SQZ_FATAL_MEMORY;
     wr16(ws, 0, 0); wr16(ws, 2, 0);
-    uint32_t dst = lin(out, 0);
+    LzwOut o = { lin(out, 0), out, 0 };
+    SET_ES(out);                                       /* loc_127A */
     for (;;) {
         wr16(ws, 0x0A, 0x200); wr8(ws, 9, 9); wr16(ws, 0x0C, 0x102);       /* sub_133C */
-        ax = lzw_code(ws, &dst, out);
+        ax = lzw_code(ws, &o);
         if (ax == 0x101) break;
         wr16(ws, 5, ax); wr8(ws, 4, (uint8_t)ax);
-        pre2_mem[dst++] = (uint8_t)ax;
+        pre2_mem[o.dst++] = (uint8_t)ax; o.di++;      /* the first stosb is not range-checked */
         for (;;) {
-            ax = lzw_code(ws, &dst, out);
+            ax = lzw_code(ws, &o);
             if (ax == 0x100) break;                 /* clear: restart the dictionary */
             if (ax == 0x101) goto done;
             wr16(ws, 7, ax);
@@ -182,7 +195,10 @@ static int decode_lzw(uint16_t out)
             }
             wr8(ws, sp++, (uint8_t)ax);
             wr8(ws, 4, (uint8_t)ax);
-            do pre2_mem[dst++] = rd8(ws, --sp); while (sp != 0x4C10);
+            do {
+                pre2_mem[o.dst++] = rd8(ws, --sp);
+                if (++o.di >= 0x8000) { o.es = (uint16_t)(o.es + 0x800); o.di = (uint16_t)(o.di - 0x8000); }
+            } while (sp != 0x4C10);
             uint16_t next = rd16(ws, 0x0C);
             if (next < 0x1000) {
                 wr8(ws, (uint16_t)(next + 0x1C10), rd8(ws, 4));
@@ -194,12 +210,13 @@ static int decode_lzw(uint16_t out)
     }
 done:
     dos_enter(); dos_close(CW(FILE_HANDLE), &ax); dos_leave_dec();
+    SET_ES(o.es);
     return 0;
 }
 
 /* ---- LZSS (loc_1414 .. sub_1700) --------------------------------------------------- */
 
-typedef struct { uint16_t ds, si, bp; uint8_t dl; uint32_t dst; int fatal; } LzBits;
+typedef struct { uint16_t ds, si, bp; uint8_t dl; uint32_t dst; int fatal; uint16_t es, di; } LzBits;   /* es:di = the original's output pointer */
 
 /* sub_1700 mode 0 (file): refill the input buffer when SI passed the threshold. */
 static void lz_refill(LzBits *b)
@@ -213,6 +230,8 @@ static void lz_refill(LzBits *b)
         if (dos_read(CW(FILE_HANDLE), b->ds, keep, (uint16_t)(CW(LZ_BUF_BYTES) - keep), &n)) { b->fatal = SQZ_FATAL_SQUEEZED; return; }
         dos_leave_dec();
         b->si = 0;
+    } else if (CB(LZ_SRC_MODE) == 0 && b->di >= 0xC000u) {      /* output window: ES up 800h, DI down 8000h */
+        b->es = (uint16_t)(b->es + 0x800); b->di = (uint16_t)(b->di - 0x8000);
     }
     b->bp = rd16(b->ds, b->si); b->si += 2;
     b->dl = 0x10;
@@ -228,7 +247,7 @@ static int lz_bit(LzBits *b)
 
 static void lz_copy(LzBits *b, uint16_t dist, uint16_t count)
 {
-    while (count--) { pre2_mem[b->dst] = pre2_mem[b->dst + (int16_t)dist]; b->dst++; }
+    while (count--) { pre2_mem[b->dst] = pre2_mem[b->dst + (int16_t)dist]; b->dst++; b->di++; }
 }
 
 /* sub_14D8 core: DS:SI = compressed stream, ES:DI = output. Returns 0 at the end code. */
@@ -237,7 +256,7 @@ static int lz_decode(LzBits *b)
     b->dl = 0x10;
     b->bp = rd16(b->ds, b->si); b->si += 2;
     for (;;) {
-        if (lz_bit(b)) { pre2_mem[b->dst++] = rd8(b->ds, b->si++); if (b->fatal) return b->fatal; continue; }
+        if (lz_bit(b)) { pre2_mem[b->dst++] = rd8(b->ds, b->si++); b->di++; if (b->fatal) return b->fatal; continue; }
         int long_form = lz_bit(b);
         uint8_t bl = rd8(b->ds, b->si++), bh = 0xFF;
         uint16_t count;
@@ -296,12 +315,14 @@ static int decode_lzss(uint16_t out)
     if (avail < 0x0F00) bytes = (uint16_t)(avail << 4);
     SET_CW(LZ_BUF_BYTES, bytes);
     SET_CW(LZ_REFILL_AT, (uint16_t)(bytes - 0x80));
+    SET_ES(out);                                       /* loc_149D: es = SqzOutputSegment */
     SET_DB(IN_DOS, DB(IN_DOS) + 1);
     if (dos_read(CW(FILE_HANDLE), ws, 0, bytes, &n)) return SQZ_FATAL_SQUEEZED;
     dos_leave_dec();
-    LzBits b = { ws, 0, 0, 0, lin(out, 0), 0 };
+    LzBits b = { ws, 0, 0, 0, lin(out, 0), 0, out, 0 };
     int r = lz_decode(&b);
     if (r) return r;
+    SET_ES(b.es);
     if (CB(LZ_SRC_MODE) == 0) {
         uint16_t ax;
         dos_enter(); dos_close(CW(FILE_HANDLE), &ax); dos_leave_dec();
@@ -314,6 +335,7 @@ static int decode_lzss(uint16_t out)
 int LoadSqzFile(uint16_t name, uint16_t *out_seg)
 {
     uint16_t ax, n;
+    SET_ES(DATA_SEG);                                  /* ds = es = DATA; the open failure stops here */
     dos_enter();
     int failed = dos_open(DATA_SEG, name, &ax);
     SET_DB(IN_DOS, 0);

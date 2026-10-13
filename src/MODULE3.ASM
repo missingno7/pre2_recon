@@ -3643,7 +3643,7 @@ ContinueAttackAnim:
 ;   Display: the frame table at the record pointer (8-byte rows, key/frame/x/y, 55AAh ends)
 ;   gives PlayerSprite/PlayerRenderY relative to the player. PlayerSprite is FFFFh
 ;   (hidden) while FallCounter is nonzero or no key matches.
-;   Quirk: PlayerWeaponType 0..2 are the only values the game sets (type 3 exists only as data).
+;   PlayerWeaponType 0..3: pickups 0Dh, 0B6h, 2Ch and 0E0h set them (loc_87AE..loc_87D8).
 UpdatePlayerStateAttack:
     call SetPlayerAnim
     call AdvancePlayerAnim
@@ -4022,9 +4022,9 @@ loc_6291:
     clc
     ret
 
-; Waits for the frame sync flag (byte 280Dh). Returns at once when it is zero. Otherwise waits
-; for it to clear, then to set, then to clear again.
-; In: none. Out: none. Notes: no writer of byte 280Dh exists in the source tree (external pulse).
+; The pause key. byte 280Dh is KeyDownTable[19h] (P; written by KeyboardIsr). Returns at once
+; when P is up. Otherwise waits for its release, the next press and that release.
+; In: none. Out: none. Notes: the waits end only through the keyboard interrupt.
 WaitFrameSyncFlag:
     cmp byte ptr ds:byte_280D, 0
     je loc_62B0

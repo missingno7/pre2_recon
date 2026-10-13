@@ -56,6 +56,32 @@ static uint64_t smoke_start_ns, gameplay_ns, gameplay_ticks;
 static uint32_t gameplay_frames0;
 static uint64_t gameplay_sb_irqs, gameplay_sb_bytes;
 static uint32_t gameplay_mem0, gameplay_io0;
+/* --scenario NAME (with --smoke): 2 s into the first level, write the state that triggers a
+ * high-risk transition, then follow the program through its screens with RETURN taps,
+ * printing every top-level step and level change (docs/smoke-test.md):
+ *   warp      CurrentLevel 3, LevelEndMode 2: the warp into bonus room 0Ah
+ *   ending    EndSignal FFh: THEEND, the intro picture gate, the front end
+ *   gameover  EndSignal 1: death bounce, game-over screen, the front end
+ *   castle    CurrentLevel 7, LevelEndMode 1, beginner: exit sequence, CASTLE, the front end */
+static const char *scenario;
+static int scenario_poked;
+static void scenario_poke(void)
+{
+    if (!strcmp(scenario, "warp")) { SET_DB(DS_CurrentLevel, 3); SET_DB(DS_LevelEndMode, 2); }
+    else if (!strcmp(scenario, "ending")) SET_DB(DS_EndSignal, 0xFF);
+    else if (!strcmp(scenario, "gameover")) SET_DB(DS_EndSignal, 1);
+    else if (!strcmp(scenario, "castle")) { SET_DB(DS_CurrentLevel, 7); SET_DB(DS_LevelEndMode, 1); SET_DB(DS_byte_B198, 0); }
+    printf("scenario %s: state written at %.2f s\n", scenario, (SDL_GetTicksNS() - smoke_start_ns) / 1e9);
+}
+static void scenario_trace(void)
+{
+    static const char *phase; static int level = -1;
+    if (phase != pre2_phase || level != DB(DS_CurrentLevel)) {
+        phase = pre2_phase; level = DB(DS_CurrentLevel);
+        printf("trace %6.2f s: %-28s CurrentLevel %02X\n", (SDL_GetTicksNS() - smoke_start_ns) / 1e9, phase, level);
+    }
+}
+
 static void smoke_keys(uint64_t polls, void (*key)(uint8_t))
 {
     /* Until the first gameplay frame: RETURN tapped (0.1 s, a quick human press) every 1.2 s (start-up screens,
@@ -69,7 +95,12 @@ static void smoke_keys(uint64_t polls, void (*key)(uint8_t))
         gameplay_mem0 = vga_mem_accesses; gameplay_io0 = vga_io_accesses;
         if (down) { key(0x9C); down = 0; }
     }
-    if (gameplay_ns) { if (!held) { key(0x4D); held = 1; } return; }
+    if (scenario) scenario_trace();
+    if (gameplay_ns && scenario && !scenario_poked && now - gameplay_ns >= 2000000000ull) {
+        if (held) { key(0xCD); held = 0; }
+        scenario_poke(); scenario_poked = 1; last = now;
+    }
+    if (gameplay_ns && !scenario_poked) { if (!held) { key(0x4D); held = 1; } return; }
     if (down && now - last >= 100000000ull) { key(0x9C); down = 0; }
     /* hands off while the map scrolls in, so the whole scroll-in can be observed */
     if (!strcmp(pre2_phase, "ShowWorldMapScrollIn()")) return;
@@ -122,6 +153,7 @@ int main(int argc, char **argv)
         else if (!strcmp(argv[i], "--smoke") && i + 1 < argc) smoke = atof(argv[++i]);
         else if (!strcmp(argv[i], "--shots") && i + 1 < argc) host_shots_dir = argv[++i];
         else if (!strcmp(argv[i], "--fast-load")) host_fast_load = 1;
+        else if (!strcmp(argv[i], "--scenario") && i + 1 < argc) scenario = argv[++i];
         else if (!strcmp(argv[i], "--fast-vga")) host_fast_vga = 1;
     }
     load_image();

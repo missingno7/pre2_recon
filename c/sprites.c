@@ -737,7 +737,11 @@ static void BuildFrameOffsets(uint16_t seg)
 int LoadSpriteSheet(void)
 {
     uint16_t seg = 0;
+    /* push es at the entry, pop es in the shared tail after BuildFrameOffsets (and the push es
+     * / pop es around the load): the caller's ES survives the whole routine */
+    uint16_t es_entry = pre2_es;
     int e = LoadSqzFile(SPRITE_SQZ_NAME, &seg);
+    pre2_es = es_entry;
     if (e) return e;
     SET_DW(DS_SpriteDataSegment, seg);
 
@@ -763,6 +767,7 @@ int LoadSpriteSheet(void)
 
     ExpandSpriteFrames();
     BuildFrameOffsets(seg);
+    SET_ES(es_entry);
     return 0;
 }
 
@@ -791,10 +796,13 @@ EXPORT int c_LoadSpriteSheet(Regs *r)
 }
 
 /* ExpandSpriteFrames falls through into BuildFrameOffsets (the original's loop exit). */
+/* Entered mid-LoadSpriteSheet: the tail pops the caller's registers from the frame the test
+ * built at SS:0100h (ES first), so ES on return is that saved word. */
 EXPORT int c_ExpandSpriteFrames(Regs *r)
 {
     ExpandSpriteFrames();
     BuildFrameOffsets(DW(DS_SpriteDataSegment));
+    SET_ES(rd16(LOAD_SEG, 0x0100));                     /* pop es (SS = the stack frame at LOAD_SEG) */
     r->ds = DATA_SEG;
     return 0;
 }

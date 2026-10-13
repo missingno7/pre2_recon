@@ -236,3 +236,24 @@ def raw_case(title, name, free=FREE):
 CASES.append(raw_case('LoadRawFile PRES.TRK', 'PRES.TRK'))
 CASES.append(raw_case('LoadRawFile MAP.SQZ (raw read, not decoded)', 'MAP.SQZ'))
 CASES.append(raw_case('LoadRawFile GLACE.TRK at another heap top', 'GLACE.TRK', free=0x3000))
+
+
+# -- ES register model: the same cases entered with ES not equal to DATA --------------------------
+# (a routine that must leave ES alone, or set it, is only visible when the entry ES differs from
+# what it would load; tools/difftest.py compares pre2_es with the oracle's ES after every case)
+def _es_variants(cases, picks, es=0x7C20):
+    """picks: (routine, title substring or '', how many) -> clones of the first matching cases."""
+    import copy
+    out = []
+    for routine, sub, limit in picks:
+        n = 0
+        for c in cases:
+            if c.routine == routine and sub in c.title and n < limit:
+                d = copy.copy(c)
+                d.title = c.title + ' [entry ES 7C20h]'
+                d.regs = dict(c.regs, ES=es)
+                out.append(d)
+                n += 1
+    return out
+CASES += _es_variants(CASES, [
+    ('InitSoundDevices', '', 10), ('InitResourceMemory', '', 9), ('LoadRawFile', '', 2), ('ProbeCpuClass', '', 2)])

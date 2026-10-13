@@ -455,3 +455,27 @@ def _start_block(page, addr, rec=0x10BB):
 for page, addr in ((0x02, 0x4C99), (0x0F, 0xFFF0), (0x00, 0x0000)):
     CASES.append(Case(f'StartSbBlock: page {page:02X}h address {addr:04X}h', 'StartSbBlock', 'c_StartSbBlock',
                       setup=_start_block(page, addr)))
+
+
+# -- ES register model: the same cases entered with ES not equal to DATA --------------------------
+# (a routine that must leave ES alone, or set it, is only visible when the entry ES differs from
+# what it would load; tools/difftest.py compares pre2_es with the oracle's ES after every case)
+def _es_variants(cases, picks, es=0x7C20):
+    """picks: (routine, title substring or '', how many) -> clones of the first matching cases."""
+    import copy
+    out = []
+    for routine, sub, limit in picks:
+        n = 0
+        for c in cases:
+            if c.routine == routine and sub in c.title and n < limit:
+                d = copy.copy(c)
+                d.title = c.title + ' [entry ES 7C20h]'
+                d.regs = dict(c.regs, ES=es)
+                out.append(d)
+                n += 1
+    return out
+CASES += _es_variants(CASES, [
+    ('MixChannel', 'silent', 1), ('MixChannel', 'plain playback', 2), ('MixChannel', 'looped wrap', 1),
+    ('MixChannel', 'random', 3), ('TrackerTick', 'slides applied', 1), ('TrackerTick', 'row processed', 1),
+    ('TrackerTick', 'speed 0: countdown', 1), ('TrackerTick', 'real module', 2), ('TrackerTick', 'random', 2),
+    ('StartSbBlock', '', 1), ('WaitSoundTicks', '', 1), ('EffectSetVolume', '', 1), ('EffectPatternBreak', '', 1)])

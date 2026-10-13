@@ -6,13 +6,15 @@
  *  - UpdatePlayer consumes the CX that UpdateTerrainEntities leaves, which is always 0
  *    (its single exit is the `dec cx / je` that ends the 16-entity loop).
  *  - The render-slot fill at loc_01C4 (`rep stosw` of 40Bh words FFFFh at offset 4F0Ah)
- *    uses whatever ES the code before it left. On the CurrentLevel < 0Ah path that is A000h
- *    (ShowWorldMapScrollIn leaves ES = A000h; ActivateResourceSlot and SetLevelVideoMode
- *    preserve it), so the words go to video memory through the VGA write logic (the
- *    off-screen tile ring), not to RenderSlots (quirk; ResetRenderSlots clears the slots
- *    afterwards). The ES of the other path is tracked in `level_es`. EnterLevelView redraws
- *    the whole tile ring later in the level start, so the stray VRAM words are overwritten
- *    before anything shows them (a mutant writing elsewhere is not observable in tests).
+ *    uses whatever ES the code before it left: the ES register model pre2_es (c/pre2.h),
+ *    which every translated routine leaves as the original leaves ES. On the CurrentLevel
+ *    < 0Ah path that is A000h (ShowWorldMapScrollIn leaves ES = A000h; ActivateResourceSlot
+ *    and SetLevelVideoMode preserve it), so the words go to video memory through the VGA
+ *    write logic (the off-screen tile ring), not to RenderSlots (quirk; ResetRenderSlots
+ *    clears the slots afterwards; EnterLevelView redraws the ring before anything shows
+ *    it). On the CurrentLevel >= 0Ah paths (warps into bonus levels, their exits and
+ *    restarts, a front end that ends on such a level) ES is what the last frame's or the
+ *    front end's code left: LevelSegment, A000h, DATA or a loader's output segment.
  * Hardware/DOS set-up that the original does inline (INT 24h vector, INT 12h, PIT) goes
  * through the same memory/port model as everything else.
  */
@@ -41,11 +43,7 @@
 const char *pre2_phase = "start";
 uint32_t pre2_frames_run;
 #define STEP(call) (pre2_phase = #call, call)
-
-/* ES as the original would hold it at loc_01C4 for the CurrentLevel >= 0Ah path; set by
- * the code that leads there. GAME_ES_UNKNOWN makes the fill fail loudly instead of guessing. */
-#define GAME_ES_UNKNOWN 0xFFFFFFFFu
-static uint32_t level_es = GAME_ES_UNKNOWN;   /* register model, not game state */
+#define GAME_AT_FRONT_END 0x7F01      /* internal status of the test entries (see restart_to_level) */
 
 /* ProgramEntry loc_0016..loc_007E: the switches in the PSP command tail. */
 static void parse_options(void)
@@ -71,24 +69,30 @@ static void parse_options(void)
     }
 }
 
-static int load(uint16_t name, uint16_t *seg) { return LoadSqzFile(name, seg); }
+/* Every LoadSqzFile call of ProgramEntry and LevelRestart is wrapped in push es / pop es. */
+static int load(uint16_t name, uint16_t *seg)
+{
+    uint16_t es_saved = pre2_es;
+    int r = LoadSqzFile(name, seg);
+    SET_ES(es_saved);
+    return r;
+}
 
 /* loc_01C4: rep stosw 40Bh x FFFFh at ES:4F0Ah. */
-static int fill_render_slots(uint32_t es)
+static void fill_render_slots(uint16_t es)
 {
-    if (es == GAME_ES_UNKNOWN) return GAME_UNSUPPORTED;
     for (uint16_t i = 0; i < 0x40B; i++) {
         uint16_t di = (uint16_t)(DS_RenderSlots + 2*i);
-        if (es == 0xA000u) { vga_write(di, 0xFF); vga_write((uint16_t)(di + 1), 0xFF); }
-        else wr16((uint16_t)es, di, 0xFFFF);
+        seg_wr8(es, di, 0xFF);
+        seg_wr8(es, (uint16_t)(di + 1), 0xFF);
     }
-    return 0;
 }
 
 int ProgramEntry(void)
 {
     int r;
     uint16_t seg;
+    SET_ES(PSP_SEG);                                     /* DOS starts the program with ES = PSP */
     parse_options();
     /* free paragraph after DATA: (B1BCh >> 4) + seg DATA + 1 */
     SET_DW(DS_NextFreeSegment, (uint16_t)((0xB1BCu >> 4) + DATA_SEG + 1));
@@ -104,6 +108,7 @@ int ProgramEntry(void)
     if ((r = load(0x000C, &seg))) return r;             /* KEYB.SQZ */
     SET_DW(DS_NextFreeSegment, seg);
     SET_DW(DS_word_003D, seg);
+    SET_ES(DATA_SEG);
     for (uint16_t i = 0; i < 0x800; i++) wr8(DATA_SEG, (uint16_t)(0x3F + i), rd8(seg, i));
     port_out8(0x40, 0x00); port_out8(0x40, 0x40);       /* PIT ch0 divisor 4000h */
     uint16_t keyb = seg;
@@ -123,17 +128,20 @@ int ProgramEntry(void)
     }
     if ((r = STEP(LoadSpriteSheet()))) return r;
     SET_DW(DS_word_0039, DW(DS_NextFreeSegment));
-    level_es = GAME_ES_UNKNOWN;
     return LevelRestart(DW(DS_NextFreeSegment));
 }
 
-int LevelRestart(uint16_t ax)
+/* LevelRestart up to the first MainFrameLoop frame: the front end when AX != 0, the CASTLE
+ * picture (back to the front end), the world map below level 0Ah, the level start. Test
+ * entries pass stop_at_front_end = 1 to return GAME_AT_FRONT_END when RunFrontEnd is due
+ * (the oracle cases stop at its entry: it waits for input). */
+static int restart_to_level(uint16_t *ax, int stop_at_front_end)
 {
     int r;
     uint16_t seg;
     for (;;) {
         SET_DW(DS_NextFreeSegment, DW(DS_word_0039));
-        if (ax) {
+        if (*ax) {
             STEP(FadeOutPaletteToBlack());
             STEP(SetLevelVideoMode());
             SET_DB(DS_Lives, 2);
@@ -142,8 +150,8 @@ int LevelRestart(uint16_t ax)
             SET_DB(DS_PlayerWeaponType, 0);
             SET_DB(DS_byte_6CA8, 0);
             if ((r = ActivateResourceSlot(3))) return r;
+            if (stop_at_front_end) return GAME_AT_FRONT_END;
             if ((r = STEP(RunFrontEnd()))) return r;
-            level_es = GAME_ES_UNKNOWN;
         }
         uint8_t level = DB(DS_CurrentLevel);
         if (level >= 8 && level < 0x0A && DB(DS_byte_B198) == 0) {
@@ -153,30 +161,36 @@ int LevelRestart(uint16_t ax)
             /* BX at the call: LoadSqzFile leaves the file handle in BX (its close) */
             ShowMode13PictureFadeIn(0xFF, CW(CS_SqzFileHandle));
             STEP(WaitForButtonPressRelease());
-            ax = 1;
+            *ax = 1;
             continue;
         }
         if (DB(DS_CurrentLevel) < 0x0A) {
             STEP(SetLevelVideoMode());
             STEP(ShowWorldMapScrollIn());
-            level_es = 0xA000u;
         }
-        if ((r = LevelStart(level_es))) return r;
+        return LevelStart();
+    }
+}
+
+int LevelRestart(uint16_t ax)
+{
+    for (;;) {
+        int r = restart_to_level(&ax, 0);
+        if (r) return r;
         r = MainFrameLoop(&ax);
         if (r) return r;
-        level_es = GAME_ES_UNKNOWN;      /* whatever UpdateLevelState's exit leaves */
-        /* UpdateLevelState set CF: restart with its AX */
+        /* UpdateLevelState set CF: restart with its AX (ES as its exit left it) */
     }
 }
 
 /* loc_01AB .. MainFrameLoop: activate the level's resource slot, set up and show the level.
- * `es` = the ES the original holds at loc_01C4 (see the file comment). */
-int LevelStart(uint32_t es)
+ * The fill at loc_01C4 uses the ES the code before it left (see the file comment). */
+int LevelStart(void)
 {
     int r;
     if ((r = ActivateResourceSlot(DB((uint16_t)(DS_byte_2D20 + DB(DS_CurrentLevel)))))) return r;
     if (DB(DS_CurrentLevel) < 0x0A) STEP(SetLevelVideoMode());
-    if ((r = fill_render_slots(es))) return r;
+    fill_render_slots(pre2_es);
     if ((r = LoadLevel(DB(DS_CurrentLevel)))) return r;
     SetLevelPalette();
     ResetLevelState();
@@ -246,9 +260,35 @@ int MainFrameLoop(uint16_t *ax_out)
     return r == 1 ? 0 : r;
 }
 
-/* Test entries: c_loc_01AB runs LevelStart with ES from the register file; c_MainFrameLoop
+/* Test entries: c_loc_01AB runs LevelStart (ES from the register file via pre2_es); c_MainFrameLoop
  * runs CX iterations (stopping early when a restart is requested; AX = its value). */
-EXPORT int c_loc_01AB(Regs *r) { return LevelStart(r->es == 0xA000u ? 0xA000u : r->es); }
+EXPORT int c_loc_01AB(Regs *r) { (void)r; return LevelStart(); }
+/* c_LevelRestart: LevelRestart with AX up to the first frame (the oracle stops at
+ * MainFrameLoop) or up to RunFrontEnd (the oracle stops at its entry). c_MainFrameLoopRestart:
+ * up to CX frames; a restart requested by UpdateLevelState runs on to the next level's first
+ * frame or to RunFrontEnd (AX = the restart's AX). */
+/* c_parse_options: the switch scan of the PSP command tail (the oracle stops at loc_007E). */
+EXPORT int c_parse_options(Regs *r) { (void)r; parse_options(); return 0; }
+EXPORT int c_LevelRestart(Regs *r)
+{
+    uint16_t ax = r->ax;
+    int st = restart_to_level(&ax, 1);
+    return st == GAME_AT_FRONT_END ? 0 : st;
+}
+EXPORT int c_MainFrameLoopRestart(Regs *r)
+{
+    for (uint16_t i = 0; i < r->cx; i++) {
+        uint16_t ax = 0;
+        int st = MainFrameStep(&ax);
+        if (st == 1) {
+            r->ax = ax;
+            st = restart_to_level(&ax, 1);
+            return st == GAME_AT_FRONT_END ? 0 : st;
+        }
+        if (st) return st;
+    }
+    return 0;
+}
 EXPORT int c_MainFrameLoop(Regs *r)
 {
     for (uint16_t i = 0; i < r->cx; i++) {

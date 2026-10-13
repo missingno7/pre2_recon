@@ -385,6 +385,7 @@ static void terrain_falling(uint16_t si)
         int16_t d = (int16_t)ax >> 4;
         SET_DW(DS_PlatformDeltaY, (uint16_t)d);
         SET_DW((uint16_t)(si + 0x0B), (uint16_t)(DW((uint16_t)(si + 0x0B)) + (uint16_t)d));
+        SET_ES(DW(DS_LevelSegment));          /* the map probe leaves ES = level map (never restored) */
         int16_t col = (int16_t)DW(si) >> 4;
         int16_t row = (int16_t)(DW((uint16_t)(si + 2)) + DW((uint16_t)(si + 0x0B))) >> 4;
         uint16_t lim = (uint16_t)((uint16_t)DB(DS_MapRows) - 1u);
@@ -434,7 +435,8 @@ static void terrain_directional(uint16_t si)
     if (dir == 5) al = (uint8_t)(0 - al);
     if (dir == 6) { al = (uint8_t)(0 - al); ah = 0; }
     if (dir == 7) { al = (uint8_t)(0 - al); ah = (uint8_t)(0 - ah); }
-    if (dir != 3) {
+    /* loc_4A61: direction 3 jumps over the sign handlers (al, ah unchanged: moves +speed, +speed) */
+    {
         int16_t dxv = (int8_t)al, dyv = (int8_t)ah;
         SET_DW(DS_PlatformDeltaX, (uint16_t)dxv);
         SET_DW((uint16_t)(si), (uint16_t)(DW((uint16_t)(si)) + (uint16_t)dxv));
@@ -573,6 +575,7 @@ static int level_finish(uint16_t *ax_out)
  * each frame, and plays sound 7. Callers: UpdateLevelState (respawn, life lost, demo end). */
 void PlayDeathBounce(void)
 {
+    uint16_t es_saved = pre2_es;                      /* push es ... pop es: ES is preserved */
     StartSoundEffect(7);
     SET_DB(DS_PlayerHurtTimer, 0);
     SET_DW(DS_PlayerFrameWord, 0x21);
@@ -603,6 +606,7 @@ void PlayDeathBounce(void)
         SET_DW(DS_PlayerY, (uint16_t)(DW(DS_PlayerY) - (uint16_t)vy));
     }
     ClearStaggeredBlocks();
+    pre2_es = es_saved;
 }
 
 /* Level state machine, called once per frame by MainFrameLoop. Priority: LevelEndMode (nonzero)
@@ -809,7 +813,7 @@ static int LevelTransitionStart(uint16_t *ax_out)
     SET_DB(DS_CurrentLevel, (uint8_t)(DB(DS_CurrentLevel) + 1));
     /* quirk: ES is still A000h from RunIrisClose here, so the tally clear goes to video
      * memory (A000:6C12h..) and the DATA tally survives the transition (ES audit) */
-    ResetItemTallyEs(0xA000u);
+    ResetItemTally();
     return level_finish(ax_out);
 }
 
@@ -851,6 +855,8 @@ static int GameOverPath(uint16_t *ax_out)
  * kept across the reset, with the sources of certain kinds dropped (see the ASM notes). */
 static int RestartFromCheckpoint(uint16_t *ax_out)
 {
+    uint16_t es_saved = pre2_es;                      /* push es ... pop es: ES is preserved */
+    SET_ES(DATA_SEG);                                 /* mov es, ax (DATA) for the snapshot copies */
     /* death snapshot of the effect-source table (8F1Dh, 70 records of 7 bytes, frame word at +4)
      * into 6C12h..6C9Fh, then 55AAh. This overwrites ItemTallyCounts and ItemTotal: quirk, the
      * tally is cleared again below. */
@@ -881,6 +887,7 @@ static int RestartFromCheckpoint(uint16_t *ax_out)
         if (DB(si) == 0) wr16(DATA_SEG, (uint16_t)(di + 3), 0xFFFF);
     }
     ResetItemTally();
+    pre2_es = es_saved;
     *ax_out = 0;
     return 0;
 }
@@ -891,7 +898,9 @@ static int ShowEndingPicture(uint16_t *ax_out)
     SetLevelVideoMode();
     SET_DW(DS_NextFreeSegment, DW(DS_word_0039));
     uint16_t seg = 0;
+    uint16_t es_saved = pre2_es;                      /* push es / pop es around LoadSqzFile */
     LoadSqzFile(0x6BA0, &seg);
+    pre2_es = es_saved;
     SET_DW(DS_LevelSegment, seg);
     ShowMode13PictureFadeIn(0x10, 0);       /* SI = 0 and CL = 10h; BX is not an input of the ASM */
     WaitForButtonPressRelease();
@@ -971,12 +980,12 @@ void ResetItemTallyEs(uint16_t es)
 {
     for (unsigned k = 0; k < ITEM_TALLY_COUNT; k++) {
         uint16_t off = (uint16_t)(DS_ItemTallyCounts + k);
-        if (es == 0xA000u) vga_write(off, 0); else wr8(es, off, 0);
+        seg_wr8(es, off, 0);
     }
     SET_DW(DS_ItemTotal, 0);
 }
 
-void ResetItemTally(void) { ResetItemTallyEs(DATA_SEG); }
+void ResetItemTally(void) { ResetItemTallyEs(pre2_es); }   /* ES = the caller's (register model) */
 
 /* Every 4th frame advances the tally pot flame sprite id word_4F56 through 68h..6Dh (high byte
  * masked with 1Fh before the step). */
@@ -1006,6 +1015,8 @@ void ClearDrawPage(void)
  * ScriptPointer from LevelScriptTable[CurrentLevel]. ShakeRows is not reset (quirk). */
 void ResetLevelState(void)
 {
+    uint16_t es_saved = pre2_es;                      /* push es ... pop es: ES is preserved */
+    SET_ES(DATA_SEG);                                 /* mov es, ax (DATA): the stos/movs destination */
     for (unsigned k = 0; k < 0x48; k++) SET_DB((uint16_t)(0x6BC4u + k), 0);
     for (unsigned k = 0; k < 0x10A5; k++) SET_DB((uint16_t)(0x815Eu + k), DB((uint16_t)(0x9203u + k)));
     SET_DB(DS_SubAnimKey, 0);
@@ -1027,6 +1038,7 @@ void ResetLevelState(void)
     uint16_t bx = DB(DS_CurrentLevel);
     SET_DW(DS_ScriptPointer, DW((uint16_t)(DS_LevelScriptTable + 2 * bx)));
     SET_DW(DS_ScriptFrameCounter, 0);
+    pre2_es = es_saved;
 }
 
 /* Applies the inline patch records from NextFreeSegment to the level map at LevelSegment. Each record:
@@ -1066,6 +1078,7 @@ void RestoreSceneryMap(void)
  * table. Then the view is redrawn. */
 void TryCaveTrigger(void)
 {
+    SET_ES(DATA_SEG);                                 /* ES = DATA on every return (also the early ones) */
     if (DB(DS_LandingBlockTimer) == 0) return;
     if (DB(DS_PlayerAltModeFlag) != 0) return;
     uint16_t dx = GetPlayerTile();
@@ -1136,6 +1149,7 @@ void UpdateProximityTriggers(void)
             SET_DB(DS_ShakeMagnitude, 7);
             if (DB(DS_SnowFrameTick) & 3) continue;
             uint16_t es = DW(DS_LevelSegment);
+            SET_ES(es);                               /* stays loaded after the return (never restored) */
             uint8_t cols = DB((uint16_t)(si + 2));
             uint8_t rows = DB((uint16_t)(si + 3));
             uint16_t di = (uint16_t)(DW(si) - 0x100u);
@@ -1235,6 +1249,7 @@ void UpdateFireflies(void)
             port_out16(0x3CE, 0x0000);
             port_out16(0x3CE, 0x0101);
         }
+        SET_ES(0xA000);                               /* video segment, kept even when the fly is off screen */
         uint16_t ay = (uint16_t)(((int16_t)DW((uint16_t)(si + 2)) >> 3) - (int16_t)(DW(DS_CameraRow) << 4));
         if (ay >= 0xB0) continue;
         uint16_t di = (uint16_t)((uint8_t)ay * 0x28u);
@@ -1251,6 +1266,7 @@ void UpdateFireflies(void)
  * 4F0Ah free (sprite FFFFh, life 0), and sets PlayerX/PlayerY to LevelStartX/Y. */
 void ResetRenderSlots(void)
 {
+    SET_ES(DATA_SEG);
     for (unsigned k = 0; k < 0x40B; k++) SET_DW((uint16_t)(PLAYER_REC + 2 * k), 0);
     uint16_t di = 0x4F0A;
     for (unsigned k = 0; k < 0x74; k++, di = (uint16_t)(di + 0x12)) {

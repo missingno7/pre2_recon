@@ -110,6 +110,7 @@ void MixChannel(uint16_t ch, uint16_t entry_sp)
     }
 
     /* MixChannelStore */
+    SET_ES(DATA_SEG);                                          /* mov ax, ds; mov es, ax (the silent return keeps ES) */
     SET_CHW(ChannelPhase, ch, phase);
     si = (uint16_t)(si - REC_W(word_0BDA, rec));
     if (CHW(ChannelEnd, ch) > si) {                            /* loc_2277 */
@@ -127,6 +128,7 @@ void MixChannel(uint16_t ch, uint16_t entry_sp)
 
 void SbMixBlock(uint16_t sp)
 {
+    SET_ES(DATA_SEG);                                          /* loc_20CF: ds = es = DATA */
     uint16_t di = DW(DS_MixBuffer);
     uint16_t left = DW(DS_SfxBytesLeft);
     if (left == 0) {                                           /* SfxSilenceBlock */
@@ -261,6 +263,7 @@ void TrackerTick(void)
     /* 3. cells of the current row for channels 0-3; es and si are latched before them */
     uint16_t pattern = DB((uint16_t)(DS_OrderTable + DW(DS_SongOrderPos)));
     uint16_t es = (uint16_t)((pattern << 6) + DW(DS_ModuleSegment));
+    SET_ES(es);                                                /* ES stays on the pattern after the tick */
     uint16_t si = (uint16_t)((DW(DS_SongRow) << 4) + DW(DS_PatternDataOffset));
     ProcessChannelCell(es, si, 0);
     ProcessChannelCell(es, (uint16_t)(si + 4), 2);
@@ -335,6 +338,7 @@ EXPORT int c_loc_20CF(Regs *r)
     (void)r;
     SbMixBlock(0x02FEu);
     port_out8(0x20, 0x20);
+    pre2_es = rd16(0x7000u, 0x0302u);          /* SbIrqExit: pop bp, pop es from the test frame (SS = 7000h, SP = 0300h) */
     return 0;
 }
 
