@@ -369,7 +369,7 @@ static void terrain_falling(uint16_t si)
     SET_DW((uint16_t)(si + 2), (uint16_t)(DW((uint16_t)(si + 2)) - v));
     if (DB((uint16_t)(si + 0x0A)) == 0) {
         uint16_t ax = (uint16_t)(v - 8);
-        if ((int16_t)ax < 0) { ax = 0; SET_DB((uint16_t)(si + 7), 0); }
+        if ((int16_t)v < 8) { ax = 0; SET_DB((uint16_t)(si + 7), 0); }   /* sub ax, 8 / jge: signed v >= 8 */
         SET_DW((uint16_t)(si + 0x0B), ax);
         if (DB((uint16_t)(si + 6)) & 0x40) {
             int stay = 0;

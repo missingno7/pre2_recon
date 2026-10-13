@@ -140,9 +140,33 @@ the VGA out from register state on a CRT timeline.
 - The pause key hung the native game (no service point in WaitFrameSyncFlag).
 - BuildDecorList compared one pair past its list (a stale word after a previous level
   could be swapped in and its target patched): found by a composed bonus-exit case.
+- UpdatePlayerCollision's side-tile column scan counted its cells with the frame height,
+  where the original uses the DH that UpdatePlayerTileContact leaves (it does not save DX:
+  the ceiling corner nudge and CeilingTileHeadBump leave 00h or FFh). Next to class-2
+  (spike) tiles, as in levels 3, 7 and 8, the C and the original could lose a life in
+  different frames. Found by a line-by-line review of the camera and collision code.
+- Falling terrain entities compared their velocity with 8 by the sign of the difference;
+  the original's `sub ax, 8 / jge` is a signed compare (differs for 8000h..8007h; not
+  reachable with the shipped levels).
 - MODE screen and map scroll-in skipped by the key that started them (no load time), map
   scroll jumping (start address not latched), MODE background too fast (no bus time):
   host timing models (docs/smoke-test.md).
+
+### Long lockstep runs (tests/lockstep.py)
+
+Hundreds of frames of MainFrameLoop on real level data with a per-frame input script run
+identically on both sides (pre2_test_frame hook; code hook at MainFrameLoop): the gorilla
+fight of level 2 from just before its arena (fight, defeat, the key drop and its pickup),
+the quake level 0Dh from each of its three proximity triggers (the earthquake: ShakeRows,
+the rising reveal blocks, collisions with them) and from its start, and walks over levels 0,
+1, 3, 4, 5, 6, 7, 8, 0Eh, 0Fh, deaths and respawns included: all equal.
+
+The gorilla's drop, checked line by line and in these runs: one effect-pool record (the
+lowest free one after the 16 debris particles), frame 63h, key item 2Eh, at the boss
+sprite's part 0 position minus (40h, 20h); picking it up turns the dormant exit 116h into
+117h, whose contact leads to 0Ch and then 0Dh. Original quirks kept: with 16 or more live
+pool records at the defeat the key never spawns (the exit stays dormant); energy exactly 0
+is not a defeat; a respawn restores the boss but keeps an opened exit.
 
 ## 10. Remaining unsupported or unverified cases
 
@@ -163,9 +187,9 @@ the VGA out from register state on a CRT timeline.
 ## 11. Differential test totals
 
 Final gate, 2026-10-13: `python tools/verify.py` exact; `python tools/difftest.py`
-5819/5819 cases equal (credits 55, effects 597, game 70, interrupts 44, level 261, objects
-3142, player 463, render 215, screens 261, sound 203, sprites 271, sqz 51, startup 48,
-system 138; before this pass: 2603). Every case also compares the ES register model. The
+5855/5855 cases equal (credits 55, effects 597, game 70, interrupts 44, level 268, lockstep
+24, objects 3142, player 468, render 215, screens 261, sound 203, sprites 271, sqz 51,
+startup 48, system 138; before this pass: 2603). Every case also compares the ES register model. The
 same cases pass with PRE2_POISON=1 (every register a case does not specify starts as
 garbage, and CF/ZF set, on both sides), so no routine depends on a register its C contract
 does not carry. `python tests/_vga_kat.py`: all VGA known-answer checks pass.

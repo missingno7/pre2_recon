@@ -289,10 +289,14 @@ EXPORT int c_MainFrameLoopRestart(Regs *r)
     }
     return 0;
 }
+/* Differential tests: called at the head of every frame of c_MainFrameLoop (the oracle runs
+ * the same script at MainFrameLoop), e.g. to change the held keys frame by frame. */
+EXPORT void (*pre2_test_frame)(void) = 0;
 EXPORT int c_MainFrameLoop(Regs *r)
 {
     for (uint16_t i = 0; i < r->cx; i++) {
         uint16_t ax = 0;
+        if (pre2_test_frame) pre2_test_frame();
         int st = MainFrameStep(&ax);
         if (st == 1) { r->ax = ax; return 0; }
         if (st) return st;

@@ -112,7 +112,10 @@ def run(case, machine=None):
     c_es = ctypes.c_uint16.in_dll(d, 'pre2_es'); c_es.value = r.es
     keep = case.c_setup(d) if case.c_setup else None
     try: status = getattr(d, case.cfunc)(ctypes.byref(r))
-    finally: ctypes.c_void_p.in_dll(d, 'pre2_test_poll').value = None; del keep
+    finally:
+        ctypes.c_void_p.in_dll(d, 'pre2_test_poll').value = None
+        ctypes.c_void_p.in_dll(d, 'pre2_test_frame').value = None
+        del keep
     c_mem = bytes(mem)
     if vga_asm is not None:
         vga_c = bytes(d.pre2_vga_state().contents)

@@ -128,6 +128,13 @@ static uint16_t unused_6760(uint16_t si);
 #define PARTICLE_END           0x52E8u
 #define DEBRIS_BASE            0x5450u
 
+/* DX as the tile contact leaves it. UpdatePlayerCollision loads the frame height into DH
+ * before UpdatePlayerTileContact, which does not save DX: the corner nudge and
+ * CeilingTileHeadBump overwrite it (DH becomes 00h or FFh), and the column scan after the
+ * contact counts its cells with that DH (quirk; the side dispatchers save DX). A register
+ * model, not game state. */
+static uint16_t contact_dx;
+
 /* ---- the state-table dispatch ----------------------------------------------------------- */
 
 static int invoke(uint16_t target, uint8_t al, uint16_t bx, uint16_t di, uint16_t si, uint16_t cx)
@@ -331,6 +338,7 @@ int UpdatePlayerCollision(void)
 
     SET_DB(DS_AirborneFlag, 0);
     uint16_t foot = U16(SAR(DW(DS_PlayerX), 4) + ax);
+    contact_dx = U16(dh << 8);                                  /* DH = the frame height */
     int st = UpdatePlayerTileContact(foot);
     if (st != PLAYER_OK) return st;
 
@@ -351,6 +359,7 @@ int UpdatePlayerCollision(void)
     st = DispatchSideTileHandler(cell);
     if (st != PLAYER_OK) return st;
     uint16_t bx = cell;
+    dh = (uint8_t)(contact_dx >> 8);                            /* DH as the contact left it */
     for (;;) {                                                  /* loc_5B72 */
         if (bx < 0x100) break;                                  /* sub bx,100h; jb */
         bx = U16(bx - 0x100);
@@ -455,11 +464,14 @@ int UpdatePlayerTileContact(uint16_t bx)
     uint16_t d1 = U16(cb + dx);
     if (DB(U16(DS_SideTileClassTable + ESB(U16(d1 + 0x100)))) == 0) {
         SET_DW(DS_PlayerX, U16(DW(DS_PlayerX) + 2 * dx));
+        contact_dx = U16(2 * dx);                               /* shl dx, 1 */
     } else {
         int16_t dn = (int16_t)-dx;
         uint16_t d2 = U16(d1 + dn + dn);
-        if (DB(U16(DS_SideTileClassTable + ESB(U16(d2 + 0x100)))) == 0)
+        if (DB(U16(DS_SideTileClassTable + ESB(U16(d2 + 0x100)))) == 0) {
             SET_DW(DS_PlayerX, U16(DW(DS_PlayerX) + 2 * dn));
+            contact_dx = U16(2 * dn);
+        } else contact_dx = U16(dn);                            /* both blocked: DX = -step */
     }
     return PLAYER_OK;
 }
@@ -674,6 +686,7 @@ void CeilingTileHeadBump(uint16_t di)
     if ((DB(U16(DS_SideTileClassTable + ESB(cell))) & 1) == 0) return;
     int16_t dx = 0x10;
     if ((DB(U16(DS_SideTileClassTable + ESB(U16(cell - 1)))) & 1) == 0) dx = -0x10;
+    contact_dx = U16(dx);                       /* DX survives into UpdatePlayerCollision's scan */
     SET_DW(p, U16(DW(p) + dx));
 }
 

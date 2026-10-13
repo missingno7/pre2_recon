@@ -833,3 +833,48 @@ def credits_cases():
 
 CASES += (attack_cases() + momentum_cases() + collision_cases() + spike_cases() + landing_cases()
           + jump_state_cases() + credits_cases())
+
+# ---- the column scan after the tile contact (DH as the contact leaves it) -------------------
+def dh_cases():
+    """UpdatePlayerCollision loads the frame height into DH; UpdatePlayerTileContact does not
+    save DX, so its corner nudge (DX = +-1/+-2) and CeilingTileHeadBump (DX = +-10h) leave DH
+    00h or FFh, and the side-class column scan above the foot counts its cells with that DH.
+    A class-2 (respawn) column shows the difference as a life lost or not."""
+    cs = []
+    def nudge(vx, tag, above_cls=2, nudge=True, frame_h=0x30):
+        def setup(m):
+            ground_at(20, 40, 0xC0, 1, solid=0x03)(m)
+            set_tile(m, 0xC2, ground=0, side=1 if nudge else 0, flags=0, solid=0)
+            set_tile(m, 0xC3, ground=0, side=above_cls, flags=0, solid=0)
+            set_tile(m, 0, ground=0, side=0, flags=0, solid=0)
+            set_cell(m, 19, 40, 0xC2)
+            for r in range(4, 19): set_cell(m, r, 40, 0xC3)
+            for c in (39, 41):
+                for r in range(4, 21): set_cell(m, r, c, 0)
+            W(m, 'PlayerVelX', vx); W(m, 'PlayerVelY', 0); W(m, 'PlayerFrameWord', 0)
+            m.wb(m.data('FrameHeights'), frame_h)
+            B(m, 'Lives', 3)
+        cs.append(mk(f'column scan: {tag}', 'UpdatePlayerCollision', 'c_UpdatePlayerCollision', setup=setup,
+                     level=3, es=True))
+    nudge(0, 'corner nudge leaves DH 00h: no cell scanned, the class-2 column is missed')
+    nudge(0x30, 'corner nudge leaves DH FFh: 15 cells scanned (frame height 10h)', frame_h=0x10)
+    nudge(-0x30, 'corner nudge to the right, DH 00h', frame_h=0x40)
+    nudge(0, 'no nudge: DH = frame height 30h', nudge=False)
+    def headbump(setup_extra=None):
+        def setup(m):
+            ground_at(20, 40, 0xC0, 1, solid=0x03, side=1)(m)
+            set_tile(m, 0xC4, ground=0, side=0, flags=1, solid=0)
+            set_tile(m, 0xC3, ground=0, side=2, flags=0, solid=0)
+            set_tile(m, 0, ground=0, side=0, flags=0, solid=0)
+            set_cell(m, 19, 40, 0); set_cell(m, 18, 40, 0xC4)
+            for r in range(4, 21): set_cell(m, r, 39, 0)
+            for r in range(4, 18): set_cell(m, r, 39, 0xC3)
+            W(m, 'PlayerVelX', 0); W(m, 'PlayerVelY', 0); W(m, 'PlayerFrameWord', 0)
+            m.wb(m.data('FrameHeights'), 0x10)
+            if setup_extra: setup_extra(m)
+        return setup
+    cs.append(mk('column scan: head-bump push-out leaves DH FFh (class 2 high above)', 'UpdatePlayerCollision',
+                 'c_UpdatePlayerCollision', setup=headbump(), level=3, es=True))
+    return cs
+
+CASES += dh_cases()

@@ -1009,3 +1009,18 @@ def level_exit_cases():
 
 
 CASES += cave_scroll_cases() + vcam_cases() + terrain_landing_cases() + particle_edge_cases() + level_exit_cases()
+
+# ---- falling terrain entity: `sub ax, 8 / jge` is a signed compare of the velocity with 8 ----
+def _falling_overflow(vel):
+    def setup(m):
+        view(m, row=20, col=30)
+        ds(m, 'PlayerVelY', 0, 2); ds(m, 'PlayerOnPlatform', 0); ds(m, 'PlayerY', 0x7FF0, 2)
+        for k in range(16): m.ww(0x9107 + 15 * k + 4, 0xFFFF)
+        si = 0x9107
+        m.ww(si, 30 * 16 + 40); m.ww(si + 2, 22 * 16); m.ww(si + 4, 0x0010)
+        m.wb(si + 6, 0x08); m.wb(si + 7, 5); m.wb(si + 0x0A, 0); m.ww(si + 0x0B, vel)
+        m.wb(si + 0x0D, 3); m.wb(si + 0x0E, 0)
+    return setup
+for _vel in (0x7FFF, 0x8000, 0x8003, 0x8007, 0x8008, 0x0008, 0x0007):
+    CASES.append(case(f'falling entity, state 0, velocity {_vel:04X}h (signed compare with 8)', 'UpdateTerrainEntities',
+                      'c_UpdateTerrainEntities', level=4, setup=_falling_overflow(_vel)))
