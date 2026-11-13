@@ -1,5 +1,7 @@
-/* VGA presentation: the modelled VGA state (c/vga.h) -> RGBA, scanned out the way the VGA
- * CRT controller and attribute controller do it, driven only by register state:
+/* Display scan-out: the display controller's geometry and colour path applied to a pixel source
+ * (see scanout.h). The source is either the VGA model's planes (the reference, used by the
+ * parity tests) or the native compositor's video store (production). The geometry follows the
+ * CRT and attribute controllers' register state (the logical register file the game programs):
  *
  *   - geometry: horizontal display end (CRTC 01h) in character clocks of 8 dots; the
  *     256-colour mode (attribute 10h bit 6) joins two dots per pixel. Vertical display end
@@ -26,7 +28,7 @@
  */
 #include "../c/pre2.h"
 #include "../c/vga.h"
-#include "present.h"
+#include "scanout.h"
 
 static uint8_t expand6(uint8_t v) { return (uint8_t)((v << 2) | (v >> 4)); }
 
@@ -44,13 +46,34 @@ static uint8_t attr_to_dac(const VgaState *v, int c)
     return (uint8_t)(a | ((v->attr[0x14] & 0x0C) << 4));
 }
 
+/* Pixel sources: 4-bit planar colour at (address, dot 0..7 from the left), and the chain-4
+ * byte at plane q, offset off. */
+static uint8_t vga_planar(void *u, uint16_t addr, int dot)
+{
+    (void)u;
+    int bit = 7 - dot, c = 0;
+    for (int q = 0; q < 4; q++) c |= ((pre2_vga.plane[q][addr] >> bit) & 1) << q;
+    return (uint8_t)c;
+}
+static uint8_t vga_chain4(void *u, int q, uint16_t off) { (void)u; return pre2_vga.plane[q][off]; }
+const ScanSource scan_vga = { vga_planar, vga_chain4, 0 };
+
 void present_vga(uint32_t *out, int *width, int *height)
 {
     present_vga_start(out, width, height, (uint16_t)(pre2_vga.crtc[0x0C] << 8 | pre2_vga.crtc[0x0D]));
 }
 
-/* `start`: the start address the CRTC latched for this frame (at the vertical retrace). */
 void present_vga_start(uint32_t *out, int *width, int *height, uint16_t start)
+{
+    static uint8_t idx[SCAN_MAX_W * SCAN_MAX_H];
+    ScanInfo si;
+    scan_indices(&scan_vga, start, idx, &si);
+    *width = si.w; *height = si.h;
+    for (int i = 0; i < si.w * si.h; i++) out[i] = si.blank_black ? 0xFF000000u : dac_rgb(&pre2_vga, idx[i]);
+}
+
+/* `start`: the start address the CRTC latched for this frame (at the vertical retrace). */
+void scan_indices(const ScanSource *src, uint16_t start, uint8_t *out, ScanInfo *info)
 {
     const VgaState *v = &pre2_vga;
     int text = !(v->gc[6] & 1);                       /* graphics controller misc: alphanumeric */
@@ -65,18 +88,19 @@ void present_vga_start(uint32_t *out, int *width, int *height, uint16_t start)
     int rows = vde / group;
     int lc = v->crtc[0x18] | ((v->crtc[0x07] & 0x10) << 4) | ((v->crtc[0x09] & 0x40) << 3);
     int w = vis_w <= 320 ? 320 : 640, h = rows <= 200 ? 200 : (rows <= 350 ? 350 : 480);
-    if (w > PRESENT_MAX_W) w = PRESENT_MAX_W;
-    if (h > PRESENT_MAX_H) h = PRESENT_MAX_H;
-    *width = w; *height = h;
-    uint32_t overscan = dac_rgb(v, attr_to_dac(v, v->attr[0x11] & 15));
+    if (w > SCAN_MAX_W) w = SCAN_MAX_W;
+    if (h > SCAN_MAX_H) h = SCAN_MAX_H;
+    info->w = w; info->h = h; info->blank_black = 0;
+    uint8_t overscan = attr_to_dac(v, v->attr[0x11] & 15);
     int blank = (v->seq[1] & 0x20) || !(v->attr_index & 0x20) || text;
+    info->blank = blank;
     if (blank) {
-        uint32_t c = text ? 0xFF000000u : overscan;
-        for (int i = 0; i < w * h; i++) out[i] = c;
+        info->blank_black = text;
+        for (int i = 0; i < w * h; i++) out[i] = overscan;
         return;
     }
-    uint32_t pal[16];
-    for (int i = 0; i < 16; i++) pal[i] = dac_rgb(v, attr_to_dac(v, i));
+    uint8_t pal[16];
+    for (int i = 0; i < 16; i++) pal[i] = attr_to_dac(v, i);
     uint16_t pitch = (uint16_t)(v->crtc[0x13] * 2);
     int dword = v->crtc[0x14] & 0x40;
     int byte_mode = v->crtc[0x17] & 0x40;
@@ -89,7 +113,7 @@ void present_vga_start(uint32_t *out, int *width, int *height, uint16_t start)
         if (scan == lc) { row_base = 0; row_scan = 0; }
         int first_of_row = (scan % group) == 0;       /* output the first scan line of each group */
         if (first_of_row) {
-            uint32_t *line = out + y * w;
+            uint8_t *line = out + y * w;
             int p = (scan >= lc && (v->attr[0x10] & 0x20)) ? 0 : pan;
             for (int x = 0; x < w; x++) {
                 if (x >= vis_w) { line[x] = overscan; continue; }
@@ -102,11 +126,9 @@ void present_vga_start(uint32_t *out, int *width, int *height, uint16_t start)
                 if (!(v->crtc[0x17] & 0x02)) addr = (uint16_t)((addr & ~0x4000) | ((row_scan & 2) << 13));
                 if (mode256) {
                     uint16_t off = chain4 && dword ? (uint16_t)(addr >> 2) : addr;
-                    line[x] = dac_rgb(v, v->plane[(px / 2) & 3][off]);
+                    line[x] = src->chain4(src->user, (px / 2) & 3, off);
                 } else {
-                    int bit = 7 - (px & 7), c = 0;
-                    for (int q = 0; q < 4; q++) c |= ((v->plane[q][addr] >> bit) & 1) << q;
-                    line[x] = pal[c];
+                    line[x] = pal[src->planar(src->user, addr, px & 7)];
                 }
             }
             y++;

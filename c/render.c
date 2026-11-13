@@ -19,6 +19,9 @@
 #include "player.h"
 #include "sound.h"
 #include "effects.h"
+#include "vram_store.h"
+#include "scene_screens.h"
+#include "scene_game.h"
 
 /* ---- helpers ------------------------------------------------------------------------- */
 
@@ -47,6 +50,7 @@ void DisableVideoOutput(void)
  * offset in the page). Latch-copy mode and map mask 0Fh are set by the caller. */
 void CopyColumnStrip(uint16_t di)
 {
+    scene_emit(SCENE_GAME_COPY, 6, di + DW(DS_DrawPage), di + DW(DS_DisplayPage), 2, 176, 40, 40);
     uint16_t si = (uint16_t)(di + DW(DS_DrawPage));
     di = (uint16_t)(di + DW(DS_DisplayPage));
     for (int line = 0; line < 0xB0; line++) {
@@ -65,6 +69,7 @@ void RevealLevelColumns(void)
     do {
         CopyColumnStrip(CW(CS_WipeColumnBase));
         CopyColumnStrip((uint16_t)(CW(CS_WipeColumnBase) + CW(CS_WipeColumnOffset)));
+        scene_emit(SCENE_GAME_TRANSITION, 7, 2, 2, CW(CS_WipeColumnOffset) / 4 + 1, 10, 160, 88, 0);
         WaitVerticalRetrace();
         WaitVerticalRetrace();
         SET_CW(CS_WipeColumnBase, (uint16_t)(CW(CS_WipeColumnBase) - 2));
@@ -78,6 +83,7 @@ void RevealLevelColumns(void)
 /* Zeroes one 16x10 block at DI: ten stosw, each followed by add di, 26h (stride 40). */
 void ClearBlock16x10(uint16_t di)
 {
+    scene_emit(SCENE_GAME_CLEAR, 4, di, 2, 10, 40);
     for (int line = 0; line < 10; line++) {
         vga_write(di, 0);
         vga_write((uint16_t)(di + 1), 0);          /* stosw: low byte, then high byte */
@@ -98,6 +104,7 @@ void ClearStaggeredBlocks(void)
         for (int k = 0; k < 0x14; k++) { ClearBlock16x10(di); di = (uint16_t)(di + 2); }
         di = (uint16_t)(CW(CS_WipeColumnBase) + CW(CS_WipeColumnOffset));
         for (int k = 0; k < 0x14; k++) { ClearBlock16x10(di); di = (uint16_t)(di + 2); }
+        scene_emit(SCENE_GAME_TRANSITION, 7, 3, 0, (CW(CS_WipeColumnBase) - DW(DS_DisplayPage)) / 400 + 1, 9, 160, 88, 0);
         WaitVerticalRetrace();
         WaitVerticalRetrace();
         SET_CW(CS_WipeColumnBase, (uint16_t)(CW(CS_WipeColumnBase) + 0x190));
@@ -119,6 +126,7 @@ void ClearDisplayPage(void)
         vga_write((uint16_t)(di + 1), 0);
         di = (uint16_t)(di + 2);
     }
+    scene_emit(SCENE_SCREEN_CLEAR, 2, (int)DW(DS_DisplayPage), 0x1F40);
 }
 
 /* ---- iris close (cs:316F, BlackoutSpan cs:32DE) -------------------------------------- */
@@ -130,6 +138,7 @@ void ClearDisplayPage(void)
 void BlackoutSpan(uint16_t bx, uint16_t cx, uint16_t dx)
 {
     if (bx >= 0x140 || cx > 0x140 || dx >= 0xC8) return;
+    scene_emit(SCENE_GAME_BLACKOUT, 4, bx, cx, dx, DW(DS_DrawPage));
     uint16_t ax = (uint16_t)(0x28u * (uint8_t)dx) + DW(DS_DrawPage);
     uint16_t di = (uint16_t)((bx >> 3) + ax);      /* shr x3 then add ax */
     uint16_t width = cx;
@@ -171,6 +180,8 @@ void RunIrisClose(void)
     SET_ES(0xA000);                                  /* ES stays A000h to the return */
     for (int k = 0; k < 0x1F40; k++) { vga_movsb(si, di); si++; di++; }
 
+    scene_emit(SCENE_GAME_COPY, 6, DW(DS_DrawPage), DW(DS_DisplayPage), 8000, 1, 0, 0);
+
     /* render slots 2.. to empty (+4 = FFFFh). The second loop writes two entries more
      * than the first (0x73 against 0x71); it is not redundant. */
     uint16_t d = 0x4F1C;
@@ -200,6 +211,7 @@ void RunIrisClose(void)
     SET_DW(DS_IrisSpeedCounter, 0);
 
     for (;;) {                                       /* loc_31F4: one frame */
+        scene_emit(SCENE_GAME_TRANSITION, 7, 1, 0, 230 - DW(DS_IrisRadius), 230, (int16_t)DW(DS_IrisCenterX), (int16_t)DW(DS_IrisCenterY), DW(DS_IrisRadius));
         uint16_t bp = 0;
         uint16_t n = 0;                              /* si in the point tables */
         SET_DW(DS_word_2DCC, 0x7D0);
@@ -281,6 +293,7 @@ void RunIrisClose(void)
  * inc di twice). */
 uint16_t RestoreTileBackdrop(uint16_t di)
 {
+    scene_emit(SCENE_GAME_RESTORE, 2, (uint16_t)(DW(DS_BackdropCursor) - 40u * DB(DS_FineScroll)), di);
     uint16_t di0 = di;
     uint16_t si = (uint16_t)(DW(DS_BackdropCursor) - (uint16_t)(0x28u * DB(DS_FineScroll)));
     for (int row = 0; row < 16; row++) {
@@ -321,6 +334,7 @@ uint16_t BlitTileCell(uint16_t ax, uint16_t di)
     uint16_t tile = (uint8_t)ax;                 /* xor ah, ah */
     uint8_t cls = DB(DS_TileClassTable + tile);
     if (cls == 0) {
+        scene_emit(SCENE_GAME_TILE, 3, tile, di, cls);
         uint16_t si = (uint16_t)(tile * 32u + TILE_CACHE_VRAM);
         for (int row = 0; row < 16; row++) {
             vga_movsb(si, di); si++; di++;
@@ -332,6 +346,7 @@ uint16_t BlitTileCell(uint16_t ax, uint16_t di)
     if (cls == 1) return RestoreTileBackdrop(di);
 
     uint16_t done = RestoreTileBackdrop(di);     /* DI = di + 2, pushed */
+    scene_emit(SCENE_GAME_TILE, 3, tile, (uint16_t)(done - 2), cls);
     uint16_t dd = (uint16_t)(done - 2);          /* dec di twice */
     uint16_t mask = (uint16_t)(TILE_MASK_TABLE + (uint16_t)((uint8_t)(cls - 2) * 32u));
     uint16_t slot = (uint16_t)(tile * 32u + TILE_CACHE_VRAM);
@@ -616,6 +631,7 @@ void DrawForegroundTile(uint16_t ax, uint16_t bx)
     if (di < dp) return;
     if (di >= (uint16_t)(dp + 0x1900)) return;
 
+    scene_emit(SCENE_GAME_FOREGROUND, 2, ax, bx);
     port_out16(0x3C4, 0x0F02);
     port_out16(0x3CE, 0x0803);                  /* function AND */
     uint16_t sp = si;
@@ -761,6 +777,7 @@ void UpdateWindAndFlakes(void)
         }
         bx = (uint16_t)(bx + DW(DS_DrawPage));
         uint16_t shifted = (uint16_t)(0x302u << cl);
+        scene_emit(SCENE_GAME_DOT, 5, bx, (shifted & 255) | (dx > bp ? (shifted & 0xFF00) : 0), 15, 2, 0);
         (void)vga_xchg(bx, (uint8_t)shifted);
         if (dx > bp) (void)vga_xchg((uint16_t)(bx + 0x28), (uint8_t)(shifted >> 8));
         dx = (uint16_t)(dx - 1);
@@ -820,7 +837,10 @@ void PresentFrame(void)
     WaitSoundTicks();
 }
 
-/* ProbeVideoMemory (cs:443F): CF = 0 when both probes of A000:2000h read back. */
+/* ProbeVideoMemory (cs:443F): CF = 0 when both probes of A000:2000h read back. With video
+ * memory not modelled (production, vga_memory_off) the accesses are made and charged as usual
+ * and the probe succeeds: the native machine has a VGA, a platform fact like the Sound Blaster
+ * and CPU probes' answers. */
 int ProbeVideoMemory(void)
 {
     bios_set_mode(0x0D);
@@ -829,10 +849,10 @@ int ProbeVideoMemory(void)
     port_out16(0x3CE, 0x0005);
     port_out16(0x3CE, 0x0004);
     vga_write(0x2000, 0x01);
-    if (vga_read(0x2000) != 0x01) return 1;
+    if (vga_read(0x2000) != 0x01 && !vga_memory_off) return 1;
     port_out16(0x3CE, 0x1103);                 /* rotate 1, function OR */
     vga_write(0x2000, 0xA0);
-    if (vga_read(0x2000) != 0x51) return 1;
+    if (vga_read(0x2000) != 0x51 && !vga_memory_off) return 1;
     return 0;
 }
 
@@ -869,6 +889,7 @@ int CheckVgaAdapter(void)
 void SetLevelVideoMode(void)
 {
     bios_set_mode(0x0D);
+    scene_emit(SCENE_SCREEN_TRANSITION, 6, 0, 0, 0, 0, 0, 0);
     port_out16(0x3D4, 0x2411);
     SET_DW(DS_DisplayPage, 0);
     SET_DW(DS_DrawPage, 0x2000);
@@ -885,6 +906,7 @@ void SetLevelVideoMode(void)
  * slots of the entries below 100h. Returns SI = the variant offset after the used tile data. */
 uint16_t LoadLevelTileSet(void)
 {
+    pre2_tile_cache.generation++;
     uint16_t lseg = DW(DS_LevelSegment);
     uint8_t rows = DB((uint16_t)(DS_LevelMapRowsTable + DB(DS_CurrentLevel)));
     SET_DB(DS_MapRows, rows);
@@ -909,6 +931,8 @@ uint16_t LoadLevelTileSet(void)
                 for (int w = 0; w < 0x10; w++) {                /* rep movsw: LevelSeg:si -> A000:di */
                     vga_write(di, rd8(var, si));
                     vga_write((uint16_t)(di + 1), rd8(var, (uint16_t)(si + 1)));
+                    tile_cache_write(di, al, rd8(var, si));
+                    tile_cache_write((uint16_t)(di + 1), al, rd8(var, (uint16_t)(si + 1)));
                     si = (uint16_t)(si + 2); di = (uint16_t)(di + 2);
                 }
                 di = (uint16_t)(di - 0x20);
@@ -917,6 +941,7 @@ uint16_t LoadLevelTileSet(void)
         }
         di = (uint16_t)(di + 0x20);
     }
+    scene_emit(SCENE_GAME_TILES, 0);
     return bp;
 }
 
@@ -924,6 +949,7 @@ uint16_t LoadLevelTileSet(void)
  * (w - 100h) * 8 paragraphs past SpriteSheetSegment, four planes, into the cache slot. */
 void UploadSpriteTiles(void)
 {
+    pre2_tile_cache.generation++;
     uint16_t di = 0x5E80;
     SET_ES(0xA000);                                         /* ES = A000h to the return */
     port_out8(0x3C4, 0x02);
@@ -938,6 +964,8 @@ void UploadSpriteTiles(void)
                 for (int k = 0; k < 0x10; k++) {                /* rep movsw from sseg:si */
                     vga_write(di, rd8(sseg, si));
                     vga_write((uint16_t)(di + 1), rd8(sseg, (uint16_t)(si + 1)));
+                    tile_cache_write(di, al, rd8(sseg, si));
+                    tile_cache_write((uint16_t)(di + 1), al, rd8(sseg, (uint16_t)(si + 1)));
                     si = (uint16_t)(si + 2); di = (uint16_t)(di + 2);
                 }
                 di = (uint16_t)(di - 0x20);
@@ -946,6 +974,7 @@ void UploadSpriteTiles(void)
         }
         di = (uint16_t)(di + 0x20);
     }
+    scene_emit(SCENE_GAME_TILES, 0);
 }
 
 /* ClassifyTileCache (cs:4232): GC colour compare over each cache slot. TileClassTable: 0
@@ -962,6 +991,7 @@ void ClassifyTileCache(void)
         uint8_t dl = 0xFF, dh = 0;
         for (int k = 0; k < 0x20; k++) {
             uint8_t al = vga_read(si);
+            if (vga_memory_off) al = tile_cache_colour0(si);   /* the same compare on the stored slots */
             si = (uint16_t)(si + 1);
             wr8(DATA_SEG, di, al);            /* the mask copy (DS = DATA) */
             di = (uint16_t)(di + 1);
@@ -1025,6 +1055,7 @@ void BuildAnimatedTileTables(void)
  * The 0 count of the first part is swapped with the second (loc_3A89..3AA3). */
 void CopyRingWindowToPage(void)
 {
+    scene_emit(SCENE_GAME_RING, 0);
     uint16_t shake = DW(DS_ShakeRows);
     uint16_t shake_bytes = (uint16_t)(0x28u * DB(DS_ShakeRows));     /* mul byte ptr ShakeRows */
     SET_CW(CS_ShakeOffsetBytes, shake_bytes);
@@ -1307,12 +1338,16 @@ int LoadLevel(uint16_t ax)
     for (uint16_t pl = 1; pl != 0x10; pl = (uint16_t)(pl << 1)) {
         port_out16(0x3C4, (uint16_t)(pl << 8 | 0x02));
         uint16_t d = LEVEL_VRAM_STASH;
+        int plane = pl == 1 ? 0 : pl == 2 ? 1 : pl == 4 ? 2 : 3;
         for (uint16_t k = 0; k < 0x3120; k++) {
             vga_write(d, rd8(lseg, src));
             vga_write((uint16_t)(d + 1), rd8(lseg, (uint16_t)(src + 1)));
+            *level_stash_at(plane, d) = rd8(lseg, src);
+            *level_stash_at(plane, (uint16_t)(d + 1)) = rd8(lseg, (uint16_t)(src + 1));
             src = (uint16_t)(src + 2); d = (uint16_t)(d + 2);
         }
     }
+    scene_emit(SCENE_GAME_STASH, 1, lseg);
     uint16_t nfs = DW(DS_NextFreeSegment);
     SET_DW(DS_NextFreeSegment, lseg);
     /* PageInResource (system.c) returns only its status. Slot 7 is pinned (ResourceFlags 08h),
@@ -1335,6 +1370,7 @@ int LoadLevel(uint16_t ax)
         uint16_t s = LEVEL_VRAM_STASH;
         for (uint16_t k = 0; k < 0x3120; k++) {
             uint8_t lo = vga_read(s), hi = vga_read((uint16_t)(s + 1));
+            if (vga_memory_off) { lo = *level_stash_at((int)pl, s); hi = *level_stash_at((int)pl, (uint16_t)(s + 1)); }
             wr8(lseg, dst, lo);
             wr8(lseg, (uint16_t)(dst + 1), hi);
             s = (uint16_t)(s + 2); dst = (uint16_t)(dst + 2);
@@ -1349,6 +1385,7 @@ int LoadLevel(uint16_t ax)
     uint16_t popped = (uint16_t)(vga_read(0x2875) | vga_read(0x2876) << 8);
     e = LoadSqzFile(BACK_NAME_AT, &back);
     if (e) return e;
+    scene_emit(SCENE_GAME_BACKDROP, 1, back);
     uint16_t bsrc = 0;
     for (uint16_t pl = 1; pl != 0x10; pl = (uint16_t)(pl << 1)) {
         port_out16(0x3C4, (uint16_t)(pl << 8 | 0x02));
@@ -1393,6 +1430,7 @@ int LoadLevel(uint16_t ax)
         SET_DW(DS_CollectTotalDecor, (uint16_t)(DW(DS_CollectTotalDecor) << 1));
         SET_DW(DS_CollectTotalMain, (uint16_t)(DW(DS_CollectTotalMain) << 1));
     }
+    scene_emit(SCENE_GAME_LEVEL, 0);
     return 0;
 }
 

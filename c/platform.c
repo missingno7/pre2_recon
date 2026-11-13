@@ -17,6 +17,7 @@
 #include "ports.h"
 #include "vga.h"
 #include "platform.h"
+#include "scene.h"
 
 #define ATTR_PAS 0x20u
 
@@ -57,6 +58,7 @@ void bios_set_mode(uint8_t al)
     else if (mode == 0x12) { cols = 80; page = 0xA000; rows = 29; charh = 16; }
     else if (mode == 0x13) { page = 0xFA00; }
     vga_bios_mode_set(al);
+    scene_emit(SCENE_MODE_SET, 1, (int32_t)al);
     wr8(0x0040, 0x0049, mode);
     wr16(0x0040, 0x004A, cols);
     wr16(0x0040, 0x004C, page);

@@ -29,6 +29,7 @@
 #include "player.h"
 #include "screens.h"
 #include "level.h"
+#include "scene_game.h"
 
 /* ---- constants without labels (offsets inside DATA or the HUD graphic) -------------------- */
 
@@ -79,9 +80,11 @@ void DrawStatusBarBackground(void)
             src++; d++;
         }
     }
+    scene_emit(SCENE_GAME_HUD, 3, 0, 0, DW(DS_DrawPage));
     SetLatchCopyMode();
     uint16_t si = dst;
     uint16_t di = (uint16_t)(display + 0x1B80u);
+    scene_emit(SCENE_GAME_COPY, 6, si, di, 0x398, 1, 0, 0);
     for (unsigned k = 0; k < 0x398u; k++) { vga_movsb(si, di); si++; di++; }
 }
 
@@ -89,6 +92,7 @@ void DrawStatusBarBackground(void)
  * into DrawPage+1BA1h, and counts one HUD write. AX (the letter mask in AH) is preserved. */
 void ClearBonusLetterRow(void)
 {
+    scene_emit(SCENE_GAME_HUD, 3, 1, 0, DW(DS_DrawPage));
     uint16_t sheet = DW(DS_word_003D);
     uint16_t dst = (uint16_t)(DW(DS_DrawPage) + 0x1BA1u);
     uint16_t s = HUD_BONUS_SRC;
@@ -107,6 +111,7 @@ void ClearBonusLetterRow(void)
  * In: glyph 0..9 digits, 0Ah/0Bh energy pips, 0Ch..10h BONUS letters; di = destination. */
 void BlitHudGlyph(uint8_t glyph, uint16_t di)
 {
+    scene_emit(SCENE_GAME_HUD, 3, 2, glyph, di);
     uint16_t sheet = DW(DS_word_003D);
     uint16_t s = (uint16_t)(HUD_GLYPH_BASE + 0x60u * glyph);
     for (unsigned p = 0; p < 4; p++) {
@@ -124,6 +129,7 @@ void BlitHudGlyph(uint8_t glyph, uint16_t di)
 /* Blits one 16x11 digit (four planes) from the font at HUD_DIGIT_BASE + 88*digit. */
 void BlitHudDigit(uint8_t digit, uint16_t di)
 {
+    scene_emit(SCENE_GAME_HUD, 3, 3, digit, di);
     uint16_t sheet = DW(DS_word_003D);
     uint16_t s = (uint16_t)(HUD_DIGIT_BASE + 0x58u * digit);
     for (unsigned p = 0; p < 4; p++) {
@@ -143,6 +149,7 @@ void BlitHudDigit(uint8_t digit, uint16_t di)
  * write, so a glyph drawn only through this routine does not trigger the strip copy (quirk). */
 void BlitHudSpriteGlyph(uint8_t index, uint16_t di)
 {
+    scene_emit(SCENE_GAME_HUD, 3, 4, index, di);
     uint16_t idx = (uint16_t)((((uint16_t)(int16_t)(int8_t)index) + 0xF1u) << 1);
     uint16_t seg = DW((uint16_t)(DS_FrameDataSegments + idx));
     uint16_t s = (uint16_t)(DW((uint16_t)(DS_FrameDataOffsets + idx)) + 0x16u);
@@ -272,6 +279,7 @@ dirty_check:
         SetLatchCopyMode();
         uint16_t si = (uint16_t)(0x1B80u + DW(DS_DrawPage));
         uint16_t di = (uint16_t)(0x1B80u + DW(DS_DisplayPage));
+        scene_emit(SCENE_GAME_COPY, 6, si, di, 0x398, 1, 0, 0);
         for (unsigned k = 0; k < 0x398u; k++) { vga_movsb(si, di); si++; di++; }
     }
     return 0;
@@ -524,6 +532,7 @@ void UpdateEffectParticles(void)
             if (ax < 0x140) {
                 uint8_t mask = (uint8_t)(0x80u >> (ax & 7));
                 di = (uint16_t)(di + (ax >> 3) + DW(DS_DrawPage));
+                scene_emit(SCENE_GAME_DOT, 5, di, mask, 15, 0, 0);
                 vga_xchg(di, mask);
             }
         }
@@ -566,6 +575,7 @@ static int ShowEndingPicture(uint16_t *ax_out);
 static int level_finish(uint16_t *ax_out)
 {
     ResetLevelState();
+    scene_emit(SCENE_GAME_HIDE, 0);
     *ax_out = 0;
     return 1;
 }
@@ -576,6 +586,7 @@ static int level_finish(uint16_t *ax_out)
 void PlayDeathBounce(void)
 {
     uint16_t es_saved = pre2_es;                      /* push es ... pop es: ES is preserved */
+    audio_source(AUDIO_SRC_PLAYER, 0x4F1C, DW(0x4F1C), DW((uint16_t)(0x4F1C + 2)));
     StartSoundEffect(7);
     SET_DB(DS_PlayerHurtTimer, 0);
     SET_DW(DS_PlayerFrameWord, 0x21);
@@ -656,6 +667,7 @@ static int LevelTransitionStart(uint16_t *ax_out)
         SET_DB(DS_PaletteFadeStep, 0);
     }
     RunIrisClose();
+    scene_emit(SCENE_GAME_TRANSITION, 7, 0, 0, 0, 0, 0, 0, 0);
     ActivateResourceSlot(0x0F);
     SET_DW(DS_PlayerY, (uint16_t)(DW(DS_PlayerY) - (DW(DS_CameraRow) << 4)));
     SET_DW(DS_PlayerX, (uint16_t)(DW(DS_PlayerX) - (DW(DS_CameraCol) << 4)));
@@ -756,6 +768,7 @@ static int LevelTransitionStart(uint16_t *ax_out)
                 SET_DW(DS_ScoreLow, (uint16_t)score);
                 SET_DW(DS_ScoreHigh, (uint16_t)(score >> 16));
                 SET_DW((uint16_t)(si + 4), 0xFFFF);
+                audio_source(AUDIO_SRC_RECORD | AUDIO_SOURCE_SCREEN, si, DW(si), DW((uint16_t)(si + 2)));
                 StartSoundEffect(8);
             }
             if (DW(DS_SnowFrameTick) & 7) continue;   /* tick & 7 != 0: the flight block repeats */
@@ -838,6 +851,7 @@ static int LifeLostPath(uint16_t *ax_out)
 /* Game over: the intro gate, the game-over screen, then score, level and lives are reset. */
 static int GameOverPath(uint16_t *ax_out)
 {
+    scene_emit(SCENE_GAME_HIDE, 0);
     (void)TryShowIntroKeyed();                /* CF is not tested by the ASM caller */
     ActivateResourceSlot(0x11);
     RunGameOverScreen();
@@ -895,6 +909,7 @@ static int RestartFromCheckpoint(uint16_t *ax_out)
 /* Ending picture (EndSignal 0FFh): the title picture from LEVEL, fade-in, then the intro. */
 static int ShowEndingPicture(uint16_t *ax_out)
 {
+    scene_emit(SCENE_GAME_HIDE, 0);
     SetLevelVideoMode();
     SET_DW(DS_NextFreeSegment, DW(DS_word_0039));
     uint16_t seg = 0;
@@ -1002,6 +1017,7 @@ void AnimateTallyPotFlame(void)
  * mode 0 and rotate 0 set. */
 void ClearDrawPage(void)
 {
+    scene_emit(SCENE_GAME_CLEAR, 4, DW(DS_DrawPage), 8000, 1, 0);
     port_out16(0x3C4, 0x0F02);
     port_out16(0x3CE, 0x0005);
     port_out16(0x3CE, 0x0003);
@@ -1088,6 +1104,7 @@ void TryCaveTrigger(void)
         if (DW(si) == dx) { found = 1; break; }
     }
     if (!found) return;
+    scene_emit(SCENE_GAME_CUT, 1, 0);
     SET_DW(DS_PlayerVelX, 0);
     SET_DW(DS_PlayerVelY, 0);
     ClearStaggeredBlocks();
@@ -1257,6 +1274,7 @@ void UpdateFireflies(void)
         if (ax >= 0x140) continue;
         uint8_t mask = (uint8_t)(0x80u >> (ax & 7));
         di = (uint16_t)(di + (ax >> 3) + DW(DS_DrawPage));
+        scene_emit(SCENE_GAME_DOT, 5, di, mask, 15, 1, !(DB((uint16_t)(si + 6)) & 1));
         vga_xchg(di, mask);
     }
     port_out16(0x3CE, 0x0001);
@@ -1436,6 +1454,7 @@ void UpdatePopupRing(void)
  * ten tiles when the player is far to the right of the view. */
 void EnterLevelView(void)
 {
+    scene_emit(SCENE_GAME_CUT, 1, 1);
     ClearStaggeredBlocks();
     SET_DW(DS_CameraCol, 0);
     SET_DW(DS_CameraRow, 0);

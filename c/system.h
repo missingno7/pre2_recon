@@ -10,6 +10,7 @@
 #define SYSTEM_H
 #include <stdint.h>
 #include "platform_dos.h"
+#include "audio_events.h"
 
 enum SystemStatus {
     SYS_OK = 0,

@@ -7,6 +7,12 @@ VgaState pre2_vga;
 uint8_t (*vga_status_hook)(void) = 0;
 void (*vga_access_hook)(void) = 0;
 uint32_t vga_mem_accesses, vga_io_accesses;
+/* Production configuration (docs/native.md): video memory is not modelled. Every CPU access is
+ * still counted (the logical machine charges it bus time, so timing is unchanged); writes go
+ * nowhere, reads return 0 and leave the latches as they are. Registers stay modelled (the
+ * CRT timing and the DAC). Nothing the game decides may depend on video memory contents:
+ * tests/native/nullvga.c runs the game both ways and requires identical game state. */
+int vga_memory_off;
 
 EXPORT VgaState *pre2_vga_state(void) { return &pre2_vga; }
 EXPORT uint32_t pre2_vga_state_size(void) { return sizeof(VgaState); }
@@ -27,6 +33,7 @@ EXPORT uint8_t vga_read(uint16_t offset)
 {
     VgaState *v = &pre2_vga;
     vga_mem_accesses++;
+    if (vga_memory_off) return 0;
     if (chain4()) {
         uint16_t a = offset >> 2;
         for (int p = 0; p < 4; p++) v->latch[p] = v->plane[p][a];
@@ -59,6 +66,7 @@ EXPORT void vga_write(uint16_t offset, uint8_t value)
 {
     VgaState *v = &pre2_vga;
     vga_mem_accesses++;
+    if (vga_memory_off) return;
     if (chain4()) {
         int p = offset & 3;
         if (v->seq[2] & (1 << p)) v->plane[p][offset >> 2] = value;

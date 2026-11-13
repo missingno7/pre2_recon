@@ -31,6 +31,7 @@
 #include "screens.h"
 #include "player.h"
 #include "effects.h"
+#include "scene_screens.h"
 
 #define SEG_VGA        0xA000u
 #define ATTR_PAS_PEL   0x33u         /* attribute index 13h with PAS set: pel pan */
@@ -137,6 +138,7 @@ static void loc_9613(void)
         port_out8(0x3C0, ATTR_PAS_PEL);
         port_out8(0x3C0, (uint8_t)(DB(DS_MapScrollX) & 7));
         uint16_t dx = DW(DS_MapScrollX);
+        scene_emit(SCENE_SCREEN_TRANSITION, 6, 5, 2, (int)dx, 640, (int)dx, (int)DW(DS_MapScrollY));
         SET_DW(DS_MapScrollX, (uint16_t)(dx + 1));
         if ((dx & 7) == 0) {
             /* column copy: from the map buffer (DS = word_2875) to VRAM, four planes, 200 rows;
@@ -154,6 +156,7 @@ static void loc_9613(void)
                     di = (uint16_t)(di + 1 + 0x27);
                 } while (--cx != 0);
                 di = (uint16_t)(di - 0x1F40);
+                scene_emit(SCENE_SCREEN_WORLD_COLUMN, 2, (int)dx, (int)al);
             }
         }
         if (DB(DS_byte_27E8) != 0) break;                 /* loc_96C1 */
@@ -230,6 +233,7 @@ void ShowWorldMapScrollIn(void)
         dh--;
     } while (dh != 0);
 
+    scene_emit(SCENE_SCREEN_WORLD_MAP, 1, (int)map);
     SET_DW(DS_MapScrollY, 0);
     SET_DW(DS_PrevMapScrollX, 0);
     SET_DW(DS_PrevMapScrollY, 0);
@@ -279,6 +283,7 @@ int RunCallbackMapScreen(uint16_t callback)
             si = (uint16_t)(si + 2);
             di = (uint16_t)(di + 2);
         }
+        scene_emit(SCENE_SCREEN_PICTURE, 6, (int)map, (int)(uint16_t)(si - 8000), 0, 8000, (int)al, 0);
     }
 
     SET_ES(map);                                         /* mov es, NextFreeSegment */
@@ -313,6 +318,7 @@ int RunCallbackMapScreen(uint16_t callback)
         }
     }
 
+    scene_emit(SCENE_SCREEN_FONT_BANKS, 1, (int)map);
     SET_ES(SEG_VGA);                                     /* ES = A000h to the return; the DAC call's ES = DATA */
     SET_DW(DS_MapScrollX, 0);                            /* is push/pop-bracketed */
     SET_DW(DS_MapScrollY, 0);
@@ -348,6 +354,8 @@ static int loc_97A8(void)
             port_out8(0x3C0, ATTR_PAS_PEL);
             port_out8(0x3C0, (uint8_t)(DB(DS_MapScrollX) & 7));
         }
+        scene_emit(SCENE_SCREEN_TRANSITION, 6, 5, 2, (int)(uint16_t)(0 - DW(DS_MapScrollX)),
+                   0, (int)DW(DS_MapScrollX), (int)DW(DS_MapScrollY));
         int st = call_frame_callback();                   /* BP = 1FFFh from AdvanceMapFrame */
         if (st) return st;
         const uint16_t bp = 0x1FFF;
@@ -386,6 +394,9 @@ static int loc_97A8(void)
                 di = (uint16_t)(di + 1);
             } while (--cnt != 0);
         }
+        scene_emit(SCENE_SCREEN_MAP_EDGES, 5, (int)DW(DS_ScreenStartOffset),
+                   (int)DW(DS_PrevMapScrollX), (int)DW(DS_MapScrollX),
+                   (int)DW(DS_PrevMapScrollY), (int)DW(DS_MapScrollY));
         if (DB(DS_ScreenExitRequested) != 0) break;
     }
     loc_9881();
@@ -556,6 +567,9 @@ static void loc_9A9B(uint16_t dx)
  * VRAM offset mask (1FFFh). Returns BX after the terminator. */
 uint16_t DrawFontString(uint16_t bx, uint16_t bp)
 {
+    scene_emit(SCENE_SCREEN_STRING, 7, (int)bx, (int)bp, (int)DW(DS_TextCursorOffset),
+               (int)DB(DS_TextAdvance), (int)DW(DS_TextFontBank),
+               (int)DW(DS_ScreenStartOffset), (int)DW(DS_PrevScreenStartOffset));
     for (;;) {
         uint8_t c = rd8(DATA_SEG, bx);
         bx = (uint16_t)(bx + 1);
@@ -636,6 +650,7 @@ void RunGameOverScreen(void)
         mw_wr(SEG_VGA, di, 0);
         di = (uint16_t)(di + 2);
     }
+    scene_emit(SCENE_SCREEN_CLEAR, 2, 0x3F40, 8000);
     for (uint8_t al = 1; al < 0x10; al <<= 1) {
         port_out8(0x3C5, al);
         for (uint16_t cx = 0xFA0; cx != 0; cx--) {
@@ -643,6 +658,7 @@ void RunGameOverScreen(void)
             si = (uint16_t)(si + 2);
             di = (uint16_t)(di + 2);
         }
+        scene_emit(SCENE_SCREEN_PICTURE, 6, (int)map, (int)(uint16_t)(si - 8000), 0x5E80, 8000, (int)al, 0);
         di = (uint16_t)(di - 0x1F40);
     }
     SET_ES(DATA_SEG);                                    /* ES = DATA from here to the return */
@@ -734,6 +750,8 @@ void CopyBackdropStrip(void)
         si = (uint16_t)(si + 1);
         di = (uint16_t)(di + 1);
     }
+    scene_emit(SCENE_SCREEN_COPY, 3, (int)(uint16_t)(ROW_PITCH * DB(DS_FineScroll) + 0x3F40),
+               (int)DW(DS_DrawPage), 0x1B80);
 }
 
 /* One animation step: FineScroll, the eight letters (sway velocity), the three items on
@@ -840,10 +858,12 @@ uint16_t ShowMode13PictureFadeIn(uint8_t count, uint16_t bx)
 {
     SET_CB(CS_FadeEntryCount, count);
     bios_set_mode(0x13);
+    scene_emit(SCENE_SCREEN_TRANSITION, 6, 0, 0, 0, 0, 0, 0);
     WaitVerticalRetrace();
     port_out8(0x3C8, 0);
     for (int k = 0; k < 0x300; k++) port_out8(0x3C9, 0);
     uint16_t src = SetPictureCopyPointers();
+    scene_emit(SCENE_SCREEN_PICTURE, 6, (int)src, 0, 0, 64000, 15, 1);
     for (uint32_t k = 0; k < 0x7D00; k++) {             /* rep movsw: 0FA00h bytes */
         uint16_t off = (uint16_t)(2 * k);
         mw_wr(SEG_VGA, off, rd16(src, off));
@@ -856,7 +876,9 @@ uint16_t ShowMode13PictureFadeIn(uint8_t count, uint16_t bx)
 static uint16_t fade_in_passes(uint16_t pal, uint16_t bx)
 {
     uint8_t bl = (uint8_t)bx, bh = (uint8_t)(bx >> 8);
+    unsigned pass = 0;
     for (;;) {                                           /* loc_91CF: one pass */
+        scene_emit(SCENE_SCREEN_TRANSITION, 6, 4, 2, (int)pass++, 32, 0, 0);
         uint16_t si = 0, bp = 0;
         SET_CB(CS_FadeEntryIndex, 0);
         for (;;) {                                       /* loc_91D9: one entry */
@@ -864,6 +886,7 @@ static uint16_t fade_in_passes(uint16_t pal, uint16_t bx)
             if (!(CW(CS_OptionBits) & 1)) {              /* loc_925E: instant write */
                 port_out8(0x3C8, 0);
                 for (int k = 0; k < 0x1E0; k++) port_out8(0x3C9, rd8(pal, (uint16_t)(si + k)));
+                scene_emit(SCENE_SCREEN_TRANSITION, 6, 0, 0, 0, 0, 0, 0);
                 return (uint16_t)(bh << 8 | bl);
             }
             uint8_t idx = CB(CS_FadeEntryIndex);
@@ -887,7 +910,10 @@ static uint16_t fade_in_passes(uint16_t pal, uint16_t bx)
             SET_CB(CS_FadeEntryIndex, (uint8_t)(CB(CS_FadeEntryIndex) + 1));
             if (CB(CS_FadeEntryIndex) >= CB(CS_FadeEntryCount)) break;
         }
-        if (bp == 0) return (uint16_t)(bh << 8 | bl);
+        if (bp == 0) {
+            scene_emit(SCENE_SCREEN_TRANSITION, 6, 0, 0, 0, 0, 0, 0);
+            return (uint16_t)(bh << 8 | bl);
+        }
     }
 }
 
@@ -908,6 +934,7 @@ void ShowPlanarPicture(uint16_t pic)
             si = (uint16_t)(si + 2);
             di = (uint16_t)(di + 2);
         }
+        scene_emit(SCENE_SCREEN_PICTURE, 6, (int)pic, (int)(uint16_t)(si - 8000), 0, 8000, (int)al, 0);
     }
     SET_ES(pic);                                       /* mov ax, ds; mov es, ax: ES = the picture to the return */
     for (uint16_t k = 0; k < 0x2D0; k++) wr8(pic, (uint16_t)(0x7D30 + k), 0);
@@ -928,6 +955,7 @@ int ShowPresentTitle(void)
     SET_DW(DS_LevelSegment, seg);
     uint16_t bx = ShowMode13PictureFadeIn(0xFF, 0);
     uint16_t logo = (uint16_t)(seg + 0x1030);            /* 3A20h words: 320 x 93 strip */
+    scene_emit(SCENE_SCREEN_PICTURE, 6, (int)logo, 0, 0, 0x7440, 15, 1);
     SET_ES(SEG_VGA);
     for (uint32_t k = 0; k < 0x3A20; k++) {
         uint16_t off = (uint16_t)(2 * k);
@@ -941,7 +969,9 @@ int ShowPresentTitle(void)
     }
     uint8_t bl = (uint8_t)bx;
     uint16_t bp;
+    unsigned pass = 0;
     do {                                                 /* loc_90DE: one pass */
+        scene_emit(SCENE_SCREEN_TRANSITION, 6, 4, 2, (int)pass++, 32, 0, 0);
         port_out8(0x3C8, 0);
         bp = 0;
         for (uint16_t k = 0; k < 0x300; k++) {
@@ -967,6 +997,7 @@ int ShowPresentTitle(void)
             }
         }
     } while (bp != 0);
+    scene_emit(SCENE_SCREEN_TRANSITION, 6, 0, 0, 0, 0, 0, 0);
     return SCR_OK;
 }
 
@@ -992,7 +1023,9 @@ void FadeOutPaletteToBlack(void)
 {
     if (!(CW(CS_OptionBits) & 1)) return;
     if (CB(CS_OptionVByte) != 5) return;
+    unsigned pass = 0;
     for (;;) {
+        scene_emit(SCENE_SCREEN_TRANSITION, 6, 4, 0, (int)pass++, 16, 0, 0);
         uint16_t bp = 0;
         SET_CB(CS_FadeEntryIndex, 0);
         for (;;) {
@@ -1012,7 +1045,10 @@ void FadeOutPaletteToBlack(void)
             SET_CB(CS_FadeEntryIndex, (uint8_t)(CB(CS_FadeEntryIndex) + 1));
             if (CB(CS_FadeEntryIndex) >= CB(CS_FadeEntryCount)) break;
         }
-        if (bp == 0) return;
+        if (bp == 0) {
+            scene_emit(SCENE_SCREEN_TRANSITION, 6, 0, 0, 0, 0, 0, 0);
+            return;
+        }
     }
 }
 
@@ -1149,6 +1185,7 @@ static void intro_setup(void)
         uint8_t b = mb_rd(SEG_VGA, k);
         mb_wr(SEG_VGA, (uint16_t)(0x3F40 + k), b);
     }
+    scene_emit(SCENE_SCREEN_COPY, 3, 0, 0x3F40, 0x1F40);
     SET_DB(DS_FadeOutActive, 0);
     SET_DB(DS_FadeInActive, 1);
     SET_DB(DS_PaletteFadeStep, 0);
@@ -1280,6 +1317,7 @@ void RestoreBackdropToDrawPage(void)
         uint8_t b = mb_rd(SEG_VGA, (uint16_t)(0x3F40 + k));
         mb_wr(SEG_VGA, (uint16_t)(di + k), b);
     }
+    scene_emit(SCENE_SCREEN_COPY, 3, 0x3F40, (int)di, 0x1F40);
 }
 
 /* ---- exported adapters (differential tests) ---------------------------------------------- */

@@ -30,7 +30,7 @@ def main():
     embed(out/'image_data.c')
     cgen.generate()
     sdl = Path(read_json(ROOT/'metadata'/'sdl3.json')['local'])
-    sources = [str(p) for p in sorted((ROOT/'c').glob('*.c'))] + [str(p) for p in sorted((ROOT/'host').glob('*.c'))] + [str(out/'image_data.c')]
+    sources = [str(p) for p in sorted((ROOT/'c').glob('*.c'))] + [str(p) for p in sorted((ROOT/'native').glob('*.c'))] + [str(p) for p in sorted((ROOT/'host').glob('*.c'))] + [str(out/'image_data.c')]
     cmd = [str(cbuild.GCC), '-O2', '-g', '-std=c11', '-Wall', '-Wextra', '-Werror', '-Wno-unused-function', '-fwrapv',
            f'-I{sdl/"include"}', '-o', str(out/'pre2.exe'), *sources, f'-L{sdl/"lib"}', '-lSDL3']
     env = dict(os.environ, PATH=str(cbuild.GCC.parent) + os.pathsep + os.environ.get('PATH', ''))

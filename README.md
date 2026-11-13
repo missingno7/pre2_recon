@@ -15,7 +15,8 @@ python tools/difftest.py      # every differential suite in tests/ (ASM in Unico
 python tools/where.py 107B    # source line for a code offset (ds:XXXX for data)
 python tools/graph.py 107B    # callers, callees, ports, interrupts, DATA of a routine
 python tools/hostbuild.py     # native SDL3 build -> build/host/pre2.exe
-build\host\pre2.exe --assets assets             # play
+build\host\pre2.exe --assets assets             # play (native renderer and audio; --reference: VGA/SB models)
+python tools/nativetest.py                       # native path: parity, stepping, audio, production (docs/native.md)
 build\host\pre2.exe --assets assets --smoke 45  # bounded integration check (docs/smoke-test.md)
 build\host\pre2.exe --assets assets --smoke 75 --scenario warp   # also ending, gameover, castle
 python tests/_vga_kat.py                         # VGA model known-answer checks
@@ -39,8 +40,9 @@ the private original assets in `assets/` and the DOS tools in `toolchain/`
 - `tools/` - build/verify, address lookup, symbol maintenance (`rename.py`, `define.py`,
   `symtab.py`, `apply.py` for worker proposals), static analysis (`explore.py`,
   `segflow.py`, `graph.py`), the bounded execution harness (`emu.py`) and C build.
-- `host/` - the native SDL3 platform: interrupts at the game's polling points, VGA
-  presentation, Sound Blaster audio, keyboard.
+- `native/` - the native runtime: logical machine and stepping, scene compositor and
+  published frames, native audio engine, native asset decoding (docs/native.md).
+- `host/` - the SDL3 host: wall clock to logical time, window, audio device, keyboard.
 - `docs/` - the oracle boundary (executable.md), architecture, timing model, smoke test,
   worker briefs, next work.
 - `metadata/` - pinned inputs, oracle manifest, toolchain and SDL3 locks.

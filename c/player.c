@@ -1214,6 +1214,7 @@ static void UpdatePlayerStateAttack(uint8_t al, uint16_t bx, uint16_t cx, uint16
         dx = 0;
         if (wt != 1) dx = 0x0A;
     }
+    audio_source(AUDIO_SRC_PLAYER, 0x4F1C, DW(0x4F1C), DW((uint16_t)(0x4F1C + 2)));
     StartSoundEffect(dx);
     uint16_t dy = 0;
     uint8_t ca = DB(DS_CurrentAnimId);

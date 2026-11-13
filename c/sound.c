@@ -40,6 +40,7 @@
 #include "startup.h"
 #include "ports.h"
 #include "platform.h"
+#include "audio_events.h"
 
 #define VOLUME_TABLE DS_VolumeTable   /* 65 rows of 64 bytes, filled at SB set-up (loc_1E90) */
 
@@ -304,6 +305,7 @@ void WaitSoundTicks(void)
  * byte), count A7h, unmasked; then DSP 14h with length A7h 00h (single-cycle 8-bit). */
 void StartSbBlock(void)
 {
+    audio_emit(AUDIO_OUTPUT_START, 0);
     uint16_t bx = DW(DS_PlayDmaRecord);
     port_out8(0x0A, 5);
     port_out8(0x0C, 0);

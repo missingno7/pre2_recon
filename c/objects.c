@@ -17,6 +17,7 @@
 #include "system.h"
 #include "vga.h"
 #include "objects.h"
+#include "scene_game.h"
 #include "effects.h"
 #include "player.h"
 #include "sprites.h"
@@ -97,7 +98,7 @@ int AllocChildRecord(uint16_t *di)
 {
     uint16_t p = CHILD_BASE;
     for (unsigned i = 0; i < CHILD_SLOTS; i++, p = (uint16_t)(p + RS_SIZE)) {
-        if (RW(p, RS_FRAME) == 0xFFFF) { *di = p; return 0; }
+        if (RW(p, RS_FRAME) == 0xFFFF) { scene_emit(SCENE_GAME_ALLOC, 1, p); *di = p; return 0; }
     }
     *di = p;                    /* full: DI is one past the last slot (50A8h), as the ASM leaves it */
     return 1;
@@ -1001,6 +1002,7 @@ static void ApplyBossPartContact(uint16_t di)
     uint8_t r = (uint8_t)(DB(DS_BossCounter) - al);
     SET_DB(DS_BossCounter, (r & 0x80) ? 0 : r);
     DrainPlayerEnergy();
+    audio_source(AUDIO_SRC_BOSS, di, DW(di), DW((uint16_t)(di + 2)));
     StartSoundEffect(1);
     SET_DB(DS_PlayerHurtTimer, 0x2C);
     SET_DB(DS_AttackAnimLock, 0);
@@ -1023,6 +1025,7 @@ static void CheckPlayerBossContact(void)
     uint16_t ax = 0xFFC0;
     if (DB(DS_byte_27EA) != 0) {
         ax = 0xFF80;
+        audio_source(AUDIO_SRC_BOSS, DW(DS_word_A425), DW(DW(DS_word_A425)), DW((uint16_t)(DW(DS_word_A425) + 2)));
         StartSoundEffect(3);
     }
     SET_DW(DS_PlayerVelY, ax);
@@ -1079,6 +1082,7 @@ static void BossHit(uint16_t si)
     uint16_t tick = DW(DS_SnowFrameTick);
     if (abs16((uint16_t)(tick - DW(DS_word_A3FD))) <= 0x16) return;
     SET_DW(DS_word_A3FD, tick);
+    audio_source(AUDIO_SRC_RECORD, si, DW(si), DW((uint16_t)(si + 2)));
     StartSoundEffect(8);
     SET_DB(DS_byte_564D, DB(DS_byte_564D) | 0x40);
     SET_DB(DS_byte_565F, DB(DS_byte_565F) | 0x40);
@@ -1640,6 +1644,7 @@ loc_70CB:
  * index*32, read through the latches) and is copied to VRAM from 3F58h. */
 void DrawLevel9Panel(uint8_t al)
 {
+    scene_emit(SCENE_GAME_PANEL, 1, al);
     uint16_t di = 0x3F58;
     SetLatchCopyMode();
     uint16_t bx = (uint16_t)(al * 6 + 0x14);
@@ -1729,7 +1734,7 @@ int RunLevel9Script(void)
         uint8_t al = DB(bx);
         if (al == 0xFF) { SpawnDriftParticle(); bx = (uint16_t)(bx + 1); continue; }
         if (al == 0xFE) { SpawnFallingParticle(); bx = (uint16_t)(bx + 1); continue; }
-        if (al == 0xFD) { StartSoundEffect(2); bx = (uint16_t)(bx + 1); continue; }
+        if (al == 0xFD) { audio_source(AUDIO_SRC_NONE, 0, 0, 0); StartSoundEffect(2); bx = (uint16_t)(bx + 1); continue; }
         if (!(al & 0x80)) {
             SET_DW(DS_Level9ScriptPtr, (uint16_t)(DW(DS_Level9ScriptPtr) + 1));
             DrawLevel9Panel(al);

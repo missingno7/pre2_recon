@@ -16,6 +16,7 @@
 #include "sqz.h"
 #include "sprites.h"
 #include "render.h"
+#include "scene_game.h"
 
 #define SPRITE_SQZ_NAME  0x2A2Eu   /* DATA offset of "SPRITES.SQZ" (anonymous string, MODULE1 DATA) */
 #define BITREV_TABLE     CS_BitReverseTable   /* 256 bytes, byte i = reverse8(i), read by XLAT */
@@ -634,12 +635,19 @@ static void draw_object(uint16_t si)
     b.rows = CB(CS_SpriteVisibleRows);
     vga_out(0x3CE, 3); vga_out(0x3CF, (uint8_t)(xs | 0x08));   /* GC 03h = (X & 7) | AND */
 
+    scene_emit(SCENE_GAME_SPRITE, 12, si, fw & 0x1FFF, CB(CS_MirrorBits) & 1, pass,
+               (int16_t)CW(CS_SpriteScreenX), (int16_t)CW(CS_SpriteTopRow), b.di,
+               (uint16_t)(b.si - DW(DS_FrameDataOffsets + bx)), b.vis | (CB(CS_SpriteRowBytes) << 8),
+               b.rows, CW(CS_SpriteSourceSkip),
+               (int32_t)((uint32_t)CB(CS_SpriteLeftClipBytes) | ((uint32_t)CB(CS_SpriteRightClipBytes) << 8) |
+                         ((uint32_t)CB(CS_ClipXFlag) << 16) | ((uint32_t)CB(CS_EdgeByteInvert) << 24)));
     if (CB(CS_MirrorBits) & 1) DrawSpriteMirrored(&b);
     else DrawSpriteStraight(&b);
 }
 
 void DrawSpriteObjects(void)
 {
+    scene_emit(SCENE_GAME_SPRITES_BEGIN, 0);
     SET_DW(DS_SnowFrameTick, (uint16_t)(DW(DS_SnowFrameTick) + 1));
     uint16_t si = 0x5720;                               /* walked down to 4F0Ah */
     for (;;) {
@@ -767,6 +775,7 @@ int LoadSpriteSheet(void)
 
     ExpandSpriteFrames();
     BuildFrameOffsets(seg);
+    scene_emit(SCENE_GAME_ASSETS, 0);
     SET_ES(es_entry);
     return 0;
 }

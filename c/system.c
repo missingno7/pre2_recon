@@ -17,6 +17,7 @@
 #include "sound.h"
 #include "render.h"
 #include "platform.h"
+#include "scene_screens.h"
 
 #define RESOURCE_NAMES   0x09E0u    /* DATA: NUL-terminated resource names, PRES.TRK first */
 #define RF(slot)         ((uint16_t)(DS_ResourceFlags + (slot)))
@@ -39,6 +40,7 @@ static uint8_t shr8(uint8_t v, uint8_t cl)
 
 void StartSoundEffect(uint16_t dx)
 {
+    audio_emit(AUDIO_SFX, dx);
     if (CB(CS_AdLibEnabled) == 1 || CB(CS_SbDetected) == 1) {
         /* sample mode: BX = DX * 4 from the whole DX (not DL) */
         uint16_t bx = (uint16_t)(dx << 2);
@@ -109,6 +111,7 @@ static int resource_sound_update(void)
 {
     if (CB(CS_SoundState) & 1) StartSbBlock();
     SET_CB(CS_SoundState, CB(CS_SoundState) | 2);
+    audio_emit(AUDIO_OUTPUT_READY, 1);
     return SYS_OK;
 }
 
@@ -120,6 +123,7 @@ static int activate_slot_body(uint16_t slot)
         if (di != slot && !(DB(RF(di)) & 8))
             SET_DB(RF(di), DB(RF(di)) & 0xFE);
     SET_CB(CS_SoundState, CB(CS_SoundState) & 0xFD);
+    audio_emit(AUDIO_SONG_BEGIN, slot);
     int st = PageInResource(slot);
     if (st) return st;
 
@@ -192,6 +196,15 @@ static int activate_slot_body(uint16_t slot)
         bx = (uint16_t)(bx + 0x10);
     }
 
+    /* The inclusive sample limit can read the stale byte after the final sample.
+     * Keep this loader input with the semantic rebuild command (audit section 5).
+     * SI still carries the final sample's segment-relative end here. */
+    uint32_t audio_tail_offset = ((uint32_t)(uint16_t)(seg - mseg) << 4) + si;
+    uint8_t audio_tail[16];
+    for (unsigned i=0;i<16;i++)
+        audio_tail[i]=rd8((uint16_t)(mseg+(audio_tail_offset>>4)),
+                          (uint16_t)((audio_tail_offset&15)+i));
+
     /* Pattern cells: each cell's first word (period) becomes its note index (period table
      * at DATA:0E75h, 36 entries; 36 when not found). PatternCount * 256 cells in all. */
     si = DW(DS_PatternDataOffset);
@@ -220,6 +233,7 @@ static int activate_slot_body(uint16_t slot)
     SET_DB(DS_SongSpeed, 6);
     for (uint16_t k = 0; k < 4; k++) SET_DW(0x0B8Au + 2 * k, 0xFFFF);   /* four channel positions: none */
     for (uint16_t k = 0; k < 32; k++) SET_DW(0x0B92u + 2 * k, 0);       /* channel fields up to InstrumentTable */
+    audio_emit_tail(AUDIO_SONG_END, slot, audio_tail_offset, audio_tail);
     return resource_sound_update();
 }
 
@@ -298,6 +312,7 @@ uint16_t PrintAsciiz(uint16_t seg, uint16_t si)
 void DrawFontChar(uint8_t al)
 {
     uint16_t di = (uint16_t)(DW(DS_TextRowOffset) + DW(DS_TextByteColumn) + DW(DS_DisplayPage));
+    scene_emit(SCENE_SCREEN_CHAR, 3, (int)DW(DS_word_003D), (int)al, (int)di);
     SET_DW(DS_TextByteColumn, (uint16_t)(DW(DS_TextByteColumn) + 1));
     if (al == 0x20) {
         /* a space clears the 12-row column in all four planes (map mask 0Fh) */
@@ -498,6 +513,7 @@ int KeyboardIsr(void)
 
     if (code == F3_SCAN) {                       /* F3 toggles the sound-on bit */
         SET_CB(CS_SoundState, CB(CS_SoundState) ^ 1);
+        audio_emit(AUDIO_OUTPUT_TOGGLE, CB(CS_SoundState) & 1);
         if (CB(CS_SbDetected) == 1) {
             if (CB(CS_SoundState) & 1) StartSbBlock();
         } else if (CB(CS_AdLibEnabled) != 1) {

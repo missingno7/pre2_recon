@@ -17,6 +17,7 @@
 #include "startup.h"
 #include "system.h"
 #include "credits.h"
+#include "scene_screens.h"
 
 /* Year gates: the late credits from 1996, the intro picture from 1994. */
 #define CREDITS_YEAR_MIN 0x07CCu
@@ -160,6 +161,7 @@ static void CopyPlane(uint16_t src_seg, uint8_t mask)
         vga_write(off, (uint8_t)w);
         vga_write((uint16_t)(off + 1), (uint8_t)(w >> 8));
     }
+    scene_emit(SCENE_SCREEN_PICTURE, 6, (int)src_seg, 0, 0, 0x81B0, (int)mask, 0);
 }
 
 int ShowIntroBody(void)

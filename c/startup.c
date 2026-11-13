@@ -28,6 +28,7 @@
  * Sound Blaster, no AdLib, no EMS, no XMS, drive A, SS = the harness stack segment 1010h,
  * RTC 1980 by the image default". */
 #include "pre2.h"
+#include "audio_events.h"
 #include "ports.h"
 #include "dos_files.h"
 #include "sqz.h"
@@ -270,6 +271,10 @@ static int init_sound_devices(void)
         e = SbSetup(&p);
         if (e) return e;
         SET_CB(CS_SbDetected, 1);
+        /* The bank allocation includes stale padding; SB converted it too. */
+        uint8_t audio_tail[16];
+        for (unsigned i=0;i<16;i++) audio_tail[i]=rd8(seg,(uint16_t)(acc+i));
+        audio_emit_tail(AUDIO_DEVICE, (CW(CS_OptionBits) & 0x40) == 0, acc, audio_tail);
         return STARTUP_OK;
     }
     if (p.adlib_found && CB(CS_CpuClass) >= 2) {

@@ -58,18 +58,16 @@ documented VGA behaviour (the differential tests cannot: both sides use it).
 Mutation checks (a deliberately wrong C change must fail) confirm that cases observe what
 they claim to.
 
-## Platform models and the SDL3 host (host/)
+## Platform models and the native runtime
 
 Hardware the game drives directly (VGA planar memory and registers, DAC palette, PIT,
 keyboard controller, Sound Blaster DSP + 8237 DMA + PIC, AdLib) is modelled in C at the
-level the game's code observes: register writes and memory side effects. Video
-presentation scans the modelled VGA state out to RGBA in an SDL3 texture the way the CRT
-and attribute controllers do, from register state only (host/present.c); the BIOS mode set
-is part of the VGA model (c/vga_bios.c: registers, default DAC, memory clear); audio presents the PCM blocks the game's own mixer produces; timing
-derives simulation ticks from the original PIT programming and handler counters, never
-from the presentation rate. host/ replaces these models with SDL3 services behind the
-same contracts. The host also gives DOS file loads and VGA accesses the time they took on a period
-machine (host_io, bus_pay), so interrupts (keyboard releases among them) arrive during
-loads as they did and VGA-bound loops keep their pace against the retrace; a CRT timeline
-from the CRTC timing registers drives 3DAh, the start address latch and the moment each
-frame is scanned out (crt_advance in host/platform_host.c).
+level the game's code observes: register writes and memory side effects. These models are
+the reference the differential tests and the native parity tests run on.
+
+The production path (docs/native.md) keeps none of the display or sound device models: the
+game runs on a logical machine (native/machine.c: coroutine, logical time, interrupts at its
+own service points); video memory is not modelled (what the game kept in it as data is
+explicit storage, c/vram_store.h); each drawing operation is drawn by the native compositor
+into published frames; each sound origin is a command to the native audio engine. The SDL3
+host (host/) only maps wall time to logical time, shows frames and submits PCM.

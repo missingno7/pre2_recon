@@ -24,15 +24,12 @@ PIT input clock 1193182 Hz. All rates below follow from the divisors the program
 - word_27F0 is incremented in the BIOS tick body (18.2 Hz) and used by screens that wait
   for a duration (credits, game over).
 
-## Native host consequence
+## Native consequence
 
-Simulation frames are driven by an emulated TimerTickCount at 72.83 Hz (the SB
-configuration, the one the port targets), not by display refresh. Presentation shows the
-page the game flipped to (CRTC start address) whenever it changes; audio consumes the
-168-byte blocks the translated mixer produces at 50.02 blocks/s. The original's interrupt
-work (timer tick, keyboard, SB block) is delivered at the game's own polling points
-(busy waits on TimerTickCount, retrace, keys). Interrupts that arrive exactly there are one
-of the timings real hardware produces, so this is a faithful choice among original behaviours,
-not an equivalence to every interleaving. Still to verify per handler: that no main-code
-read-modify-write races with an interrupt in a way the original depends on (e.g. the in-DOS
-flag protocol around DOS calls).
+Simulation runs in logical time on native/machine.c (docs/native.md, "Timing boundary"): PIT
+ticks at the programmed divisor, frames every 3 ticks through WaitSoundTicks, audio blocks on
+their own 119 us x 168 clock, CRT edges from the CRTC timing registers; logical time advances
+only by waits, busy-wait turns, video bus time and period load time. The host maps wall time
+to a logical bound and never drives the game from the display or the audio device. Interrupts
+arrive at the game's service points (busy-waits, frame waits, 3DAh reads, loads): one of the
+timings real hardware produces, not an equivalence to every interleaving.

@@ -37,6 +37,7 @@ extern void (*vga_access_hook)(void);
 /* Counts of CPU accesses to video memory and to VGA ports (the native host charges them
  * ISA bus time); not VGA state. */
 extern uint32_t vga_mem_accesses, vga_io_accesses;
+extern int vga_memory_off;      /* production: video memory not modelled (see vga.c) */
 
 void    vga_reset(void);
 uint8_t vga_read(uint16_t offset);              /* CPU read at A000:offset */

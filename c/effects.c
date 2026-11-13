@@ -25,6 +25,7 @@
 #include "player.h"
 #include "objects.h"
 #include "effects.h"
+#include "scene_game.h"
 
 /* ---- SpawnDebrisElement (cs:8875) ------------------------------------------------------- */
 
@@ -46,6 +47,7 @@ void SpawnDebrisElement(uint16_t ax, uint16_t si)
         if (DW((uint16_t)(di + 4)) == 0xFFFF) { found = 1; break; }
     }
     if (!found) return;
+    scene_emit(SCENE_GAME_ALLOC, 1, di);
     SET_DW((uint16_t)(di + 4), ax);
     SET_DW(di, DW(si));
     SET_DW((uint16_t)(di + 2), DW((uint16_t)(si + 2)));
@@ -70,6 +72,7 @@ void SpawnEffectBurst(uint16_t ax, uint16_t *dxp, uint16_t cx)
     uint16_t bx = 0x50A8;
     for (;;) {
         if (DW((uint16_t)(bx + 4)) == 0xFFFF) {
+            scene_emit(SCENE_GAME_ALLOC, 1, bx);
             SET_DW((uint16_t)(bx + 4), DW(DS_EffectFrame));
             SET_DB((uint16_t)(bx + 0x11), 0);
             SET_DW((uint16_t)(bx + 0x0C), 0xC6);
@@ -182,6 +185,7 @@ int ApplyFollowerHitToObjects(uint16_t si)
             uint16_t ax = (uint16_t)((int16_t)DW((uint16_t)(di + 8)) >> 2);
             SET_DW(di, (uint16_t)(DW(di) - ax));
         } else {
+            audio_source(AUDIO_SRC_RECORD, di, DW(di), DW((uint16_t)(di + 2)));
             StartSoundEffect(2);
             DestroyObjectWithDebris(di, bx, si);
         }
@@ -576,6 +580,7 @@ loc_8343:
     goto loc_837A;
 
 loc_8348:
+    audio_source(AUDIO_SRC_RECORD, di, DW(di), DW((uint16_t)(di + 2)));
     StartSoundEffect(3);
     {
         uint8_t al = (uint8_t)(DB((uint16_t)(di + 0x10)) >> 2);
@@ -598,6 +603,7 @@ loc_837A:
     return;
 
 loc_838A:
+    audio_source(AUDIO_SRC_RECORD, di, DW(di), DW((uint16_t)(di + 2)));
     StartSoundEffect(9);
     di = DW((uint16_t)(di + 6));
     SET_DB((uint16_t)(di + 4), DB((uint16_t)(di + 4)) & 0xFE);
@@ -673,6 +679,7 @@ loc_8618:
         TriggerPlayerRespawnCore();
         goto loc_860E;
     }
+    audio_source(AUDIO_SRC_RECORD, si, DW(si), DW((uint16_t)(si + 2)));
     StartSoundEffect(1);
     SET_DB(DS_PlayerHurtTimer, 0x2C);
     SET_DB(DS_SubAnimKey, 0);
@@ -687,6 +694,7 @@ loc_8618:
     goto loc_860E;
 
 loc_864F:
+    audio_source(AUDIO_SRC_RECORD, si, DW(si), DW((uint16_t)(si + 2)));
     StartSoundEffect(1);
     SET_DB(DS_PlayerHurtTimer, 0x2C);
     SET_DB(DS_SubAnimKey, 0);
@@ -700,6 +708,7 @@ loc_864F:
 
 loc_86B7:
     /* code A9h: destroy every live object that is not a background piece */
+    audio_source(AUDIO_SRC_RECORD, si, DW(si), DW((uint16_t)(si + 2)));
     StartSoundEffect(0);
     {
         uint16_t d = 0x4FD0;
@@ -719,6 +728,7 @@ loc_86B7:
 
 loc_870A:
     /* code AAh: four debris particles at every live object */
+    audio_source(AUDIO_SRC_RECORD, si, DW(si), DW((uint16_t)(si + 2)));
     StartSoundEffect(0);
     {
         uint16_t d = 0x4FD0;
@@ -741,6 +751,7 @@ loc_870A:
 
 loc_876C:
     if (DB(DS_byte_6C04) != 1) {
+        audio_source(AUDIO_SRC_RECORD, si, DW(si), DW((uint16_t)(si + 2)));
         StartSoundEffect(1);
         SET_DB(DS_FadeInActive, 0);
         SET_DB(DS_FadeOutActive, 1);
@@ -759,26 +770,31 @@ loc_8790:
     goto loc_853F;
 
 loc_87AE:
+    audio_source(AUDIO_SRC_RECORD, si, DW(si), DW((uint16_t)(si + 2)));
     StartSoundEffect(8);
     SET_DB(DS_PlayerWeaponType, 0);
     goto loc_853F;
 
 loc_87BC:
+    audio_source(AUDIO_SRC_RECORD, si, DW(si), DW((uint16_t)(si + 2)));
     StartSoundEffect(8);
     SET_DB(DS_PlayerWeaponType, 1);
     goto loc_853F;
 
 loc_87CA:
+    audio_source(AUDIO_SRC_RECORD, si, DW(si), DW((uint16_t)(si + 2)));
     StartSoundEffect(8);
     SET_DB(DS_PlayerWeaponType, 2);
     goto loc_853F;
 
 loc_87D8:
+    audio_source(AUDIO_SRC_RECORD, si, DW(si), DW((uint16_t)(si + 2)));
     StartSoundEffect(8);
     SET_DB(DS_PlayerWeaponType, 3);
     goto loc_853F;
 
 loc_87E6:
+    audio_source(AUDIO_SRC_RECORD, si, DW(si), DW((uint16_t)(si + 2)));
     StartSoundEffect(4);
     IncrementPlayerLives();
     SpawnDebrisElement(0xE3, 0x4F1C);
@@ -823,6 +839,7 @@ loc_885F:
     goto loc_85B0;
 
 loc_850A:
+    audio_source(AUDIO_SRC_RECORD, si, DW(si), DW((uint16_t)(si + 2)));
     StartSoundEffect(8);
     if (DB(DS_PlayerAltModeFlag) != 0) goto loc_860E;
     SET_DB(DS_PlayerAltModeFlag, 1);
@@ -833,10 +850,12 @@ loc_850A:
 loc_84F6:
     if (DB(DS_Energy) >= 3) return;
     SET_DB(DS_Energy, (uint8_t)(DB(DS_Energy) + 1));
+    audio_source(AUDIO_SRC_RECORD, si, DW(si), DW((uint16_t)(si + 2)));
     StartSoundEffect(4);
     goto loc_853F;
 
 loc_8524:
+    audio_source(AUDIO_SRC_RECORD, si, DW(si), DW((uint16_t)(si + 2)));
     StartSoundEffect(8);
     if (ax < 0x27) goto loc_860E;
     ax = (uint16_t)(ax - 0x27);
@@ -845,6 +864,7 @@ loc_8524:
     goto loc_853F;
 
 loc_854F:
+    audio_source(AUDIO_SRC_RECORD, si, DW(si), DW((uint16_t)(si + 2)));
     StartSoundEffect(8);
     ax = (uint16_t)(ax - 0x2D);
     SET_DB(DS_byte_6CA8, DB(DS_byte_6CA8) | (uint8_t)(1u << (uint8_t)ax));
@@ -857,6 +877,7 @@ loc_854F:
     goto loc_853F;
 
 loc_8582:
+    audio_source(AUDIO_SRC_RECORD, si, DW(si), DW((uint16_t)(si + 2)));
     StartSoundEffect(4);
     bx = DW((uint16_t)(si + 0x0E));
     if ((int16_t)bx < 0x80) goto loc_85B6;
@@ -874,6 +895,7 @@ loc_8582:
     goto loc_860E;
 
 loc_85B0:
+    audio_source(AUDIO_SRC_RECORD, si, DW(si), DW((uint16_t)(si + 2)));
     StartSoundEffect(8);
 loc_85B6:
     /* item pickup: tally [code-39h], count the item, popup code = table byte + 4Ah */
@@ -887,6 +909,7 @@ loc_85B6:
     goto loc_860B;
 
 loc_85DA:
+    audio_source(AUDIO_SRC_RECORD, si, DW(si), DW((uint16_t)(si + 2)));
     StartSoundEffect(8);
     bx = DW((uint16_t)(si + 9));
     if (bx != 0xFFFF) SET_DW((uint16_t)(bx + 4), 0xFFFF);
