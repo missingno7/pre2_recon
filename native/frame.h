@@ -84,6 +84,55 @@ typedef struct FrameTransition {
     int16_t cx, cy, radius;         /* iris centre/radius (screen pixels) */
 } FrameTransition;
 
+/* Native screen authoring surfaces and their semantic projection. Assets are
+ * immutable, native-owned session objects (never pointers into the DOS machine).
+ * A surface is the retained result of picture/glyph/fill/copy operations; it is
+ * independent of the faithful compositor and its published image. */
+struct FrameScreenPixels;
+typedef enum FrameScreenLayerKind {
+    FRAME_SCREEN_IMAGE, FRAME_SCREEN_CLEAR, FRAME_SCREEN_COPY,
+    FRAME_SCREEN_GLYPH, FRAME_SCREEN_FONT, FRAME_SCREEN_COLUMN,
+    FRAME_SCREEN_EDGE, FRAME_SCREEN_CEL
+} FrameScreenLayerKind;
+/* Rectangles in a native authoring image (pitch in pixels). A row's first
+ * pixel wraps by row_mask; individual pixels wrap by the image size. */
+typedef struct FrameScreenRect {
+    uint32_t origin, width, height, pitch, row_mask;
+} FrameScreenRect;
+typedef struct FrameScreenLayer {
+    const struct FrameScreenLayer *previous;
+    const struct FrameScreenPixels *image;
+    FrameScreenRect source, destination;
+    uint8_t kind, channels, character;
+    uint16_t asset, source_skip;
+    uint8_t mirror, pass, phase, clipped, clip_left, clip_right;
+    int32_t x, y, previous_x, previous_y;
+} FrameScreenLayer;
+typedef enum FrameScreenKind {
+    FRAME_SCREEN_EMPTY, FRAME_SCREEN_PICTURE, FRAME_SCREEN_MENU,
+    FRAME_SCREEN_WORLD_MAP, FRAME_SCREEN_CREDITS, FRAME_SCREEN_INTRO,
+    FRAME_SCREEN_TALLY, FRAME_SCREEN_GAME_OVER
+} FrameScreenKind;
+typedef struct FrameScreenRow {
+    uint32_t origin;                 /* authoring-surface pixel origin */
+    uint32_t mask;                   /* wrapping surface extent minus one */
+    uint16_t count;                  /* original active columns */
+    uint8_t side_clear;              /* a whole-row clear also covers wide sides */
+} FrameScreenRow;
+typedef struct FrameScreenView {
+    uint8_t valid, kind, blank, border;
+    uint16_t width, height;
+    uint32_t epoch;
+    double pan_x, pan_y;             /* published pan, in pixels / rows */
+    uint16_t revealed[4];            /* map master columns uploaded in each channel */
+    uint8_t colour[16], indexed256;
+    const struct FrameScreenPixels *surface;
+    const struct FrameScreenPixels *master; /* stamped 640 x 200 map */
+    const struct FrameScreenPixels *font_banks;
+    const FrameScreenLayer *layers;  /* immutable ordered authoring recipe, newest first */
+    FrameScreenRow rows[FRAME_MAX_H];
+} FrameScreenView;
+
 typedef struct Pre2Frame {
     uint64_t seq;                   /* display frame number */
     uint64_t t_ns;                  /* logical time of its display start */
@@ -95,6 +144,7 @@ typedef struct Pre2Frame {
     const char *screen;             /* the top-level step showing it (diagnostics) */
     FrameTransition transition;
     FrameGameView game;
+    FrameScreenView screen_view;
 } Pre2Frame;
 
 /* XRGB8888 of a frame (the faithful presenter's palette lookup). */

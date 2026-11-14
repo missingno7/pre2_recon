@@ -6,6 +6,7 @@
 #include "../c/vga.h"
 #include "../c/game.h"
 #include "../c/scene_screens.h"
+#include "enh_screens.h"
 #include <string.h>
 
 uint8_t comp_planar[0x10000 * 8];
@@ -23,6 +24,9 @@ static void sink(const SceneEvent *e)
 {
     if (e->kind < 1024 && handlers[e->kind]) handlers[e->kind](e);
     else if (!unhandled++) unhandled_first = e->kind;
+    /* After dispatch, so the gameplay family has captured its native assets: the screen
+     * model keeps its own authoring surfaces for game/screen handoffs (HUD, cels, copies). */
+    draw_screens_observe(e);
 }
 
 uint32_t compositor_unhandled(uint16_t *first_kind) { if (first_kind) *first_kind = unhandled_first; return unhandled; }
@@ -71,6 +75,7 @@ void compositor_publish(uint64_t t_ns, uint16_t start, Pre2Frame *f)
     if (compositor_transition) compositor_transition(&f->transition, start);   /* gameplay's, if any */
     f->game.valid = 0;
     if (compositor_game_view) compositor_game_view(&f->game, start);
+    draw_screens_publish(f, start);   /* semantic screen view; invalid while a world view shows */
 }
 
 static uint8_t expand6(uint8_t v) { return (uint8_t)((v << 2) | (v >> 4)); }
