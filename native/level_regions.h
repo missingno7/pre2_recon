@@ -43,7 +43,7 @@ typedef struct Pre2AuthoredRegion {
 typedef struct Pre2CaveRegion {
     uint8_t level, gate;
     uint16_t source, camera, destination;
-    Pre2AuthoredRegion region;
+    Pre2AuthoredRegion region; /* with proven_extent=0, bounds are ONLY the arrival aperture */
 } Pre2CaveRegion;
 struct FrameGameView;
 Pre2AuthoredRegion pre2_region_for_view(const struct FrameGameView *view);
@@ -59,6 +59,15 @@ typedef struct Pre2RevealRegion {
 } Pre2RevealRegion;
 const Pre2RevealRegion *pre2_region_reveals(unsigned *count);
 int pre2_region_reveal_phase(const struct FrameGameView *view, unsigned index);
+/* Tile-aligned silhouette of one reveal. The moving copy grows into the main
+ * view; its tail and the original rows restored behind it are both forbidden.
+ * Their union is invariant, but their boundary changes on every reveal step.
+ * phase=-1 is conservative: no visible-copy claim, whole bank forbidden. */
+typedef struct Pre2RevealVisibility {
+    int phase;
+    Pre2WorldRect visible_copy, never_copy, never_restored;
+} Pre2RevealVisibility;
+Pre2RevealVisibility pre2_region_reveal_visibility(const struct FrameGameView *view, unsigned index);
 /* Original below-ground bank, half-open. UpdateProximityTriggers restores its
  * old bottom rows while moving a copy upward, so it stays hidden in ALL phases. */
 Pre2WorldRect pre2_region_staging(const struct FrameGameView *view, unsigned index);

@@ -109,53 +109,97 @@ static const uint16_t presentation_right[16] = {
 static const uint16_t presentation_rows[16] = {
     49,104,49,45,128,128,128,86,110,12,24,51,51,38,173,84
 };
-#define CAVE(l,g,s,c,d,n) {l,g,s,c,d,{{((c)&255)*16,(((c)&255)+20)*16,((c)>>8)*16,((c)>>8)*16+176},n,g,g, \
-    "TryCaveTrigger / shipped cave record: " #l ": " #s " -> " #c " -> " #d}}
+#define CAVE(l,g,s,c,d,n,why) {l,g,s,c,d,{{((c)&255)*16,(((c)&255)+20)*16,((c)>>8)*16,((c)>>8)*16+176},n,g,g, \
+    "TryCaveTrigger / shipped cave record: " #l ": " #s " -> " #c " -> " #d "; " why}}
 static const Pre2CaveRegion cave_regions[] = {
-    CAVE(0x00,0,0x2725,0x2440,0x2e4c,16),
-    CAVE(0x00,0,0x07e5,0x19dc,0x20e4,17),
-    CAVE(0x00,1,0x21e4,0x00dc,0x07e5,18),
-    CAVE(0x00,0,0x0836,0x2672,0x2c7e,19),
-    CAVE(0x00,0,0x2e7e,0x0032,0x0636,20),
-    CAVE(0x00,0,0x076e,0x1ec7,0x22d1,21),
-    CAVE(0x00,1,0x24d1,0x0065,0x056e,22),
-    CAVE(0x00,0,0x220f,0x1bdb,0x1fe4,23),
-    CAVE(0x01,0,0x0526,0x5767,0x5b6f,24),
-    CAVE(0x01,0,0x0875,0x5965,0x5e6f,25),
-    CAVE(0x01,0,0x3537,0x4e19,0x5223,26),
-    CAVE(0x01,0,0x0874,0x5767,0x5e6f,27),
-    CAVE(0x01,1,0x5f6f,0x006b,0x0874,28),
-    CAVE(0x01,0,0x253c,0x3a01,0x410c,29),
-    CAVE(0x01,0,0x1533,0x0200,0x0703,30),
-    CAVE(0x02,0,0x1f0e,0x0257,0x045e,31),
-    CAVE(0x02,0,0x2a38,0x2677,0x2e7f,32),
-    CAVE(0x04,0,0x6b12,0x651f,0x6c27,33),
-    CAVE(0x04,0,0x7bf0,0x00e7,0x07f0,34),
-    CAVE(0x04,0,0x5adb,0x42d2,0x43db,35),
-    CAVE(0x05,0,0x7e0f,0x7223,0x7925,36),
-    CAVE(0x06,0,0x2725,0x2440,0x2e4c,37),
-    CAVE(0x06,0,0x07e5,0x19dc,0x20e4,38),
-    CAVE(0x06,1,0x21e4,0x00dc,0x07e5,39),
-    CAVE(0x06,0,0x0836,0x2672,0x2c7e,40),
-    CAVE(0x06,0,0x2e7e,0x0032,0x0636,41),
-    CAVE(0x06,0,0x076e,0x1ec7,0x22d1,42),
-    CAVE(0x06,1,0x24d1,0x0065,0x056e,43),
-    CAVE(0x06,0,0x220f,0x1bdb,0x1fe4,44),
-    CAVE(0x07,0,0x2709,0x4169,0x456f,45),
-    CAVE(0x07,0,0x456f,0x1a04,0x1d07,46),
-    CAVE(0x07,0,0x0e09,0x2b74,0x3178,47),
-    CAVE(0x07,0,0x3477,0x030a,0x0813,48),
-    CAVE(0x08,0,0x55cd,0x5cec,0x63f2,49),
-    CAVE(0x08,0,0x07f5,0x0310,0x0918,50),
-    CAVE(0x08,0,0x2c59,0x5ed0,0x61d9,51),
-    CAVE(0x08,0,0x55cc,0x5eec,0x62f2,52),
-    CAVE(0x0d,0,0x1305,0x09c1,0x12cc,53),
-    CAVE(0x0d,0,0x2433,0x0ac2,0x11cb,54),
-    CAVE(0x0d,0,0x2419,0x0a7f,0x1189,55),
-    CAVE(0x0d,0,0x2400,0x0914,0x121e,56),
-    CAVE(0x0d,1,0x1389,0x1b19,0x2319,57),
-    CAVE(0x0d,1,0x131e,0x1b00,0x2201,58),
-    CAVE(0x0d,1,0x13cc,0x1b33,0x2234,59),
+    CAVE(0x00,0,0x2725,0x2440,0x2e4c,16,
+        "Unproven outer extent: stationary idle look reaches columns 59..74; global camera envelope includes fixed arrivals 00DC/0065; no local isolation proof"),
+    CAVE(0x00,0,0x07e5,0x19dc,0x20e4,17,
+        "Unproven outer extent: stationary idle look reaches columns 211..226; global camera envelope includes fixed arrivals 00DC/0065; no local isolation proof"),
+    CAVE(0x00,1,0x21e4,0x00dc,0x07e5,18,
+        "full follow gate locks both axes at this authored screen"),
+    CAVE(0x00,0,0x0836,0x2672,0x2c7e,19,
+        "Unproven outer extent: stationary idle look reaches columns 109..124; global camera envelope includes fixed arrivals 00DC/0065; no local isolation proof"),
+    CAVE(0x00,0,0x2e7e,0x0032,0x0636,20,
+        "Unproven outer extent: stationary idle look reaches columns 37..52; global camera envelope includes fixed arrivals 00DC/0065; no local isolation proof"),
+    CAVE(0x00,0,0x076e,0x1ec7,0x22d1,21,
+        "Unproven outer extent: stationary idle look reaches columns 192..207; global camera envelope includes fixed arrivals 00DC/0065; no local isolation proof"),
+    CAVE(0x00,1,0x24d1,0x0065,0x056e,22,
+        "full follow gate locks both axes at this authored screen"),
+    CAVE(0x00,0,0x220f,0x1bdb,0x1fe4,23,
+        "Unproven outer extent: stationary idle look reaches columns 211..226; global camera envelope includes fixed arrivals 00DC/0065; no local isolation proof"),
+    CAVE(0x01,0,0x0526,0x5767,0x5b6f,24,
+        "Unproven outer extent: stationary idle look reaches columns 94..108; header limit 108 is shared with the fixed 006B bonus; no local isolation proof"),
+    CAVE(0x01,0,0x0875,0x5965,0x5e6f,25,
+        "Unproven outer extent: stationary idle look reaches columns 94..108; header limit 108 is shared with the fixed 006B bonus; no local isolation proof"),
+    CAVE(0x01,0,0x3537,0x4e19,0x5223,26,
+        "Unproven outer extent: stationary idle look reaches columns 18..33; header limit 108 is shared with the fixed 006B bonus; no local isolation proof"),
+    CAVE(0x01,0,0x0874,0x5767,0x5e6f,27,
+        "Unproven outer extent: stationary idle look reaches columns 94..108; header limit 108 is shared with the fixed 006B bonus; no local isolation proof"),
+    CAVE(0x01,1,0x5f6f,0x006b,0x0874,28,
+        "full follow gate locks both axes at this authored screen"),
+    CAVE(0x01,0,0x253c,0x3a01,0x410c,29,
+        "Unproven outer extent: stationary idle look reaches columns 0..10; header limit 108 is shared with the fixed 006B bonus; no local isolation proof"),
+    CAVE(0x01,0,0x1533,0x0200,0x0703,30,
+        "Unproven outer extent: stationary idle look reaches columns 0..1; header limit 108 is shared with the fixed 006B bonus; no local isolation proof"),
+    CAVE(0x02,0,0x1f0e,0x0257,0x045e,31,
+        "Unproven outer extent: stationary idle look reaches columns 77..92; upper and lower destination areas share global follow; no enclosing barrier proof"),
+    CAVE(0x02,0,0x2a38,0x2677,0x2e7f,32,
+        "Unproven outer extent: stationary idle look reaches columns 110..125; upper and lower destination areas share global follow; no enclosing barrier proof"),
+    CAVE(0x04,0,0x6b12,0x651f,0x6c27,33,
+        "Unproven outer extent: stationary idle look reaches columns 22..37; widely separated arrival heights share MapRows 128; no enclosing barrier proof"),
+    CAVE(0x04,0,0x7bf0,0x00e7,0x07f0,34,
+        "Unproven outer extent: stationary idle look reaches columns 223..236; widely separated arrival heights share MapRows 128; no enclosing barrier proof"),
+    CAVE(0x04,0,0x5adb,0x42d2,0x43db,35,
+        "Unproven outer extent: stationary idle look reaches columns 202..217; widely separated arrival heights share MapRows 128; no enclosing barrier proof"),
+    CAVE(0x05,0,0x7e0f,0x7223,0x7925,36,
+        "Unproven outer extent: stationary idle look reaches columns 20..35; cleared flag 02h permits idle look left of column 35; encounter art band is not a camera bound"),
+    CAVE(0x06,0,0x2725,0x2440,0x2e4c,37,
+        "Unproven outer extent: stationary idle look reaches columns 59..74; 00h cave records recur in a different 128-row map; bounds cannot be inherited; no local isolation proof"),
+    CAVE(0x06,0,0x07e5,0x19dc,0x20e4,38,
+        "Unproven outer extent: stationary idle look reaches columns 211..226; 00h cave records recur in a different 128-row map; bounds cannot be inherited; no local isolation proof"),
+    CAVE(0x06,1,0x21e4,0x00dc,0x07e5,39,
+        "full follow gate locks both axes at this authored screen"),
+    CAVE(0x06,0,0x0836,0x2672,0x2c7e,40,
+        "Unproven outer extent: stationary idle look reaches columns 109..124; 00h cave records recur in a different 128-row map; bounds cannot be inherited; no local isolation proof"),
+    CAVE(0x06,0,0x2e7e,0x0032,0x0636,41,
+        "Unproven outer extent: stationary idle look reaches columns 37..52; 00h cave records recur in a different 128-row map; bounds cannot be inherited; no local isolation proof"),
+    CAVE(0x06,0,0x076e,0x1ec7,0x22d1,42,
+        "Unproven outer extent: stationary idle look reaches columns 192..207; 00h cave records recur in a different 128-row map; bounds cannot be inherited; no local isolation proof"),
+    CAVE(0x06,1,0x24d1,0x0065,0x056e,43,
+        "full follow gate locks both axes at this authored screen"),
+    CAVE(0x06,0,0x220f,0x1bdb,0x1fe4,44,
+        "Unproven outer extent: stationary idle look reaches columns 211..226; 00h cave records recur in a different 128-row map; bounds cannot be inherited; no local isolation proof"),
+    CAVE(0x07,0,0x2709,0x4169,0x456f,45,
+        "Unproven outer extent: stationary idle look reaches columns 94..109; paired cave routes share global follow; teleport records do not supply wall bounds"),
+    CAVE(0x07,0,0x456f,0x1a04,0x1d07,46,
+        "Unproven outer extent: stationary idle look reaches columns 0..5; paired cave routes share global follow; teleport records do not supply wall bounds"),
+    CAVE(0x07,0,0x0e09,0x2b74,0x3178,47,
+        "Unproven outer extent: stationary idle look reaches columns 103..118; paired cave routes share global follow; teleport records do not supply wall bounds"),
+    CAVE(0x07,0,0x3477,0x030a,0x0813,48,
+        "Unproven outer extent: stationary idle look reaches columns 2..17; paired cave routes share global follow; teleport records do not supply wall bounds"),
+    CAVE(0x08,0,0x55cd,0x5cec,0x63f2,49,
+        "Unproven outer extent: stationary idle look reaches columns 225..236; EC right limit is known but the left separation of D0/EC destination areas is unproved"),
+    CAVE(0x08,0,0x07f5,0x0310,0x0918,50,
+        "Unproven outer extent: stationary idle look reaches columns 7..22; EC right limit is known but the left separation of D0/EC destination areas is unproved"),
+    CAVE(0x08,0,0x2c59,0x5ed0,0x61d9,51,
+        "Unproven outer extent: stationary idle look reaches columns 200..215; EC right limit is known but the left separation of D0/EC destination areas is unproved"),
+    CAVE(0x08,0,0x55cc,0x5eec,0x62f2,52,
+        "Unproven outer extent: stationary idle look reaches columns 225..236; EC right limit is known but the left separation of D0/EC destination areas is unproved"),
+    CAVE(0x0d,0,0x1305,0x09c1,0x12cc,53,
+        "Unproven outer extent: stationary idle look reaches columns 187..202; LevelPropHeader 9 is conditional and reveal phases change floor classes; no invariant camera-floor proof"),
+    CAVE(0x0d,0,0x2433,0x0ac2,0x11cb,54,
+        "Unproven outer extent: stationary idle look reaches columns 186..201; LevelPropHeader 9 is conditional and reveal phases change floor classes; no invariant camera-floor proof"),
+    CAVE(0x0d,0,0x2419,0x0a7f,0x1189,55,
+        "Unproven outer extent: stationary idle look reaches columns 120..135; LevelPropHeader 9 is conditional and reveal phases change floor classes; no invariant camera-floor proof"),
+    CAVE(0x0d,0,0x2400,0x0914,0x121e,56,
+        "Unproven outer extent: stationary idle look reaches columns 13..28; LevelPropHeader 9 is conditional and reveal phases change floor classes; no invariant camera-floor proof"),
+    CAVE(0x0d,1,0x1389,0x1b19,0x2319,57,
+        "full follow gate locks both axes at this authored screen"),
+    CAVE(0x0d,1,0x131e,0x1b00,0x2201,58,
+        "full follow gate locks both axes at this authored screen"),
+    CAVE(0x0d,1,0x13cc,0x1b33,0x2234,59,
+        "full follow gate locks both axes at this authored screen"),
 };
 #undef CAVE
 const Pre2CaveRegion *pre2_region_caves(unsigned *count)
@@ -196,6 +240,21 @@ Pre2WorldRect pre2_region_staging(const FrameGameView *v, unsigned index)
     Pre2WorldRect out={col*16,(col+r->columns)*16,(row+r->rows-r->steps)*16,(row+r->rows)*16};
     return out;
 }
+Pre2RevealVisibility pre2_region_reveal_visibility(const FrameGameView *v, unsigned index)
+{
+    Pre2RevealVisibility out={.phase=-1};
+    if (v->level!=13 || index>=sizeof reveals/sizeof *reveals) return out;
+    const Pre2RevealRegion *r=&reveals[index];
+    out.never_copy=pre2_region_staging(v,index);
+    out.phase=pre2_region_reveal_phase(v,index);
+    if (out.phase<0) return out;
+    int col=r->source&255, row=r->source>>8;
+    int base=row+r->rows-r->steps, moving_bottom=row+r->rows-out.phase;
+    out.visible_copy=(Pre2WorldRect){col*16,(col+r->columns)*16,(row-out.phase)*16,base*16};
+    out.never_copy=(Pre2WorldRect){col*16,(col+r->columns)*16,base*16,moving_bottom*16};
+    out.never_restored=(Pre2WorldRect){col*16,(col+r->columns)*16,moving_bottom*16,(row+r->rows)*16};
+    return out;
+}
 Pre2AuthoredRegion pre2_region_for_view(const FrameGameView *v)
 {
     unsigned level = v->level < 16 ? v->level : 0;
@@ -212,7 +271,9 @@ Pre2AuthoredRegion pre2_region_for_view(const FrameGameView *v)
              * The cleared horizontal-lock flag identifies it even if the
              * original camera pans left of its initial column 35. */
             r.bounds=(Pre2WorldRect){35*16,66*16,0,128*16};
-            r.id=80;
+            r.id=80; r.proven_extent=0;
+            /* Its art band is known, but stationary idle look at the arrival
+             * reaches camera column 20. The band is not an outer-camera proof. */
             r.evidence="TryCaveTrigger clears flags 02h/04h; 7E0F->7223->7925; band columns 35..65; MapRows 128";
         }
         return r;
@@ -233,7 +294,8 @@ Pre2AuthoredRegion pre2_region_for_view(const FrameGameView *v)
          * starting at row 27. This is a world boundary, not a 149px camera
          * cap. The window helper separately preserves original 320 overshoots. */
         r.bounds.y1=21*16;
-        r.evidence="LEVELE reveal records 12..14 final base row 21; bonus rooms start row 27";
+        r.proven_extent=0;
+        r.evidence="LEVELE content mask: final pillar base row 21; bonus rooms start row 27; LevelPropHeader 9 is not an unconditional camera bound";
     }
     for (unsigned i=0;i<sizeof cave_regions/sizeof *cave_regions;i++) {
         const Pre2CaveRegion *c=&cave_regions[i];

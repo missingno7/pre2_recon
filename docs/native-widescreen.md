@@ -54,21 +54,111 @@ Boss min/max X restrict boss motion (`UpdateBossFight`), not the camera; they
 are not imported as artificial arena walls.
 
 All **44** shipped cave source/camera/destination/gate records are explicit in
-`pre2_region_caves`, with evidence at each entry. The eight nonzero-gate arrivals
-have fixed authored 320x176 screens. The other 36 records include returns to main
-areas and free-follow rooms: their initial 320x176 arrival rectangles are recorded,
-but their complete outer polygons are **not yet proven**. Those entries have
-`proven_extent=0`; they must not be reported as completed room annotation.
-LEVEL6's lower encounter overrides its generic arrival with its larger rectangle.
-Its cleared flag 02h identifies it even if the original camera pans left of
-column 35. Arrival row 114 is not a vertical boundary: this isolated column band
-retains the full MapRows extent, including its empty upper rows.
+`pre2_region_caves`, with evidence at each entry. The eight nonzero-gate records
+prove a stationary authored 320x176 screen: both normal follow and idle-look
+scrolling test `ScrollFollowGate`. Their claimed rectangles are disjoint from
+the other known fixed-room rectangles in the same level.
 
-`pre2_region_never_visible` exposes forbidden column/row rectangles outside the
-selected region and the three earthquake staging banks. This is a content policy;
-it does not classify every nonzero map cell as gameplay. The map sweep verifies
-shipped cave records and known restricted ranges; it cannot prove every currently
-unannotated free-follow room's silhouette.
+The other **36 records remain unproven outer extents**. Their stored rectangles
+are **arrival apertures only**. The follow-up investigation proves that every
+one of these apertures is too small to be the room's outer extent: the original
+camera can leave it while the player stays at the destination, without crossing
+a collision wall. None was promoted to `proven_extent=1`.
+
+`UpdateCameraScroll` (`MODULE3.ASM`, `loc_565F`/`loc_5662`) has no per-cave clamp
+when the gate is zero. The idle-look branch of `UpdatePlayerStateIdle`
+(`loc_5D83`) calls the original scrolling leaves. For destination column P,
+left-looking reaches `max(0,P-17)`; right-looking reaches `min(P-2,L)`, where
+`L=CameraLeftLimit` if that signed limit is at least `P-20`, otherwise 236.
+`ScrollViewLeft` checks zero; `ScrollViewRight` checks this conditional limit
+(`MODULE2.ASM`, `loc_3457`/`loc_345A`/`loc_3487`). A wall cannot prevent these
+camera-only pans. Normal movement may reach still more; the measured pans are
+lower bounds on coverage, not complete room bounds.
+
+`regions_sweep` constructs the exact post-arrival camera, destination, gate and
+header fields for every record, including LEVEL6's flag clearing. It executes
+16 translated fixed-follow steps, then the two translated idle-look scrolling
+leaves under the original predicates. No original executable is booted. The
+constructor detaches the VGA callbacks and scene sink during edge draws, then
+restores all MEM_SIZE bytes, VGA state, ES, access counters and callbacks before
+the suspended scripted run resumes; logical time and every machine statistic
+must be unchanged. For claimed extents it asserts camera containment and no
+intersection with another known fixed room. This is a bounded camera-routine
+proof, not an all-input player/collision reachability proof.
+
+The following blockers remain. Empty tile zero has side class 0, ground class 0
+and flags 0 in every decoded level; blank strips cannot serve as collision
+barriers. A side-class-only flood fill is insufficient because it ignores
+landing, ceilings, jump reach and map mutations. The native sweep checks the
+three tile-zero classification bytes against every decoded level. Source/destination pairs alone supply no room-ownership labels.
+
+| Key | Missing outer-bound proof |
+|---|---|
+| A | 00h: global camera envelope includes the two fixed bonus locations 00DC/0065; local movement and mutable-boundary isolation remain unproved. |
+| B | 01h: header limit 108 also admits the fixed 006B bonus columns; it does not separate the bonus from the vertical main area. |
+| C | 02h: upper and lower destination areas share ordinary follow; no enclosing, mutation-safe barrier has been established. |
+| D | 04h: arrivals at rows 0/66/101 share the global 128-row map limit; there is no cave-local vertical clamp. |
+| E | 05h: the arrival at column 35 can look left to column 20. Columns 35..65 prove an art band, not an outer camera rectangle. |
+| F | 06h: the 00h cave records recur verbatim in a different 128-row map; 00h's shapes cannot be inherited. The fixed bonus locations still need isolation. |
+| G | 07h: paired cave routes share ordinary follow; room walls and all mutable openings have not been bounded. |
+| H | 08h: the EC right-camera limit is established, but the left separation of the D0/EC destination areas is not. |
+| I | 0Dh: LevelPropHeader 9 is conditional on player Y; reveals change floor classes. A universal camera-floor invariant separating the lower bonuses is not proved. |
+
+Every unproven record is listed below. X is the measured stationary idle-look
+camera interval in tile columns; Y is the settled camera top in pixels. These
+are counterexamples to treating the arrival aperture as an outer extent.
+`build/regions_shots/cave_arrivals.tsv` contains all 44 records, including the
+eight stationary-screen proofs. Each native entry also carries its blocker.
+
+| Level | Source | Camera | Destination | Idle X | Settled Y | Blocker |
+|---|---|---|---|---:|---:|---|
+| 00h | 2725 | 2440 | 2E4C | 59..74 | 592 | A |
+| 00h | 07E5 | 19DC | 20E4 | 211..226 | 400 | A |
+| 00h | 0836 | 2672 | 2C7E | 109..124 | 608 | A |
+| 00h | 2E7E | 0032 | 0636 | 37..52 | 0 | A |
+| 00h | 076E | 1EC7 | 22D1 | 192..207 | 480 | A |
+| 00h | 220F | 1BDB | 1FE4 | 211..226 | 432 | A |
+| 01h | 0526 | 5767 | 5B6F | 94..108 | 1360 | B |
+| 01h | 0875 | 5965 | 5E6F | 94..108 | 1408 | B |
+| 01h | 3537 | 4E19 | 5223 | 18..33 | 1216 | B |
+| 01h | 0874 | 5767 | 5E6F | 94..108 | 1392 | B |
+| 01h | 253C | 3A01 | 410C | 0..10 | 928 | B |
+| 01h | 1533 | 0200 | 0703 | 0..1 | 16 | B |
+| 02h | 1F0E | 0257 | 045E | 77..92 | 0 | C |
+| 02h | 2A38 | 2677 | 2E7F | 110..125 | 608 | C |
+| 04h | 6B12 | 651F | 6C27 | 22..37 | 1616 | D |
+| 04h | 7BF0 | 00E7 | 07F0 | 223..236 | 0 | D |
+| 04h | 5ADB | 42D2 | 43DB | 202..217 | 976 | D |
+| 05h | 7E0F | 7223 | 7925 | 20..35 | 1824 | E |
+| 06h | 2725 | 2440 | 2E4C | 59..74 | 624 | F |
+| 06h | 07E5 | 19DC | 20E4 | 211..226 | 400 | F |
+| 06h | 0836 | 2672 | 2C7E | 109..124 | 608 | F |
+| 06h | 2E7E | 0032 | 0636 | 37..52 | 0 | F |
+| 06h | 076E | 1EC7 | 22D1 | 192..207 | 448 | F |
+| 06h | 220F | 1BDB | 1FE4 | 211..226 | 400 | F |
+| 07h | 2709 | 4169 | 456F | 94..109 | 1040 | G |
+| 07h | 456F | 1A04 | 1D07 | 0..5 | 400 | G |
+| 07h | 0E09 | 2B74 | 3178 | 103..118 | 688 | G |
+| 07h | 3477 | 030A | 0813 | 2..17 | 48 | G |
+| 08h | 55CD | 5CEC | 63F2 | 225..236 | 1472 | H |
+| 08h | 07F5 | 0310 | 0918 | 7..22 | 48 | H |
+| 08h | 2C59 | 5ED0 | 61D9 | 200..215 | 1488 | H |
+| 08h | 55CC | 5EEC | 62F2 | 225..236 | 1504 | H |
+| 0Dh | 1305 | 09C1 | 12CC | 187..202 | 144 | I |
+| 0Dh | 2433 | 0AC2 | 11CB | 186..201 | 160 | I |
+| 0Dh | 2419 | 0A7F | 1189 | 120..135 | 160 | I |
+| 0Dh | 2400 | 0914 | 121E | 13..28 | 144 | I |
+
+The lower LEVEL6 art band retains the full MapRows height: arrival row 114 is
+not a top clamp. Its cleared flag 02h identifies the encounter even after a
+left pan. Its `proven_extent` is now zero as well: the new constructor falsified
+the former claim that the art band contained every camera position.
+
+`pre2_region_never_visible` exposes the selected policy's forbidden exterior
+ranges and earthquake banks. That policy remains conservative while the above
+outer extents are unresolved. It is not a proof that every nonzero map cell is
+owned by the current room. The scripted runs check reached camera positions;
+they cannot replace the missing movement- and mutation-aware isolation proofs.
 
 ### Presentation window
 
@@ -89,22 +179,77 @@ output remains 200 rows including the 24-row HUD.
 
 ### Earthquake pillars (0Dh)
 
-The phase lives in **three proximity records**, not a global earthquake byte:
-LEVELE records 12/13/14 have source cells 133Ah/132Ch/13B0h, sizes 4x6/4x6/4x8,
-and +8 countdowns 4/4/6. `UpdateProximityTriggers` (ASM `loc_5427` and following)
-changes +4 to FFFEh while firing, shifts the block up one row every fourth tick,
-decrements +8, and sets +4 to FFFFh on completion. Each step also restores its
-old bottom row from `SavePristineTriggerRows`' bank. Thus the underground original
-art remains even after the visible copy rises. It must stay hidden in every phase.
+The phase is per proximity record, not a global earthquake byte. LEVELE records
+12/13/14 have sources 133Ah/132Ch/13B0h, sizes 4x6/4x6/4x8, and +8 countdowns
+4/4/6. `UpdateProximityTriggers` (ASM `loc_5427` onward) moves the block up one
+row every fourth tick, decrements +8, and sets +4 from FFFEh to FFFFh on completion.
+`SavePristineTriggerRows` saved the old rows; every step restores its old bottom
+row behind the rising copy. The hidden storage therefore survives completion.
 
-All three visible copies finish with their base at row **21**:
-`19+6-4 = 19+8-6 = 21`. Main presentation ends at world y336; the three locked
-bonus rooms begin at camera row 27. `pre2_region_reveal_phase` recognizes each
-phase against the immutable initial map and the current published map, without
-reading live trigger state. The 17 constructed phases are checked against the
-translated reveal routine. An original published aperture extending below y336
-wins for 320 parity and is marked unresolved; no universal 149-pixel camera cap
-is claimed. Full phase-dependent nonrectangular room silhouettes remain unproven.
+`pre2_region_reveal_visibility` now describes the **tile-rectangle silhouette
+at each phase** from the immutable initial map and current published map. It
+returns the detected phase, the visible moving copy and two never-visible
+rectangles: the hidden moving tail and the restored original rows. It reads no
+live trigger state. Half-open row ranges below become world pixels by multiplying
+by 16; X is 58..62, 44..48, or 176..180 respectively.
+
+| Records / phase p | Visible rising copy | Never-visible moving tail | Never-visible restored rows |
+|---|---|---|---|
+| 12/13, p=0..4 | [19-p,21) | [21,25-p) | [25-p,25) |
+| 14, p=0..6 | [19-p,21) | [21,27-p) | [27-p,27) |
+
+The first two pillars expose 2/3/4/5/6 copied rows in phases 0/1/2/3/4; the
+third exposes 2/3/4/5/6/7/8 in phases 0..6. Empty intervals disappear at the
+endpoints. Actual tile coverage continues to come from native tile textures;
+these rectangles describe source provenance rather than synthesize pixels.
+
+The two forbidden portions have a **constant union**: [21,25) or [21,27).
+There is no basis for exposing that bank as the countdown advances: doing so
+would reveal the restored original art. `pre2_region_staging` and the existing
+seven-rectangle `pre2_region_never_visible` interface keep returning that union,
+so renderer consumers remain compatible. Callers inspecting the individual
+phases use the new visibility structure. An unrecognised/partially modified map
+returns phase -1, no visible-copy claim and the whole bank as forbidden.
+
+`regions_reveal` independently staggers the three trigger starts and reaches
+**all 175 joint phase combinations** through the translated reveal routine.
+It checks 525 per-pillar silhouettes, moving-copy bytes against their original
+shifted source, restored bytes at their original coordinates, +0/+4/+8 state,
+read-only map inference and conservative handling of a damaged phase pattern.
+No in-progress countdown is paused or rewritten to manufacture a combination.
+In 167 of the 175 combinations, row 19 no longer consists entirely of ground
+class 1. This falsifies a phase-blind solid-floor argument; it does not by
+itself prove that the player can fall through, because the remaining contact
+and slope rules still need to be considered.
+
+The row-21 presentation horizon follows the three final bases
+`19+6-4 = 19+8-6 = 21`. It is a content mask, **not a proven physical camera
+bound**; the 0Dh main policy now has `proven_extent=0`. The original vertical
+reference 9 is conditional, and the moving copies change which floor tiles have
+ground class 1. An original 320 endpoint can still preserve its overshoot for
+parity; a wider presentation keeps the storage hidden. No 149-pixel cap or
+unconditional player/camera-floor proof is asserted.
+
+### Follow-up verification
+
+`python tools/nativetest.py` passes **32/32 in this worktree** (the supervisor's
+main-checkout 34-suite run is separate). This includes all five region suites,
+16-level gameplay/enhanced parity, publication/PCM/counter purity and wide-sim.
+The full log is `build/regions_proofs/native_followup.log`.
+
+The extended sweep retains 12,126 pure captures and 3,476 exact 320x200 frames,
+covers the same 3,476 reached camera views, and adds all 44 constructed camera
+arrivals. Eight claimed fixed extents remain contained and disjoint from the
+other fixed rooms; all 36 original free-arrival apertures have counterexamples.
+232 sampled views now carry unproven outer extents, including the demoted 0Dh
+content horizon (the initial implementation reported 33). This changes proof
+metadata rather than render rectangles or game state. No new free-follow outer
+extent is claimed. Each remaining record and its blocker is listed above.
+
+The exact verifier still reports 86,428 program-image bytes and all MZ fields
+equal; the existing full-file header differences are relocation-table ordering.
+`c/`, ASM, assets, metadata, presenters, renderers and `present_motion.c` were
+not edited by this follow-up. `git diff --check` passes.
 
 ## Margin objects
 
@@ -269,7 +414,7 @@ not constitute a general read-access sanitizer: table-read instrumentation remai
 an acceptance item. The new loops have explicit source/record bounds, but no
 claim is made that every original table lookup was dynamically monitored.
 
-## Regions validation (2026-11-14)
+## Regions validation (initial implementation, 2026-11-14)
 
 All 27 existing native suites and the five new region suites passed. The full
 `python tools/nativetest.py` invocation reported 31/31 (four new suites existed

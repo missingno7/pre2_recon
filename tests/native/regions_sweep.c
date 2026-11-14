@@ -3,6 +3,9 @@
 #include "script.h"
 #include "c/vga.h"
 #include "c/scene_game.h"
+#include "c/level.h"
+#include "c/render.h"
+#include "c/view.h"
 #include "native/compositor.h"
 #include "native/enh_margin.h"
 #include "native/level_regions.h"
@@ -33,6 +36,8 @@ static void (*real_sink)(const SceneEvent *);
 typedef struct Sample { uint16_t x,y,frame; uint8_t valid,projected,asleep; } Sample;
 static Sample previous[86];
 static unsigned sample_sim;
+static FILE *cave_report;
+static unsigned cave_arrivals,free_escapes,proven_arrivals;
 static int projected(unsigned source,unsigned first,unsigned count)
 {
     for (unsigned i=0;i<count;i++) { unsigned a=DS_RenderSlots+(first+i)*18; if (DW(a+4)!=0xffff && DW(a+9)==source) return 1; }
@@ -145,12 +150,95 @@ static void reveal_contacts(void)
         }
     }
 }
+static int intersects(Pre2WorldRect a,Pre2WorldRect b)
+{
+    return a.x0<b.x1 && b.x0<a.x1 && a.y0<b.y1 && b.y0<a.y1;
+}
+static void constructed_arrivals(const uint8_t *data,unsigned state)
+{
+    /* Only the translated camera leaves run here. VGA callbacks and the scene
+     * sink are detached during their edge draws; no time, input, object update
+     * or wait executes. Restore every game byte, VGA register and access count
+     * before the suspended scripted run continues. */
+    static uint8_t saved_memory[MEM_SIZE];static VgaState saved_vga;
+    memcpy(saved_memory,pre2_mem,sizeof saved_memory);saved_vga=pre2_vga;
+    uint16_t saved_es=pre2_es;uint32_t saved_mem=vga_mem_accesses,saved_io=vga_io_accesses;
+    void (*saved_access)(void)=vga_access_hook;uint8_t (*saved_status)(void)=vga_status_hook;
+    void (*saved_sink)(const SceneEvent *)=pre2_scene_sink;
+    RtStats stats=*rt_stats();uint64_t time=rt_now();
+    vga_access_hook=NULL;vga_status_hook=NULL;pre2_scene_sink=NULL;
+    unsigned count;const Pre2CaveRegion *caves=pre2_region_caves(&count);
+    for (unsigned i=0;i<count;i++) {
+        const Pre2CaveRegion *c=&caves[i];if(c->level!=target) continue;
+        memcpy(pre2_mem,saved_memory,sizeof saved_memory);pre2_vga=saved_vga;
+        SET_DB(DS_CurrentLevel,target);SET_DB(DS_MapRows,rows[target]);
+        SET_DW(DS_CameraLeftLimit,data[state+0x306]|data[state+0x307]<<8);
+        SET_DW(DS_LevelPropHeader,data[state+0x300]|data[state+0x301]<<8);
+        SET_DB(DS_LevelFlags,target==5?data[state+0x308]&1:data[state+0x308]);
+        SET_DB(DS_ScrollFollowGate,c->gate);
+        SET_DW(DS_CameraCol,c->camera&255);SET_DW(DS_CameraRow,c->camera>>8);SET_DB(DS_FineScroll,0);
+        SET_DW(DS_PlayerX,(c->destination&255)*16);SET_DW(DS_PlayerY,(c->destination>>8)*16);
+        SET_DW(DS_PlayerVelX,0);SET_DW(DS_PlayerVelY,0);SET_DB(DS_PlayerOnPlatform,0);
+        SET_DB(DS_HScrollDir,0);SET_DB(DS_VScrollActive,0);SET_CB(CS_CameraFixedStep,0);
+        SET_DW(DS_RowRing,DW(DS_CameraRow)%12);SET_DW(DS_ColumnRing,DW(DS_CameraCol)%20);
+        /* The constructor reproduces the post-pan state, including level 05h's
+         * flag change. Fixed-step follow settles only the original dead zones. */
+        for (unsigned step=0;step<16;step++) UpdateCameraFixedStep();
+        unsigned settled_y=DW(DS_CameraRow)*16+DB(DS_FineScroll);
+        unsigned left=DW(DS_CameraCol),right=left;int escaped=0;
+        Pre2WorldRect arrival={(c->camera&255)*16,((c->camera&255)+20)*16,
+                              (c->camera>>8)*16,(c->camera>>8)*16+176};
+        for (unsigned direction=0;direction<2;direction++) {
+            if (!c->gate && !(DB(DS_LevelFlags)&2)) for (unsigned step=0;step<256;step++) {
+                /* Exact idle-look predicates in UpdatePlayerStateIdle. Only its
+                 * scrolling leaf executes; the stationary player never crosses
+                 * a collision wall, consumes a power-up, or changes room. */
+                uint16_t d=(uint16_t)((int16_t)DW(DS_PlayerX)/16-DW(DS_CameraCol));
+                if (!direction) { if(d>=17 || ScrollViewLeft()) break; }
+                else { if(d<=2 || ScrollViewRight()) break; }
+            }
+            unsigned x=DW(DS_CameraCol)*16,y=DW(DS_CameraRow)*16+DB(DS_FineScroll);
+            if(!direction) left=DW(DS_CameraCol);else right=DW(DS_CameraCol);
+            assert(DW(DS_CameraCol)<=236 && y+176<=rows[target]*16);
+            Pre2WorldRect aperture={(int)x,(int)x+320,(int)y,(int)y+176};
+            escaped|=aperture.x0<arrival.x0 || aperture.x1>arrival.x1 ||
+                     aperture.y0<arrival.y0 || aperture.y1>arrival.y1;
+            if(c->region.proven_extent) {
+                assert(aperture.x0>=c->region.bounds.x0 && aperture.x1<=c->region.bounds.x1 &&
+                       aperture.y0>=c->region.bounds.y0 && aperture.y1<=c->region.bounds.y1);
+                for(unsigned j=0;j<count;j++) if(caves[j].level==target && caves[j].gate && j!=i)
+                    assert(!intersects(c->region.bounds,caves[j].region.bounds));
+            }
+            FrameGameView probe={0};probe.level=(uint8_t)target;probe.assets=frame.game.assets;
+            probe.room=c->gate;probe.level_flags=DB(DS_LevelFlags);probe.view_w=320;probe.view_h=176;
+            probe.camera_x=(int)x;probe.camera_y=(int)y;probe.camera_limit_column=DW(DS_CameraLeftLimit);
+            Pre2AuthoredRegion selected=pre2_region_for_view(&probe);
+            if(selected.proven_extent) assert(aperture.x0>=selected.bounds.x0 && aperture.x1<=selected.bounds.x1 &&
+                                              aperture.y0>=selected.bounds.y0 && aperture.y1<=selected.bounds.y1);
+        }
+        if(!c->gate) {
+            unsigned px=c->destination&255,limit=data[state+0x306]|data[state+0x307]<<8;
+            if((int)limit<(int)px-20) limit=236;
+            unsigned expected_left=px>17?px-17:0,expected_right=px>2?px-2:0;
+            if(expected_right>limit) expected_right=limit;
+            assert(left==expected_left && right==expected_right);
+        }
+        cave_arrivals++;proven_arrivals+=c->region.proven_extent;
+        if(!c->gate) { assert(escaped);free_escapes++; }
+        fprintf(cave_report,"%02X\t%04X\t%04X\t%04X\t%u\t%u\t%u\t%u\t%d\t%u\n",target,c->source,c->camera,c->destination,c->gate,left,right,settled_y,escaped,c->region.proven_extent);
+    }
+    memcpy(pre2_mem,saved_memory,sizeof saved_memory);pre2_vga=saved_vga;pre2_es=saved_es;
+    vga_mem_accesses=saved_mem;vga_io_accesses=saved_io;vga_access_hook=saved_access;vga_status_hook=saved_status;pre2_scene_sink=saved_sink;
+    assert(rt_now()==time && !memcmp(&stats,rt_stats(),sizeof stats));
+    assert(!memcmp(pre2_mem,saved_memory,sizeof saved_memory));
+}
 static void data_sweep(void)
 {
     char name[32]; snprintf(name,sizeof name,"LEVEL%c.SQZ",target<9?'1'+target:'A'+target-9);
     uint8_t *compressed,*data; size_t n,size;
     assert(!asset_read(name,&compressed,&n) && !sqz_decode(compressed,n,&data,&size)); free(compressed);
     unsigned state=state_offsets[target]; assert(size>=state+0x13a5);
+    assert(data[state]==0 && data[state+0x100]==0 && data[state+0x200]==0); /* tile zero is not a collision curtain */
     unsigned count; const Pre2CaveRegion *c=pre2_region_caves(&count);
     unsigned found=0;
     for (unsigned k=0;k<20;k++) {
@@ -196,6 +284,7 @@ static void data_sweep(void)
     assert(b.x0==0 && b.x1<=4096);
     printf("level %02x exclusions: %u forbidden cells tested against normal/tall windows\n",target,excluded);
     printf("level %02x data: %u cells, %u cave records matched\n",target,cells,found);
+    constructed_arrivals(data,state);
     free(data);
 }
 static void service(void)
@@ -276,6 +365,8 @@ int main(int argc,char **argv)
 #else
     mkdir("build/regions_shots",0777);
 #endif
+    cave_report=fopen("build/regions_shots/cave_arrivals.tsv","w");assert(cave_report);
+    fprintf(cave_report,"level\tsource\tcamera\tdestination\tgate\tidle_left_col\tidle_right_col\tsettled_y\tescapes_arrival_aperture\tproven_extent\n");
     for (unsigned i=0;i<sizeof sheet/sizeof *sheet;i++) sheet[i]=0xff202020;
     for (target=0;target<16;target++) {
         reached=checked=selected=shot_score=shot_taken=0;last_sim=sample_sim=~0u;first_game=0;pre2_frames_run=0;
@@ -294,5 +385,8 @@ int main(int argc,char **argv)
     fprintf(manifest,"Cells 1..16: levels 00h..0Fh, scripted gameplay at 468px; maximum observed eligible margin sources.\n17: constructed level 00h locked cave 00DC.\n18,19: constructed level 05h lower encounter at cameras 35 and 46.\n20..23: constructed level 0Dh reveal map phases 0/1/4/6, all triggers advanced together.\n24: constructed camera beside a shipped sleeping terrain source, margin capture enabled.\nMap images: full backing maps at quarter scale, NOT playable bounds.\n");fclose(manifest);
     printf("regions_sweep: %u pure captures (full memory, machine/bus counters, regular semantic view); %u exact 320 frames; %u covered camera views; %u unresolved outer extents; %u frozen-source measurements; %u float activation bounce steps\n",pure,parity,covered,unresolved,source_checks,activation_y_steps);
     printf("allowlist measurements: %u omitted floats, %u sleeping terrain samples, %u unchanged sleeping-terrain activations; floats rejected after %u Y-changing activations\n",float_checks,terrain_checks,terrain_activations,activation_y_steps);
+    fclose(cave_report);
+    assert(cave_arrivals==44 && free_escapes==36 && proven_arrivals>=8);
+    printf("cave arrivals: %u translated camera constructions; %u claimed extents contained/disjoint from fixed rooms; all %u original free arrival apertures are falsified by stationary idle look\n",cave_arrivals,proven_arrivals,free_escapes);
     return 0;
 }

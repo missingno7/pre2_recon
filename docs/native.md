@@ -198,14 +198,20 @@ requires identical memory at every main-loop frame and step change, identical PC
 - Capture handlers read game memory at the event (sprite tables, strings, map cells) and copy
   assets into native ownership at load events; the gameplay view is filled from the per-page
   state recorded at draw time and selected by the latched start address.
-- The world-map, titles and screens publish no semantic view beyond the transition record
-  (fade passes, map scroll position): enhancements for them start from the indexed frame.
+- The 36 free-follow cave/room records have recorded arrival rectangles but no proven outer
+  extent (docs/native-widescreen.md lists the per-record blockers); the wide window treats them
+  conservatively. Level 0Dh's earthquake staging uses per-phase visible/forbidden rectangles.
+- The settings overlay and live presenter rebuild are verified headlessly (model, rendering,
+  pause purity); live SDL interaction and audio pause have not been exercised interactively.
 
 ## Presentation and gameplay options (host)
 
 `--mode faithful|enhanced|widescreen`, `--aspect 16:9|16:10|21:9|window`, `--interpolate`,
-`--smooth-camera [--camera-tau S]`, `--smooth-transitions`, `--hud left|centre|right`,
-`--backdrop black|mirror|stretch`: presentation only. `--wide-sim WIDTH|auto` selects the true
+`--smooth-camera [--camera-tau S]`, `--smooth-transitions`,
+`--hud left|centre|right|anchored`, `--backdrop black|mirror|stretch`: presentation only.
+Settings persist in `pre2_settings.json` (SDL preferences directory, `--settings PATH`;
+defaults < JSON < command line) and F1/F10 opens the paused settings overlay
+(docs/native-host.md). `--wide-sim WIDTH|auto` selects the true
 widescreen gameplay variant for the run (implies the widescreen presentation; `auto` takes the
 width from the aspect); demos and the attract mode always run in the original geometry.
 
@@ -258,3 +264,14 @@ enemy activation and despawn use their own windows (320x300 despawn bounds).
   true widescreen merged after review. Integration fixes: presenter camera and image width use
   the simulated view width; `--wide-sim auto`; the HUD strip's rectangle copies are kept in the
   wide variant (the HUD stays 320 wide in every geometry).
+- 2026-11-14: unified native presentation (the model of rayman_recon's single native renderer;
+  pre2_port's solutions checked against the C translation). Every enhanced/widescreen pixel is
+  drawn natively; the faithful image is only the 320 reference: native screens at any width
+  (docs/native-screens-wide.md: menu ring and CARTE extend, 320-column pictures get black
+  sides; 26,584 screen frames equal at 320; capture memory bounded by retain/release), HUD
+  from its four fields (lives, score, energy, BONUS) moved whole in wide layouts, native iris /
+  curtain / room wipes at any width, backdrop wrap where seamless, region windows instead of
+  masked 320 apertures (docs/native-widescreen.md), margin terrain sources in presentation-only
+  widescreen. presenter_native: zero faithful pixels over 23,457 publications in four
+  enhanced/widescreen configurations, enhanced 320 equal to faithful at every one. JSON
+  settings and the F1/F10 overlay with pause purity (docs/native-host.md).

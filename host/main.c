@@ -5,7 +5,11 @@
  *        [--fast-load] [--fast-vga] [--year YYYY] [--demo-out FILE] [--demo-in FILE] [--reference]
  *        [--mode faithful|enhanced|widescreen] [--aspect 16:9|16:10|21:9|window]
  *        [--interpolate] [--smooth-camera] [--camera-tau SECONDS] [--smooth-transitions]
- *        [--hud left|centre|right] [--backdrop black|mirror|stretch] [--wide-sim WIDTH|auto]
+ *        [--hud anchored|left|centre|right] [--backdrop black|mirror|stretch] [--wide-sim off|WIDTH|auto]
+ *        [--settings PATH] [--fullscreen on|off] [--window-scale 1..6] [--vsync on|off]
+ *        [--frame-cap 0..1000] [--integer-scaling on|off] [--pixel-aspect square|crt]
+ *        [--volume 0..100] [--mute on|off] [--performance on|off]
+ * F1/F10: modal settings. Product options also accept --KEY VALUE with hyphens.
  * Defaults are faithful, no smoothing. Smooth camera implies interpolation.
  * Presentation-only controls and transition fallbacks: docs/native-presenter.md.
  *
@@ -45,6 +49,9 @@
 #include "../native/compositor.h"
 #include "../native/presenter.h"
 #include "../native/enh_screens.h"
+#include "../native/settings.h"
+#include "../native/overlay.h"
+#include "../native/host_clock.h"
 
 static double secs(uint64_t ns) { return ns / 1e9; }
 
@@ -65,6 +72,125 @@ static uint8_t keys[512];
 static unsigned key_count;
 static int threaded, worker_done, want_quit;
 static uint64_t published_bound;
+static uint64_t published_now,published_ticks;
+static int worker_paused;
+static HostClock host_clock;
+static Pre2Settings settings,saved_settings;
+static char settings_path[4096];
+static Pre2Overlay overlay;
+static Pre2Frame history[FRAME_QUEUE];
+static unsigned history_head,history_count;
+static uint32_t frozen_px[PRESENTER_MAX_W*PRESENTER_MAX_H];
+static int frozen_w,frozen_h;
+static double frozen_aspect;
+static uint64_t frozen_bound,last_present_bound;
+static uint32_t *output_px;
+static size_t output_capacity;
+
+static void remember(const Pre2Frame *f)
+{
+    /* The rebuild history owns references to its frames' native screen assets. */
+    if(history_count==FRAME_QUEUE) {
+        enh_screen_view_release(&history[history_head].screen_view);
+        history_head=(history_head+1)%FRAME_QUEUE; history_count--;
+    }
+    history[(history_head+history_count)%FRAME_QUEUE]=*f;
+    enh_screen_view_retain(&history[(history_head+history_count++)%FRAME_QUEUE].screen_view);
+}
+static int rebuild_presenter(void)
+{
+    PresenterOptions opt=reference_video?presenter_defaults():settings_presenter(&settings);
+    Presenter *next=presenter_create(&opt);
+    if(!next) {fprintf(stderr,"cannot rebuild presenter\n"); return -1;}
+    for(unsigned i=0;i<history_count;i++) presenter_push(next,&history[(history_head+i)%FRAME_QUEUE]);
+    presenter_destroy(presenter); presenter=next; presentation=opt; return 0;
+}
+static double display_aspect(void)
+{
+    double a=presentation.mode==PRESENT_WIDESCREEN?(double)frame_w/frame_h:1.6;
+    return settings.pixel_aspect?a/1.2:a;
+}
+static int ui_key(int code,int down,int repeat,int shift)
+{
+    int was_open=overlay.open; OverlayKey key=OVERLAY_ENTER; int recognized=1;
+    if(code==0x3b || code==0x44) {if(!down || repeat) return 1; key=OVERLAY_TOGGLE;}
+    else {
+        if(!was_open || !down) return was_open;
+        switch(code) {
+        case 1:key=OVERLAY_ESCAPE;break; case 0x48:key=OVERLAY_UP;break;
+        case 0x50:key=OVERLAY_DOWN;break; case 0x4b:key=OVERLAY_LEFT;break;
+        case 0x4d:key=OVERLAY_RIGHT;break; case 0x1c:key=OVERLAY_ENTER;break;
+        case 0x0f:key=shift?OVERLAY_BACKTAB:OVERLAY_TAB;break; default:recognized=0;break;
+        }
+    }
+    Pre2Settings before=settings;
+    Pre2Setting changed=recognized?overlay_key(&overlay,&settings,key):SET_COUNT;
+    if(changed!=SET_COUNT) {
+        if(changed<=SET_BACKDROP && rebuild_presenter()) {settings=before; return 1;}
+        settings_copy(&saved_settings,&settings,changed);
+        if(*settings_path) settings_save(&saved_settings,settings_path,stderr);
+        else fprintf(stderr,"settings: preferences unavailable; change applies only to this run\n");
+        sdl_host_apply(&settings);
+        if(changed<=SET_BACKDROP) {
+            PresenterImage im={0}; im.pixels=frozen_px; im.capacity=sizeof frozen_px/sizeof *frozen_px;
+            if(!presenter_render(presenter,frozen_bound,sdl_host_window_aspect(),&im)) {
+                frozen_w=im.w; frozen_h=im.h;
+            }
+        }
+        frozen_aspect=(presentation.mode==PRESENT_WIDESCREEN?(double)frozen_w/frozen_h:1.6)/(settings.pixel_aspect?1.2:1);
+    }
+    if(was_open!=overlay.open) {
+        if(overlay.open) {
+            sdl_host_lock(); host_clock_pause(&host_clock,1,sdl_host_ns()); sdl_host_unlock();
+            /* Acknowledge at the next worker boundary, after PCM submission.
+             * No rt_run_until call can start until the modal UI closes. */
+            for(;;) {
+                int stopped; sdl_host_lock(); stopped=worker_paused || worker_done; sdl_host_unlock();
+                if(stopped) break;
+                sdl_host_sleep_ns(1000000);
+            }
+            sdl_host_audio_pause(1);
+            frozen_w=frame_w; frozen_h=frame_h; frozen_aspect=display_aspect();
+            frozen_bound=last_present_bound;
+            memcpy(frozen_px,frame_px,(size_t)frame_w*frame_h*4);
+        } else {
+            sdl_host_audio_pause(0);
+            sdl_host_lock(); host_clock_pause(&host_clock,0,sdl_host_ns()); sdl_host_unlock();
+        }
+    }
+    return was_open || overlay.open;
+}
+/* Nearest-neighbour composition at the drawable resolution keeps the authored
+ * menu font integral even when the game image is 320x200. */
+static void show_product(const OverlayPerf *perf)
+{
+    if(!overlay.open && !settings.performance && !settings.integer_scaling) {
+        int aw=presentation.mode==PRESENT_WIDESCREEN?frame_w:320;
+        int ah=presentation.mode==PRESENT_WIDESCREEN?frame_h:200;
+        sdl_host_show(frame_px,frame_w,frame_h,aw,settings.pixel_aspect?ah*6/5:ah);
+        return;
+    }
+    int w,h; sdl_host_window_size(&w,&h);
+    if(w<=0 || h<=0 || w>8192 || h>8192) return;
+    size_t n=(size_t)w*h;
+    if(n>output_capacity) {
+        uint32_t *p=realloc(output_px,n*4); if(!p) return; output_px=p; output_capacity=n;
+    }
+    const uint32_t *src=overlay.open?frozen_px:frame_px;
+    int sw=overlay.open?frozen_w:frame_w,sh=overlay.open?frozen_h:frame_h;
+    double a=overlay.open?frozen_aspect:display_aspect();
+    int dh=h,dw=(int)(h*a); if(dw>w) {dw=w; dh=(int)(w/a);}
+    int logical_h=(int)(sw/a+.5);
+    if(settings.integer_scaling && dw>=sw && dh>=logical_h && logical_h>0) {
+        int z=dw/sw,tz=dh/logical_h; if(tz<z) z=tz; dw=sw*z; dh=logical_h*z;
+    }
+    memset(output_px,0,n*4);
+    if(dw>0 && dh>0) for(int y=0;y<dh;y++) for(int x=0;x<dw;x++)
+        output_px[(size_t)(y+(h-dh)/2)*w+x+(w-dw)/2]=src[(size_t)(y*sh/dh)*sw+x*sw/dw];
+    if(overlay.open) overlay_render(&overlay,&settings,perf,output_px,w,h);
+    else if(settings.performance) overlay_performance(perf,output_px,w,h);
+    sdl_host_show(output_px,w,h,w,h);
+}
 static void queue_key(uint8_t key)
 {
     sdl_host_lock();
@@ -271,7 +397,7 @@ static void on_service(void)
     if (smoke_on) smoke_keys();
 }
 
-typedef struct WorkerConfig { RtConfig machine; int turbo; uint64_t wall0; } WorkerConfig;
+typedef struct WorkerConfig { RtConfig machine; int turbo; } WorkerConfig;
 static int simulation(void *arg)
 {
     WorkerConfig *cfg=arg;
@@ -280,16 +406,24 @@ static int simulation(void *arg)
     uint64_t bound=0;
     if (rt_init(&cfg->machine)) { fprintf(stderr,"rt_init failed\n"); status=1; goto done; }
     for (;;) {
+        int paused=0;
         if (threaded) {
             uint8_t pending[sizeof keys]; unsigned n; int quit;
-            sdl_host_lock(); n=key_count; memcpy(pending,keys,n); key_count=0; quit=want_quit; sdl_host_unlock();
+            sdl_host_lock();
+            paused=host_clock.paused; worker_paused=paused; quit=want_quit;
+            n=paused?0:key_count; memcpy(pending,keys,n); if(!paused) key_count=0;
+            if(!paused) bound=cfg->turbo?bound+1000000000ull/60:host_clock_bound(&host_clock,sdl_host_ns());
+            sdl_host_unlock();
             for (unsigned i=0;i<n;i++) rt_key(pending[i]);
             if (quit) { rt_request_quit(); st=RT_QUIT; break; }
+            if(paused) {sdl_host_sleep_ns(1000000); continue;}
         }
-        bound=cfg->turbo?bound+1000000000ull/60:sdl_host_ns()-cfg->wall0;
+        else bound=cfg->turbo?bound+1000000000ull/60:host_clock_bound(&host_clock,sdl_host_ns());
         if (smoke_ns && bound>smoke_ns) bound=smoke_ns;
         st=rt_run_until(bound);
-        if (threaded) { sdl_host_lock(); published_bound=bound; sdl_host_unlock(); }
+        if (threaded) {
+            sdl_host_lock(); published_bound=bound; published_now=rt_now(); published_ticks=rt_stats()->ticks; sdl_host_unlock();
+        }
         else {
             PresenterImage im={0}; im.pixels=frame_px; im.capacity=sizeof frame_px/sizeof *frame_px;
             if (!presenter_render(presenter,bound,1.6,&im)) {
@@ -312,9 +446,19 @@ int main(int argc, char **argv)
     const char *assets = "assets";
     double smoke = 0;
     int year_override = 0, turbo = 0, headless = 0;
-    const char *wide_sim = 0;       /* --wide-sim WIDTH|auto: the true-widescreen gameplay variant */
     RtConfig cfg = { 0 };
-    presentation=presenter_defaults();
+    for(int i=1;i<argc;i++) if(!strcmp(argv[i],"--settings") && i+1<argc) {
+        if(strlen(argv[i+1])>=sizeof settings_path) {fprintf(stderr,"settings path too long\n"); return 1;}
+        strcpy(settings_path,argv[++i]);
+    }
+    if(!*settings_path && sdl_host_settings_path(settings_path,sizeof settings_path)) {
+        *settings_path=0;
+        fprintf(stderr,"settings: preferences unavailable; continuing with defaults (use --settings PATH)\n");
+    }
+    saved_settings=settings_defaults();
+    if(*settings_path) settings_load(&saved_settings,settings_path,stderr);
+    settings=saved_settings;
+    printf("settings: %s\n",*settings_path?settings_path:"unavailable (run-only)");
     cfg.audio_native = 1;                     /* native audio engine; --reference: the SB path */
     for (int i = 1; i < argc; i++) {
         if (!strcmp(argv[i], "--assets") && i + 1 < argc) assets = argv[++i];
@@ -323,70 +467,49 @@ int main(int argc, char **argv)
         else if (!strcmp(argv[i], "--fast-load")) cfg.fast_load = 1;
         else if (!strcmp(argv[i], "--scenario") && i + 1 < argc) scenario = argv[++i];
         else if (!strcmp(argv[i], "--fast-vga")) cfg.fast_vga = 1;
-        else if (!strcmp(argv[i], "--wide-sim") && i + 1 < argc) wide_sim = argv[++i];
         else if (!strcmp(argv[i], "--reference")) { reference_video = 1; cfg.audio_native = 0; }
         else if (!strcmp(argv[i], "--turbo")) turbo = 1;
         else if (!strcmp(argv[i], "--headless")) headless = turbo = 1;
         else if (!strcmp(argv[i], "--demo-out") && i + 1 < argc) demo_out = argv[++i];
         else if (!strcmp(argv[i], "--demo-in") && i + 1 < argc) demo_in = argv[++i];
         else if (!strcmp(argv[i], "--year") && i + 1 < argc) year_override = atoi(argv[++i]);
-        else if (!strcmp(argv[i], "--mode") && i+1<argc) {
-            const char *m=argv[++i];
-            if (!strcmp(m,"faithful")) presentation.mode=PRESENT_FAITHFUL;
-            else if (!strcmp(m,"enhanced")) presentation.mode=PRESENT_ENHANCED;
-            else if (!strcmp(m,"widescreen")) presentation.mode=PRESENT_WIDESCREEN;
-            else { fprintf(stderr,"unknown presentation mode: %s\n",m); return 1; }
+        else if (!strcmp(argv[i],"--settings") && i+1<argc) i++;
+        else {
+            int found=0;
+            for(int id=0;id<SET_COUNT;id++) {
+                char option[80]; snprintf(option,sizeof option,"--%s",settings_key((Pre2Setting)id));
+                for(char *c=option+2;*c;c++) if(*c=='_') *c='-';
+                if(strcmp(argv[i],option)) continue;
+                const char *v=NULL;
+                int boolean=id==SET_INTERPOLATE || id==SET_SMOOTH_CAMERA || id==SET_SMOOTH_TRANSITIONS ||
+                    id==SET_FULLSCREEN || id==SET_VSYNC || id==SET_INTEGER_SCALING || id==SET_MUTE || id==SET_PERFORMANCE;
+                if(i+1<argc && strncmp(argv[i+1],"--",2)) v=argv[++i];
+                else if(boolean) v="true";
+                if(!v || settings_set(&settings,(Pre2Setting)id,v)) {
+                    fprintf(stderr,"invalid or missing value for %s\n",option); return 1;
+                }
+                found=1; break;
+            }
+            if(!found) {fprintf(stderr,"unknown or incomplete option: %s\n",argv[i]); return 1;}
         }
-        else if (!strcmp(argv[i],"--interpolate")) presentation.interpolate=1;
-        else if (!strcmp(argv[i],"--smooth-camera")) presentation.smooth_camera=1;
-        else if (!strcmp(argv[i],"--smooth-transitions")) presentation.smooth_transitions=1;
-        else if (!strcmp(argv[i],"--camera-tau") && i+1<argc) {
-            char *end; presentation.camera_tau=strtod(argv[++i],&end);
-            if (*end || !(presentation.camera_tau>0) || presentation.camera_tau>10) { fprintf(stderr,"camera-tau must be in (0,10] seconds\n"); return 1; }
-        }
-        else if (!strcmp(argv[i],"--aspect") && i+1<argc) {
-            const char *a=argv[++i];
-            if (!strcmp(a,"16:9")) presentation.aspect=16.0/9;
-            else if (!strcmp(a,"16:10")) presentation.aspect=1.6;
-            else if (!strcmp(a,"21:9")) presentation.aspect=21.0/9;
-            else if (!strcmp(a,"window")) presentation.aspect=0;
-            else { fprintf(stderr,"unknown aspect: %s\n",a); return 1; }
-        }
-        else if (!strcmp(argv[i],"--hud") && i+1<argc) {
-            const char *h=argv[++i];
-            if (!strcmp(h,"left")) presentation.hud=ENH_HUD_LEFT;
-            else if (!strcmp(h,"centre")) presentation.hud=ENH_HUD_CENTRE;
-            else if (!strcmp(h,"right")) presentation.hud=ENH_HUD_RIGHT;
-            else { fprintf(stderr,"unknown HUD policy: %s\n",h); return 1; }
-        }
-        else if (!strcmp(argv[i],"--backdrop") && i+1<argc) {
-            const char *b=argv[++i];
-            if (!strcmp(b,"black")) presentation.backdrop=ENH_BACK_BLACK;
-            else if (!strcmp(b,"mirror")) presentation.backdrop=ENH_BACK_MIRROR;
-            else if (!strcmp(b,"stretch")) presentation.backdrop=ENH_BACK_STRETCH;
-            else { fprintf(stderr,"unknown backdrop policy: %s\n",b); return 1; }
-        }
-        else { fprintf(stderr,"unknown or incomplete option: %s\n",argv[i]); return 1; }
     }
-    if (wide_sim) {
-        /* True widescreen simulates a wider view (docs/native-widescreen.md); only the
-         * widescreen presentation can show it. `auto` takes the width from the aspect
-         * (200 rows), rounded to 16 pixels, within 320..640. */
-        unsigned w = (unsigned)atoi(wide_sim);
-        if (!strcmp(wide_sim, "auto")) {
-            double a = presentation.aspect > 0 ? presentation.aspect : 16.0 / 9.0;
-            w = (unsigned)(200.0 * a / 16.0 + 0.5) * 16u;
-            if (w < 320) w = 320;
-            if (w > 640) w = 640;
+    presentation=settings_presenter(&settings);
+    if (settings.wide_sim) {
+        unsigned w=(unsigned)settings.wide_sim;
+        if(settings.wide_sim==-1) {
+            double a=presentation.aspect>0?presentation.aspect:16.0/9;
+            w=(unsigned)(200*a/16+.5)*16u; if(w<320)w=320; if(w>640)w=640;
         }
-        if (rt_set_wide_sim_width(w)) { fprintf(stderr, "--wide-sim requires auto or a multiple of 16 from 320 to 640\n"); return 1; }
-        if (presentation.mode != PRESENT_WIDESCREEN) { presentation.mode = PRESENT_WIDESCREEN; fprintf(stderr, "--wide-sim: widescreen presentation\n"); }
-        printf("true widescreen: simulated view %u px wide\n", w);
+        if(rt_set_wide_sim_width(w)) return 1;
+        settings.mode=PRESENT_WIDESCREEN; presentation.mode=PRESENT_WIDESCREEN;
+        printf("true widescreen: simulated view %u px wide (fixed for this boot)\n",w);
     }
+
     time_t t = time(NULL); struct tm *lt = localtime(&t);
     rt_boot(assets, year_override ? year_override : lt->tm_year + 1900, lt->tm_mon + 1, lt->tm_mday);
     if (!reference_video) { vga_memory_off = 1; compositor_init(); }
     if (sdl_host_init(!headless, !turbo)) return 1;
+    sdl_host_apply(&settings);
     if (reference_video) presentation=presenter_defaults();
     presenter=presenter_create(&presentation);
     if (!presenter) return 1;
@@ -395,14 +518,18 @@ int main(int argc, char **argv)
     rt_on_display_frame = on_display_frame;
     rt_on_pcm = on_pcm;
     rt_on_service = on_service;
-    WorkerConfig worker_cfg={cfg,turbo,sdl_host_ns()};
+    WorkerConfig worker_cfg={cfg,turbo};
+    host_clock_init(&host_clock,sdl_host_ns());
     int status;
     threaded=!headless;
     if (!threaded) status=simulation(&worker_cfg);
     else {
         if (sdl_host_worker_start(simulation,&worker_cfg)) return 1;
+        uint64_t perf_wall=sdl_host_ns(),perf_ticks=0,perf_frames=0;
+        OverlayPerf perf={0};
         for (;;) {
-            if (sdl_host_pump(queue_key)) { sdl_host_lock(); want_quit=1; sdl_host_unlock(); }
+            uint64_t frame_start=sdl_host_ns();
+            if (sdl_host_pump(queue_key,ui_key)) { sdl_host_lock(); want_quit=1; sdl_host_unlock(); }
             /* Short copies only under the lock. Every raster and SDL call is
              * outside it; slow presentation can only overflow the frame queue. */
             unsigned available;
@@ -411,18 +538,31 @@ int main(int argc, char **argv)
                 sdl_host_lock();
                 incoming=queue[qhead]; qhead=(qhead+1)%FRAME_QUEUE; qcount--;
                 sdl_host_unlock();
-                presenter_push(presenter,&incoming); shown_screen=incoming.screen;
+                presenter_push(presenter,&incoming); remember(&incoming); shown_screen=incoming.screen;
                 enh_screen_view_release(&incoming.screen_view);
             }
-            uint64_t bound; int done; unsigned pending;
-            sdl_host_lock(); bound=published_bound; done=worker_done; pending=qcount; sdl_host_unlock();
+            uint64_t bound,logical,ticks,mapped; int done; unsigned pending;
+            sdl_host_lock(); bound=published_bound; logical=published_now; ticks=published_ticks;
+            mapped=turbo?bound:host_clock_target(&host_clock,sdl_host_ns()); done=worker_done; pending=qcount; sdl_host_unlock();
+            uint64_t now=sdl_host_ns();
+            if(now-perf_wall>=500000000ull) {
+                double elapsed=(now-perf_wall)/1e9;
+                perf.fps=(frames_shown-perf_frames)/elapsed; perf.tps=(ticks-perf_ticks)/elapsed;
+                perf_wall=now; perf_ticks=ticks; perf_frames=frames_shown;
+            }
+            perf.drift_ms=((double)logical-(double)mapped)/1e6; perf.paused=overlay.open;
             PresenterImage im={0}; im.pixels=frame_px; im.capacity=sizeof frame_px/sizeof *frame_px;
-            if (!presenter_render(presenter,bound,sdl_host_window_aspect(),&im)) {
+            if (!overlay.open && !presenter_render(presenter,bound,sdl_host_window_aspect(),&im)) {
                 frame_w=im.w; frame_h=im.h;
-                sdl_host_show(frame_px,frame_w,frame_h,presentation.mode==PRESENT_WIDESCREEN?frame_w:320,
-                              presentation.mode==PRESENT_WIDESCREEN?frame_h:200); frames_shown++;
+                last_present_bound=bound;
+
                 if (shots_dir && bound>=next_shot_ns) { shot(); next_shot_ns=bound+500000000ull; }
-            } else sdl_host_sleep_ns(1000000);
+            }
+            show_product(&perf); frames_shown++;
+            if(settings.frame_cap>0) {
+                uint64_t interval=1000000000ull/(unsigned)settings.frame_cap,spent=sdl_host_ns()-frame_start;
+                if(spent<interval) sdl_host_sleep_ns(interval-spent);
+            }
             if (done && !pending) break;
         }
         status=sdl_host_worker_join();
@@ -430,6 +570,7 @@ int main(int argc, char **argv)
     if (smoke_on) smoke_report();
     if (demo_out) demo_save();
     presenter_destroy(presenter);
+    free(output_px);
     sdl_host_shutdown();
     return status;
 }

@@ -4,11 +4,18 @@
 #ifndef SDL_HOST_H
 #define SDL_HOST_H
 #include <stdint.h>
+#include "../native/settings.h"
 int  sdl_host_init(int video, int sound);
 void sdl_host_shutdown(void);
-/* Pumps events; each key becomes PC scan codes (E0h prefix for the extended group). Returns 1
- * when the window was closed. */
-int  sdl_host_pump(void (*key)(uint8_t code));
+/* UI sees each PC code before scan-code delivery; return nonzero to consume it.
+ * code=0/down=0 queries modality for deferred game-key releases. Returns 1 on
+ * window close. No mouse/gamepad input is currently delivered by this host. */
+int  sdl_host_pump(void (*key)(uint8_t code), int (*ui)(int code,int down,int repeat,int shift));
+/* Product settings; gain is applied to the output stream, never generated PCM. */
+void sdl_host_apply(const Pre2Settings *settings);
+void sdl_host_audio_pause(int paused);
+int sdl_host_settings_path(char *out,unsigned size);
+void sdl_host_window_size(int *w,int *h);
 /* Shows a w x h frame letterboxed at the aspect_w x aspect_h logical size. */
 void sdl_host_show(const uint32_t *xrgb, int w, int h, int aspect_w, int aspect_h);
 void sdl_host_audio(const uint8_t *pcm, uint32_t n, uint32_t rate);

@@ -10,6 +10,10 @@ static SDL_AudioStream *audio;
 static int tex_w, tex_h;
 static SDL_Thread *worker;
 static SDL_Mutex *bridge;
+static Pre2Settings applied;
+static int settings_applied;
+static uint8_t forwarded[SDL_SCANCODE_COUNT];
+static uint8_t modal_keys[SDL_SCANCODE_COUNT];
 
 /* ---- keyboard: SDL scancode -> PC scan code set 1 ----------------------------------------- */
 uint8_t sdl_pc_scancode(int sdl_scancode, int *extended)
@@ -73,6 +77,7 @@ int sdl_host_init(int video, int sound)
     if (!bridge) return 1;
     if (video) {
         win = SDL_CreateWindow("Prehistorik 2", 960, 600, SDL_WINDOW_RESIZABLE);
+        if(win) SDL_SetWindowMinimumSize(win,320,200);
         ren = win ? SDL_CreateRenderer(win, NULL) : NULL;
         if (!ren) { fprintf(stderr, "SDL video: %s\n", SDL_GetError()); return 1; }
         SDL_SetRenderVSync(ren, 1);
@@ -92,7 +97,7 @@ void sdl_host_shutdown(void)
     SDL_Quit();
 }
 
-int sdl_host_pump(void (*key)(uint8_t code))
+int sdl_host_pump(void (*key)(uint8_t code),int (*ui)(int,int,int,int))
 {
     int quit = 0;
     SDL_Event e;
@@ -103,10 +108,25 @@ int sdl_host_pump(void (*key)(uint8_t code))
          * 101-key keyboard's extended group are preceded by E0h, as the keyboard sends them */
         if (e.type == SDL_EVENT_KEY_DOWN || e.type == SDL_EVENT_KEY_UP) {
             int ext; uint8_t code = sdl_pc_scancode(e.key.scancode, &ext);
-            if (code) {
+            int down=e.type==SDL_EVENT_KEY_DOWN;
+            int consumed=ui && ui(code,down,e.key.repeat,(e.key.mod & SDL_KMOD_SHIFT)!=0);
+            if(consumed && down) modal_keys[e.key.scancode]=1;
+            if(modal_keys[e.key.scancode]) {consumed=1; if(!down) modal_keys[e.key.scancode]=0;}
+            if (code && !consumed && (down || forwarded[e.key.scancode])) {
                 if (ext) key(0xE0);
                 key((uint8_t)(code | (e.type == SDL_EVENT_KEY_UP ? 0x80 : 0)));
+                forwarded[e.key.scancode]=(uint8_t)down;
             }
+        }
+    }
+    /* A game key released in the modal UI is reconciled only on resumption.
+     * UI-only presses never acquire a game make or break code. */
+    if(!ui || !ui(0,0,0,0)) {
+        const bool *held=SDL_GetKeyboardState(NULL);
+        for(int s=0;s<SDL_SCANCODE_COUNT;s++) if(forwarded[s] && !held[s]) {
+            int ext; uint8_t code=sdl_pc_scancode(s,&ext);
+            if(ext) key(0xe0);
+            key((uint8_t)(code|0x80)); forwarded[s]=0;
         }
     }
     return quit;
@@ -121,7 +141,8 @@ void sdl_host_show(const uint32_t *xrgb, int w, int h, int aspect_w, int aspect_
         SDL_SetTextureScaleMode(tex, SDL_SCALEMODE_NEAREST);
         tex_w = w; tex_h = h;
     }
-    SDL_SetRenderLogicalPresentation(ren, aspect_w, aspect_h, SDL_LOGICAL_PRESENTATION_LETTERBOX);
+    SDL_SetRenderLogicalPresentation(ren, aspect_w, aspect_h,
+        applied.integer_scaling?SDL_LOGICAL_PRESENTATION_INTEGER_SCALE:SDL_LOGICAL_PRESENTATION_LETTERBOX);
     SDL_UpdateTexture(tex, NULL, xrgb, w * 4);
     SDL_RenderClear(ren);
     SDL_RenderTexture(ren, tex, NULL, NULL);
@@ -162,3 +183,32 @@ int sdl_host_worker_join(void)
 }
 void sdl_host_lock(void) { SDL_LockMutex(bridge); }
 void sdl_host_unlock(void) { SDL_UnlockMutex(bridge); }
+
+void sdl_host_apply(const Pre2Settings *s)
+{
+    if(win) {
+        if(!settings_applied || s->fullscreen!=applied.fullscreen)
+            if(!SDL_SetWindowFullscreen(win,s->fullscreen!=0)) fprintf(stderr,"fullscreen: %s\n",SDL_GetError());
+        if(!settings_applied || s->window_scale!=applied.window_scale)
+            SDL_SetWindowSize(win,320*s->window_scale,200*s->window_scale);
+    }
+    if(ren && (!settings_applied || s->vsync!=applied.vsync))
+        if(!SDL_SetRenderVSync(ren,s->vsync)) fprintf(stderr,"vsync: %s\n",SDL_GetError());
+    if(audio) SDL_SetAudioStreamGain(audio,s->mute?0.0f:s->volume/100.0f);
+    applied=*s; settings_applied=1;
+}
+void sdl_host_audio_pause(int paused)
+{
+    if(audio) {if(paused) SDL_PauseAudioStreamDevice(audio); else SDL_ResumeAudioStreamDevice(audio);}
+}
+int sdl_host_settings_path(char *out,unsigned size)
+{
+    char *dir=SDL_GetPrefPath("pre2-reconstruction","Prehistorik2");
+    if(!dir) {fprintf(stderr,"preferences: %s\n",SDL_GetError()); return -1;}
+    int n=snprintf(out,size,"%spre2_settings.json",dir); SDL_free(dir);
+    return n<0 || (unsigned)n>=size?-1:0;
+}
+void sdl_host_window_size(int *w,int *h)
+{
+    *w=960; *h=600; if(win) SDL_GetWindowSizeInPixels(win,w,h);
+}
