@@ -4,6 +4,7 @@
 #include "../c/pre2.h"
 #include <string.h>
 #include <stdlib.h>
+#include <stdatomic.h>
 #include "enh_screens.h"
 #include "draw_game_assets.h"
 #include "../c/vga.h"
@@ -36,21 +37,124 @@ static int model_failed;
 static const FrameScreenLayer *screen_layers;
 static const FrameScreenPixels *screen_fonts;
 static const FrameScreenPixels *screen_cels[1024];
-typedef struct ScreenAllocation { struct ScreenAllocation *next; } ScreenAllocation;
-static ScreenAllocation *screen_allocations;
-
-static void *screen_allocate(size_t size)
+static FrameGameView world_pages[2];
+static int world_active;
+static EnhScreenObserveStats observe_stats;
+static void begin_handoff(void);
+static void forget_world(void)
 {
-    ScreenAllocation *a = malloc(sizeof *a + size);
+    for (unsigned p = 0; p < 2; p++) {
+        enh_level_release(world_pages[p].assets); memset(&world_pages[p], 0, sizeof world_pages[p]);
+    }
+    world_active = 0;
+}
+EnhScreenObserveStats enh_screen_observe_stats(void) { return observe_stats; }
+/* Refcounts are on immutable objects, not on mutable capture targets. A retained
+ * publication owns its images and its bounded operation batch independently of
+ * the capture session, including through compositor_init(). */
+enum ScreenObjectKind { SCREEN_BLOCK, SCREEN_IMAGE, SCREEN_LAYER };
+typedef struct ScreenReference {
+    atomic_uint refs;
+    unsigned kind;
+    size_t bytes;
+} ScreenReference;
+static atomic_size_t live_bytes, peak_bytes, live_blocks, peak_blocks, live_images, live_layers;
+static atomic_uint_fast64_t allocation_count;
+static FrameScreenView published_view;
+static unsigned pending_layers;
+static size_t pending_bytes;
+#define SCREEN_BATCH_LAYERS 256u
+#define SCREEN_BATCH_BYTES (2u * 1024u * 1024u)
+
+static void memory_peak(atomic_size_t *peak, size_t value)
+{
+    size_t old = atomic_load_explicit(peak, memory_order_relaxed);
+    while (old < value && !atomic_compare_exchange_weak_explicit(peak, &old, value,
+               memory_order_relaxed, memory_order_relaxed)) {}
+}
+static void *screen_allocate(size_t size, unsigned kind)
+{
+    ScreenReference *a = malloc(sizeof *a + size);
     if (!a) { model_failed = 1; return NULL; }
-    a->next = screen_allocations; screen_allocations = a;
+    atomic_init(&a->refs, 1); a->kind = kind; a->bytes = sizeof *a + size;
+    size_t bytes = atomic_fetch_add_explicit(&live_bytes, a->bytes, memory_order_relaxed) + a->bytes;
+    memory_peak(&peak_bytes, bytes);
+    atomic_fetch_add_explicit(&allocation_count, 1, memory_order_relaxed);
+    if (kind == SCREEN_BLOCK) {
+        size_t blocks = atomic_fetch_add_explicit(&live_blocks, 1, memory_order_relaxed) + 1;
+        memory_peak(&peak_blocks, blocks);
+    } else if (kind == SCREEN_IMAGE) atomic_fetch_add_explicit(&live_images, 1, memory_order_relaxed);
+    else atomic_fetch_add_explicit(&live_layers, 1, memory_order_relaxed);
     return a + 1;
+}
+static void screen_retain(const void *object)
+{
+    if (object) {
+        ScreenReference *a = (ScreenReference *)object - 1;
+        atomic_fetch_add_explicit(&a->refs, 1, memory_order_relaxed);
+    }
+}
+static void screen_release(const void *object)
+{
+    if (!object) return;
+    ScreenReference *a = (ScreenReference *)object - 1;
+    if (atomic_fetch_sub_explicit(&a->refs, 1, memory_order_acq_rel) != 1) return;
+    if (a->kind == SCREEN_IMAGE) {
+        const FrameScreenPixels *image = object;
+        for (unsigned b = 0; b < (image->size + SCREEN_PIXEL_BLOCK - 1) / SCREEN_PIXEL_BLOCK; b++)
+            screen_release(image->block[b]);
+        atomic_fetch_sub_explicit(&live_images, 1, memory_order_relaxed);
+    } else if (a->kind == SCREEN_LAYER) {
+        const FrameScreenLayer *layer = object;
+        screen_release(layer->image); screen_release(layer->previous);
+        atomic_fetch_sub_explicit(&live_layers, 1, memory_order_relaxed);
+    } else atomic_fetch_sub_explicit(&live_blocks, 1, memory_order_relaxed);
+    atomic_fetch_sub_explicit(&live_bytes, a->bytes, memory_order_relaxed);
+    free(a);
+}
+void enh_screen_view_retain(const FrameScreenView *v)
+{
+    if (!v) return;
+    screen_retain(v->surface); screen_retain(v->master);
+    screen_retain(v->font_banks); screen_retain(v->layers);
+}
+void enh_screen_view_release(const FrameScreenView *v)
+{
+    if (!v) return;
+    screen_release(v->surface); screen_release(v->master);
+    screen_release(v->font_banks); screen_release(v->layers);
+}
+EnhScreenMemoryStats enh_screen_memory_stats(void)
+{
+    EnhScreenMemoryStats s;
+    s.live_bytes = atomic_load_explicit(&live_bytes, memory_order_relaxed);
+    s.peak_bytes = atomic_load_explicit(&peak_bytes, memory_order_relaxed);
+    s.live_blocks = atomic_load_explicit(&live_blocks, memory_order_relaxed);
+    s.peak_blocks = atomic_load_explicit(&peak_blocks, memory_order_relaxed);
+    s.live_images = atomic_load_explicit(&live_images, memory_order_relaxed);
+    s.live_layers = atomic_load_explicit(&live_layers, memory_order_relaxed);
+    s.allocations = atomic_load_explicit(&allocation_count, memory_order_relaxed);
+    return s;
+}
+void enh_screen_memory_reset_peaks(void)
+{
+    atomic_store_explicit(&peak_bytes, atomic_load_explicit(&live_bytes, memory_order_relaxed), memory_order_relaxed);
+    atomic_store_explicit(&peak_blocks, atomic_load_explicit(&live_blocks, memory_order_relaxed), memory_order_relaxed);
+}
+static void drop_layers(void)
+{
+    screen_release(screen_layers); screen_layers = NULL; pending_layers = 0; pending_bytes = 0;
+}
+static void drop_cels(void)
+{
+    for (unsigned i = 0; i < 1024; i++) { screen_release(screen_cels[i]); screen_cels[i] = NULL; }
 }
 static void screen_reset(void)
 {
-    while (screen_allocations) {
-        ScreenAllocation *a = screen_allocations; screen_allocations = a->next; free(a);
-    }
+    enh_screen_view_release(&published_view); memset(&published_view, 0, sizeof published_view);
+    forget_world(); memset(&observe_stats, 0, sizeof observe_stats);
+    screen_release(authored.snapshot); screen_release(linear.snapshot); screen_release(master.snapshot);
+    drop_layers(); screen_release(screen_fonts); screen_fonts = NULL; drop_cels();
     memset(&authored, 0, sizeof authored); memset(&linear, 0, sizeof linear);
     memset(&master, 0, sizeof master); memset(cleared, 1, sizeof cleared);
     authored.size = 65536u * 8u; linear.size = 65536u; master.size = 640u * 200u;
@@ -58,7 +162,6 @@ static void screen_reset(void)
     memset(linear.dirty, 1, sizeof linear.dirty); memset(master.dirty, 1, sizeof master.dirty);
     memset(reveal_frontier, 0, sizeof reveal_frontier);
     screen_kind = FRAME_SCREEN_EMPTY; screen_epoch = 0; model_failed = 0;
-    screen_layers = NULL; screen_fonts = NULL; memset(screen_cels, 0, sizeof screen_cels);
 }
 static void target_write(ScreenTarget *target, unsigned at, uint8_t value)
 {
@@ -73,36 +176,37 @@ static const FrameScreenPixels *target_snapshot(ScreenTarget *target)
     for (unsigned b = 0; b < blocks; b++) changed |= target->dirty[b];
     if (!changed) return target->snapshot;
     size_t bytes = sizeof(FrameScreenPixels) + blocks * sizeof(const uint8_t *);
-    FrameScreenPixels *image = screen_allocate(bytes);
+    FrameScreenPixels *image = screen_allocate(bytes, SCREEN_IMAGE);
     if (!image) return NULL;
     memset(image, 0, bytes); image->size = target->size;
     for (unsigned b = 0; b < blocks; b++) {
         const uint8_t *old = target->snapshot ? target->snapshot->block[b] : NULL;
         if (old && (!target->dirty[b] || !memcmp(old, target->pixel + b * SCREEN_PIXEL_BLOCK, SCREEN_PIXEL_BLOCK)))
-            image->block[b] = old;
+            { image->block[b] = old; screen_retain(old); }
         else {
-            uint8_t *pixels = screen_allocate(SCREEN_PIXEL_BLOCK);
-            if (!pixels) return NULL;
+            uint8_t *pixels = screen_allocate(SCREEN_PIXEL_BLOCK, SCREEN_BLOCK);
+            if (!pixels) { screen_release(image); return NULL; }
             memcpy(pixels, target->pixel + b * SCREEN_PIXEL_BLOCK, SCREEN_PIXEL_BLOCK);
             image->block[b] = pixels;
         }
-        target->dirty[b] = 0;
     }
-    target->snapshot = image; return image;
+    memset(target->dirty, 0, sizeof target->dirty);
+    screen_release(target->snapshot); target->snapshot = image; return image;
 }
 /* The retained recipe is also the explanation of each native surface cache.
  * Captured source images outlive asset reuse; no layer stores a game pointer. */
 static const FrameScreenPixels *source_image(const uint8_t *pixels, unsigned size)
 {
     if (size > 65536u * 8u) return NULL;
+    pending_bytes += size + SCREEN_PIXEL_BLOCK;
     unsigned blocks = (size + SCREEN_PIXEL_BLOCK - 1) / SCREEN_PIXEL_BLOCK;
     size_t bytes = sizeof(FrameScreenPixels) + blocks * sizeof(const uint8_t *);
-    FrameScreenPixels *image = screen_allocate(bytes);
+    FrameScreenPixels *image = screen_allocate(bytes, SCREEN_IMAGE);
     if (!image) return NULL;
     memset(image, 0, bytes); image->size = size;
     for (unsigned b = 0; b < (size + SCREEN_PIXEL_BLOCK - 1) / SCREEN_PIXEL_BLOCK; b++) {
-        uint8_t *block = screen_allocate(SCREEN_PIXEL_BLOCK);
-        if (!block) return NULL;
+        uint8_t *block = screen_allocate(SCREEN_PIXEL_BLOCK, SCREEN_BLOCK);
+        if (!block) { screen_release(image); return NULL; }
         unsigned count = size - b * SCREEN_PIXEL_BLOCK;
         if (count > SCREEN_PIXEL_BLOCK) count = SCREEN_PIXEL_BLOCK;
         memset(block, 0, SCREEN_PIXEL_BLOCK); memcpy(block, pixels + b * SCREEN_PIXEL_BLOCK, count);
@@ -113,7 +217,12 @@ static const FrameScreenPixels *source_image(const uint8_t *pixels, unsigned siz
 static FrameScreenLayer *screen_layer(unsigned kind, uint16_t destination, unsigned width,
                                       unsigned height, unsigned pitch, unsigned channels)
 {
-    FrameScreenLayer *layer = screen_allocate(sizeof *layer);
+    if (world_active) return NULL;
+    /* Between CRT displays the target already contains the complete authored
+     * state; descriptions need only retain a bounded recent operation batch. */
+    if (pending_layers >= SCREEN_BATCH_LAYERS || pending_bytes >= SCREEN_BATCH_BYTES) drop_layers();
+    FrameScreenLayer *layer = screen_allocate(sizeof *layer, SCREEN_LAYER);
+    pending_layers++; pending_bytes += sizeof *layer;
     if (!layer) return NULL;
     memset(layer, 0, sizeof *layer); layer->previous = screen_layers;
     layer->kind = (uint8_t)kind; layer->channels = (uint8_t)channels;
@@ -192,6 +301,7 @@ static void copy_byte(uint16_t src, uint16_t dst)
 
 static void picture_event(const SceneEvent *e)
 {
+    begin_handoff();
     uint16_t seg = (uint16_t)e->a[0], src = (uint16_t)e->a[1], dst = (uint16_t)e->a[2];
     unsigned n = (unsigned)e->a[3], mask = (unsigned)e->a[4], k = 0;
     screen_kind = dst == 0x5E80 ? FRAME_SCREEN_GAME_OVER : FRAME_SCREEN_PICTURE;
@@ -215,6 +325,7 @@ static void picture_event(const SceneEvent *e)
 
 static void clear_event(const SceneEvent *e)
 {
+    begin_handoff();
     screen_layer(FRAME_SCREEN_CLEAR, (uint16_t)e->a[0], (unsigned)e->a[1] * 8u, 1, 0, 15);
     author_clear((uint16_t)e->a[0], (unsigned)e->a[1]);
     for (unsigned i = 0; i < (unsigned)e->a[1]; i++)
@@ -223,6 +334,7 @@ static void clear_event(const SceneEvent *e)
 
 static void copy_event(const SceneEvent *e)
 {
+    begin_handoff();
     if (e->a[0] == 0x3F40 && e->a[2] == 8000) screen_kind = FRAME_SCREEN_INTRO;
     FrameScreenLayer *layer = screen_layer(FRAME_SCREEN_COPY, (uint16_t)e->a[1], (unsigned)e->a[2] * 8u, 1, 0, 15);
     if (layer) { layer->source = layer->destination; layer->source.origin = (unsigned)(uint16_t)e->a[0] * 8u; }
@@ -232,6 +344,7 @@ static void copy_event(const SceneEvent *e)
 
 static void char_event(const SceneEvent *e)
 {
+    begin_handoff();
     screen_kind = FRAME_SCREEN_CREDITS;
     uint8_t c = (uint8_t)e->a[1], g = (uint8_t)(c - 0x30);
     if (g > 9) g = (uint8_t)(g - 2);
@@ -248,12 +361,13 @@ static void char_event(const SceneEvent *e)
 
 static void fonts_event(const SceneEvent *e)
 {
+    begin_handoff();
     screen_kind = FRAME_SCREEN_MENU; screen_epoch++;
     if (!++font_epoch) font_epoch = 1;
     for (unsigned i = 0; i < sizeof fonts; i++) fonts[i] = rd8((uint16_t)e->a[0], (uint16_t)i);
-    screen_fonts = source_image(fonts, sizeof fonts);
+    screen_release(screen_fonts); screen_fonts = source_image(fonts, sizeof fonts);
     FrameScreenLayer *layer = screen_layer(FRAME_SCREEN_FONT, 0, 0, 0, 0, 12);
-    if (layer) layer->image = screen_fonts;
+    if (layer) { layer->image = screen_fonts; screen_retain(screen_fonts); }
 }
 
 static void string_event(const SceneEvent *e)
@@ -299,6 +413,7 @@ static void string_event(const SceneEvent *e)
 
 static void world_event(const SceneEvent *e)
 {
+    begin_handoff();
     screen_kind = FRAME_SCREEN_WORLD_MAP; screen_epoch++;
     memset(reveal_frontier, 0, sizeof reveal_frontier);
     if (!++world_epoch) world_epoch = 1;
@@ -436,7 +551,7 @@ static void screen_planar_asset(const uint8_t *src, uint16_t at, uint16_t dst, i
         target_write(&authored, (unsigned)(uint16_t)(dst + 40 * y + x / 8) * 8u + (unsigned)(x % 8), c);
         decoded[y * width * 8 + x] = c;
     }
-    if (screen_kind == FRAME_SCREEN_TALLY || screen_kind == FRAME_SCREEN_GAME_OVER || screen_kind == FRAME_SCREEN_INTRO) {
+    if (!world_active && (screen_kind == FRAME_SCREEN_TALLY || screen_kind == FRAME_SCREEN_GAME_OVER || screen_kind == FRAME_SCREEN_INTRO)) {
         FrameScreenLayer *layer = screen_layer(width < 40 ? FRAME_SCREEN_GLYPH : FRAME_SCREEN_IMAGE,
                                                dst, (unsigned)width * 8u, (unsigned)rows, 320, 15);
         if (layer) layer->image = source_image(decoded, (unsigned)(width * 8 * rows));
@@ -515,12 +630,12 @@ static void screen_on_sprite(const SceneEvent *e)
     uint8_t rowbytes = (uint8_t)(e->a[8] >> 8);
     int clip = (e->a[11] >> 16) & 255;
     uint16_t skip = (uint16_t)e->a[10];
-    if (screen_kind == FRAME_SCREEN_INTRO || screen_kind == FRAME_SCREEN_GAME_OVER || screen_kind == FRAME_SCREEN_TALLY) {
+    if (!world_active && (screen_kind == FRAME_SCREEN_INTRO || screen_kind == FRAME_SCREEN_GAME_OVER || screen_kind == FRAME_SCREEN_TALLY)) {
         if (!screen_cels[frame] && c->blocks) screen_cels[frame] = source_image(c->blocks, 65536);
         FrameScreenLayer *layer = screen_layer(FRAME_SCREEN_CEL, dst, (unsigned)vis * 8u,
                                                rows ? rows : 256, 320, 15);
         if (layer) {
-            layer->image = screen_cels[frame]; layer->asset = (uint16_t)frame;
+            layer->image = screen_cels[frame]; screen_retain(layer->image); layer->asset = (uint16_t)frame;
             layer->x = e->a[4]; layer->y = e->a[5]; layer->mirror = (uint8_t)mirror;
             layer->pass = (uint8_t)pass; layer->phase = (uint8_t)xs;
             layer->clipped = (uint8_t)clip; layer->clip_left = left; layer->clip_right = right;
@@ -559,30 +674,6 @@ static void screen_on_hud(const SceneEvent *e)
     }
 }
 
-static void screen_on_ring(const SceneEvent *e)
-{
-    (void)e;
-    uint16_t shake = DW(DS_ShakeRows), shake_bytes = (uint16_t)(40u * DB(DS_ShakeRows));
-    uint16_t si = (uint16_t)(DW(DS_RingTileOffset) + 40u * DB(DS_FineScroll));
-    uint16_t di = (uint16_t)(DW(DS_DrawPage) + shake_bytes);
-    uint8_t dh = (uint8_t)(DB(DS_ColumnRing) * 2), dl = (uint8_t)((20 - DB(DS_ColumnRing)) * 2);
-    uint16_t n = (uint16_t)(192 - (int16_t)(int8_t)DB(DS_FineScroll) - (DW(DS_RowRing) << 4)), rest;
-    if (n < 176) {
-        rest = (uint16_t)(176 - n - shake);
-        if ((int16_t)rest < 0) { n = (uint16_t)(n + rest); rest = 0; }
-    } else { n = (uint16_t)(176 - shake); rest = 0; }
-    if (!n) { n = rest; rest = 0; }
-    for (int part = 0; part < 2; part++) {
-        if (part) { if (!rest) break; si = (uint16_t)(0x3F40 + dh); n = rest; }
-        do {
-            screen_copy_bytes(si, di, dl, 1, 0, 0); si = (uint16_t)(si + dl); di = (uint16_t)(di + dl);
-            si = (uint16_t)(si - 40);
-            screen_copy_bytes(si, di, dh, 1, 0, 0); si = (uint16_t)(si + dh + 40); di = (uint16_t)(di + dh);
-        } while (--n);
-    }
-    screen_clear_bytes(DW(DS_DrawPage), (shake_bytes >> 1) * 2, 1, 0);
-}
-
 static void screen_on_upload(const SceneEvent *e)
 {
     uint16_t seg = (uint16_t)e->a[0];
@@ -618,19 +709,93 @@ static void screen_on_foreground(const SceneEvent *e)
     }
 }
 
+/* Only handoffs materialize world pixels. Cached semantic page descriptions have
+ * no HUD raster input, and their native level retains all referenced map rows.
+ * Rebuilding from that native model avoids a second world painter on every tile,
+ * particle and sprite event, while preserving the page being handed to a screen. */
+static void seed_world_page(unsigned page)
+{
+    const FrameGameView *view = &world_pages[!!(page & 0x2000)];
+    if (!view->valid || !view->world_valid || !view->assets || pre2_view.variant) return;
+    uint8_t indices[320 * 176];
+    EnhImage image = {0}; image.index = indices; image.capacity = sizeof indices; image.stride = 320;
+    const EnhOptions options = { ENH_BACK_BLACK, ENH_HUD_NONE, NULL, 0 };
+    if (enh_render(view, view->assets, pre2_vga.dac, pre2_vga.pel_mask,
+                   view->camera_x, view->camera_y, 320, 176, &options, &image)) {
+        model_failed = 1; return;
+    }
+    for (unsigned i = 0; i < sizeof indices; i++) target_write(&authored, page * 8u + i, indices[i]);
+    memset(cleared + page, 0, 7040);
+}
+static void begin_handoff(void)
+{
+    if (!world_active) return;
+    observe_stats.handoffs++;
+    seed_world_page(0); seed_world_page(0x2000); world_active = 0;
+}
+/* Gameplay keeps only the two authored HUD bands alive. Intersect rectangle rows
+ * with them arithmetically instead of walking every playfield pixel. Source and
+ * destination offsets, including a row crossing the 16-bit boundary, still wrap. */
+static void hud_rectangle(const SceneEvent *e, int copy)
+{
+    unsigned width = (unsigned)e->a[copy ? 2 : 1], rows = (unsigned)e->a[copy ? 3 : 2];
+    unsigned ds = (unsigned)e->a[copy ? 5 : 3], ss = copy ? (unsigned)e->a[4] : 0;
+    uint16_t dst = (uint16_t)e->a[copy ? 1 : 0], src = copy ? (uint16_t)e->a[0] : 0;
+    for (unsigned y = 0; y < rows; y++, dst = (uint16_t)(dst + ds), src = (uint16_t)(src + ss))
+        for (unsigned page = 0; page < 2; page++) for (unsigned wrap = 0; wrap < 2; wrap++) {
+            unsigned lo = page * 8192u + 7040u + wrap * 65536u;
+            unsigned hi = lo + 960u;
+            if (lo < dst) lo = dst;
+            if (hi > (unsigned)dst + width) hi = (unsigned)dst + width;
+            if (lo >= hi) continue;
+            for (unsigned x = lo - dst; x < hi - dst; x++) {
+                if (copy) author_copy((uint16_t)(src + x), (uint16_t)(dst + x));
+                else author_clear((uint16_t)(dst + x), 1);
+            }
+        }
+}
+
 void draw_screens_observe(const SceneEvent *e)
 {
+    observe_stats.events++;
+    if (e->kind == SCENE_GAME_RING) {
+        if (!world_active) drop_cels();
+        world_active = 1; observe_stats.skipped++; return;
+    }
+    if (world_active) {
+        switch (e->kind) {
+        case SCENE_MODE_SET: break;
+        case SCENE_GAME_HIDE: begin_handoff(); return;
+        case SCENE_GAME_TRANSITION:
+            if (e->a[0]) begin_handoff();
+            return;
+        case SCENE_GAME_ASSETS: drop_cels(); return;
+        case SCENE_GAME_HUD:
+            if (e->a[0] >= 2 && (uint16_t)(e->a[2] - DW(DS_DrawPage)) < 7040) begin_handoff();
+            screen_on_hud(e); return;
+        case SCENE_GAME_COPY:
+            if (e->a[2] == 8000) { begin_handoff(); break; }
+            hud_rectangle(e, 1); return;
+        case SCENE_GAME_CLEAR:
+            /* The block-wipe transition event follows its first forty clears;
+             * start at the first 16x10 block so those rows are not regenerated. */
+            if (e->a[1] == 8000 || (e->a[1] == 2 && e->a[2] == 10 && e->a[3] == 40)) { begin_handoff(); break; }
+            hud_rectangle(e, 0); return;
+        default: observe_stats.skipped++; return;
+        }
+    }
     switch (e->kind) {
     case SCENE_MODE_SET:
         memset(&transition, 0, sizeof transition);
         if (!(e->a[0] & 0x80)) {
+            forget_world();
             author_clear(0, 65536);
             for (unsigned a = 0; a < linear.size; a++) target_write(&linear, a, 0);
             screen_kind = FRAME_SCREEN_EMPTY; screen_epoch++;
-            screen_layers = NULL; screen_fonts = NULL;
+            drop_layers(); screen_release(screen_fonts); screen_fonts = NULL; drop_cels();
         }
         break;
-    case SCENE_GAME_ASSETS: memset(screen_cels, 0, sizeof screen_cels); break;
+    case SCENE_GAME_ASSETS: drop_cels(); break;
     case SCENE_GAME_COPY:
         screen_copy_bytes((uint16_t)e->a[0], (uint16_t)e->a[1], e->a[2], e->a[3], e->a[4], e->a[5]); break;
     case SCENE_GAME_CLEAR:
@@ -640,7 +805,6 @@ void draw_screens_observe(const SceneEvent *e)
     case SCENE_GAME_HUD: screen_on_hud(e); break;
     case SCENE_GAME_SPRITE: screen_on_sprite(e); break;
     case SCENE_GAME_BACKDROP: case SCENE_GAME_STASH: screen_on_upload(e); break;
-    case SCENE_GAME_RING: if (!pre2_view.variant) screen_on_ring(e); break;
     case SCENE_GAME_FOREGROUND: if (!pre2_view.variant) screen_on_foreground(e); break;
     case SCENE_GAME_BLACKOUT: screen_on_blackout(e); break;
     case SCENE_GAME_TILE:
@@ -697,6 +861,17 @@ void draw_screens_publish(Pre2Frame *frame, uint16_t start)
     FrameScreenView *v = &frame->screen_view;
     const VgaState *hw = &pre2_vga;
     memset(v, 0, sizeof *v);
+    if (frame->game.valid && frame->game.world_valid) {
+        if (!frame->transition.kind || frame->transition.kind == 4) {
+            FrameGameView *page = &world_pages[!!(start & 0x2000)];
+            if (page->assets != frame->game.assets) {
+                enh_level_retain(frame->game.assets); enh_level_release(page->assets);
+            }
+            *page = frame->game; memset(page->hud, 0, sizeof page->hud);
+        }
+        enh_screen_view_release(&published_view); memset(&published_view, 0, sizeof published_view);
+        drop_layers(); return;
+    }
     v->kind = (uint8_t)screen_kind; v->epoch = screen_epoch;
     v->width = frame->w; v->height = frame->h; v->blank = frame->blank;
     v->border = screen_colour(hw->attr[0x11]);
@@ -744,4 +919,6 @@ void draw_screens_publish(Pre2Frame *frame, uint16_t start)
     if (v->kind == FRAME_SCREEN_WORLD_MAP) v->master = target_snapshot(&master);
     v->valid = !model_failed && v->surface && !(frame->game.valid && frame->game.world_valid);
     if (!v->indexed256 && !(hw->crtc[0x17] & 64) && !text) v->valid = 0;
+    enh_screen_view_retain(v); enh_screen_view_release(&published_view); published_view = *v;
+    drop_layers();
 }

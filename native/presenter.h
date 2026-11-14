@@ -41,7 +41,7 @@ typedef struct PresenterImage {
     int w, h;
     uint64_t time; /* sampled logical time, <= bound */
     double camera_x, camera_y, alpha, progress, radius;
-    unsigned fallback; /* bit 1: missing world; 2: iris data; 4: map layers */
+    unsigned fallback; /* bit 1: missing world; 2: iris data; 4: map layers; 8: faithful pixels in non-faithful mode */
 } PresenterImage;
 typedef struct Presenter Presenter;
 PresenterOptions presenter_defaults(void);

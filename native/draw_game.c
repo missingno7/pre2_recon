@@ -97,6 +97,7 @@ static void capture_view(FrameGameView *v)
 static void publish_view(FrameGameView *v, uint16_t start)
 {
     *v = pages[page_index(start)];
+    enh_capture_surface_publish(v, start);
     if (strcmp(pre2_phase, "MainFrameLoop") && strcmp(pre2_phase, "SetLevelVideoMode()")) v->valid = 0;
     enh_capture_publish(v, start);
 }
@@ -108,6 +109,7 @@ static void publish_transition(FrameTransition *t, uint16_t start)
 
 static void copy_bytes(uint16_t src, uint16_t dst, unsigned width, unsigned rows, unsigned ss, unsigned ds)
 {
+    enh_capture_hud_copy(src, dst, width, rows, ss, ds);
     for (unsigned y = 0; y < rows; y++) {
         for (unsigned x = 0; x < width; x++) {
             uint8_t px[8]; memcpy(px, comp_px((uint16_t)(src + x), 0), 8);
@@ -118,6 +120,7 @@ static void copy_bytes(uint16_t src, uint16_t dst, unsigned width, unsigned rows
 }
 static void clear_bytes(uint16_t dst, unsigned width, unsigned rows, unsigned stride)
 {
+    enh_capture_hud_clear(dst, width, rows, stride);
     for (unsigned y = 0; y < rows; y++, dst = (uint16_t)(dst + stride))
         for (unsigned x = 0; x < width; x++) memset(comp_px((uint16_t)(dst + x), 0), 0, 8);
 }
@@ -180,6 +183,7 @@ static void on_upload(const SceneEvent *e)
 static void on_ring(const SceneEvent *e)
 {
     (void)e;
+    enh_capture_surface_ring((unsigned)page_index(DW(DS_DrawPage)));
     FrameGameView *v = draw_view(); memset(v, 0, sizeof *v); capture_view(v);
     v->world_valid = 1;
     memset(&transitions[page_index(DW(DS_DrawPage))], 0, sizeof transitions[0]);
@@ -302,12 +306,14 @@ static void on_sprite(const SceneEvent *e)
         s->frame = (uint16_t)frame; s->mirror = (uint8_t)mirror; s->mode = pass == 16 ? 2 : (uint8_t)pass;
         s->screen_x = e->a[4]; s->screen_y = e->a[5]; s->screen_space = frame == 309;
         s->world_x = (int16_t)DW(e->a[0]); s->world_y = (int16_t)DW(e->a[0] + 2);
+        enh_capture_surface_sprite((unsigned)page_index(DW(DS_DrawPage)), s);
     }
 }
 static void on_sprites_begin(const SceneEvent *e)
 {
     (void)e;
     FrameGameView *v = draw_view(); v->sprite_count = 0;
+    enh_capture_surface_sprites((unsigned)page_index(DW(DS_DrawPage)));
     if (pre2_view.variant) for (unsigned i = 0; i < 20; i++)
         if (DW(0x6EA9 + i * 8) == 0x55AA) fly_dot_alive[i] = 0;
     for (unsigned i = 0; i < 116; i++) {
@@ -336,6 +342,7 @@ static void on_sprites_begin(const SceneEvent *e)
 static void on_hud(const SceneEvent *e)
 {
     uint16_t dst = (uint16_t)e->a[2]; int type = e->a[0], idx = e->a[1];
+    enh_capture_hud((unsigned)type, (unsigned)idx, dst);
     if (!pre2_view.variant && type >= 2 && (uint16_t)(dst - DW(DS_DrawPage)) < 7040) draw_view()->world_valid = 0;
     if (type == 0) {
         planar_asset(game_hud, 0x7B0, (uint16_t)(dst + 0x1B80), 40, 23, 40);
@@ -393,6 +400,7 @@ static void on_dot(const SceneEvent *e)
 }
 static void on_blackout(const SceneEvent *e)
 {
+    enh_capture_surface_blackout(pages, (unsigned)e->a[0], (unsigned)e->a[1], (unsigned)e->a[2], (uint16_t)e->a[3]);
     uint16_t x = (uint16_t)e->a[0], w = (uint16_t)e->a[1], y = (uint16_t)e->a[2];
     uint16_t d = (uint16_t)(e->a[3] + 40 * (uint8_t)y + (x >> 3));
     if ((x & 7) || w >= 8) { mask_pixels(d++, (uint8_t)(255 >> (x & 7)), 15, 1); w = (uint16_t)(w + (x & 7)); }
@@ -424,12 +432,43 @@ static void on_panel(const SceneEvent *e)
         map = (uint16_t)(map + 250); dst = (uint16_t)(dst + 0x274);
     }
 }
+static void on_transition(const SceneEvent *e)
+{
+    if (!e->a[0]) {
+        /* Ending the iris does not restore its destructively blackened pages.
+         * They remain non-world surfaces during resource loading and tally. */
+        for (int i = 0; i < 2; i++) if (transitions[i].kind == 1) pages[i].world_valid = 0;
+        memset(transitions, 0, sizeof transitions); return;
+    }
+    /* Iris edits the back page; reveal/wipe edit the currently displayed page. */
+    int page = page_index(DW(e->a[0] == 1 ? DS_DrawPage : DS_DisplayPage));
+    FrameTransition *t = &transitions[page];
+    t->kind = (uint8_t)e->a[0]; t->phase = (uint8_t)e->a[1];
+    t->step = (uint16_t)e->a[2]; t->steps = (uint16_t)e->a[3];
+    t->cx = (int16_t)e->a[4]; t->cy = (int16_t)e->a[5]; t->radius = (int16_t)e->a[6];
+    if (t->kind == 1) enh_capture_surface_iris(pages, DW(DS_DrawPage), t->cx, t->cy, (unsigned)t->radius);
+}
 static void dispatch(const SceneEvent *e)
 {
+    if (e->kind == SCENE_GAME_COPY)
+        enh_capture_surface_copy(pages, (uint16_t)e->a[0], (uint16_t)e->a[1], (unsigned)e->a[2], (unsigned)e->a[3]);
+    if (e->kind == SCENE_GAME_COPY) {
+        if ((e->a[2] == 2 && e->a[3] == 176) || e->a[2] == 8000)
+        {
+            pages[page_index((uint16_t)e->a[1])] = pages[page_index((uint16_t)e->a[0])];
+            transitions[page_index((uint16_t)e->a[1])] = transitions[page_index((uint16_t)e->a[0])];
+        }
+    }
+    if (e->kind == SCENE_GAME_CLEAR)
+        enh_capture_surface_clear(pages, (uint16_t)e->a[0], (unsigned)e->a[1], (unsigned)e->a[2], (unsigned)e->a[3]);
+    if (e->kind == SCENE_GAME_LEVEL || e->kind == SCENE_GAME_HIDE) enh_capture_surface_hide();
     /* The faithful page store has a fixed 320-pixel layout. A wide simulation publishes its
      * semantic world pass directly to enh_render; only metadata capture is meaningful here. */
     if (pre2_view.variant) {
         switch (e->kind) {
+        case SCENE_GAME_TRANSITION: on_transition(e); break;
+        case SCENE_GAME_BLACKOUT:
+            enh_capture_surface_blackout(pages, (unsigned)e->a[0], (unsigned)e->a[1], (unsigned)e->a[2], (uint16_t)e->a[3]); break;
         case SCENE_GAME_ASSETS: game_assets_capture(); break;
         case SCENE_GAME_TILES: game_tiles_capture(); break;
         case SCENE_GAME_BACKDROP: enh_capture_backdrop((uint16_t)e->a[0]); break;
@@ -441,8 +480,10 @@ static void dispatch(const SceneEvent *e)
             if (e->n && e->a[0]) memset(alive, 0, sizeof alive);
             break;
         case SCENE_GAME_RING: {
+            enh_capture_surface_ring((unsigned)page_index(DW(DS_DrawPage)));
             FrameGameView *v = draw_view(); memset(v, 0, sizeof *v); capture_view(v);
-            v->world_valid = 1; break;
+            v->world_valid = 1;
+            memset(&transitions[page_index(DW(DS_DrawPage))], 0, sizeof transitions[0]); break;
         }
         case SCENE_GAME_SPRITES_BEGIN: on_sprites_begin(e); break;
         case SCENE_GAME_SPRITE: on_sprite(e); break;
@@ -476,7 +517,7 @@ static void dispatch(const SceneEvent *e)
                 alive[slot] = 0;
             break;
         }
-        case SCENE_GAME_HIDE: memset(pages, 0, sizeof pages); break;
+        case SCENE_GAME_HIDE: memset(pages, 0, sizeof pages); memset(transitions, 0, sizeof transitions); break;
         default: break;
         }
         return;
@@ -487,11 +528,6 @@ static void dispatch(const SceneEvent *e)
     case SCENE_GAME_STASH: case SCENE_GAME_BACKDROP: on_upload(e); break;
     case SCENE_GAME_COPY:
         copy_bytes((uint16_t)e->a[0], (uint16_t)e->a[1], e->a[2], e->a[3], e->a[4], e->a[5]);
-        if ((e->a[2] == 2 && e->a[3] == 176) || e->a[2] == 8000)
-        {
-            pages[page_index((uint16_t)e->a[1])] = pages[page_index((uint16_t)e->a[0])];
-            transitions[page_index((uint16_t)e->a[1])] = transitions[page_index((uint16_t)e->a[0])];
-        }
         break;
     case SCENE_GAME_CLEAR:
         clear_bytes((uint16_t)e->a[0], e->a[1], e->a[2], e->a[3]);
@@ -508,21 +544,7 @@ static void dispatch(const SceneEvent *e)
     case SCENE_GAME_HUD: on_hud(e); break;
     case SCENE_GAME_DOT: on_dot(e); break;
     case SCENE_GAME_BLACKOUT: on_blackout(e); break;
-    case SCENE_GAME_TRANSITION: {
-        if (!e->a[0]) {
-            /* Ending the iris does not restore its destructively blackened pages.
-             * They remain non-world surfaces during resource loading and tally. */
-            for (int i = 0; i < 2; i++) if (transitions[i].kind == 1) pages[i].world_valid = 0;
-            memset(transitions, 0, sizeof transitions); break;
-        }
-        /* Iris edits the back page; reveal/wipe edit the currently displayed page. */
-        int page = page_index(DW(e->a[0] == 1 ? DS_DrawPage : DS_DisplayPage));
-        FrameTransition *t = &transitions[page];
-        t->kind = (uint8_t)e->a[0]; t->phase = (uint8_t)e->a[1];
-        t->step = (uint16_t)e->a[2]; t->steps = (uint16_t)e->a[3];
-        t->cx = (int16_t)e->a[4]; t->cy = (int16_t)e->a[5]; t->radius = (int16_t)e->a[6];
-        break;
-    }
+    case SCENE_GAME_TRANSITION: on_transition(e); break;
     case SCENE_GAME_LEVEL: epoch++; enh_capture_level(epoch); memset(pages, 0, sizeof pages); /* fall through */
     case SCENE_GAME_CUT:
         cuts[0] = cuts[1] = 1;

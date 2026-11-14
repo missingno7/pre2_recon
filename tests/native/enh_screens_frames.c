@@ -24,8 +24,9 @@ static Review reviews[16];
 static void choose_shot(unsigned n, uint64_t brightness)
 {
     if (brightness <= best_brightness[n]) return;
+    if (pending[n]) enh_screen_view_release(&reviews[n].view);
     best_brightness[n] = brightness; pending[n] = 1;
-    reviews[n].view = frame.screen_view; reviews[n].mask = frame.pel_mask;
+    reviews[n].view = frame.screen_view; enh_screen_view_retain(&reviews[n].view); reviews[n].mask = frame.pel_mask;
     reviews[n].w = frame.w; reviews[n].h = frame.h;
     memcpy(reviews[n].palette, frame.palette, sizeof frame.palette);
 }
@@ -84,7 +85,7 @@ static void shot(unsigned n)
 }
 static void event(const SceneEvent *e)
 {
-    sink(e); draw_screens_observe(e);
+    sink(e);
     if (e->kind == SCENE_SCREEN_PICTURE && e->a[2] == 0x5e80) gameover_start = rt_now();
     if (e->kind == SCENE_SCREEN_MAP_EDGES) {
         code_frames++;
@@ -121,7 +122,7 @@ static void service(void)
 }
 static void display(uint64_t t, uint16_t start)
 {
-    compositor_publish(t, start, &frame); draw_screens_publish(&frame, start); total++;
+    compositor_publish(t, start, &frame); total++;
     FrameScreenView *v = &frame.screen_view;
     if (frame.game.valid && frame.game.world_valid) { world_frames++; return; }
     if (!v->valid) {
@@ -149,7 +150,7 @@ static void display(uint64_t t, uint16_t start)
         assert(!memcmp(indices, retained_index, 64000)); retained_checks++;
     }
     if (v->kind == FRAME_SCREEN_MENU && !retained.valid) {
-        retained = *v; memcpy(retained_index, frame.index, 64000);
+        retained = *v; enh_screen_view_retain(&retained); memcpy(retained_index, frame.index, 64000);
     }
     if (v->kind == FRAME_SCREEN_EMPTY) choose_shot(14, 1);
     if (v->blank) return;
@@ -201,8 +202,9 @@ static void run(const char *assets, int year, const char *name, int production)
     for (unsigned i = 0; i < 16; i++) if (pending[i]) {
         frame.screen_view = reviews[i].view; frame.w = reviews[i].w; frame.h = reviews[i].h;
         frame.pel_mask = reviews[i].mask; memcpy(frame.palette, reviews[i].palette, sizeof frame.palette);
-        shot(i);
+        shot(i); enh_screen_view_release(&reviews[i].view); memset(&reviews[i], 0, sizeof reviews[i]);
     }
+    enh_screen_view_release(&retained); memset(&retained, 0, sizeof retained);
     pre2_scene_sink = 0; vga_memory_off = 0;
 }
 int main(int argc, char **argv)

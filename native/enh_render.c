@@ -3,6 +3,7 @@
 #include <math.h>
 #include <string.h>
 #include <limits.h>
+#include <stdlib.h>
 
 EnhLevelPolicy enh_level_policy(unsigned level)
 {
@@ -108,7 +109,8 @@ static uint8_t back(const EnhLevel *a, int x, int y, int w, EnhBackdrop mode)
 {
     if (y < 0 || y >= 200) return 0;
     int sx = x - (w - 320) / 2;
-    if (mode == ENH_BACK_STRETCH) sx = (int)((int64_t)x * 320 / w);
+    if (a->backdrop_period) { sx %= a->backdrop_period; if (sx < 0) sx += a->backdrop_period; }
+    else if (mode == ENH_BACK_STRETCH) sx = (int)((int64_t)x * 320 / w);
     else if (mode == ENH_BACK_MIRROR) { sx %= 640; if (sx < 0) sx += 640; if (sx >= 320) sx = 639 - sx; }
     if (sx < 0 || sx >= 320) return 0;
     return a->backdrop[y * 320 + sx];
@@ -131,18 +133,174 @@ static void front_tile(const EnhLevel *a, unsigned tile, int ox, int oy, int w, 
         if (c && ox + x >= 0 && ox + x < w && oy + y >= 0 && oy + y < h) im->index[(size_t)(oy + y) * im->stride + ox + x] = c;
     }
 }
+static uint8_t hud_pixel(const EnhLevel *a, const FrameHudElement *e, int x, int y)
+{
+    if (e->kind == 6) return 0;
+    unsigned at, stride, rows;
+    const uint8_t *src = a->hud_source;
+    if (e->kind < 2 || e->kind == 5) {
+        at = e->kind == 1 ? 0x7d1 : 0x7b0; stride = 40; rows = 23;
+        if (e->kind == 5) x = 1;
+    }
+    else if (e->kind == 2) { at = 0x1610 + e->index * 96; stride = 2; rows = 12; }
+    else if (e->kind == 3) { at = 0x1c70 + e->index * 88; stride = 2; rows = 11; }
+    else {
+        unsigned frame = (uint16_t)(0xf1 + (int8_t)e->index);
+        if (!a->cels || frame >= 1024 || !a->cels[frame].blocks) return 0;
+        src = a->cels[frame].blocks; at = 22; stride = 2; rows = 11;
+    }
+    uint8_t c = 0;
+    for (unsigned p = 0; p < 4; p++)
+        c |= (uint8_t)(((src[(uint16_t)(at + p*stride*rows + y*stride + x/8)] >> (7-x%8)) & 1) << p);
+    return c;
+}
+/* Anchored layout: lives keeps the left corner, the score (which spans the
+ * original centre) stays centred, energy and BONUS keep the right corner. */
+static int hud_field_offset(unsigned field, int w)
+{
+    return field == HUD_FIELD_LIVES ? 0 : field == HUD_FIELD_SCORE ? (w-320)/2 : w-320;
+}
+static void hud(const FrameGameView *v, const EnhLevel *a, EnhHud mode, int w, int top, EnhImage *im)
+{
+    /* Only the art's plain border/interior column is repeated. Static labels
+     * remain asset draws, and dirty glyphs keep their original corner. */
+    FrameHudElement frame = {0};
+    for (int y = 0; y < 24; y++) for (int x = 0; x < w; x++)
+        im->index[(size_t)(top+y)*im->stride+x] = y < 23 && v->hud_frame ? hud_pixel(a, &frame, 1, y) : 0;
+    for (unsigned i = 0; i < v->hud_count; i++) {
+        const FrameHudElement *e = &v->hud_elements[i];
+        if (e->kind == 6 && e->x0 == 0 && e->x1 == 320) {
+            for (int y = e->y0; y < e->y1; y++) if (y >= 0 && y < 24)
+                memset(im->index+(size_t)(top+y)*im->stride, 0, (size_t)w);
+            continue;
+        }
+        int ox = mode == ENH_HUD_LEFT ? 0 : mode == ENH_HUD_RIGHT ? w-320 :
+                 mode == ENH_HUD_ANCHORED ? hud_field_offset(e->field, w) : (w-320)/2;
+        for (int y = e->y0; y < e->y1; y++) for (int x = e->x0; x < e->x1; x++)
+            if (x+ox >= 0 && x+ox < w && y >= 0 && y < 24)
+                im->index[(size_t)(top+y)*im->stride+x+ox] = hud_pixel(a, e, x-e->x, y-e->y);
+    }
+}
+/* dx/dy are presentation displacement from each source world's own camera.
+ * The old room and the already-drawn arrival can have unrelated cameras. */
+int enh_render_surface(const EnhSurface *s, const uint8_t palette[256][3], uint8_t pel_mask,
+                       double dx, double dy, int w, int h, const EnhOptions *opt, EnhImage *im)
+{
+    if (!s) {
+        for (int y = 0; y < h; y++) memset(im->index+(size_t)y*im->stride, 0, (size_t)w);
+        return 0;
+    }
+    if (s->world) {
+        const FrameGameView *v = s->world;
+        if (v->valid && v->world_valid) {
+            if (enh_render(v, v->assets, palette, pel_mask, v->camera_x+dx, v->camera_y+dy, w, h, opt, im)) return -1;
+        } else {
+            for (int y = 0; y < h; y++) memset(im->index+(size_t)y*im->stride, 0, (size_t)w);
+            if (opt->hud != ENH_HUD_NONE && v->assets) hud(v, v->assets, opt->hud, w, h-24, im);
+        }
+    } else if (enh_render_surface(s->base, palette, pel_mask, dx, dy, w, h, opt, im)) return -1;
+    for (int y = 0; y < 200 && y < h; y++) {
+        const EnhRowMask *row = &s->rows[y];
+        int oy = y < 176 ? y-(int)floor(dy) : y;
+        if (oy < 0 || oy >= h) continue;
+        for (unsigned i = 0; i < row->count; i++) {
+            int left = row->left[i] ? row->left[i]-(int)floor(dx) : 0;
+            int right = row->right[i] == 320 ? w : row->right[i]-(int)floor(dx);
+            if (left < 0) left = 0;
+            if (right > w) right = w;
+            if (left < right) memset(im->index+(size_t)oy*im->stride+left, 0, (size_t)(right-left));
+        }
+        int aperture_left=-(int)floor(dx), aperture_right=320-(int)floor(dx);
+        if (s->outside_valid[y]&1) {
+            int edge=s->outside_left[y]-(int)floor(dx);
+            if(edge>aperture_left) edge=aperture_left;
+            if(edge>w) edge=w;
+            if(edge>0) memset(im->index+(size_t)oy*im->stride,0,(size_t)edge);
+        }
+        if (s->outside_valid[y]&2) {
+            int edge=s->outside_right[y]-(int)floor(dx);
+            if(edge<aperture_right) edge=aperture_right;
+            if(edge<0) edge=0;
+            if(edge<w) memset(im->index+(size_t)oy*im->stride+edge,0,(size_t)(w-edge));
+        }
+    }
+    if (s->reveal) {
+        uint8_t *pixels = malloc((size_t)w*h); if (!pixels) return -1;
+        EnhImage source = {0}; source.index = pixels; source.capacity = (size_t)w*h; source.stride = w;
+        int rc = enh_render_surface(s->reveal, palette, pel_mask, dx, dy, w, h, opt, &source);
+        if (!rc) for (int y = 0; y < h && y < 176; y++) for (int x = 0; x < w; x++)
+            if (s->columns & (1u << ((int64_t)x*20/w))) im->index[(size_t)y*im->stride+x] = pixels[y*w+x];
+        free(pixels); if (rc) return rc;
+    }
+    const EnhSurface *root = s;
+    while (root && !root->world) root = root->reveal ? root->reveal : root->base;
+    const EnhLevel *a = root && root->world ? root->world->assets : NULL;
+    if (a && a->cels) for (unsigned i = 0; i < s->redraw_count; i++) {
+        const FrameSprite *sp = &s->redraw[i];
+        if (sp->frame < 1024) sprite(sp, &a->cels[sp->frame], sp->screen_x-(int)floor(dx),
+            sp->screen_y-(int)floor(dy), w, h < 176 ? h : 176, im);
+    }
+    memcpy(im->palette, palette, sizeof im->palette); im->pel_mask = pel_mask;
+    return 0;
+}
+int enh_render_iris(const FrameGameView *v, const uint8_t palette[256][3], uint8_t pel_mask,
+                    double cx, double cy, int w, int h, const EnhOptions *opt,
+                    double ix, double iy, double radius, EnhImage *im)
+{
+    FrameGameView base = *v;
+    base.surface = v->surface ? v->surface->base : NULL;
+    if (enh_render(&base, v->assets, palette, pel_mask, cx, cy, w, h, opt, im)) return -1;
+    for (int y = 0; y < h; y++) for (int x = 0; x < w; x++)
+        if ((x-ix)*(x-ix)+(y-iy)*(y-iy) > radius*radius) im->index[(size_t)y*im->stride+x] = 0;
+    if (v->surface && v->assets->cels) for (unsigned i = 0; i < v->surface->redraw_count; i++) {
+        const FrameSprite *sp = &v->surface->redraw[i];
+        if (sp->frame < 1024) sprite(sp, &v->assets->cels[sp->frame], sp->screen_x+v->camera_x-(int)floor(cx),
+            sp->screen_y+v->camera_y-(int)floor(cy), w, h < 176 ? h : 176, im);
+    }
+    return 0;
+}
+static void surface_hud_mask(const EnhSurface *s, int w, int top, double dx, EnhImage *im)
+{
+    if (!s) return;
+    surface_hud_mask(s->base, w, top, dx, im);
+    for (int y = 176; y < 200; y++) {
+      for (unsigned i = 0; i < s->rows[y].count; i++) {
+        int left = s->rows[y].left[i], right = s->rows[y].right[i];
+        left = left ? left-(int)floor(dx) : 0; right = right==320 ? w : right-(int)floor(dx);
+        if (left < 0) left = 0;
+        if (right > w) right = w;
+        if (left < right) memset(im->index+(size_t)(top+y-176)*im->stride+left, 0, (size_t)(right-left));
+      }
+      if (s->outside_valid[y]&1) {
+        int edge=s->outside_left[y]-(int)floor(dx); if(edge>w) edge=w;
+        if(edge>0) memset(im->index+(size_t)(top+y-176)*im->stride,0,(size_t)edge);
+      }
+      if (s->outside_valid[y]&2) {
+        int edge=s->outside_right[y]-(int)floor(dx); if(edge<0) edge=0;
+        if(edge<w) memset(im->index+(size_t)(top+y-176)*im->stride+edge,0,(size_t)(w-edge));
+      }
+    }
+}
 int enh_render(const FrameGameView *v, const EnhLevel *a, const uint8_t palette[256][3], uint8_t pel_mask,
                double camera_x, double camera_y, int w, int h, const EnhOptions *opt, EnhImage *im)
 {
     EnhOptions defaults = { ENH_BACK_BLACK, ENH_HUD_NONE, NULL, 0 }; if (!opt) opt = &defaults;
     int cx, cy;
-    if (!v || !v->valid || !v->world_valid || !a || v->assets != a || !v->map || !palette || !im || !im->index ||
+    if (!v || !v->valid || (!v->world_valid && !v->surface) || !a || v->assets != a || (!v->map && !v->surface) || !palette || !im || !im->index ||
         w <= 0 || h <= 0 || w > 16384 || h > 16384 || im->stride < (size_t)w ||
         im->stride > SIZE_MAX / (size_t)h || im->capacity < im->stride * (size_t)h ||
         v->sprite_count > FRAME_MAX_SPRITES || v->dot_count > FRAME_MAX_DOTS || v->foreground_count > FRAME_MAX_FOREGROUND ||
+        v->hud_count > FRAME_MAX_HUD ||
         a->rows > 256 || a->policy.end_column > 256 ||
         (opt->position_count && !opt->positions) || floor_int(camera_x, &cx) || floor_int(camera_y, &cy)) return -1;
     int ph = h - (opt->hud == ENH_HUD_NONE ? 0 : 24); if (ph < 0) return -1;
+    if (v->surface) {
+        int rc = enh_render_surface(v->surface, palette, pel_mask, camera_x-v->camera_x, camera_y-v->camera_y, w, h, opt, im);
+        if (!rc && opt->hud != ENH_HUD_NONE) {
+            hud(v, a, opt->hud, w, ph, im); surface_hud_mask(v->surface, w, ph, camera_x-v->camera_x, im);
+        }
+        return rc;
+    }
     memcpy(im->palette, palette, sizeof im->palette); im->pel_mask = pel_mask;
     for (int y = 0; y < ph; y++) for (int x = 0; x < w; x++) {
         uint8_t c = back(a, x, y - v->shake_rows, w, opt->backdrop);
@@ -229,12 +387,6 @@ int enh_render(const FrameGameView *v, const EnhLevel *a, const uint8_t palette[
         front_tile(a, f->tile, ox, oy, w, ph, im, NULL, cx, cy);
     }
     dots(v, regular_count, dx, dy, w, ph, im);
-    if (opt->hud != ENH_HUD_NONE) {
-        int ox = opt->hud == ENH_HUD_LEFT ? 0 : opt->hud == ENH_HUD_RIGHT ? w - 320 : (w - 320) / 2;
-        for (int y = 0; y < 24; y++) for (int x = 0; x < w; x++) {
-            int sx = x - ox; if (sx < 0) sx = 1; if (sx >= 320) sx = 318;
-            im->index[(size_t)(ph + y) * im->stride + x] = v->hud[y * 320 + sx];
-        }
-    }
+    if (opt->hud != ENH_HUD_NONE) hud(v, a, opt->hud, w, ph, im);
     return 0;
 }

@@ -44,6 +44,7 @@
 #include "../native/scanout.h"
 #include "../native/compositor.h"
 #include "../native/presenter.h"
+#include "../native/enh_screens.h"
 
 static double secs(uint64_t ns) { return ns / 1e9; }
 
@@ -85,8 +86,11 @@ static void on_display_frame(uint64_t t, uint16_t start)
     }
     if (threaded) {
         sdl_host_lock();
-        if (qcount==FRAME_QUEUE) { qhead=(qhead+1)%FRAME_QUEUE; qcount--; }
-        queue[(qhead+qcount++)%FRAME_QUEUE]=frame;
+        /* Queued copies outlive the next publication: they own a reference to their
+         * native screen assets until the presenter has taken its own (enh_screens.h). */
+        if (qcount==FRAME_QUEUE) { enh_screen_view_release(&queue[qhead].screen_view); qhead=(qhead+1)%FRAME_QUEUE; qcount--; }
+        queue[(qhead+qcount)%FRAME_QUEUE]=frame;
+        enh_screen_view_retain(&queue[(qhead+qcount++)%FRAME_QUEUE].screen_view);
         sdl_host_unlock();
     } else presenter_push(presenter,&frame);
 }
@@ -408,6 +412,7 @@ int main(int argc, char **argv)
                 incoming=queue[qhead]; qhead=(qhead+1)%FRAME_QUEUE; qcount--;
                 sdl_host_unlock();
                 presenter_push(presenter,&incoming); shown_screen=incoming.screen;
+                enh_screen_view_release(&incoming.screen_view);
             }
             uint64_t bound; int done; unsigned pending;
             sdl_host_lock(); bound=published_bound; done=worker_done; pending=qcount; sdl_host_unlock();

@@ -14,6 +14,8 @@ static EnhLevel level;
 static EnhMap map;
 static uint8_t row[256];
 static PresenterImage im;
+static EnhSurface iris_source,iris_a,iris_b;
+static FrameGameView iris_world;
 static void sample(Presenter *p,uint64_t t)
 {
     im.pixels=pixels; im.capacity=sizeof pixels/sizeof *pixels;
@@ -24,6 +26,16 @@ static void endpoint(Presenter *p,Pre2Frame *f)
 {
     sample(p,f->t_ns); frame_to_xrgb(f,expected);
     assert(im.w==f->w && im.h==f->h && !memcmp(pixels,expected,(size_t)im.w*im.h*4));
+}
+static void native_endpoint(Presenter *p,Pre2Frame *f)
+{
+    static Pre2Frame native;
+    native=*f;
+    EnhImage image={0}; image.index=native.index; image.capacity=sizeof native.index; image.stride=320;
+    EnhOptions options={ENH_BACK_BLACK,ENH_HUD_ANCHORED,NULL,0};
+    assert(!enh_render(&f->game,f->game.assets,f->palette,f->pel_mask,f->game.camera_x,f->game.camera_y,320,200,&options,&image));
+    frame_to_xrgb(&native,expected); sample(p,f->t_ns);
+    assert(!im.fallback && !memcmp(pixels,expected,64000*4));
 }
 int main(void)
 {
@@ -68,7 +80,15 @@ int main(void)
     a.game.valid=a.game.world_valid=1; a.game.assets=&level; a.game.map=&map;
     a.game.camera_limit_column=236; a.game.camera_limit_row=89;
     memset(a.game.hud,1,sizeof a.game.hud);
+    memset(level.hud_source+0x7b0,255,920);
+    a.game.hud_count=1;
+    a.game.hud_elements[0]=(FrameHudElement){.kind=0,.x1=320,.y1=23};
     b.game=a.game;
+    iris_world=a.game; iris_source.world=&iris_world;
+    iris_a.base=iris_b.base=&iris_source;
+    iris_a.rows[0]=(EnhRowMask){.count=1,.left={0},.right={320}};
+    iris_b.rows[0]=iris_b.rows[1]=iris_a.rows[0];
+    a.game.surface=&iris_a; b.game.surface=&iris_b;
     a.transition=(FrameTransition){.kind=1,.step=1,.steps=10,.cx=160,.cy=88,.radius=100};
     b.transition=a.transition; b.transition.step=2; b.transition.radius=90;
     memset(a.index,2,64000); memset(b.index,2,64000);
@@ -77,11 +97,11 @@ int main(void)
     p=presenter_create(&opt); presenter_push(p,&a);
     Pre2Frame *duplicate=malloc(sizeof *duplicate); assert(duplicate); *duplicate=a; duplicate->t_ns+=10000000;
     presenter_push(p,duplicate); presenter_push(p,&b);
-    endpoint(p,&a); endpoint(p,&b);
+    native_endpoint(p,&a); native_endpoint(p,&b);
     sample(p,a.t_ns+15000000);
     assert(im.radius==95 && !(im.fallback&2));
     assert(pixels[88*320+160]==0xffff0000u && pixels[0]==0xff000000u);
-    assert(pixels[199*320+160]!=0xff000000u); /* HUD not covered by circle */
+    assert(pixels[198*320+160]==0xff000000u); /* blackout includes the HUD rows */
     free(duplicate); presenter_destroy(p);
     /* Even a preloaded history must not use an endpoint beyond the host's
      * logical bound. This also covers a producer racing ahead of its mailbox. */

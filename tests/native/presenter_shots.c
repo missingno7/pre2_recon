@@ -5,6 +5,8 @@
 #include "native/compositor.h"
 #include "native/presenter.h"
 #include <assert.h>
+#undef assert
+#define assert(expr) do { if (!(expr)) { fprintf(stderr,"%s:%d: %s\n",__FILE__,__LINE__,#expr); exit(1); } } while (0)
 #include <sys/stat.h>
 #ifdef _WIN32
 #include <direct.h>
@@ -101,7 +103,8 @@ static void display(uint64_t t,uint16_t start)
         static uint8_t index[64000]; EnhImage ei={0}; ei.index=index; ei.capacity=sizeof index; ei.stride=320;
         EnhOptions eo={opt.backdrop,opt.hud,NULL,0};
         assert(!enh_render(&f.game,f.game.assets,f.palette,f.pel_mask,f.game.camera_x,f.game.camera_y,320,200,&eo,&ei));
-        assert(!memcmp(index,f.index,64000)); parity++;
+        assert(!memcmp(index,f.index,64000));
+        parity++;
     }
 }
 int main(int argc,char **argv)

@@ -18,10 +18,10 @@ static Pre2Frame frame;
 static FrameScreenView old;
 static uint8_t pixels[2048 * 480], expected[64000];
 static unsigned checks;
-static void event(const SceneEvent *e) { sink(e); draw_screens_observe(e); }
+static void event(const SceneEvent *e) { sink(e); }
 static void publish(uint16_t start)
 {
-    compositor_publish(0, start, &frame); draw_screens_publish(&frame, start);
+    compositor_publish(0, start, &frame);
     assert(frame.screen_view.valid);
 }
 static EnhImage image(unsigned width)
@@ -47,7 +47,7 @@ static void menu(void)
     scene_emit(SCENE_SCREEN_PICTURE, 6, 0x7000, 0, 0, 8192, 12, 0);
     scene_emit(SCENE_SCREEN_FONT_BANKS, 1, 0x6000);
     pre2_vga.crtc[1] = 0x26; pre2_vga.crtc[0x17] = 0xe2; pre2_vga.attr[0x13] = 7;
-    publish(0x1fff); parity(); old = frame.screen_view; memcpy(expected, frame.index, sizeof expected);
+    publish(0x1fff); parity(); old = frame.screen_view; enh_screen_view_retain(&old); memcpy(expected, frame.index, sizeof expected);
     const unsigned widths[] = {320, 321, 356, 468, 640, 2048};
     for (unsigned k = 0; k < sizeof widths / sizeof *widths; k++) {
         unsigned w = widths[k], pad = (w - 320) / 2;
@@ -76,6 +76,7 @@ static void menu(void)
     assert(enh_screens_render(&old, frame.palette, frame.pel_mask, old.pan_x, 0, 319, 200, &im) == -1);
     im.capacity = 63999;
     assert(enh_screens_render(&old, frame.palette, frame.pel_mask, old.pan_x, 0, 320, 200, &im) == -1); checks++;
+    enh_screen_view_release(&old); memset(&old, 0, sizeof old);
 }
 static void clears(void)
 {
@@ -125,6 +126,13 @@ static void credits(void)
     SetLevelVideoMode(); SET_DW(DS_word_003D, 0x7000);
     ShowCreditsScreen(); publish(0); parity();
     assert(frame.screen_view.kind == FRAME_SCREEN_CREDITS);
+    /* Even a caller that does not publish CRT frames cannot grow an unbounded
+     * operation recipe. The compiled native surface retains the composed state. */
+    enh_screen_memory_reset_peaks();
+    for (unsigned i = 0; i < 10000; i++) scene_emit(SCENE_SCREEN_CHAR, 3, 0x7000, 'A', (int)(i % 4000));
+    assert(enh_screen_memory_stats().live_layers <= 256);
+    assert(enh_screen_memory_stats().peak_bytes < 8u * 1024u * 1024u);
+    publish(0); parity();
 }
 static void high_resolution(void)
 {
@@ -144,5 +152,6 @@ int main(int argc, char **argv)
     pre2_phase = "constructed screens"; pre2_host_poll = 0; pre2_host_io = 0;
     menu(); clears(); map(); credits(); high_resolution();
     printf("enh_screens: %u constructed checks, ring/text/clear/reveal/retention/640x480 all exact\n", checks);
+    compositor_init(); assert(enh_screen_memory_stats().live_bytes == 0);
     return 0;
 }

@@ -18,12 +18,11 @@ int result = enh_render(&frame.game, level, frame.palette, frame.pel_mask,
                         camera_x, camera_y, width, height, &options, &image);
 ```
 
-Use this path when `frame.game.valid && frame.game.world_valid`, with no iris,
-column reveal or staggered wipe in `frame.transition`. Palette fades can use the
-enhanced image and the published palette. The clear/tally surfaces and the pages
-left blackened after the iris are explicitly marked `world_valid = 0`; a phase
-name of `MainFrameLoop` alone does not identify gameplay. Transitions and screen
-families remain the responsibility of their respective presenter.
+Use this path for valid world views and captured gameplay-transition surfaces
+(`frame.game.surface`). Iris, column reveal and staggered wipe pages retain
+semantic sources and operations, described below. Palette fades use the native
+image and published palette. Clear/tally surfaces after the iris remain
+`world_valid = 0`; a phase name of `MainFrameLoop` alone does not identify gameplay.
 
 The camera arguments are world pixels and may be fractional; indexed tiles sample
 the floored camera, and sprite placements floor the translated fractional anchor.
@@ -35,12 +34,24 @@ fine-scroll/shake convention and channel OR operation.
 
 Dimensions are checked in the range 1..16384, with stride and capacity overflow
 checks. `ENH_HUD_NONE` makes the whole height playfield; the other HUD options reserve
-the bottom 24 rows and put the native 320-pixel strip at the left, centre or right.
-The strip's surrounding area repeats its interior border columns. Height 176 with
+the bottom 24 rows. Left, centre and right preserve the original HUD grouping;
+`ENH_HUD_ANCHORED` moves whole **fields**, never single glyphs. The fields come from
+`UpdateHud`'s destinations (`FrameHudField`, native/frame.h): lives (face, LIVES label,
+count glyph at x 40) spans x 0..64 and keeps the left corner; the score (SCORE label,
+six formatted digits plus the fixed trailing 0, seven 16-pixel cells from x 72 to 184)
+spans 64..192, straddles the original centre and therefore stays centred; energy
+(label, three pips from x 200) spans 192..256 and BONUS (the 48x23 letter box at x 264)
+spans 256..320, both keeping the right corner. Every element, static art run and
+partial clear records its field at capture; the columns between moved fields are the
+plain bar pattern. An earlier per-glyph rule (each glyph by its own centre's half)
+split the score's last two digits from the rest; `enh_hud_levels` now checks at 640
+that every field equals its 320 pixels moved as one piece and that every gap column
+is the plain bar. Height 176 with
 HUD disabled is the playfield parity configuration; height 200 with HUD enabled
 contains the original 176-row field. Backdrop options are a central 320x200 image
 with black sides, reflected horizontal extension, or nearest-neighbour horizontal
-stretch. Vertical pixels outside its 200 decoded rows are black.
+stretch unless the asset has an audited seamless wrap. Vertical pixels outside
+its 200 decoded rows are black.
 
 `EnhPosition` supplies an absolute world motion anchor keyed by `FrameSprite.id`.
 Current cel, pose offset, mirror and pass remain discrete. The renderer never guesses
@@ -72,10 +83,22 @@ a whole map per frame. A snapshot allocation occurs only when map content change
 
 The frame additionally owns 240 evaluated world-cell tile paints, the remap in force,
 ordered sprite instances, ordered foreground requests, ordered dots with their OR
-colour and position relative to the sprite pass, and a page-local 320x24 HUD strip.
-The HUD is the permitted captured-strip representation: publication copies it from
-the selected native page so partial updates and front-page writes remain coherent.
-No faithful playfield image is copied into the enhanced model.
+colour and position relative to the sprite pass, and a page-local HUD element list.
+The 320x24 strip remains a test reference; no renderer reads it. HUD elements are
+opaque asset draws with original origins, corner, and retained clip rectangles.
+Overwrites split prior rectangles; copies move their semantic fragments. The list
+separates the frame's repeating column pattern, static art/labels, BONUS restoration,
+glyphs, digits, sprite letters/item indices and explicit clears. Art columns that
+differ from the repeating pattern form indivisible static elements. Only the plain
+frame column repeats across newly exposed width; labels and icons never repeat.
+
+The strip was needed because HUD state is **page-local**, not a function of current
+score/energy: `UpdateHud` draws dirty fields and conditionally copies exactly 23
+rows, while `BlitHudSpriteGlyph` does not dirty that cache. A front-page write can
+therefore survive separately until the next copy. Capture now models those writes
+and copies directly, including the untouched 24th row. Ordinary level entry resets
+the two HUDs with mode 0Dh; bonus loads skip that mode reset (`LevelStart`).
+No faithful pixels are copied into the drawing model.
 
 Tile paints are necessary semantic state: newly loaded edge cells use raw tile cels
 until the next animation pass; animation updates eleven rows whereas edge loading
@@ -183,3 +206,78 @@ Final commands (2026-11-13):
 
 Production/reference publication remains equal for 30,825 display frames. No ASM,
 translated game logic, assets, host switches, or faithful pixel operations changed.
+
+## Native gameplay pages and transition geometry (gamehud)
+
+`EnhSurface` retains immutable source worlds, cleared row intervals, column selection
+and the post-blackout sprite pass. It contains no copied pixels. Capture freezes a
+source only after the corresponding draw events have happened. Level-owned allocations
+and dependencies retain those sources across frame copies/session reset when the level
+is retained; normal frames borrow them under the existing session lifetime contract.
+
+* `BlackoutSpan` in MODULE2 / `c/render.c` supplies accepted BX/CX/DX spans. Capture
+  reproduces its head/run/tail arithmetic, including the aligned run decrement and
+  unaligned head over-clear. Linear spans crossing x=320 enter the next row before
+  their union is stored. Each display page accumulates its own union. A cleared
+  interval touching x=0 or x=320 reaches that view edge when widened. Other boundaries
+  project through the presentation camera. `RunIrisClose` keeps slots 0/1 and never
+  advances their poses/positions in its loop: replaying their current idempotent
+  clear/OR pass after the accumulated mask preserves the original keep-visible sprite.
+  The original source world still contains the other sprites and foreground, so their
+  partially blackened remnants remain correct. No faithful raster is used at endpoints.
+  Rejected out-of-aperture boundaries have no blackout event. For those margins
+  alone capture repeats the original 65-point integer sine-table walk, including
+  its stale next-point equality sentinel, and retains the outer boundaries. This
+  prevents a far margin remaining visible when the circle crosses an original edge;
+  these additional masks cannot touch any original 320-pixel position.
+* `CopyColumnStrip` freezes the already-drawn draw page as the reveal destination;
+  the displayed page supplies the departure. The original twenty column intervals
+  map by `floor(x * 20 / view_width)`. Thus 320 is exact, every wider column has the
+  same original progress, the first middle strip is repeated, and original column 0
+  remains untouched. The destination is never synthesized from a future camera/map.
+* `ClearStaggeredBlocks` retains the displayed world and unions the actual 16x10
+  clear requests. The top band begins at row 0, the other at row 166, and their
+  nine stages include the overlapping middle bands. Completed full-row clears
+  extend to both view edges. Death, cave and bonus-warp closes use the same source
+  operations. A later cave arrival becomes available only after its ring/sprite pass.
+* Between compatible observed steps the presenter may interpolate a circle (iris)
+  or the within-column / within-ten-row-band mask. Both images are native source
+  renders. Circle masking includes the HUD rows, as accepted blackout spans can;
+  the retained sprite pass is then redrawn. Fades interpolate palettes over native
+  indexed images. Post-iris tally/clear surfaces are still a separate screen-family
+  integration task, not a gameplay world.
+
+## Audited backdrop seams (gamehud)
+
+The 320x200 decoded source pictures were inspected individually and at their
+right-to-left join. None of the sixteen assets has an exact smaller horizontal
+period (all divisors of 320 through 160 are checked at load). `backdrop_period=320`
+marks a complete picture whose edges continue; smaller exact periods would be
+retained automatically. Repetition takes precedence over the extension option on
+these assets. Other art uses the caller's black/mirror/stretch policy.
+
+| Level (hex) | Source / edge result | Default beyond the source |
+|---|---|---|
+| 0, 1, 2 | Same mountain/cloud art, different palette; continuous join | wrap 320 |
+| 3, 4, 5 | Forest art; clipped trunk/branches do not join | user policy |
+| 6 | Snow peaks; edge peak cuts against sky at the join | user policy |
+| 7, 8 | Cave rock, palette variants; texture continues through the dark join | wrap 320 |
+| 9 | Mountain/cloud palette variant | wrap 320 |
+| A, B, C | Food/creature vignette; bounded picture | user policy |
+| D | Bone foreground and mountain/cloud picture; cloud is cut at the join | user policy |
+| E | Mountain/cloud palette variant | wrap 320 |
+| F | Snow-peak palette variant | user policy |
+
+`build/gamehud_shots/backdrop_audit.bmp` and `backdrop_seams.bmp` show the decoded
+pictures and joins. This is an art-extension policy, not a claim that the level map,
+collision, activation or restricted-room aperture wraps.
+
+`enh_hud` exercises page-local sprite letters, partial copies/clears, both page
+copies and all four placements against the native strip with a poisoned reference.
+`enh_hud_levels` reuses all sixteen `enh_levels` schedules and death/checkpoint;
+`enh_transitions` reuses all six `enh_scenarios` schedules, including the 59 iris
+publications. They compare every eligible HUD and complete destructive page at 320,
+poison both the faithful image and HUD before presenter use, and check exact 320
+presenter endpoints plus zero fallback at 320/356/640, with/without smoothing.
+Contact images include anchored HUDs, iris, curtain, death/cave-style wipe and
+several wrapping backdrop worlds in `build/gamehud_shots/`.

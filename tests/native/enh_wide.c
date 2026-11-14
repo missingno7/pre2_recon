@@ -2,6 +2,8 @@
  * world limits, foreground in the margin, HUD placement and sprite overrides. */
 #include "native/enh_render.h"
 #include <assert.h>
+#undef assert
+#define assert(expr) do { if (!(expr)) { fprintf(stderr,"%s:%d: %s\n",__FILE__,__LINE__,#expr); exit(1); } } while (0)
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -33,7 +35,7 @@ static void run(int w, int h, EnhOptions *options, double cx, double cy)
         if (w > 520) assert(im.index[100 * stride + 520] == 0);
     }
     if (options->hud != ENH_HUD_NONE) {
-        int ox = options->hud == ENH_HUD_LEFT ? 0 : options->hud == ENH_HUD_RIGHT ? w-320 : (w-320)/2;
+        int ox = options->hud == ENH_HUD_LEFT || options->hud == ENH_HUD_ANCHORED ? 0 : options->hud == ENH_HUD_RIGHT ? w-320 : (w-320)/2;
         assert(im.index[(size_t)(h-24)*stride + ox + 10] == view.hud[10]);
     }
     free(saved); free(p);
@@ -52,10 +54,14 @@ int main(void)
     view.sprites[1].id=2; view.sprites[1].mode=1; view.sprites[1].screen_x=-2; view.sprites[1].world_x=-2;
     view.sprites[2].id=3; view.sprites[2].mode=1; view.sprites[2].screen_x=340; view.sprites[2].world_x=340;
     for(int i=0;i<3;i++) {view.sprites[i].screen_y=40; view.sprites[i].world_y=64;}
-    for(int i=0;i<320*24;i++) view.hud[i]=(uint8_t)(i%16);
+    for(int i=0;i<320*24;i++) view.hud[i]=(uint8_t)(i%16); /* independent expected pixels */
+    view.hud_count=1; view.hud_frame=1;
+    view.hud_elements[0]=(FrameHudElement){.kind=0,.x1=320,.y1=23};
+    for(int p=0;p<4;p++) for(int y=0;y<23;y++) for(int x=0;x<320;x++)
+        if((x%16)&(1<<p)) level.hud_source[0x7b0+p*920+y*40+x/8]|=(uint8_t)(128>>(x%8));
     for(int i=0;i<256;i++) {view.animation[i]=(uint8_t)i;palette[i][0]=(uint8_t)(i%64);}
     const int widths[]={480,640,864}; unsigned cases=0;
-    for(unsigned k=0;k<3;k++) for(int b=0;b<3;b++) for(int hud=0;hud<4;hud++) {
+    for(unsigned k=0;k<3;k++) for(int b=0;b<3;b++) for(int hud=0;hud<=ENH_HUD_ANCHORED;hud++) {
         EnhOptions o={(EnhBackdrop)b,(EnhHud)hud,NULL,0};
         run(widths[k],hud ? 288 : 176,&o,0,0); cases++;
         run(widths[k],hud ? 288 : 176,&o,-17.25,31.5); cases++;
@@ -86,6 +92,8 @@ int main(void)
     o.backdrop=ENH_BACK_MIRROR;
     assert(!enh_render(&view,&level,palette,15,0,0,864,176,&o,&im)); assert(output[0]==16);
     o.backdrop=ENH_BACK_STRETCH;
+    assert(!enh_render(&view,&level,palette,15,0,0,864,176,&o,&im)); assert(output[0]==1);
+    level.backdrop_period=16; o.backdrop=ENH_BACK_BLACK;
     assert(!enh_render(&view,&level,palette,15,0,0,864,176,&o,&im)); assert(output[0]==1);
     assert(enh_render(&view,&level,palette,15,NAN,0,864,176,&o,&im)==-1);
     im.capacity--; assert(enh_render(&view,&level,palette,15,0,0,864,176,&o,&im)==-1);

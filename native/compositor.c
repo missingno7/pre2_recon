@@ -3,11 +3,11 @@
 #include "compositor.h"
 #include "scanout.h"
 #include "enh_margin.h"
+#include "enh_screens.h"
 #include "../c/pre2.h"
 #include "../c/vga.h"
 #include "../c/game.h"
 #include "../c/scene_screens.h"
-#include "enh_screens.h"
 #include <string.h>
 
 uint8_t comp_planar[0x10000 * 8];
@@ -25,8 +25,6 @@ static void sink(const SceneEvent *e)
 {
     if (e->kind < 1024 && handlers[e->kind]) handlers[e->kind](e);
     else if (!unhandled++) unhandled_first = e->kind;
-    /* After dispatch, so the gameplay family has captured its native assets: the screen
-     * model keeps its own authoring surfaces for game/screen handoffs (HUD, cels, copies). */
     draw_screens_observe(e);
 }
 

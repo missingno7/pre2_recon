@@ -45,6 +45,25 @@ typedef struct FrameDot {
 
 struct EnhLevel;
 struct EnhMap;
+struct EnhSurface;
+
+/* Opaque asset draws in page order. The clip is in the original HUD's 320x24
+ * coordinates; copies preserve it independently of the command's asset origin. */
+typedef struct FrameHudElement {
+    int16_t x, y, x0, y0, x1, y1;
+    uint16_t index;
+    uint8_t kind; /* 0 static art/label, 1 BONUS, 2 glyph, 3 digit, 4 item/letter, 5 frame pattern, 6 clear */
+    uint8_t field; /* FrameHudField that owns it: wide layouts move whole fields, never single glyphs */
+} FrameHudElement;
+/* The status bar's fields, from UpdateHud's destinations (c/level.c) in the 320x23 strip:
+ * lives count glyph at strip byte 16Dh (x 40), score digits from 171h (x 72: six formatted
+ * digits plus the fixed trailing 0, seven 16-pixel cells to x 184), energy pips from 181h
+ * (x 200, three cells), BONUS letters in the 48x23 box ClearBonusLetterRow restores at 21h
+ * (x 264). Each field owns its icon/label art; the columns between fields are the plain bar
+ * pattern. Spans: lives 0..64, score 64..192, energy 192..256, BONUS 256..320. */
+typedef enum FrameHudField { HUD_FIELD_LIVES, HUD_FIELD_SCORE, HUD_FIELD_ENERGY, HUD_FIELD_BONUS, HUD_FIELDS } FrameHudField;
+static const int16_t frame_hud_field_x[HUD_FIELDS + 1] = { 0, 64, 192, 256, 320 };
+#define FRAME_MAX_HUD 256
 typedef struct FrameForeground { uint16_t cell; uint8_t tile; } FrameForeground;
 /* Last evaluated tile paint at a world cell. Edge loads intentionally use the
  * raw animation cel until the next animation pass. Panel patches live here too. */
@@ -74,7 +93,11 @@ typedef struct FrameGameView {
     uint16_t camera_limit_row, foreground_count;
     FrameTilePaint paint[240]; /* semantic 20 x 12 cells; no pixel/page addresses */
     FrameForeground foreground[FRAME_MAX_FOREGROUND];
-    uint8_t hud[320 * 24]; /* actual page-local HUD, including partial updates */
+    uint16_t hud_count;
+    uint8_t hud_frame; /* the page has received the status-frame pattern */
+    FrameHudElement hud_elements[FRAME_MAX_HUD];
+    uint8_t hud[320 * 24]; /* verification reference only; never a drawing source */
+    const struct EnhSurface *surface; /* retained destructive page operations */
 } FrameGameView;
 
 /* Transition state, for presentation that wants to smooth the original's discrete steps. */
@@ -86,9 +109,10 @@ typedef struct FrameTransition {
 } FrameTransition;
 
 /* Native screen authoring surfaces and their semantic projection. Assets are
- * immutable, native-owned session objects (never pointers into the DOS machine).
+ * immutable, reference-counted native objects (never pointers into the DOS machine).
  * A surface is the retained result of picture/glyph/fill/copy operations; it is
- * independent of the faithful compositor and its published image. */
+ * independent of the faithful compositor and its published image. Retain/release
+ * copied views through enh_screens.h; retained images survive compositor_init(). */
 struct FrameScreenPixels;
 typedef enum FrameScreenLayerKind {
     FRAME_SCREEN_IMAGE, FRAME_SCREEN_CLEAR, FRAME_SCREEN_COPY,
@@ -130,7 +154,7 @@ typedef struct FrameScreenView {
     const struct FrameScreenPixels *surface;
     const struct FrameScreenPixels *master; /* stamped 640 x 200 map */
     const struct FrameScreenPixels *font_banks;
-    const FrameScreenLayer *layers;  /* immutable ordered authoring recipe, newest first */
+    const FrameScreenLayer *layers;  /* bounded operations since the previous publication; newest first */
     FrameScreenRow rows[FRAME_MAX_H];
 } FrameScreenView;
 

@@ -19,6 +19,7 @@ typedef struct EnhLevelPolicy {
 typedef struct EnhLevel {
     uint32_t epoch;
     uint8_t level, backdrop_scroll; /* 0 = screen fixed (RestoreTileBackdrop) */
+    uint16_t backdrop_period; /* horizontal period / audited full-picture seam; 0 = user policy */
     uint16_t columns, rows;
     EnhLevelPolicy policy;
     uint8_t map[65536], tiles[256][256], tile_class[256], flags[256];
@@ -29,7 +30,7 @@ typedef struct EnhLevel {
 } EnhLevel;
 
 typedef enum EnhBackdrop { ENH_BACK_BLACK, ENH_BACK_MIRROR, ENH_BACK_STRETCH } EnhBackdrop;
-typedef enum EnhHud { ENH_HUD_NONE, ENH_HUD_LEFT, ENH_HUD_CENTRE, ENH_HUD_RIGHT } EnhHud;
+typedef enum EnhHud { ENH_HUD_NONE, ENH_HUD_LEFT, ENH_HUD_CENTRE, ENH_HUD_RIGHT, ENH_HUD_ANCHORED } EnhHud;
 typedef struct EnhPosition { uint32_t id; double x, y; } EnhPosition;
 typedef struct EnhOptions {
     EnhBackdrop backdrop;
@@ -41,6 +42,29 @@ typedef struct EnhImage {
     uint8_t *index; size_t capacity, stride; /* caller-owned; stride >= width */
     uint8_t palette[256][3], pel_mask;
 } EnhImage;
+
+/* Destructive gameplay pages retain semantic sources and a union of cleared
+ * intervals, never faithful pixels. A curtain selects columns of an already
+ * drawn destination. Iris redraws retain the original post-blackout sprite pass. */
+#define ENH_ROW_SPANS 4
+typedef struct EnhRowMask { uint16_t count, left[ENH_ROW_SPANS], right[ENH_ROW_SPANS]; } EnhRowMask;
+typedef struct EnhSurface {
+    const EnhLevel *owner;
+    const FrameGameView *world;
+    const struct EnhSurface *base, *reveal;
+    uint32_t columns;
+    EnhRowMask rows[200];
+    int16_t outside_left[200], outside_right[200];
+    uint8_t outside_valid[200]; /* original iris boundaries outside the 320 aperture */
+    const FrameSprite *redraw;
+    uint16_t redraw_count;
+} EnhSurface;
+int enh_render_surface(const EnhSurface *surface, const uint8_t palette[256][3], uint8_t pel_mask,
+                       double camera_dx, double camera_dy, int width, int height,
+                       const EnhOptions *options, EnhImage *out);
+int enh_render_iris(const FrameGameView *view, const uint8_t palette[256][3], uint8_t pel_mask,
+                    double camera_x, double camera_y, int width, int height,
+                    const EnhOptions *options, double x, double y, double radius, EnhImage *out);
 
 /* Returns 0 on success, -1 for invalid dimensions/buffer/asset/coordinates.
  * No live game state, faithful image, or compositor storage is read. */

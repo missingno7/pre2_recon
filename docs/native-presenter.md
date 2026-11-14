@@ -18,8 +18,8 @@ The host defaults to **faithful with every smoothing option off**.
 | `--smooth-camera` | Implies interpolation. Presentation camera follows the player identity with damping. |
 | `--camera-tau SECONDS` | Positive time constant, at most 10 seconds; default .12. Larger is softer. Applies directly to both axes; no overriding recenter constant. |
 | `--smooth-transitions` | Sample original transition steps continuously using logical time and published endpoint images/palettes. |
-| `--hud left`, `centre`, `right` | Native 320x24 HUD anchoring (default centre), border-column extension in a wide world. Restricted apertures keep the centered original HUD. |
-| `--backdrop black`, `mirror`, `stretch` | Enhanced renderer's background extension policy (default black). |
+| `--hud left`, `centre`, `right` | Override the native HUD grouping. Default `ENH_HUD_ANCHORED` places each semantic element at its own corner in a wide view; only the art's plain frame pattern extends. The host CLI retains its existing three override spellings. |
+| `--backdrop black`, `mirror`, `stretch` | Extension policy for bounded backdrop pictures (default black). Audited seamless mountain/cloud and cave-rock pictures wrap by their source period; see native-enhanced.md. |
 
 The original host's uncorrected 320:200 pixel aspect is retained. Consequently
 16:10 is 320 pixels wide at height 200, 16:9 is 356, and 21:9 is 468; these switches
@@ -123,18 +123,26 @@ endpoints, never extrapolated. No blending crosses a phase/level/format boundary
 
 | Kind | Projection / fallback |
 |---|---|
-| Iris (1) | Between observed steps on a valid world view, enhanced world plus a true circle at interpolated radius. Center is source screen center rebased to world coordinates, then projected through the presentation camera. At original step endpoints the faithful raster is used: the source has unusual blackout span arithmetic and redraws sprites after blackout, so a true circle cannot be byte-identical there. Missing world/pair data keeps the faithful image (fallback bit 2). |
-| Column reveal (2) | Smooth 16-pixel column masks between consecutive published images, preserving actual partial page copies. Centered authored aperture; no unseen source page is required. |
-| Staggered block wipe (3) | Smooth 10-row masks between published images, retaining the source's staggered band pixels. Centered authored aperture. |
+| Iris (1) | Native retained world plus the accumulated per-page blackout intervals, including original head/run/tail arithmetic, row crossing and sprite redraw. At 320 every original step equals the faithful reference. An interval reaching an original edge extends to the view edge. Between compatible steps smoothing uses an interpolated circle over the native source, then redraws retained sprites. Missing world data reports bit 2. |
+| Column reveal (2) | Native departure and already-drawn destination worlds; actual copied columns select between them. Original column = floor(x * 20 / width), preserving the repeated middle strip and untouched far-left strip. Smooth within-column masks use two native endpoint renders. |
+| Staggered block wipe (3) | Native displayed source plus actual 16x10 clears. Whole-row bands extend across the view, including overlapping central bands. Death, cave and bonus-warp closes share this path. Smooth ten-row masks use native endpoints. |
 | Palette fade (4) | Per-entry interpolation in expanded RGB between consecutive published palettes with identical indexed image and pixel mask. Index changes or mismatched phases keep the published palette/image until a compatible pair exists. |
 | Map scroll (5) | Interpolate published X/Y with bilinear RGB sampling only if the complete overlap is an exact translation and palettes agree. New edge pixels come from the already-published endpoint. Stationary text/markers, ring repairs or capture/CRTC phase mismatch fail validation and retain the faithful frame (fallback bit 4). A semantic world-map/background/overlay split is needed to cover those cases. |
 
-The circle is an intentional interior presentation choice. It does not claim the
-original iris's keep-visible sprite behavior or bit-exact geometry between steps.
-Column/wipe transitions have no captured semantic source world, so they remain
-320-pixel authored transitions with black margins rather than fabricating a wider
-destination. Blank, loading, clear/tally and other non-world surfaces are faithful
-and centered. Enh-render rejection also falls back (bit 1).
+The circle remains an intentional between-step presentation choice; original step
+endpoints use the exact native span model, and both paths preserve the post-mask
+sprite pass. The semantic source model and per-level backdrop audit are documented
+in `native-enhanced.md`. Transition destinations are frozen from completed native
+draw events, never reconstructed from future game state.
+
+Every non-faithful output that retains **any faithful pixels** sets fallback bit 8.
+Missing gameplay-world data also sets bit 1; missing iris data sets bit 2; rejected
+map-scroll projection sets bit 4. Native gameplay and kinds 1/2/3 clear bit 8 only
+after a successful complete native render. The unchanged restricted-aperture policy
+can produce literal black margins, but its interior is native. Blank/loading,
+clear/tally and other screen families remain explicit faithful fallbacks in this
+worker's scope; their separate screen-native integration can clear bit 8 when it
+replaces their pixels. No gameplay transition needs those fallbacks.
 
 ## Checks and review images
 
@@ -178,3 +186,43 @@ Validation, 2026-11-13:
   with widescreen and all options: **55 frames shown / 3,153 published**, the same
   machine counts and digest. No visible window or interactive play was used.
 * `git diff --check`: **pass**. Contact sheet visually inspected.
+
+Gamehud validation adds `enh_hud`, `enh_hud_levels` and `enh_transitions`. The latter
+two reuse the sixteen-level/death and six render schedules. Their presenter inputs
+poison the faithful image and HUD strip: native 320 endpoints still equal the original,
+and 320/356/640 with/without transition smoothing report zero fallback. Distinct
+semantic surface updates also distinguish transition clocks even if faithful index
+bytes happen to agree. Review images are in `build/gamehud_shots/`; the wipe image
+is a death close using the same routine as cave entry, not an asserted walked route.
+
+Gamehud checks, 2026-11-14:
+
+* `python tools/verify.py`: 86,428 program bytes exact; MZ fields equal. The
+  pre-existing five full-file header differences remain relocation ordering.
+* `enh_hud_levels enh_transitions`: 24,753 exact HUD publications, 1,911 exact
+  native destructive pages, and 148,518 zero-fallback presenter endpoint samples
+  at 320/356/640 with/without smoothing. Compatible interval interiors are checked
+  too. Both faithful indices and HUD reference bytes are poisoned before presenter
+  use. All 59 iris publications also check the previously rejected margin boundary.
+* `enh_hud`: 48 exact partial-update, copy, clear and page/placement checks.
+* `presenter_purity`: 386,040 renders at 60/144/240 Hz, all modes/options;
+  memory, every machine counter, PCM and published frames remain identical.
+* `wide_sim`: all sixteen levels at 480/640, two runs each, pass. Entry black
+  surfaces retain aperture dimensions even before the first world pass.
+* `python tools/hostbuild.py`: pass. Four 45-second headless smokes (faithful,
+  enhanced, widescreen 356, and 640-wide simulation with all smoothing) terminate
+  with expected native status 3. The first three have digest `b32fdf580ab9c3b9`;
+  true wide simulation has digest `469af867632dfdf5`. Logs are in the shots folder.
+
+Legacy fixture migration: `tests/native/enh_wide.c` constructs only reference HUD
+pixels. It must supply source assets and semantic elements under the new contract.
+It is outside this worker's assigned test patterns and remains unchanged. The
+prepared `build/gamehud_shots/enh_wide_fixture.patch` passes 138 guarded renders
+(including anchored placement and periodic backdrop sampling) as a standalone copy.
+All other native tests passed across the full-suite and targeted reruns; this one
+fixture prevents claiming a complete passing suite until its owner integrates it.
+
+The curtain review image is a native indexed endpoint replayed with the visible
+palette subsequently observed for the same level. The scripted entry curtain runs
+under a black DAC; this explicit diagnostic colouring shows its column geometry.
+Production presentation always keeps the palette actually published at that time.
