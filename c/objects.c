@@ -21,6 +21,8 @@
 #include "effects.h"
 #include "player.h"
 #include "sprites.h"
+#include "pools.h"
+#include "view.h"
 
 /* ---- layout ---------------------------------------------------------------------------- */
 
@@ -96,11 +98,19 @@ void ScriptStepForward(uint16_t si)
 /* AllocChildRecord (cs:806C): the lowest free child slot. Returns CF (1 = all 12 in use). */
 int AllocChildRecord(uint16_t *di)
 {
-    uint16_t p = CHILD_BASE;
-    for (unsigned i = 0; i < CHILD_SLOTS; i++, p = (uint16_t)(p + RS_SIZE)) {
-        if (RW(p, RS_FRAME) == 0xFFFF) { scene_emit(SCENE_GAME_ALLOC, 1, p); *di = p; return 0; }
+    unsigned count = pre2_pool_count(PRE2_POOL_CHILD);
+    for (unsigned i = 0; i < count; i++) {
+        uint16_t p = pre2_pool_slot(PRE2_POOL_CHILD, i);
+        if (RW(p, RS_FRAME) == 0xFFFF) { pre2_pool_note_use(PRE2_POOL_CHILD, i); scene_emit(SCENE_GAME_ALLOC, 1, p); *di = p; return 0; }
     }
-    *di = p;                    /* full: DI is one past the last slot (50A8h), as the ASM leaves it */
+    if (pre2_pool_grow(PRE2_POOL_CHILD)) {
+        for (unsigned i = count; i < pre2_pool_count(PRE2_POOL_CHILD); i++) {
+            uint16_t p = pre2_pool_slot(PRE2_POOL_CHILD, i);
+            if (RW(p, RS_FRAME) == 0xFFFF) { pre2_pool_note_use(PRE2_POOL_CHILD, i); scene_emit(SCENE_GAME_ALLOC, 1, p); *di = p; return 0; }
+        }
+    }
+    *di = pre2_pool_is_wide() ? pre2_pool_slot(PRE2_POOL_CHILD, count - 1) + RS_SIZE : 0x50A8;
+    /* Faithful full result is DI=50A8h, one past the original child slots. */
     return 1;
 }
 
@@ -109,6 +119,19 @@ int AllocChildRecord(uint16_t *di)
 uint16_t AllocDebrisRecord(void)
 {
     uint16_t di = DEBRIS_BASE;
+    if (pre2_pool_is_wide()) {
+        unsigned count = pre2_pool_count(PRE2_POOL_POINT);
+        for (unsigned i = 0; i < count; i++) {
+            di = pre2_pool_slot(PRE2_POOL_POINT, i);
+            if (DW(di) == 0xFFFF) { pre2_pool_note_use(PRE2_POOL_POINT, i); return di; }
+        }
+        if (pre2_pool_grow(PRE2_POOL_POINT))
+            for (unsigned i = count; i < pre2_pool_count(PRE2_POOL_POINT); i++) {
+                di = pre2_pool_slot(PRE2_POOL_POINT, i);
+                if (DW(di) == 0xFFFF) { pre2_pool_note_use(PRE2_POOL_POINT, i); return di; }
+            }
+        return 0xFFFF; /* bounded variant exhaustion; callers leave the line absent */
+    }
     while (DW(di) != 0xFFFF) di = (uint16_t)(di + DEBRIS_SIZE);
     return di;
 }
@@ -116,10 +139,13 @@ uint16_t AllocDebrisRecord(void)
 /* IsInCameraWindow (cs:8022): CF = 1 when the world point (AX, DX) is outside the window. */
 int IsInCameraWindow(uint16_t ax, uint16_t dx)
 {
+    uint16_t world_x = ax, world_y = dx;
     ax = (uint16_t)(sar16(ax, 4) - DW(DS_CameraCol));
-    if ((int16_t)ax < -2 || (int16_t)ax > 0x16) return 1;
+    int margin=pre2_view.variant ? (int)pre2_view.activation_margin : 2;
+    if ((int16_t)ax < -margin || (int16_t)ax > (pre2_view.variant ? (int)pre2_view.cols + margin : 0x16)) return 1;
     dx = (uint16_t)(sar16(dx, 4) - DW(DS_CameraRow));
-    if ((int16_t)dx < -2 || (int16_t)dx > 0x0D) return 1;
+    if ((int16_t)dx < -margin || (int16_t)dx > (pre2_view.variant ? (int)pre2_view.rows + margin : 0x0D)) return 1;
+    if (pre2_view.variant && !pre2_view_candidate(world_x, world_y)) return 1;
     return 0;
 }
 
@@ -163,9 +189,11 @@ void CullChildAt(uint16_t si, uint16_t ax, uint16_t dx)
     if (RB(si, RS_STATE) == 0xFF) return;
     if (RB(si, RS_FLAGS) & 0x20) return;
     ax = abs16((uint16_t)(ax - DW(DS_PlayerX)));
-    if (ax <= 0x140) {
+    uint16_t retire_x = pre2_view.variant ? (uint16_t)pre2_view.width_px : 0x140;
+    uint16_t retire_y = pre2_view.variant ? (uint16_t)pre2_view.child_retire_dy : 0x12C;
+    if (ax <= retire_x) {
         ax = abs16((uint16_t)(dx - DW(DS_PlayerY)));
-        if (ax <= 0x12C) return;
+        if (ax <= retire_y) return;
     }
     if (RB(si, RS_STATE) >= 0x0A) { ChildDeath(si); return; }
     WW(si, RS_FRAME, 0xFFFF);
@@ -187,6 +215,7 @@ void SpawnDebrisLine(uint16_t owner, uint8_t al, uint8_t dl)
     uint8_t ch = step;
     for (int i = 0; i < 3; i++) {
         uint16_t di = AllocDebrisRecord();
+        if (pre2_pool_is_wide() && di == 0xFFFF) return;
         WW(di, DEBRIS_X, RW(owner, ENT_BOX));
         WW(di, DEBRIS_Y, (uint16_t)(RW(owner, 0x0B) - 0x18));
         WB(di, DEBRIS_KIND, al);
@@ -302,7 +331,7 @@ int UpdateGroundChild(uint16_t si)
     if (st == 0) {
         if (TickEntityTimer(owner)) return OBJ_OK;
         uint16_t ax = (uint16_t)(RW(si, RS_Y) - DW(DS_PlayerY));
-        if ((int16_t)ax >= (int16_t)0xB0) { ChildDeath(si); return OBJ_OK; }
+        if ((int16_t)ax >= (int16_t)(pre2_view.variant ? pre2_view.ground_child_drop : 0xB0)) { ChildDeath(si); return OBJ_OK; }
         WB(owner, ENT_FLAGS, RB(owner, ENT_FLAGS) | 8);
         WB(si, RS_STATE, 1);
         return OBJ_OK;
@@ -630,16 +659,16 @@ int UpdatePatrolChild(uint16_t si)
     uint16_t owner = RW(si, RS_OWNER);
     if (!(RB(si, RS_FLAGS) & 0x20) && RB(si, RS_STATE) != 0xFF) {
         int remove;
-        if (abs16((uint16_t)(RW(si, RS_Y) - DW(DS_PlayerY))) >= 0xBE) {
+        if (abs16((uint16_t)(RW(si, RS_Y) - DW(DS_PlayerY))) >= (pre2_view.variant ? pre2_view.patrol_retire_dy : 0xBE)) {
             remove = 1;
         } else {
             uint16_t ax = RW(owner, 0x0D);
             uint16_t dx = DW(DS_PlayerX);
             if ((int16_t)dx < (int16_t)ax) {
-                dx = (uint16_t)(dx + 0x1E0);
+                dx = (uint16_t)(dx + (pre2_view.variant ? 0x1E0u + pre2_view.width_px - 320u : 0x1E0u));
                 remove = !((int16_t)dx >= (int16_t)ax);
             } else {
-                ax = (uint16_t)(RW(owner, 0x0F) + 0x1E0);
+                ax = (uint16_t)(RW(owner, 0x0F) + (pre2_view.variant ? 0x1E0u + pre2_view.width_px - 320u : 0x1E0u));
                 remove = !((int16_t)ax > (int16_t)dx);
             }
         }
@@ -818,12 +847,12 @@ int SpawnDropOverPlayer(uint16_t si)
     if (AllocChildRecord(&di)) return 1;
     WB(di, RS_COUNT, 0);
     SET_DW(DS_LastSpawnedChild, di);
-    uint16_t dx = 0xC0;
+    uint16_t dx = pre2_view.variant ? (uint16_t)(pre2_view.width_px / 2 + 32) : 0xC0;
     uint8_t toggle = (uint8_t)(DB(DS_SpawnSideToggle) ^ 1);
     SET_DB(DS_SpawnSideToggle, toggle);
     if (toggle != 0) dx = neg16(dx);
     WW(di, RS_X, (uint16_t)(DW(DS_PlayerX) + dx));
-    WW(di, RS_Y, (uint16_t)(DW(DS_PlayerY) - 0xB0));
+    WW(di, RS_Y, (uint16_t)(DW(DS_PlayerY) - (pre2_view.variant ? pre2_view.height_px : 0xB0)));
     WW(di, RS_FRAME, RW(si, ENT_SPRITE));
     WW(di, RS_OWNER, si);
     WB(si, ENT_FLAGS, 7);
@@ -1750,10 +1779,10 @@ int RunLevel9Script(void)
 void SpawnDriftParticle(void)
 {
     uint16_t si = PARTICLE_BASE;
-    int n;
-    for (n = PARTICLE_SLOTS; n > 0; n--, si = (uint16_t)(si + RS_SIZE))
-        if (RW(si, RS_FRAME) == 0xFFFF) break;
-    if (n == 0) return;
+    unsigned n, count = pre2_pool_count(PRE2_POOL_BURST);
+    for (n = 0; n < count; n++) { si = pre2_pool_slot(PRE2_POOL_BURST, n); if (RW(si, RS_FRAME) == 0xFFFF) break; }
+    if (n == count && pre2_pool_grow(PRE2_POOL_BURST)) { n = count; si = pre2_pool_slot(PRE2_POOL_BURST, n); }
+    if (n >= pre2_pool_count(PRE2_POOL_BURST)) return;
     WW(si, RS_FRAME, 0x1CA);
     WW(si, RS_X, 0xC8);
     WW(si, RS_Y, 0x58);
@@ -1769,10 +1798,10 @@ void SpawnDriftParticle(void)
 void SpawnFallingParticle(void)
 {
     uint16_t si = PARTICLE_BASE;
-    int n;
-    for (n = PARTICLE_SLOTS; n > 0; n--, si = (uint16_t)(si + RS_SIZE))
-        if (RW(si, RS_FRAME) == 0xFFFF) break;
-    if (n == 0) return;
+    unsigned n, count = pre2_pool_count(PRE2_POOL_BURST);
+    for (n = 0; n < count; n++) { si = pre2_pool_slot(PRE2_POOL_BURST, n); if (RW(si, RS_FRAME) == 0xFFFF) break; }
+    if (n == count && pre2_pool_grow(PRE2_POOL_BURST)) { n = count; si = pre2_pool_slot(PRE2_POOL_BURST, n); }
+    if (n >= pre2_pool_count(PRE2_POOL_BURST)) return;
     WW(si, RS_FRAME, 0x1CB);
     uint16_t ax = (uint16_t)((NextWindRandom() & 0x7F) - 0x10);
     WW(si, RS_X, ax);
@@ -1847,7 +1876,7 @@ int UpdateObjects(void)
     }
 
     uint16_t si = CHILD_BASE;
-    for (unsigned n = 0; n < CHILD_SLOTS; n++, si = (uint16_t)(si + RS_SIZE)) {
+    for (unsigned n = 0; n < pre2_pool_count(PRE2_POOL_CHILD); n++, si = pre2_pool_slot(PRE2_POOL_CHILD, n)) {
         if (RW(si, RS_FRAME) == 0xFFFF) continue;
         WW(si, RS_Y, RW(si, RS_Y) + sar16(RW(si, RS_YVEL), 4));
         if (RW(si, RS_XVEL) != 0xFFFF) WW(si, RS_X, RW(si, RS_X) + sar16(RW(si, RS_XVEL), 4));

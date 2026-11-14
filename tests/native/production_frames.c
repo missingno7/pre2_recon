@@ -8,6 +8,7 @@
 #include "script.h"
 #include "c/vga.h"
 #include "native/compositor.h"
+#include "native/enh_render.h"
 
 #define MAXF 20000
 static uint64_t hashes[2][MAXF];
@@ -23,7 +24,7 @@ static void on_display(uint64_t t, uint16_t start)
     h = fnv64(f.index, (size_t)f.w * f.h, h);
     h = fnv64(f.palette, sizeof f.palette, h);
     h = fnv64(&f.transition, sizeof f.transition, h);
-    if (f.game.valid) h = fnv64(&f.game, sizeof f.game, h);
+    if (f.game.valid) h = enh_view_hash(&f.game, h);
     if (counts[cur] < MAXF) hashes[cur][counts[cur]++] = h;
 }
 

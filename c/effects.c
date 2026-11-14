@@ -26,6 +26,8 @@
 #include "objects.h"
 #include "effects.h"
 #include "scene_game.h"
+#include "pools.h"
+#include "view.h"
 
 /* ---- SpawnDebrisElement (cs:8875) ------------------------------------------------------- */
 
@@ -43,17 +45,31 @@ void SpawnDebrisElement(uint16_t ax, uint16_t si)
     }
     uint16_t di = 0x5450;
     int found = 0;
-    for (int n = 0; n < 16; n++, di = (uint16_t)(di + 0x12)) {
-        if (DW((uint16_t)(di + 4)) == 0xFFFF) { found = 1; break; }
+    unsigned count = pre2_pool_count(PRE2_POOL_DEBRIS);
+    for (unsigned n = 0; n < count; n++) {
+        di = pre2_pool_slot(PRE2_POOL_DEBRIS, n);
+        if (DW((uint16_t)(di + 4)) == 0xFFFF) { pre2_pool_note_use(PRE2_POOL_DEBRIS, n); found = 1; break; }
     }
-    if (!found) return;
+    if (!found && pre2_pool_grow(PRE2_POOL_DEBRIS)) {
+        for (unsigned n = count; n < pre2_pool_count(PRE2_POOL_DEBRIS); n++) {
+            di = pre2_pool_slot(PRE2_POOL_DEBRIS, n);
+            if (DW((uint16_t)(di + 4)) == 0xFFFF) { pre2_pool_note_use(PRE2_POOL_DEBRIS, n); found = 1; break; }
+        }
+    }
+    if (!found) {
+        if (pre2_pool_is_wide()) SET_DW(DS_LastDebrisSlot,0xFFFF);
+        return;
+    }
     scene_emit(SCENE_GAME_ALLOC, 1, di);
     SET_DW((uint16_t)(di + 4), ax);
     SET_DW(di, DW(si));
     SET_DW((uint16_t)(di + 2), DW((uint16_t)(si + 2)));
     SET_DW((uint16_t)(di + 0x0C), 0x2C);
     SET_DW(DS_LastDebrisSlot, di);
-    if (si >= 0x50A8) {
+    Pre2PoolKind source_role;
+    int retire_source = !pre2_pool_is_wide() ? si >= 0x50A8 :
+        (pre2_pool_role(si, &source_role, 0) && source_role == PRE2_POOL_PROJECTION);
+    if (retire_source) {
         uint16_t owner = DW((uint16_t)(si + 9));
         if (owner != 0xFFFF) SET_DW((uint16_t)(owner + 4), 0xFFFF);
     }
@@ -70,8 +86,18 @@ void SpawnEffectBurst(uint16_t ax, uint16_t *dxp, uint16_t cx)
     uint16_t dx = *dxp;
     uint16_t di = 0;
     uint16_t bx = 0x50A8;
+    unsigned count = pre2_pool_count(PRE2_POOL_BURST);
+    unsigned i = 0;
     for (;;) {
+        if (pre2_pool_is_wide()) {
+            if (i >= count) {
+                if (!pre2_pool_grow(PRE2_POOL_BURST)) break;
+                count = pre2_pool_count(PRE2_POOL_BURST);
+            }
+            bx = pre2_pool_slot(PRE2_POOL_BURST, i);
+        }
         if (DW((uint16_t)(bx + 4)) == 0xFFFF) {
+            pre2_pool_note_use(PRE2_POOL_BURST, i);
             scene_emit(SCENE_GAME_ALLOC, 1, bx);
             SET_DW((uint16_t)(bx + 4), DW(DS_EffectFrame));
             SET_DB((uint16_t)(bx + 0x11), 0);
@@ -91,6 +117,8 @@ void SpawnEffectBurst(uint16_t ax, uint16_t *dxp, uint16_t cx)
             cx = (uint16_t)(cx - 1);
             if (cx == 0) break;
         }
+        i++;
+        if (pre2_pool_is_wide()) continue;
         bx = (uint16_t)(bx + 0x12);
         if (bx >= 0x52E8) break;
     }
@@ -133,7 +161,10 @@ void DestroyObjectWithDebris(uint16_t di, uint16_t bx, uint16_t si)
     do {
         SpawnDebrisElement(ax, di);
         uint16_t lds = DW(DS_LastDebrisSlot);
-        SET_DW((uint16_t)(lds + 0x0C), (uint16_t)(DW((uint16_t)(lds + 0x0C)) - (uint16_t)(dx << 2)));
+        /* Compatibility deliberately adjusts the stale slot after exhaustion.
+         * The bounded variant reports failure instead of using a stale pointer. */
+        if (!pre2_pool_is_wide() || lds!=0xFFFF)
+            SET_DW((uint16_t)(lds + 0x0C), (uint16_t)(DW((uint16_t)(lds + 0x0C)) - (uint16_t)(dx << 2)));
         SET_DW((uint16_t)(di + 2), (uint16_t)(DW((uint16_t)(di + 2)) + 7));
         SET_DW(di, (uint16_t)(DW(di) + 9));
         dx = (uint16_t)(dx - 1);
@@ -171,7 +202,8 @@ void DestroyObjectWithDebris(uint16_t di, uint16_t bx, uint16_t si)
 int ApplyFollowerHitToObjects(uint16_t si)
 {
     uint16_t di = 0x4FD0;
-    for (int n = 0; n < 12; n++, di = (uint16_t)(di + 0x12)) {
+    for (unsigned n = 0; n < pre2_pool_count(PRE2_POOL_CHILD); n++) {
+        di = pre2_pool_slot(PRE2_POOL_CHILD, n);
         if (DW((uint16_t)(di + 4)) == 0xFFFF) continue;
         if (DB((uint16_t)(di + 0x0E)) == 0xFF) continue;
         uint16_t bx = DW((uint16_t)(di + 6));
@@ -289,6 +321,34 @@ void UpdateFollowerSlots(void)
  * up to 20 get FFFFh terminators, except when the 20th record was filled (then no terminator). */
 void BuildEffectDrawList(void)
 {
+    if (pre2_pool_is_wide()) {
+        unsigned out = 0;
+        uint16_t si = 0x8F1D;
+        for (int n = 0; n < 0x46; n++, si = (uint16_t)(si + 7)) {
+            if (DW((uint16_t)(si + 4)) == 0xFFFF) continue;
+            uint16_t x = DW(si), y = DW((uint16_t)(si + 2));
+            uint16_t u = (uint16_t)((int16_t)x >> 4), v = (uint16_t)((int16_t)y >> 4);
+            uint16_t cam_col = DW(DS_CameraCol), cam_row = DW(DS_CameraRow);
+            if (u < cam_col || (int16_t)(uint16_t)(u - cam_col) > (int)pre2_view.cols + 2) continue;
+            if (v < cam_row || (int16_t)(uint16_t)(v - cam_row) > (int)pre2_view.pickup_max_row) continue;
+            if (!pre2_view_candidate(x, y)) continue;
+            uint16_t di = pre2_pool_slot(PRE2_POOL_PROJECTION, out);
+            pre2_pool_note_use(PRE2_POOL_PROJECTION, out++);
+            SET_DW(di, x);
+            uint16_t sway = 0;
+            if (!(DB(DS_SnowFrameTick) & 1)) {
+                uint16_t a = (uint16_t)(int16_t)(int8_t)DB((uint16_t)(si + 6));
+                a = (uint16_t)(a + 1); SET_DB((uint16_t)(si + 6), (uint8_t)a); sway = a;
+                if ((int8_t)(uint8_t)a >= 4) { sway = (uint16_t)(-a + 1); SET_DB((uint16_t)(si + 6), (uint8_t)sway); }
+            }
+            y = (uint16_t)(sway + y); SET_DW((uint16_t)(si + 2), y);
+            SET_DW((uint16_t)(di + 2), y); SET_DW((uint16_t)(di + 4), DW((uint16_t)(si + 4)));
+            SET_DW((uint16_t)(di + 9), si);
+        }
+        while (out < pre2_pool_count(PRE2_POOL_PROJECTION))
+            SET_DW((uint16_t)(pre2_pool_slot(PRE2_POOL_PROJECTION, out++) + 4), 0xFFFF);
+        return;
+    }
     uint16_t di = 0x52E8, si = 0x8F1D;
     uint16_t bx = 0x14;
     for (int n = 0; n < 0x46; n++, si = (uint16_t)(si + 7)) {
@@ -364,13 +424,13 @@ static void cell_change_apply(uint16_t di)
     uint8_t col = (uint8_t)cell, row = (uint8_t)(cell >> 8);
     uint8_t cam_col = DB(DS_CameraCol), cam_row = DB(DS_CameraRow);
     if (col < cam_col) return;
-    if ((uint8_t)(col - cam_col) >= 0x14) return;
+    if ((uint8_t)(col - cam_col) >= pre2_view.cols) return;
     if (row < cam_row) return;
-    if ((uint8_t)(row - cam_row) >= 0x0C) return;
+    if ((uint8_t)(row - cam_row) >= pre2_view.summary_rows) return;
     SetLatchCopyMode();
     /* ring offset: 640 * (row mod 12) + 2 * (column mod 20) (the div/mul chain of the ASM) */
     uint16_t off = (uint16_t)(640 * (row % 12) + 2 * (col % 20));
-    BlitTileToRing(tile, off);                       /* AH of the pushed BX is ignored */
+    if (!pre2_view.variant) BlitTileToRing(tile, off); /* original fixed-pitch raster only */
     SET_DB(DS_AnimVisibleFlag, 1);
     SET_DB(DS_GridDirtyFlag, 1);
     SET_DW(DS_PrevCameraCol, 0x55AA);
@@ -408,7 +468,9 @@ static int cell_change_tail_b43(uint16_t di, uint16_t si, uint16_t ax, uint16_t 
 {
     SET_DW(DS_EffectFrame, ax);
     int negative;
-    if (si >= 0x4F1C) negative = (int16_t)DW((uint16_t)(si + 6)) < 0;
+    if ((!pre2_pool_is_wide() && si >= 0x4F1C) ||
+        (pre2_pool_is_wide() && si != pre2_render_slot(0) && pre2_render_contains(si)))
+        negative = (int16_t)DW((uint16_t)(si + 6)) < 0;
     else negative = (int16_t)DW(DS_PlayerFacing) < 0;
     ax = negative ? 0x30 : (uint16_t)-0x30;
     uint16_t dx = 0xFF90;
@@ -532,11 +594,12 @@ void ProcessPlayerContacts(void)
 {
     uint16_t si, di, cx, ax, bx, dx;
     uint8_t dl;
+    unsigned child_index = 0;
 
     if (DB(DS_PlayerHurtTimer) != 0) goto loc_83D7;
     si = 0x4F1C;
-    di = 0x4FD0;
-    cx = 12;
+    di = pre2_pool_slot(PRE2_POOL_CHILD, 0);
+    cx = (uint16_t)pre2_pool_count(PRE2_POOL_CHILD);
 loc_82A8:
     if (DW((uint16_t)(di + 4)) == 0xFFFF) goto loc_83CE;
     if (!(DB((uint16_t)(di + 5)) & 0x20)) goto loc_83CE;
@@ -626,15 +689,19 @@ loc_838A:
     return;
 
 loc_83CE:
-    di = (uint16_t)(di + 0x12);
+    if (pre2_pool_is_wide()) di = pre2_pool_slot(PRE2_POOL_CHILD, ++child_index);
+    else di = (uint16_t)(di + 0x12);
     cx = (uint16_t)(cx - 1);
     if (cx == 0) goto loc_83D7;
     goto loc_82A8;
 
 loc_83D7:
-    si = 0x50A8;
+    unsigned contact_index = 0;
+    unsigned burst_count = pre2_pool_count(PRE2_POOL_BURST);
+    unsigned contact_count = burst_count + pre2_pool_count(PRE2_POOL_PROJECTION);
+    si = pre2_pool_slot(PRE2_POOL_BURST, 0);
     di = 0x4F1C;
-    cx = 0x34;
+    cx = pre2_pool_is_wide() ? (uint16_t)contact_count : 0x34;
 loc_83E0:
     if (DW((uint16_t)(si + 4)) == 0xFFFF) goto loc_860E;
     if ((int16_t)DW((uint16_t)(si + 0x0C)) > 0xBC) goto loc_860E;
@@ -712,7 +779,8 @@ loc_86B7:
     StartSoundEffect(0);
     {
         uint16_t d = 0x4FD0;
-        for (int n = 0; n < 12; n++, d = (uint16_t)(d + 0x12)) {
+        for (unsigned n = 0; n < pre2_pool_count(PRE2_POOL_CHILD); n++) {
+            d = pre2_pool_slot(PRE2_POOL_CHILD, n);
             if (DW((uint16_t)(d + 4)) == 0xFFFF) continue;
             bx = DW((uint16_t)(d + 6));
             if (DB((uint16_t)(bx + 4)) & 0x10) continue;
@@ -732,7 +800,8 @@ loc_870A:
     StartSoundEffect(0);
     {
         uint16_t d = 0x4FD0;
-        for (int n = 0; n < 12; n++, d = (uint16_t)(d + 0x12)) {
+        for (unsigned n = 0; n < pre2_pool_count(PRE2_POOL_CHILD); n++) {
+            d = pre2_pool_slot(PRE2_POOL_CHILD, n);
             if (DW((uint16_t)(d + 4)) == 0xFFFF) continue;
             bx = DW((uint16_t)(d + 6));
             if (DB((uint16_t)(bx + 4)) & 0x10) continue;
@@ -929,7 +998,12 @@ loc_853F:
 loc_860B:
     SpawnDebrisElement(ax, si);
 loc_860E:
-    si = (uint16_t)(si + 0x12);
+    if (pre2_pool_is_wide()) {
+        contact_index++;
+        si = contact_index < burst_count
+            ? pre2_pool_slot(PRE2_POOL_BURST, contact_index)
+            : pre2_pool_slot(PRE2_POOL_PROJECTION, contact_index - burst_count);
+    } else si = (uint16_t)(si + 0x12);
     cx = (uint16_t)(cx - 1);
     if (cx == 0) return;
     goto loc_83E0;

@@ -54,6 +54,11 @@ typedef struct RtConfig {
     int audio_native;          /* command-driven engine; zero selects the reference SB path */
 } RtConfig;
 
+/* Pre-run choice, kept outside RtConfig so existing positional initializers
+ * remain source compatible under -Wmissing-field-initializers. Call before
+ * rt_init; 0/320 original, 336..640 in multiples of 16 selects the variant. */
+int rt_set_wide_sim_width(unsigned width);
+
 /* The machine the game starts on: our ASM build's program image relocated at LOAD_SEG (never
  * PRE2.EXE), the VGA after power-on, the asset directory as drive C:, the RTC date, and the
  * configuration the original probes for: a Sound Blaster at 220h IRQ 7, a 386-class CPU,

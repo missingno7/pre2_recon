@@ -8,6 +8,8 @@ static SDL_Renderer *ren;
 static SDL_Texture *tex;
 static SDL_AudioStream *audio;
 static int tex_w, tex_h;
+static SDL_Thread *worker;
+static SDL_Mutex *bridge;
 
 /* ---- keyboard: SDL scancode -> PC scan code set 1 ----------------------------------------- */
 uint8_t sdl_pc_scancode(int sdl_scancode, int *extended)
@@ -67,6 +69,8 @@ int sdl_host_init(int video, int sound)
 {
     SDL_InitFlags f = (video ? SDL_INIT_VIDEO : 0) | (sound ? SDL_INIT_AUDIO : 0);
     if (!SDL_Init(f)) { fprintf(stderr, "SDL_Init: %s\n", SDL_GetError()); return 1; }
+    bridge = SDL_CreateMutex();
+    if (!bridge) return 1;
     if (video) {
         win = SDL_CreateWindow("Prehistorik 2", 960, 600, SDL_WINDOW_RESIZABLE);
         ren = win ? SDL_CreateRenderer(win, NULL) : NULL;
@@ -84,6 +88,7 @@ int sdl_host_init(int video, int sound)
 void sdl_host_shutdown(void)
 {
     if (audio) SDL_DestroyAudioStream(audio);
+    if (bridge) SDL_DestroyMutex(bridge);
     SDL_Quit();
 }
 
@@ -115,8 +120,8 @@ void sdl_host_show(const uint32_t *xrgb, int w, int h, int aspect_w, int aspect_
         tex = SDL_CreateTexture(ren, SDL_PIXELFORMAT_XRGB8888, SDL_TEXTUREACCESS_STREAMING, w, h);
         SDL_SetTextureScaleMode(tex, SDL_SCALEMODE_NEAREST);
         tex_w = w; tex_h = h;
-        SDL_SetRenderLogicalPresentation(ren, aspect_w, aspect_h, SDL_LOGICAL_PRESENTATION_LETTERBOX);
     }
+    SDL_SetRenderLogicalPresentation(ren, aspect_w, aspect_h, SDL_LOGICAL_PRESENTATION_LETTERBOX);
     SDL_UpdateTexture(tex, NULL, xrgb, w * 4);
     SDL_RenderClear(ren);
     SDL_RenderTexture(ren, tex, NULL, NULL);
@@ -138,3 +143,22 @@ void sdl_host_audio(const uint8_t *pcm, uint32_t n, uint32_t rate)
 uint32_t sdl_host_audio_queued(void) { return audio ? (uint32_t)SDL_GetAudioStreamQueued(audio) : 0; }
 uint64_t sdl_host_ns(void) { return SDL_GetTicksNS(); }
 void sdl_host_sleep_ns(uint64_t ns) { SDL_DelayNS(ns); }
+double sdl_host_window_aspect(void)
+{
+    int w=960,h=600;
+    if (win) SDL_GetWindowSizeInPixels(win,&w,&h);
+    return h>0 ? (double)w/h : 1.6;
+}
+int sdl_host_worker_start(int (*run)(void *), void *user)
+{
+    worker=SDL_CreateThread(run,"Pre2 logical machine",user);
+    return worker ? 0 : -1;
+}
+int sdl_host_worker_join(void)
+{
+    int status=0;
+    if (worker) { SDL_WaitThread(worker,&status); worker=NULL; }
+    return status;
+}
+void sdl_host_lock(void) { SDL_LockMutex(bridge); }
+void sdl_host_unlock(void) { SDL_UnlockMutex(bridge); }

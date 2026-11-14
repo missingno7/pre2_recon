@@ -17,6 +17,8 @@
 #include "sprites.h"
 #include "render.h"
 #include "scene_game.h"
+#include "view.h"
+#include "pools.h"
 
 #define SPRITE_SQZ_NAME  0x2A2Eu   /* DATA offset of "SPRITES.SQZ" (anonymous string, MODULE1 DATA) */
 #define BITREV_TABLE     CS_BitReverseTable   /* 256 bytes, byte i = reverse8(i), read by XLAT */
@@ -546,6 +548,29 @@ static void draw_object(uint16_t si)
     if (CB(CS_MirrorBits) & 1) hx = (uint8_t)(w - hx);  /* sub al,dl; neg al */
     uint16_t ax = (uint16_t)(0u - cbw(hx)) + DW(si);    /* cbw; neg ax; add ax,[si] */
 
+    if (pre2_view.variant) {
+        /* The wide renderer samples native assets, never the fixed-pitch VGA
+         * pages. Visibility still belongs to this simulation pass, including
+         * the one-pass lag and blink/flash consumption. */
+        int sx=(int16_t)ax;
+        int baseline=(int16_t)(cbw(DB(DS_FrameHotY + bx)) + DW(si + 2));
+        if (bx != FRAME_309_BX) {
+            sx=(int16_t)(ax - (uint16_t)(DW(DS_CameraCol)<<4));
+            baseline=(int16_t)(baseline + DW(DS_ShakeRows) -
+                (uint16_t)((DW(DS_CameraRow)<<4) + DB(DS_FineScroll)));
+            if (sx >= (int)pre2_view.width_px || (int16_t)(sx+w)<0 || baseline<=0) return;
+        }
+        int top=(int16_t)(baseline-h);
+        if (top >= (int)pre2_view.height_px) return;
+        SET_CW(CS_SpriteScreenX, sx);
+        SET_CW(CS_SpriteTopRow, top);
+        SET_DW(DS_SpriteRelY, baseline);
+        SET_DB(si+5, (DB(si+5)|0x20)&0xBF);
+        scene_emit(SCENE_GAME_SPRITE, 12, si, fw&0x1FFF,
+                   CB(CS_MirrorBits)&1, pass, sx, top, 0, 0, 0, 0, 0, 0);
+        return;
+    }
+
     uint16_t rel;
     if (bx == FRAME_309_BX) {
         /* Frame 309: no camera, no left test, no rel > 0 test (quirk). */
@@ -649,6 +674,16 @@ void DrawSpriteObjects(void)
 {
     scene_emit(SCENE_GAME_SPRITES_BEGIN, 0);
     SET_DW(DS_SnowFrameTick, (uint16_t)(DW(DS_SnowFrameTick) + 1));
+    if (pre2_view.variant) {
+        /* Descending role order, including each role's extension at its own
+         * position in the original painter order. Point records are separate. */
+        for (unsigned n=pre2_render_count();n>0;n--) {
+            uint16_t at=pre2_render_slot(n-1);
+            SET_DW(DS_CurrentObject,at);
+            if (DW(at+4)!=0xFFFF) draw_object(at);
+        }
+        return;
+    }
     uint16_t si = 0x5720;                               /* walked down to 4F0Ah */
     for (;;) {
         SET_DW(DS_CurrentObject, si);

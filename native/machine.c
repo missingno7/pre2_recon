@@ -16,6 +16,8 @@
 #include "../c/ports.h"
 #include "../c/platform.h"
 #include "../c/system.h"
+#include "../c/view.h"
+#include "level_regions.h"
 #include "../c/interrupts.h"
 #include <string.h>
 #include <stdio.h>
@@ -37,6 +39,7 @@ void (*rt_on_service)(void) = 0;
 static Audio *audio;
 void (*rt_on_audio_command)(uint64_t, const AudioCmd *) = 0;
 static RtConfig cfg;
+static unsigned wide_sim_width;
 static RtStats stats;
 
 /* ---- logical time ------------------------------------------------------------------------- */
@@ -385,10 +388,21 @@ static void game_main(void)
     for (;;) switch_to_host();
 }
 
+int rt_set_wide_sim_width(unsigned width)
+{
+    if (width && (width<320 || width>640 || width%16)) return -1;
+    wide_sim_width=width;
+    return 0;
+}
+
 int rt_init(const RtConfig *c)
 {
     memset(&cfg,0,sizeof cfg);
     if (c) cfg = *c;
+    pre2_view_region_policy = pre2_region_policy;
+    if (pre2_view_configure(wide_sim_width)) return 1;
+    /* Wide semantic margin work has no emulated bus cost. The original fixed
+     * raster operations still charge their original accesses; see native-widescreen.md. */
     audio_destroy(audio); audio=NULL;
     if (cfg.audio_native && !(audio=audio_create(native_pcm,NULL))) return 1;
     pre2_audio_sink=audio_sink;

@@ -16,4 +16,11 @@ uint32_t sdl_host_audio_queued(void);
 uint64_t sdl_host_ns(void);
 void sdl_host_sleep_ns(uint64_t ns);
 uint8_t sdl_pc_scancode(int sdl_scancode, int *extended);
+double sdl_host_window_aspect(void);
+/* One simulation worker; the bridge lock covers only bounded copies/input, never
+ * rendering or vsync. Join it before accessing live machine state/shutdown. */
+int sdl_host_worker_start(int (*run)(void *), void *user);
+int sdl_host_worker_join(void);
+void sdl_host_lock(void);
+void sdl_host_unlock(void);
 #endif

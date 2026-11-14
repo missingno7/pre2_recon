@@ -17,6 +17,8 @@
  * Callees of the other regions (player, objects, effects, screens, sprites) are called through
  * their owners' headers. Boundaries that are not translated return LEVEL_UNSUPPORTED (level.h). */
 #include "pre2.h"
+#include "view.h"
+#include "pools.h"
 #include "vga.h"
 #include "ports.h"
 #include "render.h"
@@ -465,32 +467,42 @@ static void terrain_directional(uint16_t si)
 void UpdateTerrainEntities(void)
 {
     uint16_t si = 0x9107, di = 0x5570;
-    uint16_t bx = 7;
+    uint16_t bx = (uint16_t)pre2_pool_count(PRE2_POOL_TERRAIN);
+    unsigned projected = 0;
     SET_DB(DS_PlayerOnPlatform, 0);
     for (unsigned cx = 0x10; cx != 0; cx--, si = (uint16_t)(si + 0x0F)) {
         if (DW((uint16_t)(si + 4)) == 0xFFFF) continue;
         if ((DB((uint16_t)(si + 6)) & 0x0F) == 8) terrain_falling(si);
         else terrain_directional(si);
         int16_t rx = (int16_t)(DW(si) - (uint16_t)(DW(DS_CameraCol) << 4));
-        if (rx >= 0x160 || rx <= -0x20) continue;
+        if (rx >= (int)(pre2_view.width_px + pre2_view.terrain_margin) || rx <= -(int)pre2_view.terrain_margin) continue;
+        if (!pre2_view_candidate(DW(si), DW(si+2))) continue;
+        if (pre2_view.variant) di=pre2_pool_slot(PRE2_POOL_TERRAIN, projected);
         wr16(DATA_SEG, di, DW(si));                /* X is written before the Y test (as the ASM) */
         int16_t ry = (int16_t)(DW((uint16_t)(si + 2)) - (uint16_t)(DW(DS_CameraRow) << 4));
-        if (ry >= 0xD0 || ry <= -0x20) continue;
+        if (ry >= (int)(pre2_view.height_px + pre2_view.terrain_margin) || ry <= -(int)pre2_view.terrain_margin) continue;
         wr16(DATA_SEG, (uint16_t)(di + 2), DW((uint16_t)(si + 2)));
         wr16(DATA_SEG, (uint16_t)(di + 4), DW((uint16_t)(si + 4)));
         wr16(DATA_SEG, (uint16_t)(di + 9), si);
+        if (pre2_view.variant) pre2_pool_note_use(PRE2_POOL_TERRAIN,projected);
         if ((int16_t)DW(DS_PlayerVelY) > -0x10) {
             SET_DB((uint16_t)(si + 6), DB((uint16_t)(si + 6)) | 0x40);
             if (TryLandOnTerrainEntity(di)) {
                 di = (uint16_t)(di + 0x12);
-                bx--;
+                bx--; projected++;
                 continue;
             }
         }
         SET_DB((uint16_t)(si + 6), DB((uint16_t)(si + 6)) & 0xBF);
         SET_DW((uint16_t)(di + 2), (uint16_t)(DW((uint16_t)(di + 2)) - 2));
         di = (uint16_t)(di + 0x12);
-        bx--;
+        bx--; projected++;
+    }
+    if (pre2_view.variant) {
+        /* All sixteen sources fit; no decrement-from-zero terminator quirk. */
+        for (; projected < pre2_pool_count(PRE2_POOL_TERRAIN); projected++)
+            SET_DW(pre2_pool_slot(PRE2_POOL_TERRAIN, projected)+4, 0xFFFF);
+        return;
     }
     /* loc_4AF9: terminators. The loop body runs at least once: with all seven slots used,
      * bx is 0 and the loop runs 65536 times (quirk, kept). */
@@ -513,7 +525,8 @@ void UpdateEffectParticles(void)
     port_out16(0x3C4, 0x0F02);
     port_out16(0x3CE, 0x1003);
     uint16_t si = DS_DebrisRecord;
-    for (unsigned n = 0; n < 0x14; n++, si = (uint16_t)(si + 6)) {
+    for (unsigned n = 0; n < pre2_pool_count(PRE2_POOL_POINT); n++, si = (uint16_t)(si + 6)) {
+        if (pre2_view.variant) si=pre2_pool_slot(PRE2_POOL_POINT,n);
         if (DW(si) == 0xFFFF) continue;
         uint8_t ang = DB((uint16_t)(si + 4));
         int8_t tx = (int8_t)DB((uint16_t)(DS_SineTable + ang)) >> 2;
@@ -526,13 +539,14 @@ void UpdateEffectParticles(void)
         uint16_t ay = (uint16_t)((uint16_t)(0u - (uint16_t)(int16_t)(int8_t)DB(DS_FineScroll)) +
                                  DW((uint16_t)(si + 2)));
         ay = (uint16_t)(ay - (uint16_t)(DW(DS_CameraRow) << 4));
-        if (ay < 0xB0) {
+        if (ay < pre2_view.height_px) {
             uint16_t di = (uint16_t)((uint8_t)ay * 0x28u);
             uint16_t ax = (uint16_t)(DW(si) - (uint16_t)(DW(DS_CameraCol) << 4));
-            if (ax < 0x140) {
+            if (ax < pre2_view.width_px) {
                 uint8_t mask = (uint8_t)(0x80u >> (ax & 7));
                 di = (uint16_t)(di + (ax >> 3) + DW(DS_DrawPage));
-                scene_emit(SCENE_GAME_DOT, 5, di, mask, 15, 0, 0);
+                if (pre2_view.variant) scene_emit(SCENE_GAME_DOT, 8, di, mask, 15, 0, 0, ax & ~7u, ay, si);
+                else scene_emit(SCENE_GAME_DOT, 5, di, mask, 15, 0, 0);
                 vga_xchg(di, mask);
             }
         }
@@ -591,7 +605,7 @@ void PlayDeathBounce(void)
     SET_DB(DS_PlayerHurtTimer, 0);
     SET_DW(DS_PlayerFrameWord, 0x21);
     SET_DW(DS_PlayerVelY, 0x0F);
-    uint16_t limit = (uint16_t)((DW(DS_CameraCol) + 0x0Au) << 4);
+    uint16_t limit = (uint16_t)((DW(DS_CameraCol) << 4) + pre2_view.width_px/2);
     uint16_t vx = DW(DS_PlayerX) < limit ? 5 : (uint16_t)(0u - 5u);
     SET_DW(DS_PlayerVelX, vx);
     for (unsigned n = 0; n < 0x3C; n++) {
@@ -661,6 +675,7 @@ int UpdateLevelState(uint16_t *ax_out)
  * run when ItemTotal is nonzero, then the level counter advances. */
 static int LevelTransitionStart(uint16_t *ax_out)
 {
+    pre2_view_stage();
     if (DB(DS_byte_6C04) != 0) {
         SET_DB(DS_FadeOutActive, 0);
         SET_DB(DS_FadeInActive, 1);
@@ -851,6 +866,7 @@ static int LifeLostPath(uint16_t *ax_out)
 /* Game over: the intro gate, the game-over screen, then score, level and lives are reset. */
 static int GameOverPath(uint16_t *ax_out)
 {
+    pre2_view_stage();
     scene_emit(SCENE_GAME_HIDE, 0);
     (void)TryShowIntroKeyed();                /* CF is not tested by the ASM caller */
     ActivateResourceSlot(0x11);
@@ -1116,6 +1132,28 @@ void TryCaveTrigger(void)
     SET_DW(DS_PlayerY, (uint16_t)((w4 >> 8) << 4));
     uint16_t w2 = DW((uint16_t)(si + 2));
     uint8_t tcol = (uint8_t)w2, trow = (uint8_t)(w2 >> 8);
+    if (pre2_view.variant) {
+        tcol=(uint8_t)pre2_view_cave(DB(si+6),tcol);
+        unsigned maxrow=DB(DS_MapRows)>pre2_view.rows ? DB(DS_MapRows)-pre2_view.rows : 0;
+        if (trow > maxrow) trow=(uint8_t)maxrow;
+        /* The pan crosses regions, so temporarily include its departure and
+         * mapped destination in the camera interval. Keep original Y-then-X
+         * edge loads, summary effects and fixed-raster timing at every step. */
+        unsigned mincol=pre2_view.camera_min_col, maxcol=pre2_view.camera_max_col;
+        if (pre2_view.camera_min_col>DW(DS_CameraCol)) pre2_view.camera_min_col=DW(DS_CameraCol);
+        if (pre2_view.camera_max_col<DW(DS_CameraCol)) pre2_view.camera_max_col=DW(DS_CameraCol);
+        while (DB(DS_CameraRow)!=trow) {
+            if (DB(DS_CameraRow)<trow) ScrollViewDown(0x10);
+            else ScrollViewUp(0x10);
+        }
+        while (DB(DS_CameraCol)!=tcol) {
+            if (DB(DS_CameraCol)<tcol) ScrollViewRight();
+            else ScrollViewLeft();
+        }
+        pre2_view.camera_min_col=mincol; pre2_view.camera_max_col=maxcol;
+        SET_DW(DS_PrevCameraCol,0x55AA);
+        SET_DB(DS_GridDirtyFlag,1);
+    }
     while (DB(DS_CameraRow) != trow) {
         if (DB(DS_CameraRow) < trow) ScrollViewDown(0x10);
         else ScrollViewUp(0x10);
@@ -1268,13 +1306,14 @@ void UpdateFireflies(void)
         }
         SET_ES(0xA000);                               /* video segment, kept even when the fly is off screen */
         uint16_t ay = (uint16_t)(((int16_t)DW((uint16_t)(si + 2)) >> 3) - (int16_t)(DW(DS_CameraRow) << 4));
-        if (ay >= 0xB0) continue;
+        if (ay >= pre2_view.height_px) continue;
         uint16_t di = (uint16_t)((uint8_t)ay * 0x28u);
         uint16_t ax = (uint16_t)(((int16_t)DW(si) >> 3) - (int16_t)(DW(DS_CameraCol) << 4));
-        if (ax >= 0x140) continue;
+        if (ax >= pre2_view.width_px) continue;
         uint8_t mask = (uint8_t)(0x80u >> (ax & 7));
         di = (uint16_t)(di + (ax >> 3) + DW(DS_DrawPage));
-        scene_emit(SCENE_GAME_DOT, 5, di, mask, 15, 1, !(DB((uint16_t)(si + 6)) & 1));
+        if (pre2_view.variant) scene_emit(SCENE_GAME_DOT, 8, di, mask, 15, 1, !(DB(si+6)&1), ax & ~7u, ay, si);
+        else scene_emit(SCENE_GAME_DOT, 5, di, mask, 15, 1, !(DB((uint16_t)(si + 6)) & 1));
         vga_xchg(di, mask);
     }
     port_out16(0x3CE, 0x0001);
@@ -1291,6 +1330,7 @@ void ResetRenderSlots(void)
         SET_DW((uint16_t)(di + 4), 0xFFFF);
         SET_DB((uint16_t)(di + 0x11), 0);
     }
+    pre2_pools_reset();
     SET_DW(DS_PlayerX, DW(DS_LevelStartX));
     SET_DW(DS_PlayerY, DW(DS_LevelStartY));
 }
@@ -1400,28 +1440,28 @@ void UpdateHorizontalCamera(void)
 {
     uint16_t dx = (uint16_t)(((int16_t)DW(DS_PlayerX) >> 4) - (int16_t)DW(DS_CameraCol));
     int16_t sdx = (int16_t)dx;
-    if (!(dx >= 0x14 || DB(DS_PlayerOnPlatform) != 0 || DW(DS_PlayerVelX) != 0)) {
+    if (!(dx >= pre2_view.cols || DB(DS_PlayerOnPlatform) != 0 || DW(DS_PlayerVelX) != 0)) {
         SET_DB(DS_HScrollDir, 0);
         return;
     }
     uint8_t dir = DB(DS_HScrollDir);
     if (dir == 0) {                                   /* loc_57F6: start a direction? */
         int alpha1;                                   /* 1 = loc_5813, 2 = loc_580B */
-        if (DW(DS_PlayerVelX) == 0) alpha1 = sdx >= 0x0A ? 1 : 2;
+        if (DW(DS_PlayerVelX) == 0) alpha1 = sdx >= (int)pre2_view.follow_center ? 1 : 2;
         else alpha1 = (DB(DS_PlayerVelXHigh) & 0x80) ? 2 : 1;
         if (alpha1 == 2) {
-            if (sdx <= 4) SET_DB(DS_HScrollDir, 2);
+            if (sdx <= (int)pre2_view.follow_start_left) SET_DB(DS_HScrollDir, 2);
         } else {
-            if (sdx >= 0x10) SET_DB(DS_HScrollDir, 1);
+            if (sdx >= (int)pre2_view.follow_start_right) SET_DB(DS_HScrollDir, 1);
         }
         return;
     }
     if (dir == 1) {
-        if (sdx <= 5) { SET_DB(DS_HScrollDir, 0); return; }
+        if (sdx <= (int)pre2_view.follow_stop_left) { SET_DB(DS_HScrollDir, 0); return; }
         if (ScrollViewRight()) SET_DB(DS_HScrollDir, 0);
         return;
     }
-    if (sdx >= 0x0F) { SET_DB(DS_HScrollDir, 0); return; }
+    if (sdx >= (int)pre2_view.follow_stop_right) { SET_DB(DS_HScrollDir, 0); return; }
     if (ScrollViewLeft()) SET_DB(DS_HScrollDir, 0);
 }
 
@@ -1458,6 +1498,7 @@ void EnterLevelView(void)
     ClearStaggeredBlocks();
     SET_DW(DS_CameraCol, 0);
     SET_DW(DS_CameraRow, 0);
+    pre2_view_refresh();
     SET_DW(DS_ColumnRing, 0);
     SET_DW(DS_RowRing, 0);
     ComputeRingTileOffset(0);
@@ -1478,8 +1519,8 @@ void EnterLevelView(void)
     } while ((DB(DS_VScrollActive) | DB(DS_HScrollDir)) != 0);
     if (!(DB(DS_LevelFlags) & 2)) {
         uint16_t ax = (uint16_t)(((int16_t)DW(DS_PlayerX) >> 4) - DW(DS_CameraCol));
-        if (ax >= 0x0C) {
-            for (unsigned k = 0; k < 10; k++) ScrollViewRight();
+        if (ax >= pre2_view.entry_pan_threshold) {
+            for (unsigned k = 0; k < pre2_view.entry_pan_tiles; k++) ScrollViewRight();
         }
     }
     SET_DB(DS_GridDirtyFlag, 1);

@@ -35,7 +35,8 @@ enum SceneGameKind {
     /* type (0 background, 1 bonus background, 2 glyph, 3 digit, 4 sprite letter), index, dest. */
     SCENE_GAME_HUD,
     /* dest, mask (flakes: second row in bits 8..15), colour, kind (0 particle, 1 firefly, 2 flake), operation
-     * (0 OR colour, 1 firefly even-timer: OR channels 1..3, preserve channel zero). */
+     * (0 OR colour, 1 firefly even-timer: OR channels 1..3, preserve channel zero).
+     * Wide events add byte-origin screen x/y and source DATA record before disposal. */
     SCENE_GAME_DOT,
     /* x, width, y, draw page: original byte-granular iris span, including its fringe quirk. */
     SCENE_GAME_BLACKOUT,

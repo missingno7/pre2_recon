@@ -42,6 +42,8 @@
  */
 #include <stdbool.h>
 #include "pre2.h"
+#include "view.h"
+#include "pools.h"
 #include "platform.h"
 #include "ports.h"
 #include "render.h"
@@ -271,7 +273,7 @@ static int UpdatePlayerBody(uint16_t cx_in)
 
     /* X integrate: committed only inside the window (signed compares) */
     uint16_t ax = U16(SAR(DW(DS_PlayerVelX), 4) + DW(DS_PlayerX));
-    uint16_t lim = U16((DW(DS_CameraLeftLimit) + 0x14) << 4);
+    uint16_t lim = pre2_view.variant ? (uint16_t)pre2_view.logical_right_px : U16((DW(DS_CameraLeftLimit) + 0x14) << 4);
     if (S16(lim) > S16(ax) && S16(ax) >= 8 && S16(ax) < 0x0FF8) SET_DW(DS_PlayerX, ax);
     /* Y integrate, unconditional */
     SET_DW(DS_PlayerY, U16(DW(DS_PlayerY) + SAR(DW(DS_PlayerVelY), 4)));
@@ -319,11 +321,11 @@ int UpdatePlayerCollision(void)
     bool out = false;
     uint16_t d = U16(SAR(DW(DS_PlayerY), 4) - DW(DS_CameraRow));
     if (S16(d) < 0) d = U16(-d);
-    if (d > 0x0B) out = true;
+    if (d > pre2_view.rows) out = true;
     if (!out) {
         d = U16(SAR(DW(DS_PlayerX), 4) - DW(DS_CameraCol));
         if (S16(d) < 0) d = U16(-d);
-        if (d > 0x14) out = true;
+        if (d > pre2_view.cols) out = true;
     }
     if (!out && (DB(DS_LevelFlags) & 4) != 0) {
         if (S16(DW(DS_PlayerY)) < S16(U16(DW(DS_CameraRow) << 4))) out = true;
@@ -485,7 +487,11 @@ int RedrawTileIfVisible(uint16_t ax, uint16_t di)
 {
     uint8_t dl = (uint8_t)((di & 0xFF) - DB(DS_CameraCol));
     uint8_t dh = (uint8_t)((di >> 8) - DB(DS_CameraRow));
-    if (dl >= 0x14 || dh >= 0x0C) return 1;
+    if (dl >= pre2_view.cols || dh >= pre2_view.summary_rows) return 1;
+    if (pre2_view.variant) {
+        SET_DB(DS_AnimVisibleFlag,1);
+        return 0;
+    }
     uint8_t bl = 0x50, bh = 2;
     if (CB(CS_OptionVByte) >= 3) {
         SetLatchCopyMode();
@@ -1019,9 +1025,9 @@ static void UpdatePlayerStateIdle(uint8_t al, uint16_t bx, uint16_t cx)
     if ((DB(DS_LevelFlags) & 2) == 0 && DB(DS_ScrollFollowGate) == 0) {
         uint16_t d = U16(SAR(DW(DS_PlayerX), 4) - DW(DS_CameraCol));
         if ((DB(DS_PlayerFrameHigh) & 0x80) == 0) {
-            if (d > 2) ScrollViewRight();
+            if (d > pre2_view.idle_look_left) ScrollViewRight();
         } else {
-            if (d < 0x11) ScrollViewLeft();
+            if (d < pre2_view.idle_look_right) ScrollViewLeft();
         }
     }
     SET_DB(DS_CurrentAnimId, 0);
@@ -1381,8 +1387,8 @@ static void BurstPhysics(uint16_t si)
 void UpdateBurstParticles(void)
 {
     SET_ES(LSEG());                     /* ES = LevelSegment for the tile probes; it stays so at the return */
-    for (int n = 0; n < 32; n++) {
-        uint16_t si = U16(PARTICLE_BASE + n * 0x12);
+    for (unsigned n = 0; n < pre2_pool_count(PRE2_POOL_BURST); n++) {
+        uint16_t si = pre2_pool_slot(PRE2_POOL_BURST, n);
         if (DW(U16(si + 4)) == 0xFFFF) continue;
         uint16_t t = U16(DW(U16(si + 0x0C)) - 1);
         SET_DW(U16(si + 0x0C), t);
@@ -1399,8 +1405,8 @@ void UpdateBurstParticles(void)
 /* Ticks the 16 debris slots at 5450h (stride 12h): Y and lifetime down, freed at lifetime 0. */
 void TickDebrisSlots(void)
 {
-    for (int n = 0; n < 16; n++) {
-        uint16_t si = U16(DEBRIS_BASE + n * 0x12);
+    for (unsigned n = 0; n < pre2_pool_count(PRE2_POOL_DEBRIS); n++) {
+        uint16_t si = pre2_pool_slot(PRE2_POOL_DEBRIS, n);
         if (DW(U16(si + 4)) == 0xFFFF) continue;
         SET_DW(U16(si + 2), U16(DW(U16(si + 2)) - 1));
         uint16_t t = U16(DW(U16(si + 0x0C)) - 1);

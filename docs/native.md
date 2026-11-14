@@ -77,6 +77,9 @@ Decisions:
 | 6 | Screens/transitions capture + native renderer + pixel parity | done ([notes](native-render-rscreens.md)) |
 | 7 | Native audio engine + PCM parity + output stage | done; [boundary and tests](../native/audio.md) |
 | 8 | Production switch: no video memory model, native compositor, native audio; production frames = reference-checked frames | done |
+| 9 | Enhanced renderer: level assets + semantic per-frame world data, any width/camera (docs/native-enhanced.md) | done; equals faithful playfield on 22,842 gameplay frames at 320 |
+| 10 | Presenter: faithful / enhanced / widescreen modes, interpolation, smooth camera, smooth transitions (docs/native-presenter.md) | done; presentation never changes the game |
+| 11 | True widescreen (opt-in gameplay variant): view geometry parameter, growable pools, region policies (docs/native-widescreen.md; audit build/audit/view_geometry.md) | done; default geometry byte-identical |
 
 ## Timing boundary (native/machine.c)
 
@@ -167,6 +170,12 @@ requires identical memory at every main-loop frame and step change, identical PC
 | Drawing operations in isolation | tests/native/game_sprites.c, game_operations.c, screens*.c | all 460 sprite cels x mirror x pass modes + edge matrix (4,176 cases); 875 completed gameplay operations; 1,052 screen store checks; ENTER CODE, ending (mode 12h), castle, game-over frames |
 | Production publishes the checked frames | tests/native/production_frames.c | no video memory model + native audio vs reference: 30,825 frames identical (pixels, palette, view, transition) |
 | Presenting more often changes nothing | tests/native/present_purity.c | 4 scenarios equal with 4x publication + extra publishes |
+| Enhanced renderer = faithful at 320 | tests/native/enh_levels.c, enh_scenarios.c | 22,842 gameplay frames equal (iris/reveal/wipe/tally frames are transitions, excluded) |
+| Enhanced renderer at 480/640/864 | tests/native/enh_wide.c, enh_effects.c | 1,116 bounded cases |
+| Presenter changes nothing | tests/native/presenter_purity.c | 386,040 renders at 60/144/240 Hz with every option: game memory, counters, PCM, publications equal |
+| Interpolation and transitions | tests/native/presenter_motion.c, presenter_transitions.c | identities, spawn/despawn, reuse, cuts; transitions monotonic, never ahead, equal at original steps |
+| True widescreen default identity | all difftests, all native tests at the default geometry | 5,858/5,858 equal; native suites unchanged |
+| True widescreen variant | tests/native/wide_sim.c, wide_pools.c, wide_regions.c, wide_capture.c, wide_geometry.c | 16 levels at 480 and 640, twice each: deterministic, 0 invariant failures; restricted rooms keep the 320 aperture |
 | PCM parity of the native audio engine | tests/native/audio_parity.c, audio_songs.c | 20,857 scenario blocks and 175,566 song/control blocks byte- and time-equal |
 | Translation unchanged | tools/verify.py, tools/difftest.py | exact; suites equal |
 
@@ -191,6 +200,14 @@ requires identical memory at every main-loop frame and step change, identical PC
   state recorded at draw time and selected by the latched start address.
 - The world-map, titles and screens publish no semantic view beyond the transition record
   (fade passes, map scroll position): enhancements for them start from the indexed frame.
+
+## Presentation and gameplay options (host)
+
+`--mode faithful|enhanced|widescreen`, `--aspect 16:9|16:10|21:9|window`, `--interpolate`,
+`--smooth-camera [--camera-tau S]`, `--smooth-transitions`, `--hud left|centre|right`,
+`--backdrop black|mirror|stretch`: presentation only. `--wide-sim WIDTH|auto` selects the true
+widescreen gameplay variant for the run (implies the widescreen presentation; `auto` takes the
+width from the aspect); demos and the attract mode always run in the original geometry.
 
 ## Extension points for the enhancement milestones
 
@@ -236,3 +253,8 @@ enemy activation and despawn use their own windows (320x300 despawn bounds).
   runs without a video memory model with the native compositor and native audio;
   production_frames proves it publishes the reference-checked frames. All 5,858 differential
   cases equal, tools/verify.py exact, 12/12 native tests pass.
+- 2026-11-14: enhancement phase. View-geometry audit (build/audit/view_geometry.md: 55
+  decision sites, pools, level facts; port claims checked). Enhanced renderer, presenter and
+  true widescreen merged after review. Integration fixes: presenter camera and image width use
+  the simulated view width; `--wide-sim auto`; the HUD strip's rectangle copies are kept in the
+  wide variant (the HUD stays 320 wide in every geometry).

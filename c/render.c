@@ -9,6 +9,8 @@
  * Port I/O goes through ports.h, which routes 3C0h..3DAh to the VGA model.
  */
 #include "pre2.h"
+#include "view.h"
+#include "pools.h"
 #include "vga.h"
 #include "ports.h"
 #include "sprites.h"
@@ -424,6 +426,11 @@ void DrawTileRow(uint16_t map, uint16_t di)
         dx = (uint16_t)(dx + 1);
         if (dx >= 0x14) { di = (uint16_t)(di - 0x28); dx = 0; }
     }
+    if (pre2_view.variant) for (unsigned col=20; col<pre2_view.cols; col++) {
+        unsigned x=(map&255)+col, y=map>>8;
+        if (x<256 && y<DB(DS_MapRows) && pre2_view_candidate(x*16,y*16))
+            or_tile_flags(rd8(lvl,(uint16_t)(y*256+x)));
+    }
 }
 
 /* DrawTileColumn (cs:350C): 12 tiles of the map column at AX (top tile) into ring column DI. */
@@ -471,7 +478,7 @@ int ScrollViewUp(uint8_t dl)
 /* ScrollViewDown (cs:33AD): one scanline down. Returns CF. */
 int ScrollViewDown(uint8_t dl)
 {
-    uint16_t lim = (uint16_t)(DB(DS_MapRows) - 0x0B);
+    uint16_t lim = pre2_view.variant ? (uint16_t)(DB(DS_MapRows)>pre2_view.rows ? DB(DS_MapRows)-pre2_view.rows : 0) : (uint16_t)(DB(DS_MapRows) - 0x0B);
     if (DW(DS_CameraRow) >= lim) return 1;
     SET_DB(DS_ScrollAnimCounter, (uint8_t)(DB(DS_ScrollAnimCounter) + 1));
     SET_DB(DS_FineScroll, (uint8_t)(DB(DS_FineScroll) + dl));
@@ -491,7 +498,7 @@ int ScrollViewDown(uint8_t dl)
 /* ScrollViewLeft (cs:3145): one tile column left. Returns CF. */
 int ScrollViewLeft(void)
 {
-    if (DW(DS_CameraCol) == 0) return 1;
+    if (DW(DS_CameraCol) <= (pre2_view.variant ? pre2_view.camera_min_col : 0)) return 1;
     SET_DW(DS_CameraCol, (uint16_t)(DW(DS_CameraCol) - 1));
     uint16_t ax = (uint16_t)(DW(DS_ColumnRing) - 1);
     if ((int16_t)ax < 0) ax = 0x13;
@@ -509,6 +516,7 @@ int ScrollViewRight(void)
     ax = (uint16_t)(ax - 0x14);
     if ((int16_t)DW(DS_CameraLeftLimit) >= (int16_t)ax) ax = DW(DS_CameraLeftLimit);
     else ax = 0xEC;
+    if (pre2_view.variant) ax=(uint16_t)pre2_view.camera_max_col;
     if (DW(DS_CameraCol) >= ax) return 1;
     uint16_t di = 0x13;
     SET_DW(DS_CameraCol, (uint16_t)(DW(DS_CameraCol) + 1));
@@ -518,6 +526,14 @@ int ScrollViewRight(void)
     ComputeRingTileOffset(ax);
     uint16_t map = (uint16_t)(((DB(DS_CameraRow) << 8) | DB(DS_CameraCol)) + di);
     DrawTileColumn(map, di);
+    if (pre2_view.variant) {
+        unsigned x=DW(DS_CameraCol)+pre2_view.cols-1;
+        for (unsigned row=0;row<pre2_view.summary_rows;row++) {
+            unsigned y=DW(DS_CameraRow)+row;
+            if (x<256 && y<DB(DS_MapRows) && pre2_view_candidate(x*16,y*16))
+                or_tile_flags(rd8(DW(DS_LevelSegment),(uint16_t)(y*256+x)));
+        }
+    }
     return 0;
 }
 
@@ -549,6 +565,16 @@ void RedrawOverlayTiles(void)
     uint16_t di = DW(DS_RingTileOffset);
     SET_DW(DS_BackdropCursor, BACKDROP_BASE);
     uint16_t lvl = DW(DS_LevelSegment);
+    if (pre2_view.variant) {
+        for (unsigned row=0;row<pre2_view.summary_rows;row++) for (unsigned col=0;col<pre2_view.cols;col++) {
+            unsigned x=DW(DS_CameraCol)+col,y=DW(DS_CameraRow)+row;
+            if (x>=256 || y>=DB(DS_MapRows) || !pre2_view_candidate(x*16,y*16)) continue;
+            uint8_t t=rd8(lvl,(uint16_t)(y*256+x));
+            SET_DB(DS_VisibleTileFlags,DB(DS_VisibleTileFlags)|DB(DS_TileFlagsTable+t));
+            if (DB(DS_TileClassTable+t)>=1) SET_DB(DS_GridDirtyFlag,1);
+        }
+        return;
+    }
     for (int row = 0; row < 12; row++) {
         uint16_t dx = DW(DS_ColumnRing);
         for (int col = 0; col < 20; col++) {
@@ -590,6 +616,16 @@ void AnimateTiles(void)
     uint16_t si = (uint16_t)((DB(DS_CameraRow) << 8) | DB(DS_CameraCol));
     uint16_t di = DW(DS_RingTileOffset);
     uint16_t lvl = DW(DS_LevelSegment);
+    if (pre2_view.variant) {
+        for (unsigned row=0;row<pre2_view.rows;row++) for (unsigned col=0;col<pre2_view.cols;col++) {
+            unsigned x=DW(DS_CameraCol)+col,y=DW(DS_CameraRow)+row;
+            if (x>=256 || y>=DB(DS_MapRows) || !pre2_view_candidate(x*16,y*16)) continue;
+            uint8_t t=rd8(lvl,(uint16_t)(y*256+x));
+            SET_DB(DS_VisibleTileFlags,DB(DS_VisibleTileFlags)|DB(DS_TileFlagsTable+t));
+            if (DB(DS_AnimTileFlags+t)) SET_DB(DS_AnimVisibleFlag,1);
+        }
+        return;
+    }
     for (int row = 0; row < 11; row++) {
         uint16_t dx = DW(DS_ColumnRing);
         for (int col = 0; col < 20; col++) {
@@ -671,6 +707,17 @@ void DrawForegroundOverSprites(void)
 {
     if (!(CW(CS_OptionBits) & 2)) return;
     if (!(DB(DS_VisibleTileFlags) & 0x40)) return;
+    if (pre2_view.variant) {
+        SET_ES(DW(DS_LevelSegment));
+        for (unsigned row=0;row<pre2_view.rows;row++) for (unsigned col=0;col<pre2_view.cols;col++) {
+            unsigned x=DW(DS_CameraCol)+col,y=DW(DS_CameraRow)+row;
+            if (x>=256 || y>=DB(DS_MapRows) || !pre2_view_candidate(x*16,y*16)) continue;
+            uint16_t cell=(uint16_t)(y*256+x);
+            uint8_t t=rd8(DW(DS_LevelSegment),cell);
+            if (DB(DS_TileFlagsTable+t)&0x40) scene_emit(SCENE_GAME_FOREGROUND,2,cell,t);
+        }
+        return;
+    }
     uint16_t lvl = DW(DS_LevelSegment);
     SET_ES(lvl);                                /* ES = LevelSegment on every return past the gates */
     SetCpuWriteMode();
@@ -759,6 +806,7 @@ void UpdateWindAndFlakes(void)
     port_out16(0x3CE, 0x0005);                  /* write mode 0 */
     port_out16(0x3C4, 0x0F02);
     uint16_t dx = DW(DS_SnowWind);
+    if (pre2_view.variant && dx>256) dx=256; /* fixed authored weather-source extent */
     uint16_t bp = (uint16_t)(dx >> 1);
     uint16_t si = DS_FlakeTable;
     do {
@@ -777,7 +825,10 @@ void UpdateWindAndFlakes(void)
         }
         bx = (uint16_t)(bx + DW(DS_DrawPage));
         uint16_t shifted = (uint16_t)(0x302u << cl);
-        scene_emit(SCENE_GAME_DOT, 5, bx, (shifted & 255) | (dx > bp ? (shifted & 0xFF00) : 0), 15, 2, 0);
+        if (pre2_view.variant) {
+            uint16_t rel=(uint16_t)(bx-DW(DS_DrawPage));
+            scene_emit(SCENE_GAME_DOT,8,bx,(shifted&255)|(dx>bp?(shifted&0xFF00):0),15,2,0,(rel%40)*8,rel/40,si-2);
+        } else scene_emit(SCENE_GAME_DOT, 5, bx, (shifted & 255) | (dx > bp ? (shifted & 0xFF00) : 0), 15, 2, 0);
         (void)vga_xchg(bx, (uint8_t)shifted);
         if (dx > bp) (void)vga_xchg((uint16_t)(bx + 0x28), (uint8_t)(shifted >> 8));
         dx = (uint16_t)(dx - 1);

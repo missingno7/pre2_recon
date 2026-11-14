@@ -1,4 +1,5 @@
 #include "draw_game_assets.h"
+#include "enh_capture.h"
 #include "../c/pre2.h"
 #include "../c/vram_store.h"
 #include <stdlib.h>
@@ -45,6 +46,7 @@ void game_assets_capture(void)
             c->coverage[o * 8 + d] = !!(c->blocks[o] & bit);
         }
     }
+    enh_capture_cels();
 }
 uint8_t game_cel_byte(const GameCel *c, uint16_t off)
 {

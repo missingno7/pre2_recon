@@ -9,6 +9,7 @@
 #include "script.h"
 #include "c/vga.h"
 #include "native/compositor.h"
+#include "native/enh_render.h"
 
 #define MAXS 20000
 typedef struct { uint64_t h[MAXS]; unsigned n; uint64_t frames_hash, pcm, end, ticks; uint32_t game_frames; } Trace;
@@ -33,7 +34,7 @@ static void on_display(uint64_t t, uint16_t start)
     for (int k = 0; k < (extra ? 4 : 1); k++) compositor_publish(t, start, &f);
     cur->frames_hash = fnv64(f.index, (size_t)f.w * f.h, cur->frames_hash);
     cur->frames_hash = fnv64(f.palette, sizeof f.palette, cur->frames_hash);
-    if (f.game.valid) cur->frames_hash = fnv64(&f.game, sizeof f.game, cur->frames_hash);
+    if (f.game.valid) cur->frames_hash = enh_view_hash(&f.game, cur->frames_hash);
 }
 static void on_pcm(uint64_t t, const uint8_t *p, uint32_t n, uint32_t rate)
 {

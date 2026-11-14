@@ -35,6 +35,8 @@
 #include "credits.h"
 #include "startup.h"
 #include "platform.h"
+#include "view.h"
+#include "pools.h"
 
 #define PSP_SEG (LOAD_SEG - 0x10u)
 
@@ -96,6 +98,7 @@ int ProgramEntry(void)
     parse_options();
     /* free paragraph after DATA: (B1BCh >> 4) + seg DATA + 1 */
     SET_DW(DS_NextFreeSegment, (uint16_t)((0xB1BCu >> 4) + DATA_SEG + 1));
+    pre2_pools_reserve();
     wr16(0, 0x90, CS_CriticalErrorHandler);              /* INT 24h vector */
     wr16(0, 0x92, CODE_SEG);
     SwapInt08Int09Vectors();
@@ -188,6 +191,7 @@ int LevelRestart(uint16_t ax)
 int LevelStart(void)
 {
     int r;
+    pre2_view_begin_level();
     if ((r = ActivateResourceSlot(DB((uint16_t)(DS_byte_2D20 + DB(DS_CurrentLevel)))))) return r;
     if (DB(DS_CurrentLevel) < 0x0A) STEP(SetLevelVideoMode());
     fill_render_slots(pre2_es);
@@ -217,6 +221,7 @@ int MainFrameStep(uint16_t *ax_out)
 {
     int r;
     pre2_frames_run++;
+    pre2_view_refresh();
     {
         UpdatePopupRing();
         UpdateFollowerSlots();
