@@ -15,30 +15,141 @@ same rules are exposed to `c/` through the runtime's region-policy callback.
 
 ## Region policy
 
-The backing level map is 256 columns of storage, not a 4096-pixel playable
-world. Continuous regions retain the level's authored right-camera limit. When
-the aperture grows, the limit moves left by the added tile columns so the
-playable world-right edge stays fixed. This is conservative because the level
-headers and cave records do not describe complete safe polygons for every
-disconnected room.
+`native/level_regions.c` now has separate simulation and presentation contracts.
+The existing `pre2_region_policy` callback keeps the opt-in simulation variant's
+limits. `pre2_region_for_view` returns a half-open rectangle `(x0,x1,y0,y1)` in
+world pixels, an identity, an evidence string and `proven_extent`. Backing-map
+storage remains distinct: `EnhLevelPolicy` excludes the level-09 graphics bank
+but cannot globally exclude LEVEL6's lower room along with its tower.
 
-Known restrictions keep an effective 320-pixel aperture, centred by the host
-inside the wider output:
+The presentation main extents follow the shipped headers and MapRows:
 
-* Level 05 tower and lower encounter remain authored as 320-pixel bands. The
-  tower uses columns 0..19; the lower encounter retains its moving aperture
-  starting at camera column 35 and its authored right limit 46.
-* Level 09 keeps columns 0..19 as world and columns 20..49 as graphics storage.
-* Level 0E keeps its 20-column horizontal band while preserving vertical travel.
-* A cave with a nonzero follow gate is locked to a 320-pixel aperture. An
-  unannotated arrival also holds a 320-pixel aperture around its mapped target
-  until its room bounds are established.
+| Level | Main world rectangle (pixels) | Evidence / exception |
+|---|---|---|
+| 00h | 0..4096, 0..784 | LEVEL1 header; ScrollViewDown |
+| 01h | 0..2048, 0..1664 | LEVEL2 camera limit 108, plus 20 columns |
+| 02h | 0..4096, 0..784 | LEVEL3 header |
+| 03h | 0..4096, 0..720 | LEVEL4 camera limit 236 |
+| 04h | 0..4096, 0..2048 | LEVEL5 header |
+| 05h tower | 0..320, 0..2048 | LEVEL6 flags 06h, horizontal follow disabled |
+| 05h lower | 560..1056, 0..2048 | cave 7E0F -> 7223 -> 7925; arrival column 35, right limit 46; MapRows |
+| 06h | 0..4096, 0..2048 | LEVEL7 header |
+| 07h | 0..4096, 0..1376 | LEVEL8 header |
+| 08h | 0..4096, 0..1760 | LEVEL9 header, including arrivals at column 236 |
+| 09h | 0..320, 0..192 | columns 20..49 are panel graphics sources, not world |
+| 0Ah | 0..2560, 0..384 | LEVELB camera limit 140 |
+| 0Bh | 0..2560, 0..816 | LEVELC camera limit 140 |
+| 0Ch | 0..4096, 0..816 | LEVELD camera limit 236 |
+| 0Dh main | 0..4096, 0..336 | reveal blocks' final base at row 21; bonus rooms below |
+| 0Eh | 0..320, 0..2768 | LEVELF camera limit 0, vertical travel retained |
+| 0Fh | 0..4096, 0..1344 | LEVELG header |
 
-These choices follow the decoded headers, cave records, and map facts in
-`build/audit/view_geometry.md` (sections 3 and 4). They do not claim the
-remaining cave and room shapes have all been proven safe. In particular, Level
-0D's staged reveal requires phase-aware masks and is not covered by a global
-vertical clamp. Its 149-pixel port workaround is not an original camera limit.
+The earlier wide-simulation callback contains conservative 124/140/140 limits
+for 01h/03h/0Ch. They are **not** the shipped header values. This presentation
+change does not alter that callback or the opt-in simulation's game state.
+The original conditional right-scroll fallback is preserved: a published camera
+past the main header does not get pulled into another room. Its aperture is an
+explicit unresolved extent until that room's outer geometry is established.
+Boss min/max X restrict boss motion (`UpdateBossFight`), not the camera; they
+are not imported as artificial arena walls.
+
+All **44** shipped cave source/camera/destination/gate records are explicit in
+`pre2_region_caves`, with evidence at each entry. The eight nonzero-gate arrivals
+have fixed authored 320x176 screens. The other 36 records include returns to main
+areas and free-follow rooms: their initial 320x176 arrival rectangles are recorded,
+but their complete outer polygons are **not yet proven**. Those entries have
+`proven_extent=0`; they must not be reported as completed room annotation.
+LEVEL6's lower encounter overrides its generic arrival with its larger rectangle.
+Its cleared flag 02h identifies it even if the original camera pans left of
+column 35. Arrival row 114 is not a vertical boundary: this isolated column band
+retains the full MapRows extent, including its empty upper rows.
+
+`pre2_region_never_visible` exposes forbidden column/row rectangles outside the
+selected region and the three earthquake staging banks. This is a content policy;
+it does not classify every nonzero map cell as gameplay. The map sweep verifies
+shipped cave records and known restricted ranges; it cannot prove every currently
+unannotated free-follow room's silhouette.
+
+### Presentation window
+
+`pre2_present_window` in `present_motion.c` returns the camera and visible world
+intersection. When the rectangle is at least as wide/tall as the requested view,
+the whole window clamps inside it. At an edge the original simulation aperture
+moves off centre. A smaller rectangle is centred with literal RGB black outside
+its extent. The presenter renders the full requested width through `enh_render`;
+it no longer renders a separate 320-pixel room image and centres that image.
+The HUD keeps its own anchoring, centred for narrow rooms. An unsmoothed
+320x176 endpoint that originally panned into void retains its exact aperture;
+wider windows still rest at the art edge.
+
+The smooth camera uses this same clamp and retains region identity separately from player identity in its seed
+tag, so changing region reseeds it. Forced downward scroll still follows published
+simulation Y. The helper supports taller playfields; the current host gameplay
+output remains 200 rows including the 24-row HUD.
+
+### Earthquake pillars (0Dh)
+
+The phase lives in **three proximity records**, not a global earthquake byte:
+LEVELE records 12/13/14 have source cells 133Ah/132Ch/13B0h, sizes 4x6/4x6/4x8,
+and +8 countdowns 4/4/6. `UpdateProximityTriggers` (ASM `loc_5427` and following)
+changes +4 to FFFEh while firing, shifts the block up one row every fourth tick,
+decrements +8, and sets +4 to FFFFh on completion. Each step also restores its
+old bottom row from `SavePristineTriggerRows`' bank. Thus the underground original
+art remains even after the visible copy rises. It must stay hidden in every phase.
+
+All three visible copies finish with their base at row **21**:
+`19+6-4 = 19+8-6 = 21`. Main presentation ends at world y336; the three locked
+bonus rooms begin at camera row 27. `pre2_region_reveal_phase` recognizes each
+phase against the immutable initial map and the current published map, without
+reading live trigger state. The 17 constructed phases are checked against the
+translated reveal routine. An original published aperture extending below y336
+wins for 320 parity and is marked unresolved; no universal 149-pixel camera cap
+is claimed. Full phase-dependent nonrectangular room silhouettes remain unproven.
+
+## Margin objects
+
+`enh_margin_capture` runs once in the gameplay publication path. It reads bounded
+source arenas and appends `FrameSprite`s with `margin_only=1`; faithful pixels,
+regular sprites, dots, game memory, counters and audio are untouched. It is off
+when `pre2_view.variant` is active, including restricted rooms of `--wide-sim`.
+
+The allowlist is derived from Prehistorik 2, independently of Rayman's types:
+**sleeping directional terrain sources** among the 16 records at 9107h, stride 15.
+`terrain_directional` returns before movement only while +Eh is zero, target speed
++7 is nonnegative and flags C0h are clear. Falling type 8 and every moving/awakened
+source are excluded. Terrain moves before projection, so merely being unprojected
+is insufficient evidence of immobility. Non-ridden placement uses the original
+Y-2 adjustment. This is a state-qualified allowlist, not permission to draw all
+platform types at their inactive source positions.
+
+The **70 float/pickup sources are excluded** by the requested unchanged-activation
+criterion. DATA 8F1Dh, stride 7: `BuildEffectDrawList` freezes Y/sway while a source
+is omitted, but resumes its bounce after admission and before the 20-record
+capacity return. The scripted sweep measured 59 nonzero activation Y steps, all
+within the original -3..+3 sway range. Frozen inactive positions therefore do not
+prove motionless handoffs. Enabling those extras requires an explicit relaxation
+of that criterion; no such relaxation is assumed here.
+
+No inactive enemy entity type is admitted: its spawn/script handoff needs a
+separate animation/position proof. The port's 64-record enemy ownership walk is
+not used; the original has 12 child records.
+
+Actual projected slot ownership (+9) together with the **published** regular draw
+list decides whether a source is already drawn. A projected but sprite-culled
+source is still a candidate. Terrain source IDs use 80000046h..80000055h and synthetic
+slots F046h..F055h; generation is the authored-source level epoch. Sources are
+loaded rather than allocated during play; reset restores the same sources and
+publishes a camera cut. Capture has no observation-dependent lifetime counters.
+Any collision with a regular generation ID suppresses the extra instead of
+publishing duplicate IDs.
+
+The renderer draws the appended sources behind regular sprites and preserves
+every pixel overlapping the simulation's original 320x176 window, including the
+mask blitter's edge carry. Foreground-neighbour requests from extras also stay
+outside that window when interpolation supplies position overrides. Trailing
+dots retain their original place after
+foreground. The remaining pickup pop-ins are intentional under the strict
+allowlist. Moving terrain and enemy activation pop-ins also remain.
 
 ## Timing and capture
 
@@ -115,14 +226,12 @@ compositor is bypassed for wide world events, while the fixed HUD remains safe.
 
 ## Integration limitations
 
-The presenter worker owns host renderer selection, effective-aperture centering,
-and the rest of `native/enh_render.c`. This work only changes its level-policy
-function. Its existing foreground exclusion and tile-paint domain still assume
-320 pixels. Main gameplay capture publishes the full simulation width, but the
-presenter must consume the region's effective aperture when choosing its output
-camera and clip. Dynamic cave/level05 lower-region render masks need that shared
-policy integration; the simulation table alone does not change the renderer's
-per-frame clipping. Level0D phase silhouettes remain unannotated.
+The presentation window and margin-object pass described above replace the old
+restricted-aperture centring policy for ordinary world rendering. The opt-in
+wide simulation still uses its existing region-policy callback and conservative
+cave widths. Other workers own screen/HUD/transition native rendering; this change
+adds no faithful-image fallback and does not complete those paths. Free-follow
+cave extents and complete earthquake silhouettes remain content-policy limits.
 
 ## Validation coverage
 
@@ -159,3 +268,72 @@ route/exit playthroughs or all boss endings. Extent assertions and a canary do
 not constitute a general read-access sanitizer: table-read instrumentation remains
 an acceptance item. The new loops have explicit source/record bounds, but no
 claim is made that every original table lookup was dynamically monitored.
+
+## Regions validation (2026-11-14)
+
+All 27 existing native suites and the five new region suites passed. The full
+`python tools/nativetest.py` invocation reported 31/31 (four new suites existed
+when it started); `regions_margin` passed separately. Final affected-suite runs
+covered `presenter_motion`, `regions_margin`, `regions_sweep`, and `regions_window`.
+The final sweep also asserts that the constructed shipped-terrain contact really
+adds pixels. The final window tests also cover original 320 overshoots, strict
+staging exclusion at wider widths, horizontal-only locks and reseeding under
+colliding player/region identity hashes. `regions_reveal` checks all 17 phases
+of the translated routine.
+
+* Region checks: 322,560 map cells, all 44 cave records matched to shipped data,
+  503,736 camera/size cases, and 3,476 reachable scripted camera views covered.
+  33 views use explicitly unresolved outer extents. These runs are not complete
+  cave routes, all boss endings, or proof of every free-follow room polygon.
+* Capture checks: 12,126 full-memory/counter/regular-view purity checks and 3,476
+  exact 320x200 frames. On/off replay also compares every machine counter, PCM,
+  faithful pixels/palettes/transitions and regular semantic views in ordinary,
+  warp, game-over and wide-sim schedules.
+* Allowlist evidence: 8,372 frozen sleeping-terrain samples and one unchanged
+  activation in the level scripts, plus a constructed admission using the actual
+  terrain projector. Floats had 152,690 omitted-source samples but 59 Y-changing
+  activations; they are rejected. Enemy types remain unqualified.
+* `python tools/verify.py`: 86,428 program-image bytes exact, all MZ fields equal;
+  the existing five full-file header-byte differences are relocation ordering.
+* `python tools/hostbuild.py`: pass. Headless 45-second year-1995 smokes pass with
+  exit 3 (the harness time limit) in faithful, enhanced, widescreen 21:9 with all
+  smoothing, and widescreen with `--wide-sim 640`. The three presentation-only
+  runs retain digest `b32fdf580ab9c3b9`, 3,275 timer ticks, 3,153 publications and
+  349,944 PCM bytes. The existing simulation variant has digest
+  `469af867632dfdf5`; its capture is disabled.
+* `git diff --check`: pass. No changes to ASM, `c/`, assets, host, or other workers'
+  source files. No differential rerun was needed because `c/` was not changed.
+
+`build/regions_shots/contact.bmp` is a 4x6 sheet, with `manifest.txt` identifying
+all cells. It includes every level, a constructed locked cave, both edges of the
+lower tower band, four constructed earthquake phases, and a shipped sleeping
+terrain source viewed in the margin. Constructions are labelled as such, rather
+than represented as played routes. Full backing-map BMPs are inspection data,
+not declarations that every stored cell is playable. `sweep.log` and the four
+`host_*.log` files contain current measurements; `rejected_float_trial.log`
+records the rejected permissive float experiment.
+
+The pop-in metric counts a source newly entering the regular draw list that was
+already visible by its anchor in the previous wider window; it is not a count of
+all pixel discontinuities. In particular it does not count unqualified enemies.
+The strict allowlist improves one observed level-0Fh terrain handoff at 468/640;
+most source pop-ins are pickups and intentionally remain:
+
+| Level | 356 before -> after | 468 before -> after | 640 before -> after |
+|---|---:|---:|---:|
+| 00h | 0 -> 0 | 2 -> 2 | 2 -> 2 |
+| 01h | 3 -> 3 | 7 -> 7 | 7 -> 7 |
+| 02h | 3 -> 3 | 4 -> 4 | 4 -> 4 |
+| 03h | 4 -> 4 | 4 -> 4 | 4 -> 4 |
+| 04h | 0 -> 0 | 0 -> 0 | 0 -> 0 |
+| 05h | 0 -> 0 | 0 -> 0 | 0 -> 0 |
+| 06h | 4 -> 4 | 5 -> 5 | 5 -> 5 |
+| 07h | 0 -> 0 | 1 -> 1 | 1 -> 1 |
+| 08h | 0 -> 0 | 0 -> 0 | 0 -> 0 |
+| 09h | 0 -> 0 | 0 -> 0 | 0 -> 0 |
+| 0ah | 4 -> 4 | 5 -> 5 | 5 -> 5 |
+| 0bh | 5 -> 5 | 7 -> 7 | 7 -> 7 |
+| 0ch | 0 -> 0 | 1 -> 1 | 1 -> 1 |
+| 0dh | 4 -> 4 | 6 -> 6 | 6 -> 6 |
+| 0eh | 0 -> 0 | 0 -> 0 | 0 -> 0 |
+| 0fh | 0 -> 0 | 2 -> 1 | 2 -> 1 |

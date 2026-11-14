@@ -31,6 +31,7 @@ typedef struct FrameSprite {
     int32_t  world_x, world_y;      /* the record's position (its anchor) */
     int32_t  screen_x, screen_y;    /* top-left where the faithful pass placed it */
     uint8_t  screen_space;  /* drawn without the camera (frame 309, HUD-like records) */
+    uint8_t  margin_only;   /* source snapshot: behind regular sprites, outside simulation window only */
 } FrameSprite;
 
 /* A plotted point: particle, firefly or flake. */

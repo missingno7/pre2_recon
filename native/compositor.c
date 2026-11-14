@@ -2,6 +2,7 @@
  * publication. Drawing families live in draw_game.c and draw_screens.c. */
 #include "compositor.h"
 #include "scanout.h"
+#include "enh_margin.h"
 #include "../c/pre2.h"
 #include "../c/vga.h"
 #include "../c/game.h"
@@ -75,6 +76,7 @@ void compositor_publish(uint64_t t_ns, uint16_t start, Pre2Frame *f)
     if (compositor_transition) compositor_transition(&f->transition, start);   /* gameplay's, if any */
     f->game.valid = 0;
     if (compositor_game_view) compositor_game_view(&f->game, start);
+    enh_margin_capture(&f->game);       /* read-only margin sources (presentation-only widescreen) */
     draw_screens_publish(f, start);   /* semantic screen view; invalid while a world view shows */
 }
 

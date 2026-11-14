@@ -9,6 +9,10 @@ EnhLevelPolicy enh_level_policy(unsigned level)
     Pre2RegionPolicy p = pre2_region_backing_policy(level);
     EnhLevelPolicy out = { p.first_column, p.end_column,
                            p.fixed_aperture, p.graphics_columns };
+    /* This is the lifetime asset domain, not the current room's aperture.
+     * LEVEL6's lower encounter is wider than its tower; its rectangles live
+     * in pre2_region_for_view. Only the two 20-column bands are global. */
+    out.fixed_room = level == 9 || level == 14;
     return out;
 }
 
@@ -169,16 +173,38 @@ int enh_render(const FrameGameView *v, const EnhLevel *a, const uint8_t palette[
         im->index[(size_t)y * im->stride + x] = c;
     }
     int dx = v->camera_x - cx, dy = v->camera_y - cy;
-    for (unsigned i = 0; i < v->sprite_count; i++) {
-        dots(v, i, dx, dy, w, ph, im);
-        const FrameSprite *s = &v->sprites[i]; if (!a->cels || s->frame >= 1024) continue;
-        double px = s->screen_x + (s->screen_space ? 0 : v->camera_x - camera_x);
-        double py = s->screen_y + (s->screen_space ? 0 : v->camera_y - camera_y);
-        if (!s->screen_space) for (size_t k = 0; k < opt->position_count; k++) if (opt->positions[k].id == s->id) {
-            px += opt->positions[k].x - s->world_x; py += opt->positions[k].y - s->world_y; break;
+    unsigned regular_count=v->sprite_count;
+    while (regular_count && v->sprites[regular_count-1].margin_only) regular_count--;
+    /* Appended source snapshots are a rear pass. The original sprite/dot order
+     * and indices remain intact, including dots after the last regular sprite. */
+    for (unsigned pass_index=0;pass_index<2;pass_index++) {
+      unsigned begin=pass_index?0:regular_count, end=pass_index?regular_count:v->sprite_count;
+      for (unsigned i=begin;i<end;i++) {
+        if (pass_index) dots(v,i,dx,dy,w,ph,im);
+        const FrameSprite *s=&v->sprites[i]; if (!a->cels || s->frame>=1024) continue;
+        double px=s->screen_x+(s->screen_space?0:v->camera_x-camera_x);
+        double py=s->screen_y+(s->screen_space?0:v->camera_y-camera_y);
+        if (!s->screen_space) for (size_t k=0;k<opt->position_count;k++) if (opt->positions[k].id==s->id) {
+            px+=opt->positions[k].x-s->world_x; py+=opt->positions[k].y-s->world_y; break;
         }
-        int x, y; if (floor_int(px, &x) || floor_int(py, &y)) return -1;
-        sprite(s, &a->cels[s->frame], x, y, w, ph, im);
+        int x,y; if (floor_int(px,&x) || floor_int(py,&y)) return -1;
+        const EnhCel *cel=&a->cels[s->frame];
+        if (x>=w || x+cel->w<0 || y>=ph || y+cel->h<=0) continue;
+        if (!s->margin_only) sprite(s,cel,x,y,w,ph,im);
+        else {
+            /* Sprite erase/OR arithmetic is unchanged. Preserve its overlap with
+             * the simulation window, including a byte-shift carry at either
+             * edge; only pixels beyond that window belong to this rear pass. */
+            uint8_t saved[320*176];
+            int x0=dx<0?0:dx, x1=dx+320>w?w:dx+320;
+            int y0=dy<0?0:dy, y1=dy+176>ph?ph:dy+176;
+            if (x0<x1 && y0<y1) for (int r=y0;r<y1;r++)
+                memcpy(saved+(r-y0)*320,im->index+(size_t)r*im->stride+x0,(size_t)(x1-x0));
+            sprite(s,cel,x,y,w,ph,im);
+            if (x0<x1 && y0<y1) for (int r=y0;r<y1;r++)
+                memcpy(im->index+(size_t)r*im->stride+x0,saved+(r-y0)*320,(size_t)(x1-x0));
+        }
+      }
     }
     /* Foreground requests are world cells, not a raster padded to 320 pixels.
      * Outside the original aperture regenerate the sprite-neighbour requests. */
@@ -192,7 +218,7 @@ int enh_render(const FrameGameView *v, const EnhLevel *a, const uint8_t palette[
             if (r < 0 || r >= a->rows || c < a->policy.first_column || c >= a->policy.end_column) continue;
             unsigned t = v->map->rows[r][c];
             if (a->flags[t] & 0x40) front_tile(a, t, c * 16 - cx, r * 16 - cy, w, ph, im,
-                                             opt->position_count ? NULL : v, cx, cy);
+                                             opt->position_count && !s->margin_only ? NULL : v, cx, cy);
         }
     }
     /* Overrides regenerate the complete neighbourhood; replaying old requests
@@ -202,7 +228,7 @@ int enh_render(const FrameGameView *v, const EnhLevel *a, const uint8_t palette[
         int ox = (f->cell & 255) * 16 - cx, oy = (f->cell >> 8) * 16 - cy;
         front_tile(a, f->tile, ox, oy, w, ph, im, NULL, cx, cy);
     }
-    dots(v, v->sprite_count, dx, dy, w, ph, im);
+    dots(v, regular_count, dx, dy, w, ph, im);
     if (opt->hud != ENH_HUD_NONE) {
         int ox = opt->hud == ENH_HUD_LEFT ? 0 : opt->hud == ENH_HUD_RIGHT ? w - 320 : (w - 320) / 2;
         for (int y = 0; y < 24; y++) for (int x = 0; x < w; x++) {

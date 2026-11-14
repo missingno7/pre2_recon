@@ -1,4 +1,5 @@
 #include "presenter.h"
+#include "level_regions.h"
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
@@ -196,21 +197,15 @@ int presenter_render(Presenter *p, uint64_t bound, double aspect, PresenterImage
             presenter_interpolate(&f->game,&b->f.game,fraction(t,r->sim_time,b->sim_time),&pose); break;
         }
         o->alpha=pose.alpha;
-        int fixed=presenter_fixed_aperture(pose.view,o->w), rw=fixed?320:o->w;
-        double sw=pose.view->view_w>320?pose.view->view_w:320;   /* simulated view width (wide variant) */
+        int rw=o->w;
+        double sw=pose.view->view_w>320?pose.view->view_w:320;
         double cx=pose.x-(rw-sw)/2.0, cy=pose.y;
-        if (p->opt.smooth_camera && !fixed) presenter_camera(&p->camera,&pose,t,rw,p->opt.camera_tau,&cx,&cy);
-        else if (fixed) p->camera.seeded=0;
-        else if (rw>320 && pose.view->assets) {
-            EnhLevelPolicy pol=enh_level_policy(pose.view->level);
-            double lo=pol.first_column*16.0, end=pol.end_column*16.0;
-            double header=(pose.view->camera_limit_column+20)*16.0;
-            if (pose.view->camera_x+sw<=header && end>header) end=header;
-            if (cx<lo) cx=lo;
-            if (cx>end-rw) cx=end-rw;
-        }
+        if (p->opt.smooth_camera) presenter_camera(&p->camera,&pose,t,rw,p->opt.camera_tau,&cx,&cy);
+        Pre2PresentWindow window=pre2_present_window(pose.view,cx,cy,rw,176);
+        cx=window.x; cy=window.y;
         EnhImage im={0}; im.index=p->index; im.capacity=sizeof p->index; im.stride=rw;
         EnhOptions opt={p->opt.backdrop,p->opt.hud,pose.positions,pose.count};
+        if (window.region.bounds.x1-window.region.bounds.x0<rw) opt.hud=ENH_HUD_CENTRE;
         if (enh_render(pose.view,pose.view->assets,f->palette,f->pel_mask,cx,cy,rw,200,&opt,&im)==0) {
             int ox=(o->w-rw)/2;
             uint32_t pal[256];
@@ -221,6 +216,8 @@ int presenter_render(Presenter *p, uint64_t bound, double aspect, PresenterImage
             double iy=f->game.camera_y+f->transition.cy-cy+pose.view->shake_rows;
             for (int y=0;y<200;y++) for (int x=0;x<rw;x++) {
                 uint32_t c=pal[p->index[y*rw+x]];
+                if (y<176 && (floor(cx)+x<window.visible.x0 || floor(cx)+x>=window.visible.x1 ||
+                              floor(cy)+y<window.visible.y0 || floor(cy)+y>=window.visible.y1)) c=0xff000000u;
                 if (iris && y<176 && (x-ix)*(x-ix)+(y-iy)*(y-iy)>o->radius*o->radius) c=0xff000000u;
                 o->pixels[y*o->w+x+ox]=c;
             }
