@@ -65,17 +65,18 @@ Pre2RegionPolicy pre2_region_policy(unsigned level, Pre2RegionKind kind,
         return p;
     }
 
-    /* A nonzero cave gate locks the original two-axis scroll. Until an
-     * unannotated arrival is mapped, keep its aperture at 320 but preserve
-     * the caller's original follow limits. */
     if (kind == PRE2_REGION_CAVE_UNKNOWN) {
-        p.effective_width_px = 320; p.fixed_aperture = 1;
+        /* A free-follow arrival scrolls like the main region and gets the requested width:
+         * only a locked screen (nonzero gate) is a room. Its outer walls are not mapped, so
+         * the wide view can show what lies beside it in the map, as the camera's own idle
+         * look already does at 320. */
+        unsigned cols = p.effective_width_px / 16;
         /* The record proves its original 20-column arrival aperture even when
          * it lies beyond the main header's conditional camera threshold. Do
          * not clamp a canonical column-236 arrival to the main world's edge. */
         if (camera_col > 236) camera_col=236;
-        if (p.camera_max_col < camera_col) p.camera_max_col=(uint16_t)camera_col;
         if (p.world_right_column < camera_col+20) p.world_right_column=(uint16_t)(camera_col+20);
+        p.camera_max_col = p.world_right_column > cols ? (uint16_t)(p.world_right_column - cols) : 0;
         return p;
     }
     if (kind == PRE2_REGION_CAVE_LOCKED) {
@@ -299,7 +300,9 @@ Pre2AuthoredRegion pre2_region_for_view(const FrameGameView *v)
     }
     for (unsigned i=0;i<sizeof cave_regions/sizeof *cave_regions;i++) {
         const Pre2CaveRegion *c=&cave_regions[i];
-        if (c->level != level || !!c->gate != !!v->room) continue;
+        /* Only locked screens are rooms. A free-follow arrival camera is an ordinary
+         * camera position (the way-back records' lie on the main region's own path). */
+        if (c->level != level || !c->gate || !v->room) continue;
         if (v->camera_x == (c->camera&255)*16 && v->camera_y == (c->camera>>8)*16)
             return c->region;
     }

@@ -155,8 +155,10 @@ int sdl_host_pump(void (*key)(uint8_t code),int (*ui)(int,int,int,int))
     return quit;
 }
 
-void sdl_host_show(const uint32_t *xrgb, int w, int h, int aspect_w, int aspect_h)
+void sdl_host_show(const uint32_t *xrgb, int w, int h, int aspect_w, int aspect_h,
+                   const uint32_t *overlay_argb, int ow, int oh)
 {
+    static SDL_Texture *over; static int over_w, over_h;
     if (!ren) return;
     if (!tex || w != tex_w || h != tex_h) {
         if (tex) SDL_DestroyTexture(tex);
@@ -169,6 +171,19 @@ void sdl_host_show(const uint32_t *xrgb, int w, int h, int aspect_w, int aspect_
     SDL_UpdateTexture(tex, NULL, xrgb, w * 4);
     SDL_RenderClear(ren);
     SDL_RenderTexture(ren, tex, NULL, NULL);
+    if (overlay_argb && ow > 0 && oh > 0) {
+        if (!over || ow != over_w || oh != over_h) {
+            if (over) SDL_DestroyTexture(over);
+            over = SDL_CreateTexture(ren, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, ow, oh);
+            SDL_SetTextureScaleMode(over, SDL_SCALEMODE_NEAREST);
+            SDL_SetTextureBlendMode(over, SDL_BLENDMODE_BLEND);
+            over_w = ow; over_h = oh;
+        }
+        SDL_FRect dst = { 0, 0, (float)ow, (float)oh };
+        SDL_SetRenderLogicalPresentation(ren, 0, 0, SDL_LOGICAL_PRESENTATION_DISABLED);
+        SDL_UpdateTexture(over, NULL, overlay_argb, ow * 4);
+        SDL_RenderTexture(ren, over, NULL, &dst);
+    }
     SDL_RenderPresent(ren);
 }
 

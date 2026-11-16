@@ -110,14 +110,20 @@ are counterexamples to treating the arrival aperture as an outer extent.
 `build/regions_shots/cave_arrivals.tsv` contains all 44 records, including the
 eight stationary-screen proofs. Each native entry also carries its blocker.
 
-The simulation variant returns to the main region's width on the way back
-(`pre2_view_cave`): it remembers the source tile of the trigger that left the
-main region, and a later free-follow trigger landing within four tiles of it
-(the shipped return records land 0..1 columns, 0..4 rows away) selects
-`PRE2_REGION_MAIN` again. Cave-to-cave, one-way passages and locked screens
-keep the 320 arrival until the next level. `--smoke 50 --scenario cave` walks
-record 0836h and its return 2E7Eh (464 -> 320 -> 464 with `--wide-sim auto
---aspect 21:9`).
+Only a locked screen (a trigger record with a nonzero follow gate) is a room: the
+simulation variant keeps it at 320 and the presenter centres it. A free-follow
+arrival scrolls like the main region, so it keeps the requested width in the
+simulation and is not a presentation region; its camera stops where the wide
+view reaches the arrival's right edge. This is the legacy port's rule too. The
+36 free-follow records have no mapped outer walls, so the wide view can show
+what lies beside them in the map, as the original's own idle look does at 320.
+`--smoke 50 --scenario cave` walks record 0836h and its way back 2E7Eh (the
+view stays 464 with `--wide-sim auto --aspect 21:9`).
+Two player-relative checks follow the variant's width as well: the approach
+spawner's near limit (a screen width; `SpawnChildOnApproach`) and the pickup
+projection's left edge (two tiles of slack, as on the right). The ring spawner
+(`SpawnChildOnPlayerBox`, offsets -120..+120 at ds:A343h) is left as authored:
+its children rise from the ground on screen in the original too.
 
 | Level | Source | Camera | Destination | Idle X | Settled Y | Blocker |
 |---|---|---|---|---:|---:|---|

@@ -30,8 +30,11 @@ int main(void)
     assert(p.effective_width_px == 320 && p.camera_min_col == 103 && p.camera_max_col == 103);
     assert(p.first_column == 103 && p.end_column == 123);
     p = pre2_region_policy(0, PRE2_REGION_CAVE_UNKNOWN, 640, 103);
+    /* free follow keeps the requested width; the camera stops at the arrival's right edge */
+    assert(p.effective_width_px == 640 && p.camera_max_col == 216 && p.world_right_column == 256);
+    p = pre2_region_policy(0, PRE2_REGION_CAVE_UNKNOWN, 320, 103);
     assert(p.effective_width_px == 320 && p.camera_max_col == 236);
     p = pre2_region_policy(1, PRE2_REGION_CAVE_UNKNOWN, 640, 236);
-    assert(p.effective_width_px==320 && p.camera_max_col==236 && p.world_right_column==256);
+    assert(p.effective_width_px==640 && p.camera_max_col==216 && p.world_right_column==256);
     return 0;
 }

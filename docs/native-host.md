@@ -82,6 +82,14 @@ Window, vsync, scaling and gain changes apply immediately. Gain/mute operate on 
 machine still generates exactly the same mono PCM. A frame cap limits presents,
 independently of the simulation; vsync can impose a lower effective cap.
 
+The game image is always scaled by the GPU. The menu and the performance line
+are drawn at the drawable's resolution into an overlay texture the renderer
+blends on top (the earlier CPU composition of the whole window cost 4 ms at
+1080p and 15 ms at 4K per frame whenever the performance line was on). The
+image is sampled at the display's own time on the logical clock, not at the
+bound the simulation worker last finished. The performance line adds DRAW
+(composing the image) and SHOW (upload, swap and the wait for sync) in ms.
+
 The audio output stage (`sdl_host_audio`) does not change the machine's PCM. It
 centres it (a 7 Hz DC blocker to signed 16-bit: the original rests at 00h, so
 every gap SDL fills with silence was a step), keeps a 60 ms cushion ahead of

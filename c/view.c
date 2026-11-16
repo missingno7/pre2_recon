@@ -41,13 +41,10 @@ void pre2_view_refresh(void)
     /* World right stays authored even when the camera maximum moves left. */
     pre2_view.logical_right_px=p.world_right_column*16;
 }
-static unsigned main_door;
-static int main_door_valid;
 void pre2_view_begin_level(void)
 {
     pre2_view.variant=pre2_view.configured && !DB(DS_byte_2879);
     pre2_view.region=PRE2_REGION_MAIN;
-    main_door_valid=0;
     pre2_view.region_anchor_col=0;
     aperture(320);
     pre2_view_refresh();
@@ -66,26 +63,12 @@ void pre2_view_stage(void)
     pre2_view.variant=0;
     aperture(320);
 }
-/* The door the player left the main region through. A later free-follow trigger that
- * lands within DOOR_REACH tiles of it is that door's way back (the shipped return records
- * land 0..1 columns and 0..4 rows from their entry tile): the main region, at its full
- * width, is selected again. Anything else (another cave, a one-way passage, a locked
- * screen) keeps the conservative 320 arrival. */
-#define DOOR_REACH 4
-static int near_door(unsigned tile)
-{
-    int dc=(int)(tile&255)-(int)(main_door&255), dr=(int)(tile>>8)-(int)(main_door>>8);
-    return main_door_valid && dc>=-DOOR_REACH && dc<=DOOR_REACH && dr>=-DOOR_REACH && dr<=DOOR_REACH;
-}
 unsigned pre2_view_cave(unsigned gate, unsigned target_col, unsigned source, unsigned destination)
 {
     if (!pre2_view.variant) return target_col;
-    int from_main=pre2_view.region==PRE2_REGION_MAIN;
+    (void)source; (void)destination;   /* the record's tiles: no region depends on them yet */
     pre2_view.region=DB(DS_CurrentLevel)==5 ? PRE2_REGION_TOWER_LOWER :
-        gate ? PRE2_REGION_CAVE_LOCKED :
-        !from_main && near_door(destination) ? PRE2_REGION_MAIN : PRE2_REGION_CAVE_UNKNOWN;
-    if (from_main) { main_door=source; main_door_valid=1; }
-    else if (pre2_view.region==PRE2_REGION_MAIN) main_door_valid=0;
+        gate ? PRE2_REGION_CAVE_LOCKED : PRE2_REGION_CAVE_UNKNOWN;
     pre2_view.region_anchor_col=target_col;
     /* Select the arrival region before the equality pan, rather than changing
      * its destination underneath ScrollViewRight's bound. */

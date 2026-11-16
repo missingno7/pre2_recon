@@ -52,8 +52,8 @@ int main(void)
     overlay_key(&o,&s,OVERLAY_TOGGLE); assert(o.open);
     mkdir("build/overlay_shots");
     const int sizes[][2]={{320,200},{640,400},{960,600},{1280,720},{1920,1080},{257,151}};
-    const uint64_t expected[]={0xead8751dc9879bb7ull,0xa520e3807df8b5d7ull,0x282887caf80d1f3dull,
-        0x2cc166cd5d00f4baull,0x58d0ddf1800480cfull,0xca993498d4004dc9ull};
+    const uint64_t expected[]={0x47b6aabfa10f0bbdull,0x24012723a23e4257ull,0xe8d7a09b2c6d5f17ull,
+        0x71854d85da1ed278ull,0xd524b1e22d04f8bdull,0xa3d865544ea2f684ull};
     unsigned mismatched=0;   /* every shot is written before the golden check */
     for(unsigned i=0;i<sizeof sizes/sizeof *sizes;i++) {
         int w=sizes[i][0],h=sizes[i][1]; size_t n=(size_t)w*h;
@@ -61,7 +61,7 @@ int main(void)
         a[0]=b[0]=0x12345678; a[n+1]=b[n+1]=0xabcdef01;
         for(size_t p=1;p<=n;p++) a[p]=b[p]=((p%w)*255/w)<<16 | ((p/w)*255/h)<<8 | 0x42;
         o.tab=(int)(i%4); o.row=0;
-        OverlayPerf perf={144,72.8,-.4,1};
+        OverlayPerf perf={144,72.8,-.4,1,1.5,6.9};
         overlay_render(&o,&s,&perf,a+1,w,h); overlay_render(&o,&s,&perf,b+1,w,h);
         assert(!memcmp(a,b,(n+2)*4)); assert(a[0]==0x12345678 && a[n+1]==0xabcdef01);
         char path[128]; snprintf(path,sizeof path,"build/overlay_shots/overlay_%dx%d.bmp",w,h); bmp(path,a+1,w,h);

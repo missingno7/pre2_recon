@@ -269,7 +269,6 @@ int presenter_render(Presenter *p, uint64_t bound, double aspect, PresenterImage
         cx=window.x; cy=window.y;
         EnhImage im={0}; im.index=p->index; im.capacity=sizeof p->index; im.stride=rw;
         EnhOptions opt={p->opt.backdrop,p->opt.hud,pose.positions,pose.count};
-        if (window.region.bounds.x1-window.region.bounds.x0<rw) opt.hud=ENH_HUD_CENTRE;
         double ix=f->game.camera_x+f->transition.cx-cx;
         double iy=f->game.camera_y+f->transition.cy-cy;
         int rc = iris ? enh_render_iris(pose.view,f->palette,f->pel_mask,cx,cy,rw,200,&opt,ix,iy,o->radius,&im) :

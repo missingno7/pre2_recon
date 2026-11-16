@@ -84,11 +84,17 @@ static void text(uint32_t *px,int w,int h,int x,int y,int scale,const char *str,
     }
 }
 static int scale_for(int w,int h) {int s=w/320,t=h/200; if(t<s)s=t; return s>0?s:1;}
+int overlay_scale(int w,int h) {return scale_for(w,h);}
+int overlay_performance_rows(int scale) {return 11*scale;}
 void overlay_performance(const OverlayPerf *p,uint32_t *px,int w,int h)
 {
-    if(!p || !px || w<=0 || h<=0) return;
-    char b[100]; int s=scale_for(w,h);
-    snprintf(b,sizeof b,"FPS %.1f TPS %.1f DRIFT %+.1f MS%s",p->fps,p->tps,p->drift_ms,p->paused?" PAUSED":"");
+    overlay_performance_strip(p,px,w,h,scale_for(w,h));
+}
+void overlay_performance_strip(const OverlayPerf *p,uint32_t *px,int w,int h,int s)
+{
+    if(!p || !px || w<=0 || h<=0 || s<=0) return;
+    char b[100];
+    snprintf(b,sizeof b,"FPS %.1f TPS %.1f DRIFT %+.1f MS DRAW %.1f SHOW %.1f%s",p->fps,p->tps,p->drift_ms,p->draw_ms,p->show_ms,p->paused?" PAUSED":"");
     rect(px,w,h,0,0,(int)strlen(b)*GLYPH_W*s+6*s,11*s,0x0d1822);
     text(px,w,h,3*s,2*s,s,b,0xb8e8c4);
 }

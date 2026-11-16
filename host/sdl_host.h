@@ -21,8 +21,11 @@ void sdl_host_apply(const Pre2Settings *settings);
 void sdl_host_audio_pause(int paused);
 int sdl_host_settings_path(char *out,unsigned size);
 void sdl_host_window_size(int *w,int *h);
-/* Shows a w x h frame letterboxed at the aspect_w x aspect_h logical size. */
-void sdl_host_show(const uint32_t *xrgb, int w, int h, int aspect_w, int aspect_h);
+/* Shows a w x h frame letterboxed at the aspect_w x aspect_h logical size; the GPU scales
+ * it. An optional ARGB overlay (menu, performance line) of ow x oh drawable pixels is
+ * blended over the window's top-left at 1:1. */
+void sdl_host_show(const uint32_t *xrgb, int w, int h, int aspect_w, int aspect_h,
+                   const uint32_t *overlay_argb, int ow, int oh);
 /* Unsigned 8-bit mono blocks as the machine produced them; see the output stage's notes. */
 void sdl_host_audio(const uint8_t *pcm, uint32_t n, uint32_t rate);
 uint32_t sdl_host_audio_queued(void);

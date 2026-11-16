@@ -329,7 +329,10 @@ void BuildEffectDrawList(void)
             uint16_t x = DW(si), y = DW((uint16_t)(si + 2));
             uint16_t u = (uint16_t)((int16_t)x >> 4), v = (uint16_t)((int16_t)y >> 4);
             uint16_t cam_col = DW(DS_CameraCol), cam_row = DW(DS_CameraRow);
-            if (u < cam_col || (int16_t)(uint16_t)(u - cam_col) > (int)pre2_view.cols + 2) continue;
+            /* The original drops a source as its anchor tile leaves the left edge, while
+             * part of the sprite is still on screen; the variant gives the left the same
+             * two-tile slack the right has. */
+            if ((int16_t)(uint16_t)(u - cam_col) < -2 || (int16_t)(uint16_t)(u - cam_col) > (int)pre2_view.cols + 2) continue;
             if (v < cam_row || (int16_t)(uint16_t)(v - cam_row) > (int)pre2_view.pickup_max_row) continue;
             if (!pre2_view_candidate(x, y)) continue;
             uint16_t di = pre2_pool_slot(PRE2_POOL_PROJECTION, out);

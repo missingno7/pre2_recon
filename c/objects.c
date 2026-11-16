@@ -1002,8 +1002,11 @@ int SpawnChildOnApproach(uint16_t si)
     uint16_t ey = RW(si, 0x0B);
     if ((int16_t)DW(DS_PlayerY) <= (int16_t)ey) return 1;
     uint16_t ax = abs16((uint16_t)(RW(si, ENT_BOX) - DW(DS_PlayerX)));
-    if ((int16_t)ax >= 0x280) return 1;
-    if ((int16_t)ax < 0x140) {
+    /* The near limit is a screen width (the entity point is then off screen wherever the
+     * player stands in the follow band); the variant measures it in its own width. */
+    int near_px = pre2_view.variant ? (int)pre2_view.width_px : 0x140;
+    if ((int16_t)ax >= near_px + 0x140) return 1;
+    if ((int16_t)ax < near_px) {
         ax = (uint16_t)(DW(DS_PlayerY) - ey);
         if ((int16_t)ax >= 0x168) return 1;
         if ((int16_t)ax <= 0xB4) return 1;

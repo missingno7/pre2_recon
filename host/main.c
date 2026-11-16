@@ -75,7 +75,7 @@ static void console_attach(void) {}
 /* ---- presentation: the reference VGA scan-out at each CRT frame's display start ------------ */
 static uint32_t frame_px[PRESENTER_MAX_W * PRESENTER_MAX_H];
 static int frame_w = 320, frame_h = 200;
-static uint64_t frames_shown;
+static uint64_t frames_shown, draw_ns, draws;
 static int reference_video;
 static Pre2Frame frame;
 static Presenter *presenter;
@@ -183,35 +183,32 @@ static int ui_key(int code,int down,int repeat,int shift)
     }
     return was_open || overlay.open;
 }
-/* Nearest-neighbour composition at the drawable resolution keeps the authored
- * menu font integral even when the game image is 320x200. */
+/* The game image is always scaled by the GPU. The menu and the performance line are drawn
+ * at the drawable's own resolution (integral authored font) into an overlay the renderer
+ * blends on top: nothing of the window's size is composed on the CPU per frame except the
+ * overlay that is actually visible. */
 static void show_product(const OverlayPerf *perf)
 {
-    if(!overlay.open && !settings.performance && !settings.integer_scaling) {
-        (void)display_aspect();
-        sdl_host_show(frame_px,frame_w,frame_h,canvas_w,settings.pixel_aspect?240:200);
-        return;
-    }
+    const uint32_t *src=overlay.open?frozen_px:frame_px;
+    int sw=overlay.open?frozen_w:frame_w,sh=overlay.open?frozen_h:frame_h;
+    (void)image_aspect(sw,sh);
+    int aw=canvas_w,ah=settings.pixel_aspect?240:200;
+    if(!overlay.open && !settings.performance) { sdl_host_show(src,sw,sh,aw,ah,NULL,0,0); return; }
     int w,h; sdl_host_window_size(&w,&h);
     if(w<=0 || h<=0 || w>8192 || h>8192) return;
-    size_t n=(size_t)w*h;
+    int scale=overlay_scale(w,h),rows=overlay.open?h:overlay_performance_rows(scale);
+    if(rows>h) rows=h;
+    size_t n=(size_t)w*rows;
     if(n>output_capacity) {
         uint32_t *p=realloc(output_px,n*4); if(!p) return; output_px=p; output_capacity=n;
     }
-    const uint32_t *src=overlay.open?frozen_px:frame_px;
-    int sw=overlay.open?frozen_w:frame_w,sh=overlay.open?frozen_h:frame_h;
-    double a=overlay.open?frozen_aspect:display_aspect();
-    int dh=h,dw=(int)(h*a); if(dw>w) {dw=w; dh=(int)(w/a);}
-    int logical_h=(int)(sw/a+.5);
-    if(settings.integer_scaling && dw>=sw && dh>=logical_h && logical_h>0) {
-        int z=dw/sw,tz=dh/logical_h; if(tz<z) z=tz; dw=sw*z; dh=logical_h*z;
-    }
     memset(output_px,0,n*4);
-    if(dw>0 && dh>0) for(int y=0;y<dh;y++) for(int x=0;x<dw;x++)
-        output_px[(size_t)(y+(h-dh)/2)*w+x+(w-dw)/2]=src[(size_t)(y*sh/dh)*sw+x*sw/dw];
     if(overlay.open) overlay_render(&overlay,&settings,perf,output_px,w,h);
-    else if(settings.performance) overlay_performance(perf,output_px,w,h);
-    sdl_host_show(output_px,w,h,w,h);
+    else overlay_performance_strip(perf,output_px,w,rows,scale);
+    /* Untouched pixels: the menu dims the frozen picture, the performance line is clear. */
+    uint32_t clear=overlay.open?0xC0000000u:0;
+    for(size_t i=0;i<n;i++) output_px[i]=output_px[i]?0xFF000000u|output_px[i]:clear;
+    sdl_host_show(src,sw,sh,aw,ah,output_px,w,rows);
 }
 static void queue_key(uint8_t key)
 {
@@ -383,6 +380,7 @@ static void smoke_report(void)
     double s = secs(rt_now());
     printf("smoke: ran %.2f s logical; timer interrupts %llu (%.2f Hz); display frames %llu, shown %llu\n", s,
            (unsigned long long)st->ticks, st->ticks / s, (unsigned long long)st->display_frames, (unsigned long long)frames_shown);
+    if (draws) printf("smoke: presenter: %llu images, %.2f ms each\n", (unsigned long long)draws, draw_ns / 1e6 / draws);
     if (gameplay_ns) {
         double g = secs(rt_now() - gameplay_ns);
         uint32_t f = pre2_frames_run - gameplay_frames0;
@@ -470,7 +468,10 @@ static int simulation(void *arg)
         }
         else {
             PresenterImage im={0}; im.pixels=frame_px; im.capacity=sizeof frame_px/sizeof *frame_px;
-            if (!presenter_render(presenter,bound,1.6,&im)) {
+            uint64_t draw0=sdl_host_ns();
+            int drawn=!presenter_render(presenter,bound,1.6,&im);
+            draw_ns+=sdl_host_ns()-draw0; draws++;
+            if (drawn) {
                 frame_w=im.w; frame_h=im.h; shown_screen=frame.screen;
                 if (shots_dir && bound>=next_shot_ns) { shot(); next_shot_ns=bound+shot_interval_ns; }
             }
@@ -608,13 +609,22 @@ int main(int argc, char **argv)
             }
             perf.drift_ms=((double)logical-(double)mapped)/1e6; perf.paused=overlay.open;
             PresenterImage im={0}; im.pixels=frame_px; im.capacity=sizeof frame_px/sizeof *frame_px;
-            if (!overlay.open && !presenter_render(presenter,bound,sdl_host_window_aspect(),&im)) {
+            uint64_t draw0=sdl_host_ns();
+            /* The image is sampled at the display's own time on the logical clock, not at the
+             * bound the worker last happened to finish (that moves in the worker's steps,
+             * which do not line up with refreshes and made interpolated motion uneven).
+             * The presenter only ever uses frames already published. */
+            uint64_t present=turbo?bound:mapped;
+            if (!overlay.open && !presenter_render(presenter,present,sdl_host_window_aspect(),&im)) {
                 frame_w=im.w; frame_h=im.h;
-                last_present_bound=bound;
+                last_present_bound=present;
 
                 if (shots_dir && bound>=next_shot_ns) { shot(); next_shot_ns=bound+shot_interval_ns; }
             }
+            uint64_t draw1=sdl_host_ns();
             show_product(&perf); frames_shown++;
+            uint64_t show1=sdl_host_ns();
+            perf.draw_ms+=((draw1-draw0)/1e6-perf.draw_ms)*.05; perf.show_ms+=((show1-draw1)/1e6-perf.show_ms)*.05;
             if(settings.frame_cap>0) {
                 uint64_t interval=1000000000ull/(unsigned)settings.frame_cap,spent=sdl_host_ns()-frame_start;
                 if(spent<interval) sdl_host_sleep_ns(interval-spent);
@@ -622,6 +632,8 @@ int main(int argc, char **argv)
             if (done && !pending) break;
         }
         status=sdl_host_worker_join();
+        if (smoke_on) printf("host: last presented %.1f images/s; draw %.2f ms, show %.2f ms (includes the wait for sync)\n",
+                             perf.fps, perf.draw_ms, perf.show_ms);
     }
     if (smoke_on) smoke_report();
     if (demo_out) demo_save();
