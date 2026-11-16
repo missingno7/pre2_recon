@@ -107,6 +107,10 @@ static void hud_publish(uint64_t t, uint16_t start, Pre2Frame *f)
         if(i%3==0) for(unsigned pixel=0;pixel<64000;pixel++) {
             const uint8_t *c=f->palette[f->index[pixel]&f->pel_mask];
             uint32_t rgb=0xff000000u | (uint32_t)((c[0]<<2)|(c[0]>>4))<<16 | (uint32_t)((c[1]<<2)|(c[1]>>4))<<8 | ((c[2]<<2)|(c[2]>>4));
+            /* The smooth curtain mirrors the original's right edge: at a step endpoint it
+             * differs from the original only by the one strip the left side trails by. */
+            int x=(int)(pixel%320), step=f->transition.step;
+            if(i>=3 && f->transition.kind==2 && pixel<176*320 && x>=160-16*step && x<176-16*step) continue;
             if(pi.pixels[pixel]!=rgb) { fprintf(stderr,"poisoned presenter differs at level %u kind %u step %u pixel %u\n",v.level,f->transition.kind,f->transition.step,pixel); exit(1); }
         }
         if(i==2 && f->transition.kind==1 && v.surface && f->transition.cy>=0 && f->transition.cy<176) {

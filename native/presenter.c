@@ -22,7 +22,8 @@ struct Presenter {
     FrameScreenView pan;   /* CARTE pan endpoint with capped reveal */
     /* The status strip as last published outside an iris. The original iris blacks its
      * spans out of the 320 strip itself, which a wide layout cannot map back. */
-    FrameGameView hud_view;
+    FrameGameView hud_view, curtain_view;
+    EnhSurface curtain_surface;
     uint16_t hud_count; uint8_t hud_frame, hud_valid; uint32_t hud_epoch;
     FrameHudElement hud_elements[FRAME_MAX_HUD];
 };
@@ -288,13 +289,26 @@ int presenter_render(Presenter *p, uint64_t bound, double aspect, PresenterImage
         }
         if (rc==0) {
             o->fallback &= ~8u;
-            int mask_pair = pair && step_t>0 && (f->transition.kind==2 || f->transition.kind==3);
-            if (mask_pair) {
+            /* Smooth shapes (the original's own timeline, drawn continuously).
+             * Column reveal: one curtain opening from the centre over the whole width, its
+             * half-width the original's right edge (16 pixels of 320 per step); the left
+             * side mirrors it instead of trailing by a strip, so the far-left strip the
+             * original never copies opens with the rest. The destination is the page the
+             * original copies from, complete before the first column.
+             * Block wipe: the two bands (ten rows per step, from the top and the bottom
+             * edge) close towards the middle at a steady rate. */
+            double advance = pair ? (next->transition.step-f->transition.step)*step_t : 0;
+            int curtain = p->opt.smooth_transitions && f->transition.kind==2 &&
+                pose.view->surface && pose.view->surface->reveal;
+            if (curtain) {
+                p->curtain_surface=*pose.view->surface; p->curtain_surface.columns=0xFFFFFu;
+                p->curtain_view=*pose.view; p->curtain_view.surface=&p->curtain_surface;
                 EnhImage ni={0}; ni.index=p->next_index; ni.capacity=sizeof p->next_index; ni.stride=rw;
-                mask_pair = next->game.valid && next->game.assets &&
-                    !enh_render(&next->game,next->game.assets,next->palette,next->pel_mask,
-                        next->game.camera_x+cx-f->game.camera_x,next->game.camera_y+cy-f->game.camera_y,rw,200,&opt,&ni);
+                curtain = !enh_render(&p->curtain_view,p->curtain_view.assets,f->palette,f->pel_mask,cx,cy,rw,200,&opt,&ni);
             }
+            double curtain_half = (f->transition.step+advance)*rw/20.0;
+            int bands = p->opt.smooth_transitions && f->transition.kind==3 && pair && step_t>0;
+            double band_rows = 10.0*(f->transition.step+advance);
             int ox=(o->w-rw)/2;
             uint32_t pal[256];
             for (int i=0;i<256;i++) pal[i]=rgb(f->palette[i&f->pel_mask],(pal_b?pal_b:f)->palette[i&f->pel_mask],pal_t);
@@ -304,14 +318,8 @@ int presenter_render(Presenter *p, uint64_t bound, double aspect, PresenterImage
                 uint32_t c=pal[p->index[y*rw+x]];
                 if (y<176 && (floor(cx)+x<window.visible.x0 || floor(cx)+x>=window.visible.x1 ||
                               floor(cy)+y<window.visible.y0 || floor(cy)+y>=window.visible.y1)) c=0xff000000u;
-                if (mask_pair && y<176) {
-                    double sx=(x+.5)*320.0/rw;
-                    double edge=f->transition.kind==2 ? (sx<160 ? 16-fmod(sx,16) : fmod(sx,16))/16 : (y%10+.5)/10;
-                    if (step_t>=edge) {
-                        unsigned idx=p->next_index[y*rw+x]&next->pel_mask;
-                        c=rgb(next->palette[idx],next->palette[idx],0);
-                    }
-                }
+                if (curtain && y<176 && fabs(x+.5-rw/2.0)<curtain_half) c=pal[p->next_index[y*rw+x]];
+                if (bands && (y<band_rows || y>=176-band_rows) && y<176) c=pal[0];
                 o->pixels[y*o->w+x+ox]=c;
             }
             o->camera_x=cx; o->camera_y=cy;

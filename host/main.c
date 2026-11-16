@@ -2,6 +2,7 @@
  * (native/machine.c) and presents what it publishes.
  *
  *   pre2 [--assets DIR] [--smoke SECONDS] [--scenario NAME] [--turbo] [--headless] [--shots DIR]
+ *        [--shot-interval SECONDS]
  *        [--fast-load] [--fast-vga] [--year YYYY] [--demo-out FILE] [--demo-in FILE] [--reference]
  *        [--mode faithful|enhanced|widescreen] [--aspect 16:9|16:10|21:9|window]
  *        [--interpolate] [--smooth-camera] [--camera-tau SECONDS] [--smooth-transitions]
@@ -254,7 +255,7 @@ static void write_bmp(const char *path, const uint32_t *px, int w, int h)
     fwrite(hd, 1, 54, f); fwrite(px, 4, (size_t)(w * h), f); fclose(f);
 }
 
-/* --shots DIR: the presented frame every 0.5 s of logical time as DIR/NNNN_<step>.bmp. */
+/* --shots DIR: the presented frame every 0.5 s (--shot-interval) of logical time as DIR/NNNN_<step>.bmp. */
 static const char *shots_dir;
 static const char *shown_screen;
 static void shot(void)
@@ -426,7 +427,7 @@ static void demo_save(void)
     printf("demo: saved %s (level %u, expert %u, %u entries)\n", demo_out, DB(0x083E), DB(0x083D), n);
 }
 
-static uint64_t next_shot_ns;
+static uint64_t next_shot_ns, shot_interval_ns = 500000000ull;
 static void on_service(void)
 {
     static int loaded;
@@ -471,7 +472,7 @@ static int simulation(void *arg)
             PresenterImage im={0}; im.pixels=frame_px; im.capacity=sizeof frame_px/sizeof *frame_px;
             if (!presenter_render(presenter,bound,1.6,&im)) {
                 frame_w=im.w; frame_h=im.h; shown_screen=frame.screen;
-                if (shots_dir && bound>=next_shot_ns) { shot(); next_shot_ns=bound+500000000ull; }
+                if (shots_dir && bound>=next_shot_ns) { shot(); next_shot_ns=bound+shot_interval_ns; }
             }
         }
         if (st!=RT_STEP_DONE) break;
@@ -509,6 +510,7 @@ int main(int argc, char **argv)
         if (!strcmp(argv[i], "--assets") && i + 1 < argc) assets = argv[++i];
         else if (!strcmp(argv[i], "--smoke") && i + 1 < argc) smoke = atof(argv[++i]);
         else if (!strcmp(argv[i], "--shots") && i + 1 < argc) shots_dir = argv[++i];
+        else if (!strcmp(argv[i], "--shot-interval") && i + 1 < argc) shot_interval_ns = (uint64_t)(atof(argv[++i]) * 1e9);
         else if (!strcmp(argv[i], "--fast-load")) cfg.fast_load = 1;
         else if (!strcmp(argv[i], "--scenario") && i + 1 < argc) scenario = argv[++i];
         else if (!strcmp(argv[i], "--fast-vga")) cfg.fast_vga = 1;
@@ -610,7 +612,7 @@ int main(int argc, char **argv)
                 frame_w=im.w; frame_h=im.h;
                 last_present_bound=bound;
 
-                if (shots_dir && bound>=next_shot_ns) { shot(); next_shot_ns=bound+500000000ull; }
+                if (shots_dir && bound>=next_shot_ns) { shot(); next_shot_ns=bound+shot_interval_ns; }
             }
             show_product(&perf); frames_shown++;
             if(settings.frame_cap>0) {
