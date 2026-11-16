@@ -22,7 +22,7 @@ struct Presenter {
     FrameScreenView pan;   /* CARTE pan endpoint with capped reveal */
     /* The status strip as last published outside an iris. The original iris blacks its
      * spans out of the 320 strip itself, which a wide layout cannot map back. */
-    FrameGameView hud_view, curtain_view;
+    FrameGameView hud_view, curtain_view, leaving_view;
     EnhSurface curtain_surface;
     uint16_t hud_count; uint8_t hud_frame, hud_valid; uint32_t hud_epoch;
     FrameHudElement hud_elements[FRAME_MAX_HUD];
@@ -259,6 +259,29 @@ int presenter_render(Presenter *p, uint64_t bound, double aspect, PresenterImage
             if (!b->f.game.valid || !b->f.game.world_valid || b->f.transition.kind || b->f.game.level_epoch!=f->game.level_epoch) break;
             if (b->f.game.sim_frame==f->game.sim_frame) continue;
             presenter_interpolate(&f->game,&b->f.game,fraction(t,r->sim_time,b->sim_time),&pose); break;
+        }
+        /* The simulation camera moves in whole tiles and culls what that step puts off
+         * screen. The newer view supplies the sprite set, so such a sprite would vanish at
+         * the start of the slide with part of it still in view: keep each sprite of the
+         * older view that the newer one lacks and that lies outside the newer view's own
+         * window (it left; it was not removed), at its world position, for this interval. */
+        if (pose.view!=&f->game && pose.view->assets && pose.view->assets->cels) {
+            const FrameGameView *old=&f->game, *nv=pose.view;
+            int vw=nv->view_w>320?nv->view_w:320, added=0;
+            for (unsigned i=0;i<old->sprite_count && i<FRAME_MAX_SPRITES;i++) {
+                const FrameSprite *s=&old->sprites[i];
+                if (s->screen_space || s->margin_only || s->frame>=1024) continue;
+                unsigned k; for (k=0;k<nv->sprite_count;k++) if (nv->sprites[k].id==s->id && nv->sprites[k].gen==s->gen) break;
+                if (k<nv->sprite_count) continue;
+                const EnhCel *cel=&nv->assets->cels[s->frame];
+                int bx=s->screen_x+old->camera_x-nv->camera_x, by=s->screen_y+old->camera_y-nv->camera_y;
+                if (!(bx>=vw || bx+cel->w<=0 || by>=176 || by+cel->h<=0)) continue;
+                if (!added) { p->leaving_view=*nv; added=1; }
+                if (p->leaving_view.sprite_count>=FRAME_MAX_SPRITES) break;
+                FrameSprite *d=&p->leaving_view.sprites[p->leaving_view.sprite_count++];
+                *d=*s; d->screen_x=bx; d->screen_y=by;
+            }
+            if (added) pose.view=&p->leaving_view;
         }
         o->alpha=pose.alpha;
         int rw=o->w;

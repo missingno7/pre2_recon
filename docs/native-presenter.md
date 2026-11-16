@@ -70,7 +70,12 @@ slices. Audio generation, timestamps, rate and SDL resampling are unchanged.
 For an open interpolation interval the newer view supplies the sprite set,
 animation/cel, pose offsets, mirror, pass, tiles, HUD, palette and dots. Matching
 requires both ID and generation. New sprites appear at their newer position;
-despawned sprites disappear. Screen-space sprites ignore anchor overrides and
+despawned sprites disappear. One exception keeps the slide whole: the simulation
+camera moves in whole tiles and culls what that step puts off screen, so a sprite
+of the older view that the newer one lacks, and whose place lies outside the newer
+view's own window, left the view rather than being removed. It is drawn at its
+world position for that interval and slides out with the camera instead of
+vanishing with up to a tile of it still visible. Screen-space sprites ignore anchor overrides and
 camera movement. At alpha 0/1 the complete respective endpoint view is used, with
 no position overrides (including its discrete sprite set and foreground requests).
 This endpoint convention necessarily has a discrete set change just after alpha 0.
