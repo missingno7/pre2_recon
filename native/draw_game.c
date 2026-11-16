@@ -11,7 +11,7 @@
 
 static FrameGameView pages[2];
 static FrameTransition transitions[2];
-static uint32_t epoch, generation[FRAME_ID_SLOT_STRIDE];
+static uint32_t epoch, sim_steps, generation[FRAME_ID_SLOT_STRIDE];
 static uint8_t alive[FRAME_ID_SLOT_STRIDE], cuts[2];
 static uint16_t owners[FRAME_ID_SLOT_STRIDE];
 static uint32_t point_dot_generation[256], fly_dot_generation[20];
@@ -84,7 +84,7 @@ static FrameGameView *draw_view(void) { return &pages[page_index(DW(DS_DrawPage)
 static void capture_view(FrameGameView *v)
 {
     v->valid = 1; v->level = DB(DS_CurrentLevel); v->level_epoch = epoch;
-    v->sim_frame = pre2_frames_run;
+    v->sim_frame = pre2_frames_run; v->sim_step = ++sim_steps;
     v->camera_x = (int32_t)DW(DS_CameraCol) * 16;
     v->camera_y = (int32_t)DW(DS_CameraRow) * 16 + DB(DS_FineScroll);
     v->shake_rows = (int16_t)DW(DS_ShakeRows); v->view_w = pre2_view.width_px; v->view_h = pre2_view.height_px;
@@ -563,7 +563,7 @@ void draw_game_register(void)
 {
     enh_capture_reset();
     game_assets_reset(); memset(pages, 0, sizeof pages); memset(transitions, 0, sizeof transitions);
-    epoch = 0; memset(owners, 0, sizeof owners); memset(generation, 0, sizeof generation); memset(alive, 0, sizeof alive); cuts[0] = cuts[1] = 1;
+    epoch = 0; sim_steps = 0; memset(owners, 0, sizeof owners); memset(generation, 0, sizeof generation); memset(alive, 0, sizeof alive); cuts[0] = cuts[1] = 1;
     reset_dot_identities();
     for (int kind = SCENE_GAME_ASSETS; kind <= SCENE_GAME_HIDE; kind++) compositor_handle((uint16_t)kind, dispatch);
     compositor_game_view = publish_view; compositor_transition = publish_transition;

@@ -76,6 +76,9 @@ typedef struct FrameGameView {
     uint8_t  level;                 /* CurrentLevel */
     uint32_t level_epoch;           /* bumps at each level load (asset/map generation) */
     uint32_t sim_frame;             /* main-loop frame that produced this view */
+    /* Counts the game's drawn simulation passes, also those of a loop nested in one
+     * main-loop frame (the death bounce's sixty): the unit motion is interpolated over. */
+    uint32_t sim_step;
     int32_t  camera_x, camera_y;    /* simulation camera in world pixels (column*16, row*16 + fine) */
     int16_t  shake_rows;
     uint16_t view_w, view_h;        /* the playfield (320 x 176) */

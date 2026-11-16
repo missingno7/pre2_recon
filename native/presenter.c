@@ -14,7 +14,7 @@ struct Presenter {
     Record records[HISTORY];
     unsigned head, count;
     uint64_t first_sim_time;
-    uint32_t last_sim, last_epoch;
+    uint32_t last_sim, last_step, last_epoch;
     int have_sim;
     PresenterCamera camera;
     uint8_t index[PRESENTER_MAX_W * PRESENTER_MAX_H];
@@ -86,8 +86,9 @@ void presenter_push(Presenter *p, const Pre2Frame *f)
         memcpy(p->hud_elements, f->game.hud_elements, f->game.hud_count * sizeof p->hud_elements[0]);
     }
     if (f->game.valid) {
-        if (!p->have_sim || p->last_sim != f->game.sim_frame || p->last_epoch != f->game.level_epoch) {
-            p->first_sim_time = f->t_ns; p->last_sim = f->game.sim_frame;
+        if (!p->have_sim || p->last_sim != f->game.sim_frame || p->last_step != f->game.sim_step ||
+            p->last_epoch != f->game.level_epoch) {
+            p->first_sim_time = f->t_ns; p->last_sim = f->game.sim_frame; p->last_step = f->game.sim_step;
             p->last_epoch = f->game.level_epoch; p->have_sim = 1;
         }
         r->sim_time = p->first_sim_time;
@@ -257,7 +258,7 @@ int presenter_render(Presenter *p, uint64_t bound, double aspect, PresenterImage
         if (p->opt.interpolate && ordinary) for (unsigned k=at+1;k<available;k++) {
             Record *b=record(p,k);
             if (!b->f.game.valid || !b->f.game.world_valid || b->f.transition.kind || b->f.game.level_epoch!=f->game.level_epoch) break;
-            if (b->f.game.sim_frame==f->game.sim_frame) continue;
+            if (b->f.game.sim_frame==f->game.sim_frame && b->f.game.sim_step==f->game.sim_step) continue;
             presenter_interpolate(&f->game,&b->f.game,fraction(t,r->sim_time,b->sim_time),&pose); break;
         }
         /* The simulation camera moves in whole tiles and culls what that step puts off

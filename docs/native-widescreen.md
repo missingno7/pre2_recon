@@ -119,6 +119,11 @@ view reaches the arrival's right edge. This is the legacy port's rule too. The
 what lies beside them in the map, as the original's own idle look does at 320.
 `--smoke 50 --scenario cave` walks record 0836h and its way back 2E7Eh (the
 view stays 464 with `--wide-sim auto --aspect 21:9`).
+The camera follow is measured on the original 20-column window centred in the
+wider view (`aperture` in c/view.c): it starts four columns from that window's
+edge and pans the original eleven columns, so the extra width is margin on both
+sides (the legacy port's layout: its simulation camera was the original's) and
+the margins slide naturally where the camera stops at a world edge.
 Two player-relative checks follow the variant's width as well: the approach
 spawner's near limit (a screen width; `SpawnChildOnApproach`) and the pickup
 projection's left edge (two tiles of slack, as on the right). The ring spawner

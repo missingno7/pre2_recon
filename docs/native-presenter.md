@@ -40,7 +40,9 @@ retained publication return -1, leaving the caller free to keep its previous ima
 
 The presenter copies 32 CRT publications, retaining the two consecutive distinct
 simulation views needed around the requested time (and further bounded history for
-transitions). Repeated displays of the same `game.sim_frame` retain the time it was
+transitions). Views are told apart by `game.sim_frame` and `game.sim_step` (the drawn passes of a loop
+nested in one main-loop frame, such as the death bounce, are steps of their own).
+Repeated displays of the same view retain the time it was
 **first displayed**. They do not restart interpolation. The delay is the fixed
 `PRESENTER_DELAY_NS = floor(3 * 16384 * 1e9 / 1193182)`, about 41.194 ms: one original
 simulation frame of three PIT ticks, **not** a fixed host update frequency or three

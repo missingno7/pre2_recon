@@ -14,10 +14,15 @@ static void aperture(unsigned width)
 {
     pre2_view.width_px=width; pre2_view.height_px=176;
     pre2_view.cols=width/16; pre2_view.rows=11; pre2_view.summary_rows=12;
-    pre2_view.follow_center=pre2_view.cols/2;
-    pre2_view.follow_start_left=4; pre2_view.follow_start_right=pre2_view.cols-4;
-    pre2_view.follow_stop_left=5; pre2_view.follow_stop_right=pre2_view.cols-5;
-    pre2_view.idle_look_left=2; pre2_view.idle_look_right=pre2_view.cols-3;
+    /* The camera follows as the original does, measured on the original 20-column window
+     * centred in the wider view: it starts when the player is four columns from that
+     * window's edge and pans the original eleven columns, so the extra width is margin on
+     * both sides rather than a longer walk to the screen edge before anything scrolls. */
+    unsigned inset=(pre2_view.cols-20)/2;
+    pre2_view.follow_center=inset+10;
+    pre2_view.follow_start_left=inset+4; pre2_view.follow_start_right=inset+16;
+    pre2_view.follow_stop_left=inset+5; pre2_view.follow_stop_right=inset+15;
+    pre2_view.idle_look_left=inset+2; pre2_view.idle_look_right=inset+17;
     pre2_view.entry_pan_threshold=pre2_view.cols/2+2; pre2_view.entry_pan_tiles=pre2_view.cols/2;
 }
 int pre2_view_configure(unsigned width)
