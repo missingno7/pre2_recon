@@ -2,7 +2,7 @@
 
 ```powershell
 python tools/hostbuild.py
-build\host\pre2.exe --assets assets --smoke 50 [--shots DIR]
+build\host\pre2_sdl3.exe --assets assets --smoke 50 [--shots DIR]
 ```
 
 The only run of the complete program. It is an integration and pacing check, not a
@@ -82,7 +82,7 @@ lowest level:
 
 ## Transition scenarios (`--scenario NAME`, 2026-10-13)
 
-`build\host\pre2.exe --assets assets --smoke 75 --scenario warp|ending|gameover|castle`: 2 s
+`build\host\pre2_sdl3.exe --assets assets --smoke 75 --scenario warp|ending|gameover|castle`: 2 s
 into level 1 the harness writes the state that triggers the transition, then follows the
 program through its screens with RETURN taps and prints each top-level step and level
 change. All four reach their next gameplay natively:

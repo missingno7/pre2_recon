@@ -9,7 +9,7 @@
  *        [--settings PATH] [--fullscreen on|off] [--window-scale 1..6] [--vsync on|off]
  *        [--frame-cap 0..1000] [--integer-scaling on|off] [--pixel-aspect square|crt]
  *        [--volume 0..100] [--mute on|off] [--performance on|off]
- * F1/F10: modal settings. Product options also accept --KEY VALUE with hyphens.
+ * F10: modal settings. Product options also accept --KEY VALUE with hyphens.
  * Defaults are faithful, no smoothing. Smooth camera implies interpolation.
  * Presentation-only controls and transition fallbacks: docs/native-presenter.md.
  *
@@ -43,6 +43,7 @@
 #include "../c/vga.h"
 #include "../c/game.h"
 #include "../c/startup.h"
+#include "../c/view.h"
 #include "../native/machine.h"
 #include "sdl_host.h"
 #include "../native/scanout.h"
@@ -54,6 +55,21 @@
 #include "../native/host_clock.h"
 
 static double secs(uint64_t ns) { return ns / 1e9; }
+
+/* The product is a window-subsystem program (no console of its own). Started from a
+ * console without redirection, reports still go to that console. */
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+static void console_attach(void)
+{
+    HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
+    if ((out && out != INVALID_HANDLE_VALUE) || !AttachConsole(ATTACH_PARENT_PROCESS)) return;
+    freopen("CONOUT$", "w", stdout); freopen("CONOUT$", "w", stderr);
+}
+#else
+static void console_attach(void) {}
+#endif
 
 /* ---- presentation: the reference VGA scan-out at each CRT frame's display start ------------ */
 static uint32_t frame_px[PRESENTER_MAX_W * PRESENTER_MAX_H];
@@ -105,15 +121,21 @@ static int rebuild_presenter(void)
     for(unsigned i=0;i<history_count;i++) presenter_push(next,&history[(history_head+i)%FRAME_QUEUE]);
     presenter_destroy(presenter); presenter=next; presentation=opt; return 0;
 }
-static double display_aspect(void)
+/* The output canvas: widescreen's shape is that of its 200-row images. A picture of
+ * another size (the 640x480 ending) is fitted to the same canvas instead of moving the
+ * letterbox for its own rounding of the width. */
+static int canvas_w=320;
+static double image_aspect(int w,int h)
 {
-    double a=presentation.mode==PRESENT_WIDESCREEN?(double)frame_w/frame_h:1.6;
-    return settings.pixel_aspect?a/1.2:a;
+    if(presentation.mode!=PRESENT_WIDESCREEN) canvas_w=320;
+    else if(h==200) canvas_w=w;
+    return settings.pixel_aspect?canvas_w/240.0:canvas_w/200.0;
 }
+static double display_aspect(void) { return image_aspect(frame_w,frame_h); }
 static int ui_key(int code,int down,int repeat,int shift)
 {
     int was_open=overlay.open; OverlayKey key=OVERLAY_ENTER; int recognized=1;
-    if(code==0x3b || code==0x44) {if(!down || repeat) return 1; key=OVERLAY_TOGGLE;}
+    if(code==0x44) {if(!down || repeat) return 1; key=OVERLAY_TOGGLE;}
     else {
         if(!was_open || !down) return was_open;
         switch(code) {
@@ -137,7 +159,7 @@ static int ui_key(int code,int down,int repeat,int shift)
                 frozen_w=im.w; frozen_h=im.h;
             }
         }
-        frozen_aspect=(presentation.mode==PRESENT_WIDESCREEN?(double)frozen_w/frozen_h:1.6)/(settings.pixel_aspect?1.2:1);
+        frozen_aspect=image_aspect(frozen_w,frozen_h);
     }
     if(was_open!=overlay.open) {
         if(overlay.open) {
@@ -165,9 +187,8 @@ static int ui_key(int code,int down,int repeat,int shift)
 static void show_product(const OverlayPerf *perf)
 {
     if(!overlay.open && !settings.performance && !settings.integer_scaling) {
-        int aw=presentation.mode==PRESENT_WIDESCREEN?frame_w:320;
-        int ah=presentation.mode==PRESENT_WIDESCREEN?frame_h:200;
-        sdl_host_show(frame_px,frame_w,frame_h,aw,settings.pixel_aspect?ah*6/5:ah);
+        (void)display_aspect();
+        sdl_host_show(frame_px,frame_w,frame_h,canvas_w,settings.pixel_aspect?240:200);
         return;
     }
     int w,h; sdl_host_window_size(&w,&h);
@@ -269,7 +290,11 @@ static void key_now(uint8_t code) { rt_key_at(code, rt_now()); }
  *   ending    EndSignal FFh: THEEND, the intro picture gate, the front end
  *   gameover  EndSignal 1: death bounce, game-over screen, the front end
  *   castle    CurrentLevel 7, LevelEndMode 1, beginner: exit sequence, CASTLE, the front end
- *   attract   no key from the front end on: the attract demo (prints the demo player's X) */
+ *   attract   no key from the front end on: the attract demo (prints the demo player's X)
+ *   cave      level 1's cave record 0836h and, 3 s later, its way back 2E7Eh: the player is
+ *             held on each source tile until the trigger takes it; prints the simulated
+ *             view width after each arrival (true widescreen: 320 in the cave, wide again
+ *             back in the main region) */
 static const char *scenario;
 static int scenario_poked;
 static void scenario_poke(void)
@@ -287,6 +312,23 @@ static void scenario_trace(void)
         phase = pre2_phase; level = DB(DS_CurrentLevel);
         printf("trace %6.2f s: %-28s CurrentLevel %02X\n", secs(rt_now()), phase, level);
     }
+}
+
+static void scenario_cave(uint64_t now)
+{
+    static const uint16_t source[2] = { 0x0836, 0x2E7E };
+    static unsigned stage; static int placed; static uint64_t arrived;
+    if (stage >= 2 || (arrived && now - arrived < 3000000000ull)) return;
+    unsigned col = DW(DS_PlayerX) >> 4, scol = source[stage] & 255, srow = source[stage] >> 8;
+    if (placed && (col > scol + 20 || col + 20 < scol)) {
+        printf("cave: record %04X took the player to tile %02X,%02X at %.2f s: view %u px, camera column %u\n",
+               source[stage], col, DW(DS_PlayerY) >> 4, secs(now), pre2_view.width_px, DW(DS_CameraCol));
+        stage++; placed = 0; arrived = now; return;
+    }
+    SET_DW(DS_PlayerX, (uint16_t)(scol * 16 + 8)); SET_DW(DS_PlayerY, (uint16_t)(srow * 16 + 4));
+    SET_DB(DS_LandingBlockTimer, 4); SET_DB(DS_PlayerAltModeFlag, 0);
+    SET_DW(DS_PlayerVelX, 0); SET_DW(DS_PlayerVelY, 0);
+    placed = 1;
 }
 
 static void smoke_keys(void)
@@ -318,6 +360,7 @@ static void smoke_keys(void)
         scenario_poke(); scenario_poked = 1; last = now;
     }
     if (gameplay_ns && !scenario_poked) { if (!held) { key_now(0x4D); held = 1; } return; }
+    if (scenario_poked && !strcmp(scenario, "cave")) { scenario_cave(now); return; }
     if (down && now - last >= 100000000ull) { key_now(0x9C); down = 0; }
     /* hands off while the map scrolls in, so the whole scroll-in can be observed */
     if (!strcmp(pre2_phase, "ShowWorldMapScrollIn()")) return;
@@ -443,7 +486,9 @@ done:
 
 int main(int argc, char **argv)
 {
-    const char *assets = "assets";
+    const char *assets = NULL;
+    static char found_assets[1024];
+    console_attach();
     double smoke = 0;
     int year_override = 0, turbo = 0, headless = 0;
     RtConfig cfg = { 0 };
@@ -505,6 +550,15 @@ int main(int argc, char **argv)
         printf("true widescreen: simulated view %u px wide (fixed for this boot)\n",w);
     }
 
+    if (!assets) {
+        if (sdl_host_find_assets(found_assets, sizeof found_assets)) {
+            sdl_host_fatal("Prehistorik 2 game files were not found.\n\n"
+                           "Put pre2_sdl3.exe and SDL3.dll in the game folder (next to SPRITES.SQZ), "
+                           "or start it with --assets DIR.");
+            return 1;
+        }
+        assets = found_assets;
+    }
     time_t t = time(NULL); struct tm *lt = localtime(&t);
     rt_boot(assets, year_override ? year_override : lt->tm_year + 1900, lt->tm_mon + 1, lt->tm_mday);
     if (!reference_video) { vga_memory_off = 1; compositor_init(); }

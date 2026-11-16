@@ -210,7 +210,7 @@ requires identical memory at every main-loop frame and step change, identical PC
 `--smooth-camera [--camera-tau S]`, `--smooth-transitions`,
 `--hud left|centre|right|anchored`, `--backdrop black|mirror|stretch`: presentation only.
 Settings persist in `pre2_settings.json` (SDL preferences directory, `--settings PATH`;
-defaults < JSON < command line) and F1/F10 opens the paused settings overlay
+defaults < JSON < command line) and F10 opens the paused settings overlay
 (docs/native-host.md). `--wide-sim WIDTH|auto` selects the true
 widescreen gameplay variant for the run (implies the widescreen presentation; `auto` takes the
 width from the aspect); demos and the attract mode always run in the original geometry.
@@ -274,4 +274,4 @@ enemy activation and despawn use their own windows (320x300 despawn bounds).
   masked 320 apertures (docs/native-widescreen.md), margin terrain sources in presentation-only
   widescreen. presenter_native: zero faithful pixels over 23,457 publications in four
   enhanced/widescreen configurations, enhanced 320 equal to faithful at every one. JSON
-  settings and the F1/F10 overlay with pause purity (docs/native-host.md).
+  settings and the F10 overlay with pause purity (docs/native-host.md).

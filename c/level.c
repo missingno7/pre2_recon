@@ -1133,7 +1133,7 @@ void TryCaveTrigger(void)
     uint16_t w2 = DW((uint16_t)(si + 2));
     uint8_t tcol = (uint8_t)w2, trow = (uint8_t)(w2 >> 8);
     if (pre2_view.variant) {
-        tcol=(uint8_t)pre2_view_cave(DB(si+6),tcol);
+        tcol=(uint8_t)pre2_view_cave(DB(si+6),tcol,DW(si),w4);
         unsigned maxrow=DB(DS_MapRows)>pre2_view.rows ? DB(DS_MapRows)-pre2_view.rows : 0;
         if (trow > maxrow) trow=(uint8_t)maxrow;
         /* The pan crosses regions, so temporarily include its departure and

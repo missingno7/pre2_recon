@@ -123,7 +123,7 @@ endpoints, never extrapolated. No blending crosses a phase/level/format boundary
 
 | Kind | Projection / fallback |
 |---|---|
-| Iris (1) | Native retained world plus the accumulated per-page blackout intervals, including original head/run/tail arithmetic, row crossing and sprite redraw. At 320 every original step equals the faithful reference. An interval reaching an original edge extends to the view edge. Between compatible steps smoothing uses an interpolated circle over the native source, then redraws retained sprites. Missing world data reports bit 2. |
+| Iris (1) | Native retained world plus the accumulated per-page blackout intervals, including original head/run/tail arithmetic, row crossing and sprite redraw. At 320 every original step equals the faithful reference. An interval reaching an original edge extends to the view edge. Between compatible steps smoothing uses an interpolated circle over the native source, then redraws retained sprites. Missing world data reports bit 2. In a wide layout the HUD rows are redrawn from the strip's last state before the iris and cut by the published circle: the original blacks its spans out of the 320 strip, which moved fields cannot map back. |
 | Column reveal (2) | Native departure and already-drawn destination worlds; actual copied columns select between them. Original column = floor(x * 20 / width), preserving the repeated middle strip and untouched far-left strip. Smooth within-column masks use two native endpoint renders. |
 | Staggered block wipe (3) | Native displayed source plus actual 16x10 clears. Whole-row bands extend across the view, including overlapping central bands. Death, cave and bonus-warp closes share this path. Smooth ten-row masks use native endpoints. |
 | Palette fade (4) | Per-entry interpolation in expanded RGB between consecutive published palettes with identical indexed image and pixel mask. Index changes or mismatched phases keep the published palette/image until a compatible pair exists. |
@@ -177,7 +177,7 @@ Validation, 2026-11-13:
   pass**, including 386,040 pure renders at 60/144/240 Hz and all seven shots.
 * `python tools/verify.py`: **86,428-byte program image exact**, MZ fields equal;
   the existing five full-file header-byte differences are relocation ordering.
-* `python tools/hostbuild.py`: **pass**. `build/host/pre2.exe --assets assets
+* `python tools/hostbuild.py`: **pass**. `build/host/pre2_sdl3.exe --assets assets
   --smoke 45 --headless --year 1995 --mode MODE` passes the bounded run for each
   mode (exit 3); widescreen also exercises 21:9 and all smoothing options. Every
   mode has 3,275 ticks, 3,153 display publications, 349,944 PCM bytes and memory

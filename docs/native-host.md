@@ -5,6 +5,13 @@ program on a simulation worker; rendering and the settings UI consume published
 frames. `--assets assets --smoke 45 --headless --year 1995` remains the bounded
 integration run (exit **3** means it reached its logical limit).
 
+The product is `build/host/pre2_sdl3.exe` plus `SDL3.dll`, a window-subsystem
+program: copied into a game folder it starts with no arguments. Without
+`--assets DIR` the game data is the first of the executable's directory, its
+`assets/`, the working directory and `./assets` that holds `SPRITES.SQZ`; if
+none does, a message box says so. Started from a console it still prints its
+reports there.
+
 Preferences live in `pre2_settings.json` under
 `SDL_GetPrefPath("pre2-reconstruction", "Prehistorik2")`. On Windows this is
 normally `%APPDATA%\pre2-reconstruction\Prehistorik2\pre2_settings.json`.
@@ -61,7 +68,7 @@ Those flags describe a test/run rather than user preferences and are not saved.
 `--reference` always uses default presenter options, including after a menu edit.
 Input rebinding, mouse and gamepad input are not implemented by the host.
 
-F1 or F10 opens/closes the modal menu. Escape closes; Up/Down selects an
+F10 opens/closes the modal menu (F1 is left to the game). Escape closes; Up/Down selects an
 editable row, skipping info rows; Left/Right changes it; Enter advances its
 value; Tab/Shift+Tab changes tabs. Tabs are Display (including performance),
 Enhancements, Audio, and Experimental. A compact authored 3x5 bitmap font is
@@ -74,6 +81,14 @@ publications, and preview the same frozen logical target behind the menu.
 Window, vsync, scaling and gain changes apply immediately. Gain/mute operate on SDL's output stream; the
 machine still generates exactly the same mono PCM. A frame cap limits presents,
 independently of the simulation; vsync can impose a lower effective cap.
+
+The audio output stage (`sdl_host_audio`) does not change the machine's PCM. It
+centres it (a 7 Hz DC blocker to signed 16-bit: the original rests at 00h, so
+every gap SDL fills with silence was a step), keeps a 60 ms cushion ahead of
+the device (refilled after an underrun), follows the queue depth with a rate
+ratio within 0.5 %, and drops a queue beyond 250 ms. The clicks inside the
+original mix (unramped notes and effects, unfiltered 8403 Hz stepping) remain;
+removing those needs the separate high-quality engine.
 The performance display reports presented FPS, delivered original PIT timer
 ticks per wall second (TPS; zero while paused), and logical time minus the current
 wall target with pauses removed, in milliseconds. It is not a fixed-rate

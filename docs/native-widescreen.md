@@ -110,6 +110,15 @@ are counterexamples to treating the arrival aperture as an outer extent.
 `build/regions_shots/cave_arrivals.tsv` contains all 44 records, including the
 eight stationary-screen proofs. Each native entry also carries its blocker.
 
+The simulation variant returns to the main region's width on the way back
+(`pre2_view_cave`): it remembers the source tile of the trigger that left the
+main region, and a later free-follow trigger landing within four tiles of it
+(the shipped return records land 0..1 columns, 0..4 rows away) selects
+`PRE2_REGION_MAIN` again. Cave-to-cave, one-way passages and locked screens
+keep the 320 arrival until the next level. `--smoke 50 --scenario cave` walks
+record 0836h and its return 2E7Eh (464 -> 320 -> 464 with `--wide-sim auto
+--aspect 21:9`).
+
 | Level | Source | Camera | Destination | Idle X | Settled Y | Blocker |
 |---|---|---|---|---:|---:|---|
 | 00h | 2725 | 2440 | 2E4C | 59..74 | 592 | A |

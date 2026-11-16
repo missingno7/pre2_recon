@@ -14,11 +14,11 @@ python tools/verify.py        # exact rebuild: image, header, relocations (~10 s
 python tools/difftest.py      # every differential suite in tests/ (ASM in Unicorn vs C)
 python tools/where.py 107B    # source line for a code offset (ds:XXXX for data)
 python tools/graph.py 107B    # callers, callees, ports, interrupts, DATA of a routine
-python tools/hostbuild.py     # native SDL3 build -> build/host/pre2.exe
-build\host\pre2.exe --assets assets             # play (native renderer and audio; --reference: VGA/SB models)
+python tools/hostbuild.py     # native SDL3 build -> build/host/pre2_sdl3.exe
+build\host\pre2_sdl3.exe --assets assets             # play (native renderer and audio; --reference: VGA/SB models)
 python tools/nativetest.py                       # native path: parity, stepping, audio, production (docs/native.md)
-build\host\pre2.exe --assets assets --smoke 45  # bounded integration check (docs/smoke-test.md)
-build\host\pre2.exe --assets assets --smoke 75 --scenario warp   # also ending, gameover, castle
+build\host\pre2_sdl3.exe --assets assets --smoke 45  # bounded integration check (docs/smoke-test.md)
+build\host\pre2_sdl3.exe --assets assets --smoke 75 --scenario warp   # also ending, gameover, castle
 python tests/_vga_kat.py                         # VGA model known-answer checks
 python tools/coverage.py                        # routine coverage (after PRE2_COVERAGE=1 difftest)
 ```

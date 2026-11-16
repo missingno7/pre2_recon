@@ -23,6 +23,7 @@ int pre2_view_configure(unsigned width);
 void pre2_view_begin_level(void);
 void pre2_view_refresh(void);
 void pre2_view_stage(void);
-unsigned pre2_view_cave(unsigned gate, unsigned target_col);
+/* source/destination: the trigger record's tiles (low byte column, high byte row). */
+unsigned pre2_view_cave(unsigned gate, unsigned target_col, unsigned source, unsigned destination);
 int pre2_view_candidate(unsigned x, unsigned y);
 #endif

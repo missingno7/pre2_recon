@@ -20,6 +20,11 @@ struct Presenter {
     uint8_t index[PRESENTER_MAX_W * PRESENTER_MAX_H];
     uint8_t next_index[PRESENTER_MAX_W * PRESENTER_MAX_H];
     FrameScreenView pan;   /* CARTE pan endpoint with capped reveal */
+    /* The status strip as last published outside an iris. The original iris blacks its
+     * spans out of the 320 strip itself, which a wide layout cannot map back. */
+    FrameGameView hud_view;
+    uint16_t hud_count; uint8_t hud_frame, hud_valid; uint32_t hud_epoch;
+    FrameHudElement hud_elements[FRAME_MAX_HUD];
 };
 static Record *record(Presenter *p, unsigned i) { return &p->records[(p->head + i) % HISTORY]; }
 static double fraction(uint64_t t, uint64_t a, uint64_t b)
@@ -60,7 +65,7 @@ void presenter_reset(Presenter *p)
 {
     if (!p) return;
     release_all(p);
-    p->head = p->count = 0; p->have_sim = 0;
+    p->head = p->count = 0; p->have_sim = 0; p->hud_valid = 0;
     memset(&p->camera, 0, sizeof p->camera);
 }
 void presenter_destroy(Presenter *p) { if (p) release_all(p); free(p); }
@@ -74,6 +79,11 @@ void presenter_push(Presenter *p, const Pre2Frame *f)
     }
     Record *r = record(p,p->count++); r->f = *f; r->sim_time = f->t_ns;
     enh_screen_view_retain(&r->f.screen_view);
+    if (f->game.valid && f->game.world_valid && f->transition.kind != 1 && f->game.hud_count <= FRAME_MAX_HUD) {
+        p->hud_count = f->game.hud_count; p->hud_frame = f->game.hud_frame;
+        p->hud_epoch = f->game.level_epoch; p->hud_valid = 1;
+        memcpy(p->hud_elements, f->game.hud_elements, f->game.hud_count * sizeof p->hud_elements[0]);
+    }
     if (f->game.valid) {
         if (!p->have_sim || p->last_sim != f->game.sim_frame || p->last_epoch != f->game.level_epoch) {
             p->first_sim_time = f->t_ns; p->last_sim = f->game.sim_frame;
@@ -263,6 +273,19 @@ int presenter_render(Presenter *p, uint64_t bound, double aspect, PresenterImage
         double iy=f->game.camera_y+f->transition.cy-cy;
         int rc = iris ? enh_render_iris(pose.view,f->palette,f->pel_mask,cx,cy,rw,200,&opt,ix,iy,o->radius,&im) :
             enh_render(pose.view,pose.view->assets,f->palette,f->pel_mask,cx,cy,rw,200,&opt,&im);
+        /* The captured iris spans over the HUD rows are positions in the original 320
+         * strip. A wide layout moves the HUD fields apart, so there the strip is redrawn
+         * from its state before the iris and cut by the published circle, which continues
+         * the world rows' outline. */
+        if (rc==0 && f->transition.kind==1 && (rw!=320 || pose.view->view_w>320) &&
+            p->hud_valid && p->hud_epoch==pose.view->level_epoch) {
+            p->hud_view=*pose.view;
+            p->hud_view.hud_count=p->hud_count; p->hud_view.hud_frame=p->hud_frame;
+            memcpy(p->hud_view.hud_elements,p->hud_elements,p->hud_count*sizeof p->hud_elements[0]);
+            if (!enh_render_hud(&p->hud_view,opt.hud,rw,176,&im))
+                for (int y=176;y<200;y++) for (int x=0;x<rw;x++)
+                    if ((x-ix)*(x-ix)+(y-iy)*(y-iy)>o->radius*o->radius) p->index[y*rw+x]=0;
+        }
         if (rc==0) {
             o->fallback &= ~8u;
             int mask_pair = pair && step_t>0 && (f->transition.kind==2 || f->transition.kind==3);

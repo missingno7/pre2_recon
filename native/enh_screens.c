@@ -55,7 +55,9 @@ int enh_screens_render(const FrameScreenView *v,
                  * real ring's last row; it is an independent native draw target. */
                 sx = (int)x - (int)(w - v->width);
                 if (sx >= row->count) { line[x] = v->border; continue; }
-                if (sx >= 0) {
+                /* An interpolated pan displaces the sample (dx < 0): the columns it moves
+                 * left of the surface row come from the master, never the ring's wrap. */
+                if (sx + dx >= 0) {
                     uint8_t bits = pixel(v->surface, (uint32_t)((int64_t)row->origin + sx + dx + (int64_t)320 * dy) & row->mask) & 15;
                     int mx = (int)floor(pan_x) - (int)w + (int)x;
                     for (unsigned p = 0; p < 4; p++) if (mx >= v->revealed[p]) bits &= (uint8_t)~(1u << p);

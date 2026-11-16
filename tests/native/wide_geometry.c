@@ -42,9 +42,19 @@ int main(int argc,char **argv)
     assert(pre2_view.camera_max_col==104 && pre2_view.logical_right_px==144*16);
     SET_DW(DS_CameraCol,104); assert(ScrollViewRight());
     SET_DW(DS_CameraCol,0); assert(ScrollViewLeft());
-    assert(pre2_view_cave(0,236)==236 && pre2_view.width_px==320);
+    assert(pre2_view_cave(0,236,0,0x4040)==236 && pre2_view.width_px==320);
     SET_DW(DS_CameraCol,235); pre2_view_refresh();
     assert(pre2_view.camera_max_col==236 && pre2_view.logical_right_px==256*16);
+    /* Cave to cave keeps the 320 arrival; the way back to the door the main region was
+     * left through (source 0000h above) selects the main region and its width again. */
+    assert(pre2_view_cave(0,50,0x4242,0x3030)==50 && pre2_view.width_px==320);
+    pre2_view_cave(0,0,0x3131,0x0201);
+    assert(pre2_view.region==PRE2_REGION_MAIN && pre2_view.width_px==pre2_view.requested_width);
+    assert(pre2_view_cave(1,0,0x0201,0x4040)==0 && pre2_view.width_px==320);   /* a locked screen */
+    pre2_view_cave(0,0,0x3131,0x0201);
+    assert(pre2_view.region==PRE2_REGION_MAIN);
+    pre2_view_cave(0,236,0,0x4040);
+    SET_DW(DS_CameraCol,235); pre2_view_refresh();
     /* Exit contacts in an extension projection must remain part of the
      * ascending contact union, including authored level-number remaps. */
     ResetRenderSlots();

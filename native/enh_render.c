@@ -259,6 +259,13 @@ int enh_render_iris(const FrameGameView *v, const uint8_t palette[256][3], uint8
     }
     return 0;
 }
+int enh_render_hud(const FrameGameView *v, EnhHud mode, int w, int top, EnhImage *im)
+{
+    if (!v || !v->assets || !im || !im->index || w <= 0 || top < 0 || mode == ENH_HUD_NONE ||
+        im->stride < (size_t)w || im->capacity < im->stride * (size_t)(top + 24)) return -1;
+    hud(v, v->assets, mode, w, top, im);
+    return 0;
+}
 static void surface_hud_mask(const EnhSurface *s, int w, int top, double dx, EnhImage *im)
 {
     if (!s) return;

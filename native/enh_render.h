@@ -62,6 +62,8 @@ typedef struct EnhSurface {
 int enh_render_surface(const EnhSurface *surface, const uint8_t palette[256][3], uint8_t pel_mask,
                        double camera_dx, double camera_dy, int width, int height,
                        const EnhOptions *options, EnhImage *out);
+/* The HUD strip alone (24 rows at `top`), without any surface blackout. */
+int enh_render_hud(const FrameGameView *view, EnhHud mode, int width, int top, EnhImage *out);
 int enh_render_iris(const FrameGameView *view, const uint8_t palette[256][3], uint8_t pel_mask,
                     double camera_x, double camera_y, int width, int height,
                     const EnhOptions *options, double x, double y, double radius, EnhImage *out);

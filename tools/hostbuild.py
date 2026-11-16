@@ -1,6 +1,6 @@
 """Build the native SDL3 host: c/*.c (translated game, platform models) + host/*.c.
 
-    python tools/hostbuild.py      -> build/host/pre2.exe (+ SDL3.dll)
+    python tools/hostbuild.py      -> build/host/pre2_sdl3.exe (+ SDL3.dll)
 
 The initial memory image comes from our own ASM build (build/asm/PRE2.EXE, which
 tools/verify.py proves identical to the original image): it is embedded as a generated C
@@ -31,8 +31,8 @@ def main():
     cgen.generate()
     sdl = Path(read_json(ROOT/'metadata'/'sdl3.json')['local'])
     sources = [str(p) for p in sorted((ROOT/'c').glob('*.c'))] + [str(p) for p in sorted((ROOT/'native').glob('*.c'))] + [str(p) for p in sorted((ROOT/'host').glob('*.c'))] + [str(out/'image_data.c')]
-    cmd = [str(cbuild.GCC), '-O2', '-g', '-std=c11', '-Wall', '-Wextra', '-Werror', '-Wno-unused-function', '-fwrapv',
-           f'-I{sdl/"include"}', '-o', str(out/'pre2.exe'), *sources, f'-L{sdl/"lib"}', '-lSDL3']
+    cmd = [str(cbuild.GCC), '-O2', '-g', '-std=c11', '-Wall', '-Wextra', '-Werror', '-Wno-unused-function', '-fwrapv', '-mwindows',
+           f'-I{sdl/"include"}', '-o', str(out/'pre2_sdl3.exe'), *sources, f'-L{sdl/"lib"}', '-lSDL3']
     env = dict(os.environ, PATH=str(cbuild.GCC.parent) + os.pathsep + os.environ.get('PATH', ''))
     p = subprocess.run(cmd, capture_output=True, text=True, env=env)
     if p.returncode: raise SystemExit(p.stdout + p.stderr)
@@ -40,7 +40,7 @@ def main():
     for dll in ('libwinpthread-1.dll',):
         src = cbuild.GCC.parent/dll
         if src.exists(): shutil.copyfile(src, out/dll)
-    print(out/'pre2.exe')
+    print(out/'pre2_sdl3.exe')
 
 if __name__ == '__main__':
     main()

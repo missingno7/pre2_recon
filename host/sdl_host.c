@@ -1,6 +1,7 @@
 /* SDL3 window, audio device and keyboard for the native host (see sdl_host.h). */
 #include <SDL3/SDL.h>
 #include <stdio.h>
+#include <string.h>
 #include "sdl_host.h"
 
 static SDL_Window *win;
@@ -69,6 +70,28 @@ uint8_t sdl_pc_scancode(int sdl_scancode, int *extended)
     }
 }
 
+int sdl_host_find_assets(char *out, unsigned size)
+{
+    const char *base = SDL_GetBasePath();
+    const char *dirs[4][2] = { { base, "" }, { base, "assets" }, { ".", "" }, { "", "assets" } };
+    for (int i = 0; i < 4; i++) {
+        char probe[1100];
+        if (!dirs[i][0]) continue;
+        size_t n = strlen(dirs[i][0]);
+        const char *sep = n && *dirs[i][1] && dirs[i][0][n - 1] != '/' && dirs[i][0][n - 1] != '\\' ? "/" : "";
+        if (snprintf(out, size, "%s%s%s", dirs[i][0], sep, dirs[i][1]) >= (int)size) continue;
+        if (snprintf(probe, sizeof probe, "%s/SPRITES.SQZ", out) >= (int)sizeof probe) continue;
+        FILE *f = fopen(probe, "rb");
+        if (f) { fclose(f); return 0; }
+    }
+    return -1;
+}
+void sdl_host_fatal(const char *message)
+{
+    fprintf(stderr, "%s\n", message);
+    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Prehistorik 2", message, NULL);
+}
+
 int sdl_host_init(int video, int sound)
 {
     SDL_InitFlags f = (video ? SDL_INIT_VIDEO : 0) | (sound ? SDL_INIT_AUDIO : 0);
@@ -83,7 +106,7 @@ int sdl_host_init(int video, int sound)
         SDL_SetRenderVSync(ren, 1);
     }
     if (sound) {
-        SDL_AudioSpec src = { SDL_AUDIO_U8, 1, 8403 };
+        SDL_AudioSpec src = { SDL_AUDIO_S16, 1, 8403 };
         audio = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &src, NULL, NULL);
         if (audio) SDL_ResumeAudioStreamDevice(audio);
     }
@@ -149,16 +172,48 @@ void sdl_host_show(const uint32_t *xrgb, int w, int h, int aspect_w, int aspect_
     SDL_RenderPresent(ren);
 }
 
+/* The output stage. The machine's PCM (unsigned, resting at 00h, one block handed over at
+ * the logical time it starts) is not changed; what the device gets is:
+ *  - centred: a one-pole DC blocker (about 7 Hz) to signed 16-bit, so the gaps SDL fills
+ *    with its own silence (song loads, F3, stalls) are not steps from the 00h rest level;
+ *  - cushioned: AUDIO_LEAD_MS of silence ahead of the first block and after every underrun,
+ *    so scheduling jitter of the simulation worker does not starve the device;
+ *  - servoed: the stream's rate follows the queue depth within +-0.5 % (device and logical
+ *    clocks drift apart), and a queue beyond AUDIO_MAX_MS is dropped rather than played late. */
+#define AUDIO_LEAD_MS 60
+#define AUDIO_MAX_MS 250
 void sdl_host_audio(const uint8_t *pcm, uint32_t n, uint32_t rate)
 {
     static uint32_t cur = 8403;
-    if (!audio) return;
+    static double prev_in, prev_out;
+    static int16_t out[4096], lead[4096];
+    if (!audio || !rate) return;
     if (rate != cur) {
-        SDL_AudioSpec src = { SDL_AUDIO_U8, 1, (int)rate };
+        SDL_AudioSpec src = { SDL_AUDIO_S16, 1, (int)rate };
         SDL_SetAudioStreamFormat(audio, &src, NULL);
         cur = rate;
     }
-    SDL_PutAudioStreamData(audio, pcm, (int)n);
+    if (n > sizeof out / sizeof *out) n = sizeof out / sizeof *out;
+    for (uint32_t i = 0; i < n; i++) {
+        double y = pcm[i] - prev_in + 0.995 * prev_out;
+        prev_in = pcm[i]; prev_out = y;
+        double s = y * 100.0;
+        out[i] = (int16_t)(s > 32767 ? 32767 : s < -32768 ? -32768 : s);
+    }
+    int queued = SDL_GetAudioStreamQueued(audio);
+    double ms = queued < 0 ? 0 : queued / 2 * 1000.0 / rate;
+    if (ms > AUDIO_MAX_MS) { SDL_ClearAudioStream(audio); ms = 0; queued = 0; }
+    if (queued <= 0) {
+        uint32_t pad = rate * AUDIO_LEAD_MS / 1000;
+        if (pad > sizeof lead / sizeof *lead) pad = sizeof lead / sizeof *lead;
+        SDL_PutAudioStreamData(audio, lead, (int)(pad * 2));
+        ms = AUDIO_LEAD_MS;
+    }
+    double error = (ms - AUDIO_LEAD_MS) / AUDIO_LEAD_MS;
+    if (error > 1) error = 1;
+    if (error < -1) error = -1;
+    SDL_SetAudioStreamFrequencyRatio(audio, (float)(1.0 + 0.005 * error));
+    SDL_PutAudioStreamData(audio, out, (int)(n * 2));
 }
 
 uint32_t sdl_host_audio_queued(void) { return audio ? (uint32_t)SDL_GetAudioStreamQueued(audio) : 0; }
